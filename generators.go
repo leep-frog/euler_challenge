@@ -3,11 +3,15 @@ package main
 type Generator struct {
 	values []int
 
-	next func(*Generator) int
+	f func(*Generator) int
 }
 
 func (g *Generator) Last() int {
 	return g.values[len(g.values)-1]
+}
+
+func (g *Generator) Len() int {
+	return len(g.values)
 }
 
 func (g *Generator) Nth(i int) int {
@@ -18,15 +22,14 @@ func (g *Generator) Nth(i int) int {
 }
 
 func (g *Generator) Next() int {
-	i := g.next(g)
+	i := g.f(g)
 	g.values = append(g.values, i)
 	return i
 }
 
 func NewGenerator(start int, f func(*Generator) int) *Generator {
 	return &Generator{
-		values: []int{start},
-		next: func(g *Generator) int {
+		f: func(g *Generator) int {
 			if len(g.values) == 0 {
 				return start
 			}
@@ -64,7 +67,7 @@ func Fibonaccis() *Generator {
 }
 
 func Triangulars() *Generator {
-	i := 0
+	i := 1
 	return NewGenerator(1, func(g *Generator) int {
 		i++
 		return g.Last() + i

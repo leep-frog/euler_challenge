@@ -33,6 +33,7 @@ func p5() *command.Node {
 		command.ExecutorNode(func(o command.Output, d *command.Data) error {
 
 			primer := Primer()
+			primer.Next()
 			primes := map[int]int{}
 			for i := 2; i < d.Int(N); i++ {
 				addPrimeFactors(i, primer, primes)
