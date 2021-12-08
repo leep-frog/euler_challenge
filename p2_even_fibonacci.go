@@ -9,14 +9,12 @@ func p2() *command.Node {
 		command.Description("Find the sum of all even fibonacci numbers less than N"),
 		command.IntNode(N, "", command.IntPositive()),
 		command.ExecutorNode(func(o command.Output, d *command.Data) error {
+			fibs := Fibonaccis()
 			var sum int
-			for a, b := 1, 2; b < d.Int(N); {
-				if b%2 == 0 {
-					sum += b
+			for i := fibs.Next(); i < d.Int(N); i = fibs.Next() {
+				if i%2 == 0 {
+					sum += i
 				}
-				tmp := a + b
-				a = b
-				b = tmp
 			}
 			o.Stdoutf("%d", sum)
 			return nil

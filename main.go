@@ -33,6 +33,7 @@ func node() *command.Node {
 		"9":  p9(),
 		"10": p10(),
 		"11": p11(),
+		"12": p12(),
 	}, nil, true)
 }
 

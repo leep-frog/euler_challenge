@@ -9,8 +9,7 @@ func p7() *command.Node {
 		command.Description("Find the Nth prime number"),
 		command.IntNode(N, "", command.IntPositive()),
 		command.ExecutorNode(func(o command.Output, d *command.Data) error {
-			primer := &Primer{}
-			o.Stdoutf("%d", primer.Nth(d.Int(N)-1))
+			o.Stdoutf("%d", Primer().Nth(d.Int(N)-1))
 			return nil
 		}),
 	)

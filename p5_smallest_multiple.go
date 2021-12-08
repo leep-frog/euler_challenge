@@ -4,7 +4,7 @@ import (
 	"github.com/leep-frog/command"
 )
 
-func addPrimeFactors(i int, primer *Primer, primes map[int]int) {
+func addPrimeFactors(i int, primer *Generator, primes map[int]int) {
 	if i == primer.Last() {
 		primes[i] = 1
 		primer.Next()
@@ -32,8 +32,7 @@ func p5() *command.Node {
 		command.IntNode(N, "", command.IntPositive()),
 		command.ExecutorNode(func(o command.Output, d *command.Data) error {
 
-			primer := &Primer{}
-			primer.Next()
+			primer := Primer()
 			primes := map[int]int{}
 			for i := 2; i < d.Int(N); i++ {
 				addPrimeFactors(i, primer, primes)

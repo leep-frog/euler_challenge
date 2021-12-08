@@ -9,14 +9,14 @@ func p10() *command.Node {
 		command.Description("Find the sum of all primes lower than N"),
 		command.IntNode(N, "", command.IntPositive()),
 		command.ExecutorNode(func(o command.Output, d *command.Data) error {
-			p := &Primer{}
+			p := Primer()
 
 			for i := 0; p.Next() < d.Int(N); i++ {
 			}
 
 			sum := 0
-			for i := 0; i < len(p.Primes)-1; i++ {
-				sum += p.Primes[i]
+			for i := 0; i < len(p.values)-1; i++ {
+				sum += p.Nth(i)
 			}
 			o.Stdoutf("%d", sum)
 			return nil

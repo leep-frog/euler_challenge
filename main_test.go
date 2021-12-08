@@ -135,7 +135,7 @@ func TestAll(t *testing.T) {
 			want:    70600674,
 			long:    true,
 		},
-		{
+		/*{
 			name:    "p12 example",
 			problem: 12,
 			arg:     5,
@@ -147,6 +147,7 @@ func TestAll(t *testing.T) {
 			arg:     500,
 			want:    1,
 		},
+		/* Useful for commenting out tests */
 	} {
 		if test.long == runLongTests {
 			t.Run(test.name, func(t *testing.T) {
