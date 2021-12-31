@@ -14,14 +14,17 @@ func FileGenerator() *command.Node {
 	fi := "file-input"
 	fs := "FILE_SUFFIX"
 	desc := "DESCRIPTION"
+	x := "example"
 	return command.SerialNodes(
 		command.NewFlagNode(
 			command.BoolFlag(fi, 'i', "If set, new file will accept a file input; otherwise it accepts an integer, N"),
+			command.BoolFlag(x, 'x', "If set, include example stuff in tests"),
 		),
 		command.IntNode(pn, "Problem number", command.IntPositive()),
 		command.StringNode(fs, "suffix for file name"),
 		command.StringListNode(desc, "Description of the problem", 1, command.UnboundedList),
 		command.ExecutableNode(func(o command.Output, d *command.Data) ([]string, error) {
+			includeExample := d.Bool(x)
 			fileInput := d.Bool(fi)
 			num := d.Int(pn)
 
@@ -68,7 +71,9 @@ func FileGenerator() *command.Node {
 			// Write example files if file input
 			if fileInput {
 				parse.Touch(fmt.Sprintf("p%d.txt", num))
-				parse.Touch(fmt.Sprintf("p%d_example.txt", num))
+				if includeExample {
+					parse.Touch(fmt.Sprintf("p%d_example.txt", num))
+				}
 			}
 
 			testFmt := "\t\t{\n\t\t\tname: \"p%d%s\",\n\t\t\targs: []string{\"%d\", \"%s\"},\n\t\t\twant: []string{\"0\"},\n\t\t},"
@@ -81,11 +86,15 @@ func FileGenerator() *command.Node {
 
 			exTest := fmt.Sprintf(testFmt, num, " example", num, exTestArg)
 			test := fmt.Sprintf(testFmt, num, "", num, testArg)
+			testStr := fmt.Sprintf("r \"(^.*TEST_START.*)$\" '$1\n%s' ec_test.go", test)
+			if includeExample {
+				testStr = fmt.Sprintf("r \"(^.*TEST_START.*)$\" '$1\n%s\n%s' ec_test.go", test, exTest)
+			}
 			return []string{
 				// Add line to node.go
 				fmt.Sprintf("r \"(^.*END_LIST.*$)\" '\t\t\"%d\": P%d(),\n$1' node.go", num, num),
 				// Add tests to ec_test.go
-				fmt.Sprintf("r \"(^.*TEST_START.*)$\" '$1\n%s\n%s' ec_test.go", test, exTest),
+				testStr,
 			}, nil
 		}),
 	)
