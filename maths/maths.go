@@ -4,12 +4,28 @@ import (
 	"fmt"
 	"math"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/leep-frog/euler_challenge/parse"
 )
+
+func Divisors(i int) []int {
+	var r []int
+	for j := 1; j*j <= i; j++ {
+		if i%j == 0 {
+			if j*j == i {
+				r = append(r, j)
+			} else {
+				r = append(r, j, i/j)
+			}
+		}
+	}
+	sort.Ints(r)
+	return r
+}
 
 func IsSquare(i int) bool {
 	rt := int(math.Sqrt(float64(i)))

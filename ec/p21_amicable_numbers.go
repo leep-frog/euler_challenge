@@ -2,6 +2,7 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/maths"
 )
 
 func P21() *command.Node {
@@ -14,13 +15,9 @@ func P21() *command.Node {
 			sumMap := map[int]int{}
 			for i := 1; i <= n; i++ {
 				count := 0
-				for j := 1; j*j <= i; j++ {
-					if i%j == 0 {
-						if j*j == i || j == 1 {
-							count += j
-						} else {
-							count += j + i/j
-						}
+				for _, div := range maths.Divisors(i) {
+					if div != i {
+						count += div
 					}
 				}
 				sumMap[i] = count
