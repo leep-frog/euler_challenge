@@ -10,7 +10,7 @@ func P20() *command.Node {
 		command.Description("Find the sum of the digits of n!"),
 		command.IntNode(N, "", command.IntPositive()),
 		command.ExecutorNode(func(o command.Output, d *command.Data) {
-			n := uint64(d.Int(N))
+			n := d.Int(N)
 			o.Stdoutln(maths.Facotiral(n).DigitSum())
 		}),
 	)

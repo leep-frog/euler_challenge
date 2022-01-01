@@ -532,10 +532,18 @@ func (i *Int) DigitSum() uint64 {
 	return sum
 }
 
-func Facotiral(n uint64) *Int {
+func Facotiral(n int) *Int {
 	r := One()
-	for i := int64(1); uint64(i) <= n; i++ {
-		r = r.Times(NewInt(i))
+	for i := 1; i <= n; i++ {
+		r = r.Times(NewInt(int64(i)))
+	}
+	return r
+}
+
+func FacotiralI(n int) int {
+	r := 1
+	for i := 2; i <= n; i++ {
+		r *= i
 	}
 	return r
 }
