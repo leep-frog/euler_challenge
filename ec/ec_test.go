@@ -20,6 +20,21 @@ func TestAll(t *testing.T) {
 	}{
 		// TEST_START (needed for file_generator.go)
 		{
+			name: "p25",
+			args: []string{"25", "1000"},
+			want: []string{"4782"},
+		},
+		{
+			name: "p25 example 2",
+			args: []string{"25", "2"},
+			want: []string{"7"},
+		},
+		{
+			name: "p25 example 1",
+			args: []string{"25", "1"},
+			want: []string{"1"},
+		},
+		{
 			name: "p24",
 			args: []string{"24", "1000000"},
 			want: []string{"2783915460"},

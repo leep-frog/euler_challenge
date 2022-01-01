@@ -113,9 +113,15 @@ func PrimesInt() *IntGenerator {
 	})
 }
 
+func ShortFibonaccis() *Generator {
+	return fibonaccis(1, 2)
+}
+
 func Fibonaccis() *Generator {
-	a := 1
-	b := 2
+	return fibonaccis(1, 1)
+}
+
+func fibonaccis(a, b int) *Generator {
 	return NewGenerator(1, func(g *Generator) int {
 		r := b
 		b = a + b
@@ -124,9 +130,15 @@ func Fibonaccis() *Generator {
 	})
 }
 
+func ShortFibonaccisInt() *IntGenerator {
+	return fibonaccisInt(maths.NewInt(1), maths.NewInt(2))
+}
+
 func FibonaccisInt() *IntGenerator {
-	a := maths.NewInt(1)
-	b := maths.NewInt(2)
+	return fibonaccisInt(maths.NewInt(1), maths.NewInt(1))
+}
+
+func fibonaccisInt(a, b *maths.Int) *IntGenerator {
 	return NewIntGenerator(maths.NewInt(1), func(ig *IntGenerator) *maths.Int {
 		r := b
 		b = a.Plus(b)
