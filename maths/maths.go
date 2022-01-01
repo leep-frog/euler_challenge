@@ -200,6 +200,14 @@ func (i *Int) get(spot int) uint64 {
 	return i.parts[spot]
 }
 
+func SumInts(is ...int) int {
+	var s int
+	for _, i := range is {
+		s += i
+	}
+	return s
+}
+
 func SumI(is ...int64) *Int {
 	var ints []*Int
 	for _, i := range is {
