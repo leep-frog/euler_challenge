@@ -57,6 +57,19 @@ func (g *Generator) Next() int {
 	return i
 }
 
+// Note: this assumes that the cycles are strictly increasing.
+func (g *Generator) InCycle(i int) bool {
+	for ; g.Len() == 0 || g.Last() <= i; g.Next() {
+	}
+
+	for _, v := range g.values {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
+
 func NewGenerator(start int, f func(*Generator) int) *Generator {
 	return &Generator{
 		f: func(g *Generator) int {

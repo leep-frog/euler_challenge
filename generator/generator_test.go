@@ -7,6 +7,50 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
+func TestCycle(t *testing.T) {
+	for _, test := range []struct {
+		name  string
+		g     *Generator
+		want  bool
+		nexts int
+		v     int
+	}{
+		{
+			name: "works for primes",
+			g:    Primes(),
+			want: true,
+			v:    19,
+		},
+		{
+			name: "works when not in cycle",
+			g:    Primes(),
+			v:    21,
+		},
+		{
+			name:  "works for primes when already past",
+			g:     Primes(),
+			want:  true,
+			v:     19,
+			nexts: 20,
+		},
+		{
+			name:  "works when not in cycle and already past",
+			g:     Primes(),
+			v:     21,
+			nexts: 20,
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			for i := 0; i < test.nexts; i++ {
+				test.g.Next()
+			}
+			if got := test.g.InCycle(test.v); got != test.want {
+				t.Errorf("InCycle(%d) returned %v; want %v", test.v, got, test.want)
+			}
+		})
+	}
+}
+
 func TestGenerators(t *testing.T) {
 	for _, test := range []struct {
 		name string
@@ -35,7 +79,7 @@ func TestGenerators(t *testing.T) {
 			g:    Fibonaccis(),
 			ig:   FibonaccisInt(),
 			want: []int{
-				1, 2, 3, 5, 8, 13, 21,
+				1, 1, 2, 3, 5, 8, 13, 21,
 			},
 		},
 	} {
