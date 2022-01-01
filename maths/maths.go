@@ -208,6 +208,29 @@ func SumInts(is ...int) int {
 	return s
 }
 
+func Permutations(parts []string) []string {
+	r := []string{}
+	permutations(parts, map[string]bool{}, &r, []string{})
+	return r
+}
+
+func permutations(m []string, ignore map[string]bool, r *[]string, cur []string) {
+	if len(cur) == len(m) {
+		*r = append(*r, strings.Join(cur, ""))
+	}
+
+	for _, p := range m {
+		if ignore[p] {
+			continue
+		}
+		cur = append(cur, p)
+		ignore[p] = true
+		permutations(m, ignore, r, cur)
+		delete(ignore, p)
+		cur = (cur)[:len(cur)-1]
+	}
+}
+
 func SumI(is ...int64) *Int {
 	var ints []*Int
 	for _, i := range is {

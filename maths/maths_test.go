@@ -2,6 +2,7 @@ package maths
 
 import (
 	"fmt"
+	"sort"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -9,6 +10,28 @@ import (
 
 func tn(name string) string {
 	return fmt.Sprintf("[maxInt = %d] %s", maxInt(), name)
+}
+
+func TestPermutations(t *testing.T) {
+	for _, test := range []struct {
+		name  string
+		parts []string
+		want  []string
+	}{
+		{
+			name:  "small",
+			parts: []string{"0", "1", "2"},
+			want:  []string{"012", "021", "102", "120", "201", "210"},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			got := Permutations(test.parts)
+			sort.Strings(got)
+			if diff := cmp.Diff(test.want, got); diff != "" {
+				t.Errorf("Permutations(%v) returned incorrect value (-want, +got):\n%s", test.parts, diff)
+			}
+		})
+	}
 }
 
 func TestComps(t *testing.T) {
