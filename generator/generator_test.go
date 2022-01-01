@@ -7,7 +7,7 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
-func TestCycle(t *testing.T) {
+func TestContains(t *testing.T) {
 	for _, test := range []struct {
 		name  string
 		g     *Generator
@@ -44,7 +44,7 @@ func TestCycle(t *testing.T) {
 			for i := 0; i < test.nexts; i++ {
 				test.g.Next()
 			}
-			if got := test.g.InCycle(test.v); got != test.want {
+			if got := test.g.Contains(test.v); got != test.want {
 				t.Errorf("InCycle(%d) returned %v; want %v", test.v, got, test.want)
 			}
 		})

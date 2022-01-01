@@ -32,6 +32,7 @@ func (ig *IntGenerator) Next() *maths.Int {
 
 type Generator struct {
 	values []int
+	set    map[int]bool
 
 	f func(*Generator) int
 }
@@ -54,20 +55,19 @@ func (g *Generator) Nth(i int) int {
 func (g *Generator) Next() int {
 	i := g.f(g)
 	g.values = append(g.values, i)
+	if g.set == nil {
+		g.set = map[int]bool{}
+	}
+	g.set[i] = true
 	return i
 }
 
 // Note: this assumes that the cycles are strictly increasing.
-func (g *Generator) InCycle(i int) bool {
+func (g *Generator) Contains(i int) bool {
 	for ; g.Len() == 0 || g.Last() <= i; g.Next() {
 	}
 
-	for _, v := range g.values {
-		if i == v {
-			return true
-		}
-	}
-	return false
+	return g.set[i]
 }
 
 func NewGenerator(start int, f func(*Generator) int) *Generator {
