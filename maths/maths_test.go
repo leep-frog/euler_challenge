@@ -12,16 +12,90 @@ func tn(name string) string {
 	return fmt.Sprintf("[maxInt = %d] %s", maxInt(), name)
 }
 
-func TestPermutations(t *testing.T) {
+func TestPalindromes(t *testing.T) {
 	for _, test := range []struct {
-		name  string
-		parts []string
-		want  []string
+		n    int
+		want []int
+	}{
+		{},
+		{
+			n:    1,
+			want: []int{1, 2, 3, 4, 5, 6, 7, 8, 9},
+		},
+		{
+			n:    2,
+			want: []int{11, 22, 33, 44, 55, 66, 77, 88, 99},
+		},
+		{
+			n: 3,
+			want: []int{
+				101, 111, 121, 131, 141, 151, 161, 171, 181, 191,
+				202, 212, 222, 232, 242, 252, 262, 272, 282, 292,
+				303, 313, 323, 333, 343, 353, 363, 373, 383, 393,
+				404, 414, 424, 434, 444, 454, 464, 474, 484, 494,
+				505, 515, 525, 535, 545, 555, 565, 575, 585, 595,
+				606, 616, 626, 636, 646, 656, 666, 676, 686, 696,
+				707, 717, 727, 737, 747, 757, 767, 777, 787, 797,
+				808, 818, 828, 838, 848, 858, 868, 878, 888, 898,
+				909, 919, 929, 939, 949, 959, 969, 979, 989, 999,
+			},
+		},
+	} {
+		t.Run(fmt.Sprintf("Palindromes_%d", test.n), func(t *testing.T) {
+			if diff := cmp.Diff(test.want, Palindromes(test.n)); diff != "" {
+				t.Errorf("Palindromes(%d) returned incorrect values (-want, +got):\n%s", test.n, diff)
+			}
+		})
+	}
+}
+
+func TestToBinary(t *testing.T) {
+	for _, test := range []struct {
+		i    int
+		want string
 	}{
 		{
-			name:  "small",
-			parts: []string{"0", "1", "2"},
-			want:  []string{"012", "021", "102", "120", "201", "210"},
+			i:    585,
+			want: "1001001001",
+		},
+		{
+			i:    13,
+			want: "1101",
+		},
+	} {
+		t.Run(fmt.Sprintf("ToBinary(%d)", test.i), func(t *testing.T) {
+			wantB := NewBinary(test.want)
+			got := ToBinary(test.i)
+
+			if diff := cmp.Diff(test.want, got.String(), CmpOpts()...); diff != "" {
+				t.Errorf("ToBinary(%d) produced incorrect string:\n%s", test.i, diff)
+			}
+
+			if diff := cmp.Diff(wantB, got, CmpOpts()...); diff != "" {
+				t.Errorf("ToBinary(%d) produced incorrect struct:\n%s", test.i, diff)
+			}
+		})
+	}
+}
+
+func TestPermutations(t *testing.T) {
+	for _, test := range []struct {
+		name    string
+		parts   []string
+		want    []string
+		wantRot []string
+	}{
+		{
+			name:    "small",
+			parts:   []string{"0", "1", "2"},
+			want:    []string{"012", "021", "102", "120", "201", "210"},
+			wantRot: []string{"012", "120", "201"},
+		},
+		{
+			name:    "duplicates",
+			parts:   []string{"1", "0", "1"},
+			want:    []string{"011", "101", "110"},
+			wantRot: []string{"101", "011", "110"},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -29,6 +103,11 @@ func TestPermutations(t *testing.T) {
 			sort.Strings(got)
 			if diff := cmp.Diff(test.want, got); diff != "" {
 				t.Errorf("Permutations(%v) returned incorrect value (-want, +got):\n%s", test.parts, diff)
+			}
+
+			gotRot := Rotations(test.parts)
+			if diff := cmp.Diff(test.wantRot, gotRot); diff != "" {
+				t.Errorf("Rotations(%v) returned incorrect value (-want, +got):\n%s", test.parts, diff)
 			}
 		})
 	}

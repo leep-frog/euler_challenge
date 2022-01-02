@@ -208,25 +208,41 @@ func SumInts(is ...int) int {
 	return s
 }
 
-func Permutations(parts []string) []string {
-	r := []string{}
-	permutations(parts, map[string]bool{}, &r, []string{})
+func Rotations(parts []string) []string {
+	var r []string
+	for i := 0; i < len(parts); i++ {
+		r = append(r, strings.Join(append(parts[i:], parts[:i]...), ""))
+	}
 	return r
 }
 
-func permutations(m []string, ignore map[string]bool, r *[]string, cur []string) {
+func Permutations(parts []string) []string {
+	m := map[string]bool{}
+	remaining := map[string]int{}
+	for _, part := range parts {
+		remaining[part]++
+	}
+	permutations(parts, remaining, m, []string{})
+	var r []string
+	for perm := range m {
+		r = append(r, perm)
+	}
+	return r
+}
+
+func permutations(m []string, remaining map[string]int, r map[string]bool, cur []string) {
 	if len(cur) == len(m) {
-		*r = append(*r, strings.Join(cur, ""))
+		r[strings.Join(cur, "")] = true
 	}
 
 	for _, p := range m {
-		if ignore[p] {
+		if remaining[p] == 0 {
 			continue
 		}
 		cur = append(cur, p)
-		ignore[p] = true
-		permutations(m, ignore, r, cur)
-		delete(ignore, p)
+		remaining[p]--
+		permutations(m, remaining, r, cur)
+		remaining[p]++
 		cur = (cur)[:len(cur)-1]
 	}
 }
@@ -484,6 +500,115 @@ func Pow(a, b int) int {
 	return ogA
 }
 
+type Binary struct {
+	digits []bool
+}
+
+var (
+	binaryRegex = regexp.MustCompile("^[01]*$")
+)
+
+func NewBinary(bs string) *Binary {
+	if !binaryRegex.MatchString(bs) {
+		panic("invalid binary string")
+	}
+	b := &Binary{}
+	for i := len(bs) - 1; i >= 0; i-- {
+		b.digits = append(b.digits, bs[i:i+1] == "1")
+	}
+	return b
+}
+
+// Return palindrome numbers that are n digits long.
+func Palindromes(n int) []int {
+	if n == 0 {
+		return nil
+	}
+	var r, cur []string
+	palindromeLeft(n, &cur, &r)
+
+	var p []int
+	for _, v := range r {
+		p = append(p, parse.Atoi(v))
+	}
+	return p
+}
+
+func palindromeLeft(n int, cur, r *[]string) {
+	start := 0
+	if len(*cur) == 0 {
+		start = 1
+	}
+
+	if n == 0 {
+		full := *cur
+		for i := len(full) - 1; i >= 0; i-- {
+			full = append(full, full[i])
+		}
+		*r = append(*r, strings.Join(full, ""))
+		return
+	}
+	if n == 1 {
+		for s := start; s <= 9; s++ {
+			full := append(*cur, strconv.Itoa(s))
+			for i := len(full) - 2; i >= 0; i-- {
+				full = append(full, full[i])
+			}
+			*r = append(*r, strings.Join(full, ""))
+		}
+		return
+	}
+
+	for i := start; i <= 9; i++ {
+		*cur = append(*cur, strconv.Itoa(i))
+		palindromeLeft(n-2, cur, r)
+		*cur = (*cur)[:len(*cur)-1]
+	}
+}
+
+func (b *Binary) Palindrome() bool {
+	for i := 0; i <= len(b.digits)/2; i++ {
+		j := len(b.digits) - 1 - i
+		if b.digits[i] != b.digits[j] {
+			return false
+		}
+	}
+	return true
+}
+
+func (b *Binary) Equals(that *Binary) bool {
+	if len(b.digits) != len(that.digits) {
+		return false
+	}
+
+	for i, v := range b.digits {
+		if v != that.digits[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func ToBinary(i int) *Binary {
+	b := &Binary{}
+	for ; i > 0; i /= 2 {
+		b.digits = append(b.digits, i%2 == 1)
+	}
+	return b
+}
+
+func (b *Binary) String() string {
+	var s []string
+	for i := len(b.digits) - 1; i >= 0; i-- {
+		if b.digits[i] {
+			s = append(s, "1")
+		} else {
+			s = append(s, "0")
+		}
+	}
+	return strings.Join(s, "")
+}
+
 func (i *Int) Div(that *Int) (*Int, *Int) {
 	var q, r *Int
 	magOnlyFunc(i, that, func(i, that *Int) {
@@ -530,6 +655,9 @@ func CmpOpts() []cmp.Option {
 				return this == nil || this.EQ(Zero())
 			}
 			return that != nil && this.EQ(that)
+		}),
+		cmp.Comparer(func(this, that *Binary) bool {
+			return this.Equals(that)
 		}),
 	}
 }
