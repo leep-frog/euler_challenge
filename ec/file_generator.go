@@ -13,7 +13,6 @@ func FileGenerator() *command.Node {
 	pn := "PROBLEM_NUMBER"
 	fi := "file-input"
 	fs := "FILE_SUFFIX"
-	desc := "DESCRIPTION"
 	x := "example"
 	return command.SerialNodes(
 		command.NewFlagNode(
@@ -22,7 +21,6 @@ func FileGenerator() *command.Node {
 		),
 		command.IntNode(pn, "Problem number", command.IntPositive()),
 		command.StringNode(fs, "suffix for file name"),
-		command.StringListNode(desc, "Description of the problem", 1, command.UnboundedList),
 		command.ExecutableNode(func(o command.Output, d *command.Data) ([]string, error) {
 			includeExample := d.Bool(x)
 			fileInput := d.Bool(fi)
@@ -53,7 +51,7 @@ func FileGenerator() *command.Node {
 				"",
 				fmt.Sprintf("func P%d() *command.Node {", num),
 				"  return command.SerialNodes(",
-				fmt.Sprintf("    command.Description(\"%s\"),", strings.Join(d.StringList(desc), " ")),
+				fmt.Sprintf("    command.Description(\"https://projecteuler.net/problem=%d\"),", num),
 				arg,
 				"    command.ExecutorNode(func(o command.Output, d *command.Data) {",
 				loader,
