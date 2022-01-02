@@ -473,6 +473,17 @@ func (i *Int) divInt(by16 uint16) (*Int, uint16) {
 	return ret, rem
 }
 
+func Pow(a, b int) int {
+	if b == 0 {
+		return 1
+	}
+	ogA := a
+	for i := 1; i < b; i++ {
+		ogA *= a
+	}
+	return ogA
+}
+
 func (i *Int) Div(that *Int) (*Int, *Int) {
 	var q, r *Int
 	magOnlyFunc(i, that, func(i, that *Int) {
