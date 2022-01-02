@@ -109,6 +109,20 @@ func Primes() *Generator {
 	})
 }
 
+func PrimeFactors(n int, p *Generator) map[int]int {
+	r := map[int]int{}
+	for i := 0; ; i++ {
+		pi := p.Nth(i)
+		for n%pi == 0 {
+			r[pi]++
+			n = n / pi
+			if n == 1 {
+				return r
+			}
+		}
+	}
+}
+
 func PrimesInt() *IntGenerator {
 	return NewIntGenerator(maths.NewInt(2), func(g *IntGenerator) *maths.Int {
 		for i := g.Last().Plus(maths.One()); ; i.PP() {
