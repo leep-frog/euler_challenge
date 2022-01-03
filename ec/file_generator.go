@@ -14,10 +14,12 @@ func FileGenerator() *command.Node {
 	fi := "file-input"
 	fs := "FILE_SUFFIX"
 	x := "example"
+	ni := "no-input"
 	return command.SerialNodes(
 		command.NewFlagNode(
 			command.BoolFlag(fi, 'i', "If set, new file will accept a file input; otherwise it accepts an integer, N"),
 			command.BoolFlag(x, 'x', "If set, include example stuff in tests"),
+			command.BoolFlag(ni, 'n', "If set, no input"),
 		),
 		command.IntNode(pn, "Problem number", command.IntPositive()),
 		command.StringNode(fs, "suffix for file name"),
@@ -25,6 +27,24 @@ func FileGenerator() *command.Node {
 			includeExample := d.Bool(x)
 			fileInput := d.Bool(fi)
 			num := d.Int(pn)
+			noInput := d.Bool(ni)
+
+			/*resp, err := http.Get("https://projecteuler.net/minimal=38")
+			if err != nil {
+				return nil, o.Stderrf("failed to get problem web page: %v", err)
+			}
+
+			bodyBytes, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return nil, o.Stderrf("failed to read body: %v", err)
+			}
+			body := string(bodyBytes)
+
+			if resp.StatusCode != 200 {
+				return nil, o.Stderrf("response has status code (%d):\n%v", resp.StatusCode, body)
+			}
+
+			o.Stdout(body)*/
 
 			arg := "    command.IntNode(N, \"\", command.IntPositive()),"
 			loader := "      n := d.Int(N)"
@@ -33,6 +53,8 @@ func FileGenerator() *command.Node {
 				arg = "    command.StringNode(\"FILE\", \"\"),"
 				loader = "      lines := parse.ReadFileLines(d.String(\"FILE\"))"
 				printer = "      o.Stdoutln(lines)"
+			} else if noInput {
+				printer = "      o.Stdoutln(0)"
 			}
 
 			template := []string{
@@ -52,10 +74,18 @@ func FileGenerator() *command.Node {
 				fmt.Sprintf("func P%d() *command.Node {", num),
 				"  return command.SerialNodes(",
 				fmt.Sprintf("    command.Description(\"https://projecteuler.net/problem=%d\"),", num),
-				arg,
-				"    command.ExecutorNode(func(o command.Output, d *command.Data) {",
-				loader,
-				printer,
+			)
+
+			if !noInput {
+				template = append(template,
+					arg,
+					"    command.ExecutorNode(func(o command.Output, d *command.Data) {",
+					loader,
+					printer,
+				)
+			}
+
+			template = append(template,
 				"    }),",
 				"  )",
 				"}",

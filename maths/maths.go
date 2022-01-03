@@ -29,7 +29,12 @@ func Divisors(i int) []int {
 
 func IsSquare(i int) bool {
 	rt := int(math.Sqrt(float64(i)))
-	return rt*rt == i
+	return rt*rt ==
+		i
+}
+
+func Sqrt(i int) int {
+	return int(math.Sqrt(float64(i)))
 }
 
 func Abs(a int) int {
@@ -564,6 +569,86 @@ func palindromeLeft(n int, cur, r *[]string) {
 		palindromeLeft(n-2, cur, r)
 		*cur = (*cur)[:len(*cur)-1]
 	}
+}
+
+type Bester struct {
+	better func(int, int) bool
+	best   int
+	bestI  int
+
+	set bool
+}
+
+func (b *Bester) Best() int {
+	return b.best
+}
+
+func (b *Bester) BestIndex() int {
+	return b.bestI
+}
+
+func (b *Bester) Check(v int) {
+	if !b.set || b.better(v, b.best) {
+		b.best = v
+		b.set = true
+	}
+}
+
+func (b *Bester) IndexCheck(idx, v int) {
+	if !b.set || b.better(v, b.best) {
+		b.best = v
+		b.bestI = idx
+		b.set = true
+	}
+}
+
+func Largest() *Bester {
+	return &Bester{
+		better: func(i, j int) bool {
+			return i > j
+		},
+	}
+}
+
+func Smallest() *Bester {
+	return &Bester{
+		better: func(i, j int) bool {
+			return i < j
+		},
+	}
+}
+
+type IncrementalBester struct {
+	b *Bester
+	m map[int]int
+}
+
+func (ib *IncrementalBester) Best() int {
+	return ib.b.best
+}
+
+func (ib *IncrementalBester) BestIndex() int {
+	return ib.b.bestI
+}
+
+func (ib *IncrementalBester) Increment(v int) {
+	ib.m[v]++
+	ib.b.IndexCheck(v, ib.m[v])
+}
+
+func LargestIncremental() *IncrementalBester {
+	return &IncrementalBester{
+		b: Largest(),
+		m: map[int]int{},
+	}
+}
+
+func Digits(n int) []int {
+	var r []int
+	for v, i := strconv.Itoa(n), 0; i < len(v); i++ {
+		r = append(r, parse.Atoi(v[i:i+1]))
+	}
+	return r
 }
 
 func (b *Binary) Palindrome() bool {

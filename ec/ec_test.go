@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/maths"
 )
 
 var (
@@ -19,6 +20,16 @@ func TestAll(t *testing.T) {
 	}{
 		// TEST_START (needed for file_generator.go)
 		{
+			name: "p39",
+			args: []string{"39"},
+			want: []string{"840"},
+		},
+		{
+			name: "p38",
+			args: []string{"38"},
+			want: []string{"932718654 9327"},
+		},
+		{
 			name: "p37",
 			args: []string{"37"},
 			want: []string{"748317"},
@@ -33,7 +44,7 @@ func TestAll(t *testing.T) {
 			args: []string{"36", "10"},
 			want: []string{"25"},
 		},
-		/*{
+		{
 			name: "p35",
 			args: []string{"35", "1000000"},
 			want: []string{"55"},
