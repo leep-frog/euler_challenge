@@ -76,6 +76,23 @@ type Int struct {
 }
 
 var (
+	biggestInt = NewInt(math.MaxInt).Plus(One())
+	zero       = Zero()
+)
+
+func (i *Int) IsZero() bool {
+	return i.EQ(zero)
+}
+
+func (i *Int) ToInt() int {
+	d, m := i.Div(biggestInt)
+	if d.NEQ(zero) {
+		panic("Int is too big to convert to int")
+	}
+	return parse.Atoi(m.String())
+}
+
+var (
 	// maxInt ~2^30
 	// var so it can be modified for testing purposes.
 	maxIntCached uint64 = 0
@@ -128,6 +145,24 @@ func MustIntFromString(s string) *Int {
 		panic(err)
 	}
 	return r
+}
+
+func Pandigital(v int) bool {
+	m := map[int]bool{}
+	for _, d := range Digits(v) {
+		if m[d] {
+			return false
+		}
+		m[d] = true
+	}
+
+	for i := 1; i <= len(m); i++ {
+		if !m[i] {
+			return false
+		}
+	}
+
+	return true
 }
 
 func NewInt(i int64) *Int {
@@ -358,6 +393,10 @@ func (i *Int) EQ(that *Int) bool {
 	return !i.LT(that) && !that.LT(i)
 }
 
+func (i *Int) NEQ(that *Int) bool {
+	return !i.EQ(that)
+}
+
 func (i *Int) GT(that *Int) bool {
 	return that.LT(i)
 }
@@ -381,6 +420,10 @@ func (i *Int) MagLT(that *Int) bool {
 
 func (i *Int) MagEQ(that *Int) bool {
 	return !i.MagLT(that) && !that.MagLT(i)
+}
+
+func (i *Int) MagNEQ(that *Int) bool {
+	return !i.MagEQ(that)
 }
 
 func (i *Int) MagGT(that *Int) bool {
@@ -697,7 +740,7 @@ func (b *Binary) String() string {
 func (i *Int) Div(that *Int) (*Int, *Int) {
 	var q, r *Int
 	magOnlyFunc(i, that, func(i, that *Int) {
-		if that.EQ(Zero()) {
+		if that.EQ(zero) {
 			panic("Divide by zero exception")
 		}
 
@@ -717,7 +760,7 @@ func (i *Int) Div(that *Int) (*Int, *Int) {
 				ret = ret.Minus(prod)
 			}
 			start = start.DivInt(2)
-			if start.EQ(Zero()) {
+			if start.EQ(zero) {
 				quotient.trim()
 				q, r = quotient, ret
 			}
@@ -734,10 +777,10 @@ func CmpOpts() []cmp.Option {
 	return []cmp.Option{
 		cmp.Comparer(func(this, that *Int) bool {
 			if this == nil {
-				return that == nil || that.EQ(Zero())
+				return that == nil || that.EQ(zero)
 			}
 			if that == nil {
-				return this == nil || this.EQ(Zero())
+				return this == nil || this.EQ(zero)
 			}
 			return that != nil && this.EQ(that)
 		}),

@@ -55,13 +55,11 @@ func TestGenerators(t *testing.T) {
 	for _, test := range []struct {
 		name string
 		g    *Generator
-		ig   *IntGenerator
 		want []int
 	}{
 		{
 			name: "Generates primes",
 			g:    Primes(),
-			ig:   PrimesInt(),
 			want: []int{
 				2, 3, 5, 7, 11, 13,
 			},
@@ -69,7 +67,6 @@ func TestGenerators(t *testing.T) {
 		{
 			name: "Generates triangulars",
 			g:    Triangulars(),
-			ig:   TriangularsInt(),
 			want: []int{
 				1, 3, 6, 10, 15, 21,
 			},
@@ -77,7 +74,6 @@ func TestGenerators(t *testing.T) {
 		{
 			name: "Generates fibonaccis",
 			g:    Fibonaccis(),
-			ig:   FibonaccisInt(),
 			want: []int{
 				1, 1, 2, 3, 5, 8, 13, 21,
 			},
@@ -91,13 +87,14 @@ func TestGenerators(t *testing.T) {
 			var nexts, lasts, nths []int
 			var nextsI, lastsI, nthsI []*maths.Int
 			for i := range test.want {
-				nexts = append(nexts, test.g.Next())
+				nxtI := test.g.NextBig()
+				nexts = append(nexts, nxtI.ToInt())
 				lasts = append(lasts, test.g.Last())
 				nths = append(nths, test.g.Nth(i))
 
-				nextsI = append(nextsI, test.ig.Next())
-				lastsI = append(lastsI, test.ig.Last())
-				nthsI = append(nthsI, test.ig.Nth(i))
+				nextsI = append(nextsI, nxtI)
+				lastsI = append(lastsI, test.g.LastBig())
+				nthsI = append(nthsI, test.g.BigNth(i))
 			}
 
 			var wantI []*maths.Int

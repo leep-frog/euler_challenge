@@ -79,10 +79,12 @@ func FileGenerator() *command.Node {
 			if !noInput {
 				template = append(template,
 					arg,
-					"    command.ExecutorNode(func(o command.Output, d *command.Data) {",
+
 					loader,
 					printer,
 				)
+			} else {
+				template = append(template, "    command.ExecutorNode(func(o command.Output, d *command.Data) {")
 			}
 
 			template = append(template,
@@ -104,12 +106,15 @@ func FileGenerator() *command.Node {
 				}
 			}
 
-			testFmt := "\t\t{\n\t\t\tname: \"p%d%s\",\n\t\t\targs: []string{\"%d\", \"%s\"},\n\t\t\twant: []string{\"0\"},\n\t\t},"
-			testArg := "1"
-			exTestArg := "1"
+			testFmt := "\t\t{\n\t\t\tname: \"p%d%s\",\n\t\t\targs: []string{\"%d\"%s},\n\t\t\twant: []string{\"0\"},\n\t\t},"
+			testArg := ", \"1\""
+			exTestArg := ", \"1\""
 			if fileInput {
-				testArg = fmt.Sprintf("p%d.txt", num)
-				exTestArg = fmt.Sprintf("p%d_example.txt", num)
+				testArg = fmt.Sprintf(", \"p%d.txt\"", num)
+				exTestArg = fmt.Sprintf(", \"p%d_example.txt\"", num)
+			} else if noInput {
+				testArg = ""
+				exTestArg = ""
 			}
 
 			exTest := fmt.Sprintf(testFmt, num, " example", num, exTestArg)

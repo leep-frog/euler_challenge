@@ -12,6 +12,41 @@ func tn(name string) string {
 	return fmt.Sprintf("[maxInt = %d] %s", maxInt(), name)
 }
 
+func TestPandigital(t *testing.T) {
+	for _, test := range []struct {
+		v    int
+		want bool
+	}{
+		{
+			v:    1,
+			want: true,
+		},
+		{
+			v:    1234,
+			want: true,
+		},
+		{
+			v:    35124,
+			want: true,
+		},
+		{
+			v: 351241,
+		},
+		{
+			v: 350124,
+		},
+		{
+			v: 13,
+		},
+	} {
+		t.Run(fmt.Sprintf("Pandigital_%d", test.v), func(t *testing.T) {
+			if got := Pandigital(test.v); got != test.want {
+				t.Errorf("Pandigital(%d) returned %v; want %v", test.v, got, test.want)
+			}
+		})
+	}
+}
+
 func TestPalindromes(t *testing.T) {
 	for _, test := range []struct {
 		n    int
@@ -260,6 +295,10 @@ func TestComps(t *testing.T) {
 					t.Errorf("%v.EQ(%v) returned %v; want %v", test.a, test.b, got, test.wantEQ)
 				}
 
+				if got := test.a.NEQ(test.b); got != !test.wantEQ {
+					t.Errorf("%v.NEQ(%v) returned %v; want %v", test.a, test.b, got, !test.wantEQ)
+				}
+
 				if got := test.a.GTE(test.b); got != test.wantGTE {
 					t.Errorf("%v.GTE(%v) returned %v; want %v", test.a, test.b, got, test.wantGTE)
 				}
@@ -279,6 +318,10 @@ func TestComps(t *testing.T) {
 
 				if got := test.a.MagEQ(test.b); got != test.wantMagEQ {
 					t.Errorf("%v.MagEQ(%v) returned %v; want %v", test.a, test.b, got, test.wantMagEQ)
+				}
+
+				if got := test.a.MagNEQ(test.b); got != !test.wantMagEQ {
+					t.Errorf("%v.MagNEQ(%v) returned %v; want %v", test.a, test.b, got, !test.wantMagEQ)
 				}
 
 				if got := test.a.MagGTE(test.b); got != test.wantMagGTE {
