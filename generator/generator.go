@@ -1,66 +1,71 @@
 package generator
 
-import "github.com/leep-frog/euler_challenge/maths"
+import (
+	"constraints"
+	"fmt"
 
-// TODO: cache stuff (every 1000?)
-type Generator struct {
-	values []*maths.Int
+	"github.com/leep-frog/euler_challenge/maths"
+)
+
+type Generator[T any] struct {
+	values []T
 	set    map[string]bool
 
-	f func(*Generator) *maths.Int
+	f   func(*Generator[T]) T
+	idx int
 }
 
-func (g *Generator) LastBig() *maths.Int {
+func (g *Generator[T]) last() T {
 	return g.values[len(g.values)-1]
 }
 
-func (g *Generator) Last() int {
-	return g.LastBig().ToInt()
-}
-
-func (g *Generator) Len() int {
+func (g *Generator[T]) len() int {
 	return len(g.values)
 }
 
-func (g *Generator) BigNth(i int) *maths.Int {
-	for len(g.values) <= i {
-		g.Next()
+func (g *Generator[T]) Nth(i int) T {
+	for g.len() <= i {
+		g.getNext()
 	}
 	return g.values[i]
 }
 
-func (g *Generator) Nth(i int) int {
-	return g.BigNth(i).ToInt()
+func (g *Generator[T]) Next() T {
+	g.idx++
+	return g.Nth(g.idx - 1)
 }
 
-func (g *Generator) NextBig() *maths.Int {
+func (g *Generator[T]) getNext() T {
 	i := g.f(g)
 	g.values = append(g.values, i)
 	if g.set == nil {
 		g.set = map[string]bool{}
 	}
-	g.set[i.String()] = true
+	g.set[fmt.Sprintf("%v", i)] = true
 	return i
 }
 
-func (g *Generator) Next() int {
-	return g.NextBig().ToInt()
-}
-
-// Note: this assumes that the cycles are strictly increasing.
-func (g *Generator) Contains(i int) bool {
-	return g.ContainsBig(maths.NewInt(int64(i)))
-}
-
-func (g *Generator) ContainsBig(i *maths.Int) bool {
-	for ; g.Len() == 0 || g.LastBig().LTE(i); g.Next() {
+func SystemContains[T constraints.Ordered](g *Generator[T], t T) bool {
+	for ; g.len() == 0 || g.last() <= t; g.getNext() {
 	}
-	return g.set[i.String()]
+	return g.set[fmt.Sprintf("%v", t)]
 }
 
-func NewGenerator(start *maths.Int, f func(*Generator) *maths.Int) *Generator {
-	return &Generator{
-		f: func(g *Generator) *maths.Int {
+type Comparable[T any] interface {
+	LTE(T) bool
+}
+
+func Contains[T Comparable[T]](g *Generator[T], t T) bool {
+	for ; g.len() == 0 || g.last().LTE(t); g.getNext() {
+	}
+	return g.set[fmt.Sprintf("%v", t)]
+}
+
+// TODO: cache stuff (every 1000?)
+
+func NewGenericator[T any](start T, f func(*Generator[T]) T) *Generator[T] {
+	return &Generator[T]{
+		f: func(g *Generator[T]) T {
 			if len(g.values) == 0 {
 				return start
 			}
@@ -69,10 +74,10 @@ func NewGenerator(start *maths.Int, f func(*Generator) *maths.Int) *Generator {
 	}
 }
 
-func PrimeFactors(n int, p *Generator) map[int]int {
+func PrimeFactors(n int, p *Generator[int]) map[int]int {
 	r := map[int]int{}
 	for i := 0; ; i++ {
-		pi := p.Nth(i)
+		pi := int(p.Nth(i))
 		for n%pi == 0 {
 			r[pi]++
 			n = n / pi
@@ -83,12 +88,12 @@ func PrimeFactors(n int, p *Generator) map[int]int {
 	}
 }
 
-func Primes() *Generator {
-	return NewGenerator(maths.NewInt(2), func(g *Generator) *maths.Int {
-		for i := g.LastBig().Plus(maths.One()); ; i.PP() {
+func Primes() *Generator[int] {
+	return NewGenericator(2, func(g *Generator[int]) int {
+		for i := g.last() + 1; ; i++ {
 			newPrime := true
 			for _, p := range g.values {
-				if _, rem := i.Div(p); rem.EQ(maths.Zero()) {
+				if rem := i % p; rem == 0 {
 					newPrime = false
 					break
 				}
@@ -100,16 +105,19 @@ func Primes() *Generator {
 	})
 }
 
-func ShortFibonaccis() *Generator {
-	return fibonaccisInt(maths.NewInt(1), maths.NewInt(2))
+func Fibonaccis() *Generator[int] {
+	a, b := 1, 1
+	return NewGenericator(1, func(g *Generator[int]) int {
+		r := b
+		b = a + b
+		a = r
+		return int(a)
+	})
 }
 
-func Fibonaccis() *Generator {
-	return fibonaccisInt(maths.NewInt(1), maths.NewInt(1))
-}
-
-func fibonaccisInt(a, b *maths.Int) *Generator {
-	return NewGenerator(maths.NewInt(1), func(g *Generator) *maths.Int {
+func BigFibonaccis() *Generator[*maths.Int] {
+	a, b := maths.One(), maths.One()
+	return NewGenericator(maths.One(), func(g *Generator[*maths.Int]) *maths.Int {
 		r := b
 		b = a.Plus(b)
 		a = r
@@ -117,10 +125,10 @@ func fibonaccisInt(a, b *maths.Int) *Generator {
 	})
 }
 
-func Triangulars() *Generator {
-	i := maths.One()
-	return NewGenerator(maths.One(), func(g *Generator) *maths.Int {
-		i.PP()
-		return g.LastBig().Plus(i)
+func Triangulars() *Generator[int] {
+	i := 1
+	return NewGenericator(1, func(g *Generator[int]) int {
+		i++
+		return g.last() + int(i)
 	})
 }

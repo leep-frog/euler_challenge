@@ -3,29 +3,8 @@ package eulerchallenge
 import (
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/generator"
+	"github.com/leep-frog/euler_challenge/maths"
 )
-
-func addPrimeFactors(i int, primer *generator.Generator, primes map[int]int) {
-	if i == primer.Last() {
-		primes[i] = 1
-		primer.Next()
-		return
-	}
-
-	for p, cnt := range primes {
-		curCnt := 0
-		for i%p == 0 {
-			curCnt++
-			i = i / p
-		}
-		if curCnt > cnt {
-			primes[p] = curCnt
-		}
-		if i == 1 {
-			break
-		}
-	}
-}
 
 func P5() *command.Node {
 	return command.SerialNodes(
@@ -37,7 +16,9 @@ func P5() *command.Node {
 			primer.Next()
 			primes := map[int]int{}
 			for i := 2; i < d.Int(N); i++ {
-				addPrimeFactors(i, primer, primes)
+				for p, cnt := range generator.PrimeFactors(i, primer) {
+					primes[p] = maths.Max(cnt, primes[p])
+				}
 			}
 			product := 1
 			for p, cnt := range primes {

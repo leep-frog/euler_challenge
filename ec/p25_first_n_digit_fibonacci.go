@@ -12,10 +12,13 @@ func P25() *command.Node {
 		command.ExecutorNode(func(o command.Output, d *command.Data) {
 			n := d.Int(N)
 
-			g := generator.Fibonaccis()
-			for len(g.NextBig().String()) < n {
+			for g, i := generator.BigFibonaccis(), 1; ; i++ {
+				o.Stdoutln(i)
+				if len(g.Nth(i).String()) >= n {
+					o.Stdoutln(i + 1)
+					return
+				}
 			}
-			o.Stdoutln(g.Len())
 		}),
 	)
 }

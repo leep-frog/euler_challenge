@@ -12,12 +12,9 @@ func P10() *command.Node {
 		command.ExecutorNode(func(o command.Output, d *command.Data) {
 			p := generator.Primes()
 
-			for i := 0; p.Next() < d.Int(N); i++ {
-			}
-
-			sum := 0
-			for i := 0; i < p.Len()-1; i++ {
-				sum += p.Nth(i)
+			var sum int
+			for pn := p.Next(); pn < d.Int(N); pn = p.Next() {
+				sum += pn
 			}
 			o.Stdoutln(sum)
 		}),

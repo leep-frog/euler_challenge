@@ -142,7 +142,7 @@ func TestAll(t *testing.T) {
 		{
 			name: "p25 example 1",
 			args: []string{"25", "1"},
-			want: []string{"1"},
+			want: []string{"2"},
 		},
 		{
 			name: "p24",
