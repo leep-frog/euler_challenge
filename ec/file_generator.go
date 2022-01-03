@@ -79,7 +79,7 @@ func FileGenerator() *command.Node {
 			if !noInput {
 				template = append(template,
 					arg,
-
+					"    command.ExecutorNode(func(o command.Output, d *command.Data) {",
 					loader,
 					printer,
 				)
