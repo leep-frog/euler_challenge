@@ -270,6 +270,14 @@ func Triangulars() *Generator[int] {
 	i := 1
 	return NewGenerator(triName, 1, newIntGeneratable(), func(g *Generator[int]) int {
 		i++
-		return g.last() + int(i)
+		return g.last() + i
+	})
+}
+
+func Pentagonals() *Generator[int] {
+	i := 1
+	return NewGenerator(triName, 1, newIntGeneratable(), func(g *Generator[int]) int {
+		i += 3
+		return g.last() + i
 	})
 }

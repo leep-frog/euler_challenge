@@ -118,6 +118,13 @@ func TestGenerators(t *testing.T) {
 			},
 		},
 		{
+			name: "Generates pentagonals",
+			g:    Pentagonals(),
+			want: []int{
+				1, 5, 12, 22, 35, 51,
+			},
+		},
+		{
 			name: "Generates fibonaccis",
 			g:    Fibonaccis(),
 			want: []int{
