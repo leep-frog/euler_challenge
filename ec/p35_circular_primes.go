@@ -34,7 +34,7 @@ func P35() *command.Node {
 				rots := maths.Rotations(digits)
 				for _, rot := range rots {
 					checked[rot] = true
-					if !p.Contains(parse.Atoi(rot)) {
+					if !generator.IsPrime(parse.Atoi(rot), p) {
 						allPrime = false
 					}
 				}

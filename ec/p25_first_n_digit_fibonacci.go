@@ -13,7 +13,6 @@ func P25() *command.Node {
 			n := d.Int(N)
 
 			for g, i := generator.BigFibonaccis(), 1; ; i++ {
-				o.Stdoutln(i)
 				if len(g.Nth(i).String()) >= n {
 					o.Stdoutln(i + 1)
 					return

@@ -5,9 +5,21 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/leep-frog/euler_challenge/maths"
+	"github.com/leep-frog/command/cache"
 )
 
+func fakeCache(t *testing.T) {
+	oldFunc := newCache
+	newCache = func() *cache.Cache {
+		return cache.NewTestCache(t)
+	}
+	t.Cleanup(func() {
+		newCache = oldFunc
+	})
+}
+
 func TestContains(t *testing.T) {
+	fakeCache(t)
 	for _, test := range []struct {
 		name  string
 		g     *Generator[int]
@@ -52,6 +64,7 @@ func TestContains(t *testing.T) {
 }
 
 func TestGenerators(t *testing.T) {
+	fakeCache(t)
 	for _, test := range []struct {
 		name string
 		g    *Generator[int]
@@ -110,6 +123,7 @@ func TestGenerators(t *testing.T) {
 }
 
 func TestBigGenerators(t *testing.T) {
+	fakeCache(t)
 	for _, test := range []struct {
 		name string
 		g    *Generator[*maths.Int]

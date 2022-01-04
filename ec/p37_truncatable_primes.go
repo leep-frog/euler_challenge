@@ -25,7 +25,7 @@ func P37() *command.Node {
 				for j := 1; j < len(pnStr); j++ {
 					leftTrunc := pnStr[j:]
 					rightTrunc := pnStr[:j]
-					if !p.Contains(parse.Atoi(leftTrunc)) || !p.Contains(parse.Atoi(rightTrunc)) {
+					if !generator.IsPrime(parse.Atoi(leftTrunc), p) || !generator.IsPrime(parse.Atoi(rightTrunc), p) {
 						valid = false
 						break
 					}

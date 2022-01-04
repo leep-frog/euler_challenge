@@ -1,11 +1,14 @@
 package generator
 
 import (
-	"bufio"
 	"strconv"
+	"fmt"
+	"strings"
+	"log"
 
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/parse"
+	"github.com/leep-frog/command/cache"
 )
 
 const (
@@ -57,6 +60,8 @@ func (ig *intGeneratable) FromString(s string) int {
 }
 
 type Generator[T any] struct {
+	name string
+
 	values []T
 	set    map[string]bool
 
@@ -64,8 +69,10 @@ type Generator[T any] struct {
 
 	f   func(*Generator[T]) T
 	idx int
+}
 
-	scanner *bufio.Scanner
+func (g *Generator[T]) Reset() {
+	g.idx = 0
 }
 
 func (g *Generator[T]) last() T {
@@ -89,17 +96,20 @@ func (g *Generator[T]) Next() T {
 }
 
 func (g *Generator[T]) getNext() T {
-	if g.scanner != nil && g.scanner.Scan() {
-		g.values = append(g.values, g.g.FromString(g.scanner.Text()))
-	}
 	i := g.f(g)
 	g.values = append(g.values, i)
-	if g.set == nil {
-		g.set = map[string]bool{}
-	}
-	g.set[g.g.String(i)] = true
+	s := g.g.String(i)
+	g.set[s] = true
+	//putCache(g.name, g.values, g.g)
 	return i
 }
+
+var (
+	newCache = func() *cache.Cache{
+		return cache.NewCache()
+	}
+)
+
 
 func (g *Generator[T]) Contains(t T) bool {
 	for ; g.len() == 0 || g.g.LTE(g.last(), t); g.getNext() {
@@ -107,10 +117,35 @@ func (g *Generator[T]) Contains(t T) bool {
 	return g.set[g.g.String(t)]
 }
 
-// TODO: cache stuff (every 1000?)
+func getFromCache(name string) []string {
+	c := newCache()
+	name = fmt.Sprintf("coding_challenge_%s", name)
+	s, err := c.Get(name)
+	if err != nil {
+		log.Fatalf(fmt.Sprintf("failed to get cache: %v", err))
+	}
+	sl := strings.Split(s, "\n")
+	if len(sl) > 0 && sl[len(sl) - 1] == "" {
+		sl = sl[:len(sl)-1]
+	}
+	return sl
+}
 
-func NewGenericator[T any](start T, g Generatable[T], f func(*Generator[T]) T) *Generator[T] {
-	return &Generator[T]{
+func putCache[T any](name string, sl []T, g Generatable[T]) {
+	var r []string
+	for _, s := range sl {
+		r = append(r, g.String(s))
+	}
+	c := newCache()
+	name = fmt.Sprintf("coding_challenge_%s", name)
+	if err := c.Put(name, strings.Join(r, "\n")); err != nil {
+		panic(fmt.Sprintf("failed to write to struct: %v", err))
+	}
+}
+
+func NewGenerator[T any](name string, start T, g Generatable[T], f func(*Generator[T]) T) *Generator[T] {
+	gt := &Generator[T]{
+		name: name,
 		g: g,
 		f: func(g *Generator[T]) T {
 			if len(g.values) == 0 {
@@ -118,7 +153,17 @@ func NewGenericator[T any](start T, g Generatable[T], f func(*Generator[T]) T) *
 			}
 			return f(g)
 		},
+		set: map[string]bool{},
 	}
+	/*for _, line := range getFromCache(name) {
+		if line == "" {
+			continue
+		}
+		t := g.FromString(line)
+		gt.values = append(gt.values, t)
+		gt.set[g.String(t)] = true
+	}*/
+	return gt
 }
 
 func PrimeFactors(n int, p *Generator[int]) map[int]int {
@@ -136,10 +181,14 @@ func PrimeFactors(n int, p *Generator[int]) map[int]int {
 }
 
 func Primes() *Generator[int] {
-	return NewGenericator(2, newIntGeneratable(), func(g *Generator[int]) int {
+	return NewGenerator(primesName, 2, newIntGeneratable(), func(g *Generator[int]) int {
 		for i := g.last() + 1; ; i++ {
 			newPrime := true
 			for _, p := range g.values {
+				// Only need to check up to square root of i.
+				if p*p > i {
+					break
+				}
 				if rem := i % p; rem == 0 {
 					newPrime = false
 					break
@@ -152,11 +201,29 @@ func Primes() *Generator[int] {
 	})
 }
 
+func IsPrime(n int, p *Generator[int]) bool {
+	if n <= 1 {
+		return false
+	}
+	ogIdx := p.idx
+	defer func() {p.idx = ogIdx}()
+	p.Reset()
+	for pn := p.Next(); pn * pn <= n; pn = p.Next() {
+		if n % pn == 0 {
+			return false
+		}
+	}
+	return true
+}
+
 func BigPrimes() *Generator[*maths.Int] {
-	return NewGenericator(maths.NewInt(2), newBigGeneratable(), func(g *Generator[*maths.Int]) *maths.Int {
+	return NewGenerator(primesName, maths.NewInt(2), newBigGeneratable(), func(g *Generator[*maths.Int]) *maths.Int {
 		for i := g.last().Plus(maths.One()); ; i.PP() {
 			newPrime := true
 			for _, p := range g.values {
+				if p.Times(p).GT(i) {
+					break
+				}
 				if _, rem := i.Div(p); rem.IsZero() {
 					newPrime = false
 					break
@@ -171,7 +238,7 @@ func BigPrimes() *Generator[*maths.Int] {
 
 func Fibonaccis() *Generator[int] {
 	a, b := 1, 1
-	return NewGenericator(1, newIntGeneratable(), func(g *Generator[int]) int {
+	return NewGenerator(fibName, 1, newIntGeneratable(), func(g *Generator[int]) int {
 		r := b
 		b = a + b
 		a = r
@@ -181,7 +248,7 @@ func Fibonaccis() *Generator[int] {
 
 func BigFibonaccis() *Generator[*maths.Int] {
 	a, b := maths.One(), maths.One()
-	return NewGenericator(maths.One(), newBigGeneratable(), func(g *Generator[*maths.Int]) *maths.Int {
+	return NewGenerator(fibName, maths.One(), newBigGeneratable(), func(g *Generator[*maths.Int]) *maths.Int {
 		r := b
 		b = a.Plus(b)
 		a = r
@@ -191,7 +258,7 @@ func BigFibonaccis() *Generator[*maths.Int] {
 
 func Triangulars() *Generator[int] {
 	i := 1
-	return NewGenericator(1, newIntGeneratable(), func(g *Generator[int]) int {
+	return NewGenerator(triName, 1, newIntGeneratable(), func(g *Generator[int]) int {
 		i++
 		return g.last() + int(i)
 	})

@@ -19,7 +19,8 @@ func P27() *command.Node {
 				for b := -n; b <= n; b++ {
 					// Try positive direction
 					k := 0
-					for ; p.Contains(k*k + a*k + b); k++ {
+
+					for ; generator.IsPrime(k*k+a*k+b, p); k++ {
 					}
 					if k > max {
 						max = k
@@ -28,7 +29,7 @@ func P27() *command.Node {
 
 					// Try negative direction
 					k = 0
-					for ; p.Contains(k*k + a*k + b); k-- {
+					for ; generator.IsPrime(k*k+a*k+b, p); k-- {
 					}
 					if k > max {
 						max = k

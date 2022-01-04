@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/maths"
 )
 
 var (
@@ -21,9 +22,9 @@ func TestAll(t *testing.T) {
 		{
 			name: "p41",
 			args: []string{"41"},
-			want: []string{""},
+			want: []string{"7652413"},
 		},
-		/*{
+		{
 			name: "p40",
 			args: []string{"40"},
 			want: []string{"210"},

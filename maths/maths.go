@@ -2,6 +2,7 @@ package maths
 
 import (
 	"fmt"
+	"log"
 	"math"
 	"regexp"
 	"sort"
@@ -87,7 +88,7 @@ func (i *Int) IsZero() bool {
 func (i *Int) ToInt() int {
 	d, m := i.Div(biggestInt)
 	if d.NEQ(zero) {
-		panic("Int is too big to convert to int")
+		log.Fatalf("Int is too big to convert to int")
 	}
 	return parse.Atoi(m.String())
 }
@@ -142,7 +143,7 @@ func IntFromString(s string) (*Int, error) {
 func MustIntFromString(s string) *Int {
 	r, err := IntFromString(s)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	return r
 }
@@ -412,7 +413,7 @@ func (i *Int) LTE(that *Int) bool {
 // Magnitude less than.
 func (i *Int) MagLT(that *Int) bool {
 	var b bool
-	magOnlyFunc(i, that, func(i1, i2 *Int) {
+	magsOnlyFunc(i, that, func(i1, i2 *Int) {
 		b = i1.LT(i2)
 	})
 	return b
@@ -473,13 +474,13 @@ func (i *Int) Times(that *Int) *Int {
 
 func (i *Int) MagMinus(that *Int) *Int {
 	var r *Int
-	magOnlyFunc(i, that, func(i1, i2 *Int) {
+	magsOnlyFunc(i, that, func(i1, i2 *Int) {
 		r = i1.Minus(i2)
 	})
 	return r
 }
 
-func magOnlyFunc(this, that *Int, f func(*Int, *Int)) {
+func magsOnlyFunc(this, that *Int, f func(*Int, *Int)) {
 	thisNeg := this.negative
 	thatNeg := that.negative
 	this.negative = false
@@ -487,6 +488,13 @@ func magOnlyFunc(this, that *Int, f func(*Int, *Int)) {
 	f(this, that)
 	this.negative = thisNeg
 	that.negative = thatNeg
+}
+
+func magOnlyFunc(this *Int, f func(*Int)) {
+	thisNeg := this.negative
+	this.negative = false
+	f(this)
+	this.negative = thisNeg
 }
 
 func (i *Int) Minus(that *Int) *Int {
@@ -520,7 +528,7 @@ func (i *Int) ModInt(by uint16) uint16 {
 
 func (i *Int) divInt(by16 uint16) (*Int, uint16) {
 	if by16 == 0 {
-		panic("Divide by zero exception")
+		log.Fatal("Divide by zero exception")
 	}
 	by := uint64(by16)
 	var rem uint16
@@ -558,7 +566,7 @@ var (
 
 func NewBinary(bs string) *Binary {
 	if !binaryRegex.MatchString(bs) {
-		panic("invalid binary string")
+		log.Fatal("invalid binary string")
 	}
 	b := &Binary{}
 	for i := len(bs) - 1; i >= 0; i-- {
@@ -739,9 +747,9 @@ func (b *Binary) String() string {
 
 func (i *Int) Div(that *Int) (*Int, *Int) {
 	var q, r *Int
-	magOnlyFunc(i, that, func(i, that *Int) {
+	magsOnlyFunc(i, that, func(i, that *Int) {
 		if that.EQ(zero) {
-			panic("Divide by zero exception")
+			log.Fatal("Divide by zero exception")
 		}
 
 		// Make "start" the biggest power of 2 such that (that * start) <= i
@@ -792,7 +800,7 @@ func CmpOpts() []cmp.Option {
 
 func (i *Int) Digits() []int {
 	var r []int
-	magOnlyFunc(i, nil, func(i1, i2 *Int) {
+	magOnlyFunc(i, func(i1 *Int) {
 		for v, idx := i1.String(), 0; idx < len(v); idx++ {
 			r = append(r, parse.Atoi(v[idx:idx+1]))
 		}

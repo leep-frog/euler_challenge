@@ -15,7 +15,7 @@ import (
 func Atoi(s string) int {
 	i, err := strconv.Atoi(s)
 	if err != nil {
-		log.Fatalf("failed to convert string to int: %v", err)
+		panic(fmt.Sprintf("failed to convert string to int: %v", err))
 	}
 	return i
 }
