@@ -257,6 +257,38 @@ func Rotations(parts []string) []string {
 	return r
 }
 
+func Sets(parts []int) [][]int {
+	m := map[string]bool{}
+	r := [][]int{}
+	sets(parts, m, []int{}, &r)
+	return r
+}
+
+func sets(remaining []int, m map[string]bool, cur []int, r *[][]int) {
+	if len(remaining) == 0 {
+		if len(cur) == 0 {
+			return
+		}
+
+		if s := fmt.Sprintf("%v", cur); m[s] {
+			return
+		} else {
+			m[s] = true
+		}
+
+		k := make([]int, len(cur))
+		copy(k, cur)
+		fmt.Println(cur)
+		*r = append(*r, k)
+		return
+	}
+
+	sets(remaining[1:], m, cur, r)
+	cur = append(cur, remaining[0])
+	sets(remaining[1:], m, cur, r)
+	cur = cur[:len(cur)-1]
+}
+
 func Permutations(parts []string) []string {
 	m := map[string]bool{}
 	remaining := map[string]int{}

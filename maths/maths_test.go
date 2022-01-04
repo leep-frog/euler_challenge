@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/leep-frog/euler_challenge/parse"
 )
 
 func tn(name string) string {
@@ -119,18 +120,36 @@ func TestPermutations(t *testing.T) {
 		parts   []string
 		want    []string
 		wantRot []string
+		wantSet [][]int
 	}{
 		{
 			name:    "small",
 			parts:   []string{"0", "1", "2"},
 			want:    []string{"012", "021", "102", "120", "201", "210"},
 			wantRot: []string{"012", "120", "201"},
+			wantSet: [][]int{
+				{2},
+				{1},
+				{1, 2},
+				{0},
+				{0, 2},
+				{0, 1},
+				{0, 1, 2},
+			},
 		},
 		{
 			name:    "duplicates",
 			parts:   []string{"1", "0", "1"},
 			want:    []string{"011", "101", "110"},
 			wantRot: []string{"101", "011", "110"},
+			wantSet: [][]int{
+				{1},
+				{0},
+				{0, 1},
+				{1, 1},
+				{1, 0},
+				{1, 0, 1},
+			},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -143,6 +162,16 @@ func TestPermutations(t *testing.T) {
 			gotRot := Rotations(test.parts)
 			if diff := cmp.Diff(test.wantRot, gotRot); diff != "" {
 				t.Errorf("Rotations(%v) returned incorrect value (-want, +got):\n%s", test.parts, diff)
+			}
+
+			var iParts []int
+			for _, p := range test.parts {
+				iParts = append(iParts, parse.Atoi(p))
+			}
+
+			gotSet := Sets(iParts)
+			if diff := cmp.Diff(test.wantSet, gotSet); diff != "" {
+				t.Errorf("Sets(%v) returned incorrect values (-want, +got):\n%s", test.parts, diff)
 			}
 		})
 	}
