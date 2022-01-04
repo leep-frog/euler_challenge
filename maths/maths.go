@@ -790,11 +790,20 @@ func CmpOpts() []cmp.Option {
 	}
 }
 
-func (i *Int) DigitSum() uint64 {
-	s := i.String()
-	var sum uint64
-	for i := 0; i < len(s); i++ {
-		sum += uint64(parse.Atoi(s[i : i+1]))
+func (i *Int) Digits() []int {
+	var r []int
+	magOnlyFunc(i, nil, func(i1, i2 *Int) {
+		for v, idx := i1.String(), 0; idx < len(v); idx++ {
+			r = append(r, parse.Atoi(v[idx:idx+1]))
+		}
+	})
+	return r
+}
+
+func (i *Int) DigitSum() int {
+	var sum int
+	for _, d := range i.Digits() {
+		sum += d
 	}
 	return sum
 }

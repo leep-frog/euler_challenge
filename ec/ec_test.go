@@ -21,7 +21,7 @@ func TestAll(t *testing.T) {
 		{
 			name: "p41",
 			args: []string{"41"},
-			want: []string{"0"},
+			want: []string{""},
 		},
 		/*{
 			name: "p40",

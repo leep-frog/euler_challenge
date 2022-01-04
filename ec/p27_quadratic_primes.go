@@ -19,7 +19,7 @@ func P27() *command.Node {
 				for b := -n; b <= n; b++ {
 					// Try positive direction
 					k := 0
-					for ; generator.SystemContains(p, k*k+a*k+b); k++ {
+					for ; p.Contains(k*k + a*k + b); k++ {
 					}
 					if k > max {
 						max = k
@@ -28,7 +28,7 @@ func P27() *command.Node {
 
 					// Try negative direction
 					k = 0
-					for ; generator.SystemContains(p, k*k+a*k+b); k-- {
+					for ; p.Contains(k*k + a*k + b); k-- {
 					}
 					if k > max {
 						max = k

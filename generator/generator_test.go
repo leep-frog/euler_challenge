@@ -44,7 +44,7 @@ func TestContains(t *testing.T) {
 			for i := 0; i < test.nexts; i++ {
 				test.g.Next()
 			}
-			if got := SystemContains(test.g, test.v); got != test.want {
+			if got := test.g.Contains(test.v); got != test.want {
 				t.Errorf("InCycle(%d) returned %v; want %v", test.v, got, test.want)
 			}
 		})
