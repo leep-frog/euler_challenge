@@ -260,7 +260,7 @@ func BigPrimes() *Generator[*maths.Int] {
 				if p.Times(p).GT(i) {
 					break
 				}
-				if _, rem := i.Div(p); rem.IsZero() {
+				if i.Mod(p).IsZero() {
 					newPrime = false
 					break
 				}

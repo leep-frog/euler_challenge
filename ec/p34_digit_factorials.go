@@ -13,7 +13,7 @@ func P34() *command.Node {
 				0: 1,
 			}
 			for i := 1; i <= 9; i++ {
-				fs[i] = maths.FacotiralI(i)
+				fs[i] = maths.FactorialI(i)
 			}
 
 			var superSum int

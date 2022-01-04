@@ -603,7 +603,7 @@ func TestDiv(t *testing.T) {
 			/* Useful for commenting out tests. */
 		} {
 			t.Run(tn(test.name), func(t *testing.T) {
-				quo, rem := test.a.Div(test.b)
+				quo, rem := test.a.Divide(test.b)
 				if diff := cmp.Diff(test.c, quo, CmpOpts()...); diff != "" {
 					t.Errorf("Div(%v, %v) returned incorrect quotient (-want, +got):\n%s", test.a, test.b, diff)
 				}
@@ -615,7 +615,7 @@ func TestDiv(t *testing.T) {
 				if test.noReverseTest {
 					return
 				}
-				quo, rem = test.a.Div(test.c)
+				quo, rem = test.a.Divide(test.c)
 				if diff := cmp.Diff(test.b, quo, CmpOpts()...); diff != "" {
 					t.Errorf("Div(%v, %v) returned incorrect quotient (-want, +got):\n%s", test.a, test.c, diff)
 				}
@@ -689,7 +689,7 @@ func TestDivInt(t *testing.T) {
 
 				bInt := NewInt(int64(test.b))
 				remInt := NewInt(int64(test.wantRem))
-				quo, rem := test.a.Div(bInt)
+				quo, rem := test.a.Divide(bInt)
 				if diff := cmp.Diff(test.want, quo, CmpOpts()...); diff != "" {
 					t.Errorf("Div(%v, %v) returned incorrect quotient (-want, +got):\n%s", test.a, bInt, diff)
 				}

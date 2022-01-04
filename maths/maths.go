@@ -86,7 +86,7 @@ func (i *Int) IsZero() bool {
 }
 
 func (i *Int) ToInt() int {
-	d, m := i.Div(biggestInt)
+	d, m := i.Divide(biggestInt)
 	if d.NEQ(zero) {
 		log.Fatalf("Int is too big to convert to int")
 	}
@@ -776,7 +776,17 @@ func (b *Binary) String() string {
 	return strings.Join(s, "")
 }
 
-func (i *Int) Div(that *Int) (*Int, *Int) {
+func (i *Int) Div(that *Int) *Int {
+	q, _ := i.Divide(that)
+	return q
+}
+
+func (i *Int) Mod(that *Int) *Int {
+	_, m := i.Divide(that)
+	return m
+}
+
+func (i *Int) Divide(that *Int) (*Int, *Int) {
 	var q, r *Int
 	magsOnlyFunc(i, that, func(i, that *Int) {
 		if that.EQ(zero) {
@@ -847,7 +857,12 @@ func (i *Int) DigitSum() int {
 	return sum
 }
 
-func Facotiral(n int) *Int {
+// TODO: change Div function
+func Choose(n, r int) *Int {
+	return Factorial(n).Div(Factorial(r).Times(Factorial(n - r)))
+}
+
+func Factorial(n int) *Int {
 	r := One()
 	for i := 1; i <= n; i++ {
 		r = r.Times(NewInt(int64(i)))
@@ -855,7 +870,7 @@ func Facotiral(n int) *Int {
 	return r
 }
 
-func FacotiralI(n int) int {
+func FactorialI(n int) int {
 	r := 1
 	for i := 2; i <= n; i++ {
 		r *= i

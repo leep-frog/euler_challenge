@@ -11,7 +11,7 @@ func P20() *command.Node {
 		command.IntNode(N, "", command.IntPositive()),
 		command.ExecutorNode(func(o command.Output, d *command.Data) {
 			n := d.Int(N)
-			o.Stdoutln(maths.Facotiral(n).DigitSum())
+			o.Stdoutln(maths.Factorial(n).DigitSum())
 		}),
 	)
 }

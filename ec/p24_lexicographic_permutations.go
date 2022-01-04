@@ -31,7 +31,7 @@ func P24() *command.Node {
 			// the factorials from (3 * 9! + 2 * 8!) will start with 32, etc.
 			digits := []string{}
 			index := 0
-			f := maths.FacotiralI(len(vs))
+			f := maths.FactorialI(len(vs))
 			for len(vs) > 0 {
 				f /= len(vs)
 
