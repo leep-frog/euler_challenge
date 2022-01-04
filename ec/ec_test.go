@@ -19,11 +19,76 @@ func TestAll(t *testing.T) {
 	}{
 		// TEST_START (needed for file_generator.go)
 		{
+			name: "p51",
+			args: []string{"51", "8"},
+			want: []string{"_2_3_3 121313"},
+		},
+		{
+			name: "p51 example 2",
+			args: []string{"51", "6"},
+			want: []string{"56__3 56003"},
+		},
+		{
+			name: "p51 example 1",
+			args: []string{"51", "7"},
+			want: []string{"_3 13"},
+		},
+		/*{
+			name: "p50",
+			args: []string{"50", "1000000"},
+			want: []string{"997651 543"},
+		},
+		{
+			name: "p50 example 2",
+			args: []string{"50", "1000"},
+			want: []string{"953 21"},
+		},
+		{
+			name: "p50 example 1",
+			args: []string{"50", "100"},
+			want: []string{"41 6"},
+		},
+		{
+			name: "p49",
+			args: []string{"49"},
+			want: []string{"148748178147", "296962999629"},
+		},
+		{
+			name: "p48",
+			args: []string{"48", "1000"},
+			want: []string{"9110846700"},
+		},
+		{
+			name: "p48 example",
+			args: []string{"48", "10"},
+			want: []string{"405071317"},
+		},
+		{
+			name: "p47",
+			args: []string{"47", "4"},
+			want: []string{"134043"},
+		},
+		{
+			name: "p47 example 2",
+			args: []string{"47", "3"},
+			want: []string{"644"},
+		},
+		{
+			name: "p47 example 1",
+			args: []string{"47", "2"},
+			want: []string{"14"},
+		},
+		/*{
+			name: "p46",
+			args: []string{"46"},
+			want: []string{"5777"},
+		},
+		{
 			name: "p45",
 			args: []string{"45"},
 			want: []string{"5482660"},
 		},
-		/*{
+		{
 			name: "p44",
 			args: []string{"44"},
 			want: []string{"5482660"},

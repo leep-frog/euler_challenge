@@ -167,6 +167,9 @@ func NewGenerator[T any](name string, start T, g Generatable[T], f func(*Generat
 }
 
 func PrimeFactors(n int, p *Generator[int]) map[int]int {
+	if n <= 1 {
+		return nil
+	}
 	r := map[int]int{}
 	for i := 0; ; i++ {
 		pi := int(p.Nth(i))

@@ -278,7 +278,6 @@ func sets(remaining []int, m map[string]bool, cur []int, r *[][]int) {
 
 		k := make([]int, len(cur))
 		copy(k, cur)
-		fmt.Println(cur)
 		*r = append(*r, k)
 		return
 	}
