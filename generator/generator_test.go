@@ -76,6 +76,46 @@ func TestIsPentagonal(t *testing.T) {
 	}
 }
 
+func TestIsHexagonal(t *testing.T) {
+	for _, test := range []struct {
+		t int
+		want bool
+	} {
+		{-1, false},
+		{1, true},
+		{2, false},
+		{3, false},
+		{4, false},
+		{5, false},
+		{6, true},
+		{7, false},
+		{8, false},
+		{9, false},
+		{10, false},
+		{11, false},
+		{12, false},
+		{13, false},
+		{14, false},
+		{15, true},
+		{16, false},
+		{17, false},
+
+		{40752, false},
+		{40753, false},
+		{40754, false},
+		{40755, true},
+		{40756, false},
+		{40757, false},
+		{40758, false},
+	} {
+		t.Run(fmt.Sprintf("IsHexagonal(%d)", test.t), func(t *testing.T) {
+			if got := IsHexagonal(test.t); got != test.want {
+				t.Errorf("IsHexagonal(%d) returned %v; want %v", test.t, got, test.want)
+			}
+		})
+	}
+}
+
 func fakeCache(t *testing.T) {
 	oldFunc := newCache
 	newCache = func() *cache.Cache {
@@ -157,6 +197,13 @@ func TestGenerators(t *testing.T) {
 			g:    Pentagonals(),
 			want: []int{
 				1, 5, 12, 22, 35, 51,
+			},
+		},
+		{
+			name: "Generates hexagonals",
+			g:    Hexagonals(),
+			want: []int{
+				1, 6, 15, 28, 45, 66,
 			},
 		},
 		{

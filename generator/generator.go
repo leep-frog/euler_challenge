@@ -201,8 +201,19 @@ func Primes() *Generator[int] {
 	})
 }
 
+// t_n  = n(2n−1) >= 2 * n * n
+func IsHexagonal(tn int) bool {
+	if tn < 1 {
+		return false
+	}
+	
+	n := maths.Sqrt((tn ) / 2)
+	for ; n * (2 * n - 1)  < tn; n ++ {}
+	return n * (2 * n - 1) == tn
+}
+
+
 // t_n  = n(3n−1)/2
-// 2t_n = (3n*n - n) >= 3n*n
 func IsPentagonal(tn int) bool {
 	if tn < 1 {
 		return false
@@ -290,6 +301,14 @@ func Pentagonals() *Generator[int] {
 	i := 1
 	return NewGenerator(triName, 1, newIntGeneratable(), func(g *Generator[int]) int {
 		i += 3
+		return g.last() + i
+	})
+}
+
+func Hexagonals() *Generator[int] {
+	i := 1
+	return NewGenerator(triName, 1, newIntGeneratable(), func(g *Generator[int]) int {
+		i += 4
 		return g.last() + i
 	})
 }
