@@ -41,6 +41,41 @@ func TestIsTriangular(t *testing.T) {
 	}
 }
 
+func TestIsPentagonal(t *testing.T) {
+	for _, test := range []struct {
+		t int
+		want bool
+	} {
+		{-1, false},
+		{1, true},
+		{2, false},
+		{3, false},
+		{4, false},
+		{5, true},
+		{6, false},
+		{7, false},
+		{8, false},
+		{9, false},
+		{10, false},
+		{11, false},
+		{12, true},
+		{13, false},
+		{14, false},
+
+		{143, false},
+		{144, false},
+		{145, true},
+		{146, false},
+		{147, false},
+	} {
+		t.Run(fmt.Sprintf("IsPentagonal(%d)", test.t), func(t *testing.T) {
+			if got := IsPentagonal(test.t); got != test.want {
+				t.Errorf("IsPentagonal(%d) returned %v; want %v", test.t, got, test.want)
+			}
+		})
+	}
+}
+
 func fakeCache(t *testing.T) {
 	oldFunc := newCache
 	newCache = func() *cache.Cache {

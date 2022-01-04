@@ -201,8 +201,20 @@ func Primes() *Generator[int] {
 	})
 }
 
+// t_n  = n(3n−1)/2
+// 2t_n = (3n*n - n) >= 3n*n
+func IsPentagonal(tn int) bool {
+	if tn < 1 {
+		return false
+	}
+	
+	n := maths.Sqrt((2 * tn ) / 3)
+	for ; n * (3 * n - 1) / 2 < tn; n ++ {}
+	return n * (3 * n - 1) / 2 == tn
+}
+
+// t_n = n(n+1)/2
 func IsTriangular(tn int) bool {
-	// t_n = n(n+1)/2
 	if tn < 1 {
 		return false
 	}
