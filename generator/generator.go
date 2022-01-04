@@ -201,6 +201,16 @@ func Primes() *Generator[int] {
 	})
 }
 
+func IsTriangular(tn int) bool {
+	// t_n = n(n+1)/2
+	if tn < 1 {
+		return false
+	}
+	n2 := tn * 2
+	n := maths.Sqrt(n2)
+	return n * (n + 1) / 2 == tn
+}
+
 func IsPrime(n int, p *Generator[int]) bool {
 	if n <= 1 {
 		return false

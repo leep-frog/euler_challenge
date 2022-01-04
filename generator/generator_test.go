@@ -1,12 +1,45 @@
 package generator
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/command/cache"
 )
+
+func TestIsTriangular(t *testing.T) {
+	for _, test := range []struct {
+		t int
+		want bool
+	} {
+		{-1, false},
+		{1, true},
+		{2, false},
+		{3, true},
+		{4, false},
+		{5, false},
+		{6, true},
+		{7, false},
+		{8, false},
+		{9, false},
+		{10, true},
+		{11, false},
+
+		{53, false},
+		{54, false},
+		{55, true},
+		{56, false},
+		{57, false},
+	} {
+		t.Run(fmt.Sprintf("IsTriangular(%d)", test.t), func(t *testing.T) {
+			if got := IsTriangular(test.t); got != test.want {
+				t.Errorf("IsTriangular(%d) returned %v; want %v", test.t, got, test.want)
+			}
+		})
+	}
+}
 
 func fakeCache(t *testing.T) {
 	oldFunc := newCache
