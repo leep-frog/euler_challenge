@@ -598,6 +598,22 @@ func (i *Int) divInt(by16 uint16) (*Int, uint16) {
 	return ret, rem
 }
 
+func BigPow(a, b int) *Int {
+	if b == 0 {
+		return One()
+	}
+	ai := NewInt(int64(a))
+	r := NewInt(int64(a))
+	for i := 1; i < b; i++ {
+		r = r.Times(ai)
+	}
+	return r
+}
+
+func Range(n int) []int {
+	return make([]int, n)
+}
+
 func Pow(a, b int) int {
 	if b == 0 {
 		return 1
