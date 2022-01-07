@@ -171,7 +171,7 @@ func (ss *stateSet[M, T]) Swap(i, j int) {
 	ss.values[j] = tmp
 }
 
-type stateValue[M any, T State[M, T]] struct {
+type stateValue[M, T any] struct {
 	state T
 	dist  int
 	prev *stateValue[M, T]
