@@ -28,7 +28,7 @@ type State[M, T any] interface {
 	AdjacentStates(M) []T
 }
 
-type Context[M any] struct {
+type Context[M, T any] struct {
 	GlobalContext M
 }
 
@@ -120,13 +120,13 @@ func ShortestOffsetPath[M any, T OffsetState[M, T]](initState T, initDist int, g
 
 func ShortestPath[M any, T State[M, T]](initState T, globalContext M) ([]T, int) {
 	states := &stateSet[M, T]{}
-	states.Push(&stateValue[M, T]{initState, initState.Distance(globalContext), nil})
+	states.Push(&StateValue[M, T]{initState, initState.Distance(globalContext), nil})
 
 	checked := map[string]bool{}
 	ctx := &Context[M]{globalContext}
 
 	for states.Len() > 0 {
-		sv := heap.Pop(states).(*stateValue[M, T])
+		sv := heap.Pop(states).(*StateValue[M, T])
 		if code := sv.state.Code(); checked[code] {
 			continue
 		} else {
@@ -142,14 +142,14 @@ func ShortestPath[M any, T State[M, T]](initState T, globalContext M) ([]T, int)
 		}
 
 		for _, adjState := range sv.state.AdjacentStates(globalContext) {
-			heap.Push(states, &stateValue[M, T]{adjState, adjState.Distance(globalContext), sv})
+			heap.Push(states, &StateValue[M, T]{adjState, adjState.Distance(globalContext), sv})
 		}
 	}
 	return nil, -1
 }
 
 type stateSet[M , T any] struct {
-	values []*stateValue[M, T]
+	values []*StateValue[M, T]
 }
 
 func (ss *stateSet[M, T]) Len() int {
@@ -161,7 +161,7 @@ func (ss *stateSet[M, T]) Less(i, j int) bool {
 }
 
 func (ss *stateSet[M, T]) Push(x interface{}) {
-	ss.values = append(ss.values, x.(*stateValue[M, T]))
+	ss.values = append(ss.values, x.(*StateValue[M, T]))
 }
 
 func (ss *stateSet[M, T]) Pop() interface{} {
@@ -176,12 +176,12 @@ func (ss *stateSet[M, T]) Swap(i, j int) {
 	ss.values[j] = tmp
 }
 
-type stateValue[M, T any] struct {
+type StateValue[M, T any] struct {
 	state T
 	dist  int
-	prev *stateValue[M, T]
+	prev *StateValue[M, T]
 }
 
-func (sv *stateValue[M, T]) String() string {
+func (sv *StateValue[M, T]) String() string {
 	return fmt.Sprintf("(%d) %v", sv.dist, sv.state)
 }
