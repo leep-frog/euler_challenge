@@ -28,7 +28,7 @@ type State[M, T any] interface {
 	AdjacentStates(M) []T
 }
 
-type Context[M, T any] struct {
+type Context[M any] struct {
 	GlobalContext M
 }
 
