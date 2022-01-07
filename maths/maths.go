@@ -303,6 +303,21 @@ func Permutations(parts []string) []string {
 	return r
 }
 
+func (b *Binary) Len() int {
+	return len(b.digits)
+}
+
+func (b *Binary) Concat(that *Binary) *Binary {
+	var d []bool
+	for _, v := range b.digits {
+		d = append(d, v)
+	}
+	for _, v := range that.digits {
+		d = append(d, v)
+	}
+	return &Binary{d}
+}
+
 func permutations(m []string, remaining map[string]int, r map[string]bool, cur []string) {
 	if len(cur) == len(m) {
 		r[strings.Join(cur, "")] = true
@@ -792,6 +807,14 @@ func (b *Binary) Equals(that *Binary) bool {
 		}
 	}
 	return true
+}
+
+// TODO: map package
+func Set[K1, K2 comparable, V any](m map[K1]map[K2]V, k1 K1, k2 K2, v V) {
+	if m[k1] == nil {
+		m[k1] = map[K2]V{}
+	}
+	m[k1][k2] = v
 }
 
 func XOR(a, b int) int {

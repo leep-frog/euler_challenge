@@ -1,7 +1,6 @@
 package eulerchallenge
 
 import (
-	"fmt"
 	"log"
 	"sort"
 	"strings"
@@ -270,21 +269,10 @@ func (h *hand) beats(thatH *hand) bool {
 	for _, cmp := range cmps {
 		better, ok := checkHand(bv, cmp.f(h), cmp.f(thatH))
 		if ok {
-			if better {
-				fmt.Println(cmp.name, h, "BEAT", thatH)
-			} else {
-				fmt.Println(cmp.name, h, "LOST", thatH)
-			}
 			return better
 		}
 	}
 
 	// High card
-
-	if bv {
-		fmt.Println("HiCd", h, "BEAT", thatH)
-	} else {
-		fmt.Println("HiCd", h, "LOST", thatH)
-	}
 	return bv
 }

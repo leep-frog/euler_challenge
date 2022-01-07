@@ -30,7 +30,7 @@ func P18() *command.Node {
 				tower = append(tower, row)
 			}
 
-			_, dist := bfs.ShortestOffsetPath(&place{0, 0}, maxValue-tower[0][0], tower)
+			_, dist := bfs.ShortestOffsetPath[[][]int](&place{0,0}, maxValue-tower[0][0], tower)
 			o.Stdoutln((maxValue * len(tower)) - dist)
 			//o.Stdoutln(check(tower, 0, 0, tower[0][0]))
 		}),
@@ -56,15 +56,12 @@ func (p *place) Code() string {
 	return fmt.Sprintf("%d_%d", p.row, p.col)
 }
 
-func (p *place) Done(towerI interface{}) bool {
-	tower := towerI.([][]int)
+func (p *place) Done(tower [][]int) bool {
 	return p.row == len(tower)-1
 }
 
-func (p *place) AdjacentStates(towerI interface{}) []*bfs.AdjacentState {
-	tower := towerI.([][]int)
-
-	return []*bfs.AdjacentState{
+func (p *place) AdjacentStates(tower [][]int) []*bfs.AdjacentState[[][]int] {
+	return []*bfs.AdjacentState[[][]int]{
 		{
 			State: &place{
 				col: p.col,
