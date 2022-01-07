@@ -30,9 +30,9 @@ type State[M, T any] interface {
 
 type OffsetState[M, T any] interface {
 	Code() string
-	// Returns if the given state is in a final position. The input is a contextual variable
-	// that is passed along from ShortestPath.
-	Done(M) bool
+	// Returns if the given state is in a final position. The first input is a contextual variable
+	// that is passed along from ShortestPath. The second input is the depth.
+	Done(M, int) bool
 	// Returns all pairs of the adjacent states and those states offsets from this state.
 	// The input is a contextual variable that is passed along from ShortestPath.
 	AdjacentStates(M) []*AdjacentState[M, T]
@@ -58,7 +58,7 @@ func (os *offsetState[M, T]) Distance(M) int {
 }
 
 func (os *offsetState[M, T]) Done(m M) bool {
-	return os.os.Done(m)
+	return os.os.Done(m, os.dist)
 }
 
 func (os *offsetState[M, T]) AdjacentStates(m M) []*offsetState[M, T] {
@@ -69,15 +69,54 @@ func (os *offsetState[M, T]) AdjacentStates(m M) []*offsetState[M, T] {
 	return r
 }
 
-func ShortestOffsetPath[M any, T OffsetState[M, T]](initState T, initDist int, globalContext M) (T, int) {
+func ShortestOffsetPath[M any, T OffsetState[M, T]](initState T, initDist int, globalContext M) ([]T, int) {
 	state := &offsetState[M, T]{initState, initDist}
 	r, d := ShortestPath[M, *offsetState[M, T]](state, globalContext)
-	return r.os.(T), d
+	var path []T
+	for _, s := range r {
+		path = append(path, s.os.(T))
+	}
+	return path, d
 }
 
-func ShortestPath[M any, T State[M, T]](initState T, globalContext M) (T, int) {
+/*type pathOrPop[T any] struct {
+	t T
+	pop bool
+	popCode string
+}
+
+/*func AnyPath[M any, T State[M, T]](initState T, globalContext M) []T {
+	pops := []pathOrPop[T]{{initState, false}}
+	path := []T{}
+	inPath := map[string]bool{}
+	for len(pops) > 0 {
+		pop := pops[len(path)-1]
+		pops = pops[:len(pops)-1]
+	
+		if pop.pop {
+			path = path[:len(path)-1]
+			delete(inPath, pop.popCode)
+			continue
+		}
+
+		state := pop.t
+		path = append(path, state)
+		inPath[state.Code()] = true
+
+		if state.Done(globalContext) {
+			return path
+		}
+
+		pops = append(pops, &pathOrPop{nil, true})
+		for _, adjState := range state.AdjacentStates(globalContext) {
+			pops = append(pops, &pathOrPop{adjState, false})	
+		}
+	}
+}*/
+
+func ShortestPath[M any, T State[M, T]](initState T, globalContext M) ([]T, int) {
 	states := &stateSet[M, T]{}
-	states.Push(&stateValue[M, T]{initState, initState.Distance(globalContext)})
+	states.Push(&stateValue[M, T]{initState, initState.Distance(globalContext), nil})
 
 	checked := map[string]bool{}
 
@@ -90,46 +129,52 @@ func ShortestPath[M any, T State[M, T]](initState T, globalContext M) (T, int) {
 		}
 
 		if sv.state.Done(globalContext) {
-			return sv.state, sv.dist
+			var path []T
+			for cur := sv; cur != nil; cur = cur.prev {
+				path = append(path, cur.state)
+			}
+			return path, sv.dist
 		}
 
 		for _, adjState := range sv.state.AdjacentStates(globalContext) {
-			heap.Push(states, &stateValue[M, T]{adjState, adjState.Distance(globalContext)})
+			heap.Push(states, &stateValue[M, T]{adjState, adjState.Distance(globalContext), sv})
 		}
 	}
-	var nill T
-	return nill, -1
+	return nil, -1
 }
 
-type stateSet[M any, T State[M, T]] []*stateValue[M, T]
+type stateSet[M any, T State[M, T]] struct {
+	values []*stateValue[M, T]
+}
 
 func (ss *stateSet[M, T]) Len() int {
-	return len(*ss)
+	return len(ss.values)
 }
 
 func (ss *stateSet[M, T]) Less(i, j int) bool {
-	return (*ss)[i].dist < (*ss)[j].dist
+	return ss.values[i].dist < ss.values[j].dist
 }
 
 func (ss *stateSet[M, T]) Push(x interface{}) {
-	*ss = append(*ss, x.(*stateValue[M, T]))
+	ss.values = append(ss.values, x.(*stateValue[M, T]))
 }
 
 func (ss *stateSet[M, T]) Pop() interface{} {
-	r := (*ss)[len(*ss)-1]
-	*ss = (*ss)[:len(*ss)-1]
+	r := ss.values[len(ss.values)-1]
+	ss.values = ss.values[:len(ss.values)-1]
 	return r
 }
 
 func (ss *stateSet[M, T]) Swap(i, j int) {
-	tmp := (*ss)[i]
-	(*ss)[i] = (*ss)[j]
-	(*ss)[j] = tmp
+	tmp := ss.values[i]
+	ss.values[i] = ss.values[j]
+	ss.values[j] = tmp
 }
 
 type stateValue[M any, T State[M, T]] struct {
 	state T
 	dist  int
+	prev *stateValue[M, T]
 }
 
 func (sv *stateValue[M, T]) String() string {

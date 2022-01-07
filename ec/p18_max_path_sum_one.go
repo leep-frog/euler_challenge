@@ -30,9 +30,11 @@ func P18() *command.Node {
 				tower = append(tower, row)
 			}
 
-			_, dist := bfs.ShortestOffsetPath(&place{0,0}, maxValue-tower[0][0], tower)
+			path, dist := bfs.ShortestOffsetPath(&place{0,0}, maxValue-tower[0][0], tower)
+			for _, p := range path {
+				o.Stdoutln(p)
+			}
 			o.Stdoutln((maxValue * len(tower)) - dist)
-			//o.Stdoutln(check(tower, 0, 0, tower[0][0]))
 		}),
 	)
 }
@@ -52,11 +54,15 @@ type place struct {
 	col int
 }
 
+func (p *place) String() string {
+	return p.Code()
+}
+
 func (p *place) Code() string {
 	return fmt.Sprintf("%d_%d", p.row, p.col)
 }
 
-func (p *place) Done(tower [][]int) bool {
+func (p *place) Done(tower [][]int, dist int) bool {
 	return p.row == len(tower)-1
 }
 

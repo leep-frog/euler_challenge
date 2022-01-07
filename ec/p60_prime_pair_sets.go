@@ -30,3 +30,9 @@ func P60() *command.Node {
 		}),
 	)
 }
+
+/*type primePair struct {
+	startPrime int
+}
+
+func */
