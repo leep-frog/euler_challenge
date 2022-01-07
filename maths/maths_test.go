@@ -111,6 +111,10 @@ func TestToBinary(t *testing.T) {
 			if diff := cmp.Diff(wantB, got, CmpOpts()...); diff != "" {
 				t.Errorf("ToBinary(%d) produced incorrect struct:\n%s", test.i, diff)
 			}
+
+			if diff := cmp.Diff(test.i, got.ToInt()); diff != "" {
+				t.Errorf("ToBinary(%d).ToInt() returned incorrect int:\n%s", test.i, diff)
+			}
 		})
 	}
 }
@@ -561,14 +565,12 @@ func TestIntFromString(t *testing.T) {
 			},
 		} {
 			t.Run(tn(fmt.Sprintf("IntFromString(%s)", test.s)), func(t *testing.T) {
-				fmt.Println(tn(test.s), "=====================")
 				got, err := IntFromString(test.s)
 				command.CmpError(t, fmt.Sprintf("IntFromString(%s) ", test.s), test.wantErr, err)
 				if diff := cmp.Diff(test.want, got, CmpOpts()...); diff != "" {
 					t.Errorf("IntFromString(%s) returned incorrect value (-want, +got):\n%s", test.s, diff)
 				}
 			})
-			fmt.Println("heyo")
 		}
 	}
 }

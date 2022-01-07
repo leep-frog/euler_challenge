@@ -794,6 +794,33 @@ func (b *Binary) Equals(that *Binary) bool {
 	return true
 }
 
+func XOR(a, b int) int {
+	return ToBinary(a).XOR(ToBinary(b)).ToInt()
+}
+
+func (b *Binary) ToInt() int {
+	start := 1
+	total := 0
+	for i := 0; i < len(b.digits); i++ {
+		if b.digits[i] {
+			total += start
+		}
+		start *= 2
+	}
+	return total
+}
+
+func (b *Binary) XOR(that *Binary) *Binary {
+	end := Max(len(b.digits), len(that.digits))
+	var d []bool
+	for i := 0; i < end; i++ {
+		f := i < len(b.digits) && b.digits[i]
+		s := i < len(that.digits) && that.digits[i]
+		d = append(d, f != s)
+	}
+	return &Binary{d}
+}
+
 func ToBinary(i int) *Binary {
 	b := &Binary{}
 	for ; i > 0; i /= 2 {
