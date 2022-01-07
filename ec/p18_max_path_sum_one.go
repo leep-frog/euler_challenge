@@ -62,8 +62,8 @@ func (p *place) Code() string {
 	return fmt.Sprintf("%d_%d", p.row, p.col)
 }
 
-func (p *place) Done(tower [][]int, dist int) bool {
-	return p.row == len(tower)-1
+func (p *place) Done(ctx *bfs.Context[[][]int], dist int) bool {
+	return p.row == len(ctx.GlobalContext)-1
 }
 
 func (p *place) AdjacentStates(tower [][]int) []*bfs.AdjacentState[[][]int, *place] {

@@ -21,18 +21,22 @@ type State[M, T any] interface {
 	Distance(M) int
 	// Returns if the given state is in a final position. The input is a contextual variable
 	// that is passed along from ShortestPath.
-	Done(M) bool
+	Done(*Context[M]) bool
 	// Returns all of the adjacent states. The input is a contextual variable
 	// that is passed along from ShortestPath.
 	// T should always be State[M], but we cannot do that here without having a recursive type
 	AdjacentStates(M) []T
 }
 
+type Context[M any] struct {
+	GlobalContext M
+}
+
 type OffsetState[M, T any] interface {
 	Code() string
 	// Returns if the given state is in a final position. The first input is a contextual variable
 	// that is passed along from ShortestPath. The second input is the depth.
-	Done(M, int) bool
+	Done(*Context[M], int) bool
 	// Returns all pairs of the adjacent states and those states offsets from this state.
 	// The input is a contextual variable that is passed along from ShortestPath.
 	AdjacentStates(M) []*AdjacentState[M, T]
@@ -57,7 +61,7 @@ func (os *offsetState[M, T]) Distance(M) int {
 	return os.dist
 }
 
-func (os *offsetState[M, T]) Done(m M) bool {
+func (os *offsetState[M, T]) Done(m *Context[M]) bool {
 	return os.os.Done(m, os.dist)
 }
 
@@ -119,6 +123,7 @@ func ShortestPath[M any, T State[M, T]](initState T, globalContext M) ([]T, int)
 	states.Push(&stateValue[M, T]{initState, initState.Distance(globalContext), nil})
 
 	checked := map[string]bool{}
+	ctx := &Context[M]{globalContext}
 
 	for states.Len() > 0 {
 		sv := heap.Pop(states).(*stateValue[M, T])
@@ -128,7 +133,7 @@ func ShortestPath[M any, T State[M, T]](initState T, globalContext M) ([]T, int)
 			checked[code] = true
 		}
 
-		if sv.state.Done(globalContext) {
+		if sv.state.Done(ctx) {
 			var path []T
 			for cur := sv; cur != nil; cur = cur.prev {
 				path = append(path, cur.state)
