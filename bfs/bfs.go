@@ -143,7 +143,7 @@ func ShortestPath[M any, T State[M, T]](initState T, globalContext M) ([]T, int)
 	return nil, -1
 }
 
-type stateSet[M any, T State[M, T]] struct {
+type stateSet[M , T any] struct {
 	values []*stateValue[M, T]
 }
 
