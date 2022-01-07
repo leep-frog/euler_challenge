@@ -28,7 +28,7 @@ func P15() *command.Node {
 				top = top.Times(i.Plus(n))
 				bottom = bottom.Times(i)
 			}
-			o.Stdoutln(top.Mod(bottom))
+			o.Stdoutln(top.Div(bottom))
 		}),
 	)
 }

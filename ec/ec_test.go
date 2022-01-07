@@ -18,12 +18,12 @@ func TestAll(t *testing.T) {
 		long bool
 	}{
 		// TEST_START (needed for file_generator.go)
-		/*{
+		{
 			name: "p60",
 			args: []string{"60", "4"},
 			want: []string{""},
 		},
-		{
+		/*{
 			name: "p59",
 			args: []string{"59", "p59.txt"},
 			want: []string{"129448"},
@@ -133,7 +133,7 @@ func TestAll(t *testing.T) {
 			args: []string{"47", "2"},
 			want: []string{"14"},
 		},
-		/*{
+		{
 			name: "p46",
 			args: []string{"46"},
 			want: []string{"5777"},
@@ -141,7 +141,7 @@ func TestAll(t *testing.T) {
 		{
 			name: "p45",
 			args: []string{"45"},
-			want: []string{"5482660"},
+			want: []string{"1533776805"},
 		},
 		{
 			name: "p44",
@@ -291,12 +291,12 @@ func TestAll(t *testing.T) {
 		},
 		{
 			name: "p24 example 2",
-			args: []string{"24", maths.Facotiral(9).Plus(maths.One()).String()},
+			args: []string{"24", maths.Factorial(9).Plus(maths.One()).String()},
 			want: []string{"1023456789"},
 		},
 		{
 			name: "p24 example 1",
-			args: []string{"24", maths.Facotiral(9).String()},
+			args: []string{"24", maths.Factorial(9).String()},
 			want: []string{"0987654321"},
 		},
 		{
@@ -328,13 +328,13 @@ func TestAll(t *testing.T) {
 			name: "p19",
 			args: []string{"19"},
 			want: []string{"171"},
-		},*/
+		},
 		{
 			name: "p18 example",
 			args: []string{"18", "p18_example.txt"},
 			want: []string{"23"},
 		},
-		/*{
+		{
 			name: "p18",
 			args: []string{"18", "p18.txt"},
 			want: []string{"1074"},

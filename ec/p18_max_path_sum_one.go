@@ -31,7 +31,7 @@ func P18() *command.Node {
 			}
 
 			_, dist := bfs.ShortestOffsetPath(&place{0,0}, maxValue-tower[0][0], tower)
-			o.Stdoutln((maxValue * len(tower)) - dist, k)
+			o.Stdoutln((maxValue * len(tower)) - dist)
 			//o.Stdoutln(check(tower, 0, 0, tower[0][0]))
 		}),
 	)
