@@ -2,13 +2,9 @@ package generator
 
 import (
 	"strconv"
-	"fmt"
-	"strings"
-	"log"
 
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/parse"
-	"github.com/leep-frog/command/cache"
 )
 
 const (
@@ -104,11 +100,11 @@ func (g *Generator[T]) getNext() T {
 	return i
 }
 
-var (
+/*var (
 	newCache = func() *cache.Cache{
 		return cache.NewCache()
 	}
-)
+)*/
 
 
 func (g *Generator[T]) Contains(t T) bool {
@@ -117,7 +113,7 @@ func (g *Generator[T]) Contains(t T) bool {
 	return g.set[g.g.String(t)]
 }
 
-func getFromCache(name string) []string {
+/*func getFromCache(name string) []string {
 	c := newCache()
 	name = fmt.Sprintf("coding_challenge_%s", name)
 	s, err := c.Get(name)
@@ -141,7 +137,7 @@ func putCache[T any](name string, sl []T, g Generatable[T]) {
 	if err := c.Put(name, strings.Join(r, "\n")); err != nil {
 		panic(fmt.Sprintf("failed to write to struct: %v", err))
 	}
-}
+}*/
 
 func NewGenerator[T any](name string, start T, g Generatable[T], f func(*Generator[T]) T) *Generator[T] {
 	gt := &Generator[T]{

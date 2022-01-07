@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/parse"
 )
 
@@ -522,6 +523,52 @@ func TestIntToBool(t *testing.T) {
 					t.Errorf("%s(%d) returned %v; want %v", test.fName, test.input, got, test.want)
 				}
 			})
+		}
+	}
+}
+
+func TestIntFromString(t *testing.T) {
+	for _, md := range maxIs(t) {
+		setMax(md)
+		for _, test := range []struct {
+			s       string
+			want    *Int
+			wantErr error
+		}{
+			{
+				s:    "0",
+				want: Zero(),
+			},
+			{
+				s:    "1",
+				want: One(),
+			},
+			{
+				s:    "01",
+				want: One(),
+			},
+			{
+				s:    "000001",
+				want: One(),
+			},
+			{
+				s:    "001001",
+				want: NewInt(1001),
+			},
+			{
+				s:    "67734834945737458",
+				want: NewInt(67734834945737458),
+			},
+		} {
+			t.Run(tn(fmt.Sprintf("IntFromString(%s)", test.s)), func(t *testing.T) {
+				fmt.Println(tn(test.s), "=====================")
+				got, err := IntFromString(test.s)
+				command.CmpError(t, fmt.Sprintf("IntFromString(%s) ", test.s), test.wantErr, err)
+				if diff := cmp.Diff(test.want, got, CmpOpts()...); diff != "" {
+					t.Errorf("IntFromString(%s) returned incorrect value (-want, +got):\n%s", test.s, diff)
+				}
+			})
+			fmt.Println("heyo")
 		}
 	}
 }

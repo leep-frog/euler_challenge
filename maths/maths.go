@@ -111,13 +111,13 @@ func maxInt() uint64 {
 }
 
 var (
-	intReg = regexp.MustCompile("^(-?)([1-9][0-9]+)$")
+	intReg = regexp.MustCompile("^(-?)([0-9]*)$")
 )
 
 func IntFromString(s string) (*Int, error) {
 	m := intReg.FindStringSubmatch(s)
 	if len(m) == 0 {
-		return nil, fmt.Errorf("Invalid string")
+		return nil, fmt.Errorf("Invalid string: %s", s)
 	}
 
 	r := &Int{
@@ -137,6 +137,7 @@ func IntFromString(s string) (*Int, error) {
 		n, _ := strconv.Atoi(numString[start:end])
 		r.parts[idx] = uint64(n)
 	}
+	r.trim()
 	return r, nil
 }
 
@@ -325,6 +326,27 @@ func SumI(is ...int64) *Int {
 		ints = append(ints, NewInt(i))
 	}
 	return Sum(ints...)
+}
+
+func (i *Int) Palindrome() bool {
+	s := i.String()
+	for idx := range s {
+		if s[idx:idx+1] != s[len(s)-idx-1:len(s)-idx] {
+			return false
+		}
+	}
+	return true
+}
+
+func (i *Int) Reverse() *Int {
+	var r []string
+	magOnlyFunc(i, func(pos *Int) {
+		s := pos.String()
+		for i := range s {
+			r = append(r, s[len(s)-1-i:len(s)-i])
+		}
+	})
+	return MustIntFromString(strings.Join(r, ""))
 }
 
 func Sum(is ...*Int) *Int {

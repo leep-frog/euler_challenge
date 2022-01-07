@@ -58,6 +58,8 @@ func Branches() map[string]*command.Node {
 		"51": P51(),
 		"52": P52(),
 		"53": P53(),
+		"54": P54(),
+		"55": P55(),
 		// END_LIST (needed for file_generator.go)
 	}
 }

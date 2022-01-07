@@ -19,6 +19,21 @@ func TestAll(t *testing.T) {
 	}{
 		// TEST_START (needed for file_generator.go)
 		{
+			name: "p55",
+			args: []string{"55"},
+			want: []string{"249"},
+		},
+		{
+			name: "p54",
+			args: []string{"54", "p54.txt"},
+			want: []string{"376"},
+		},
+		{
+			name: "p54",
+			args: []string{"54", "p54_example.txt"},
+			want: []string{"3"},
+		},
+		{
 			name: "p53",
 			args: []string{"53"},
 			want: []string{"4075"},
