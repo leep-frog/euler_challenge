@@ -30,6 +30,13 @@ type State[M, T any] interface {
 
 type Context[M, T any] struct {
 	GlobalContext M
+	StateValue StateValue[M, T]
+}
+
+type StateValue[M, T any] interface {
+	State() T
+	Dist() int
+	Prev() StateValue[M, T]
 }
 
 type OffsetState[M, T any] interface {
@@ -123,7 +130,7 @@ func ShortestOffsetPath[M any, T OffsetState[M, T]](initState T, initDist int, g
 
 func ShortestPath[M any, T State[M, T]](initState T, globalContext M) ([]T, int) {
 	states := &stateSet[M, T]{}
-	states.Push(&StateValue[M, T]{initState, initState.Distance(globalContext), nil})
+	states.Push(&stateValue[M, T]{initState, initState.Distance(globalContext), nil})
 
 	checked := map[string]bool{}
 	ctx := &Context[M, T]{
@@ -131,7 +138,7 @@ func ShortestPath[M any, T State[M, T]](initState T, globalContext M) ([]T, int)
 	}
 
 	for states.Len() > 0 {
-		sv := heap.Pop(states).(*StateValue[M, T])
+		sv := heap.Pop(states).(*stateValue[M, T])
 		if code := sv.state.Code(); checked[code] {
 			continue
 		} else {
@@ -147,14 +154,14 @@ func ShortestPath[M any, T State[M, T]](initState T, globalContext M) ([]T, int)
 		}
 
 		for _, adjState := range sv.state.AdjacentStates(globalContext) {
-			heap.Push(states, &StateValue[M, T]{adjState, adjState.Distance(globalContext), sv})
+			heap.Push(states, &stateValue[M, T]{adjState, adjState.Distance(globalContext), sv})
 		}
 	}
 	return nil, -1
 }
 
 type stateSet[M , T any] struct {
-	values []*StateValue[M, T]
+	values []*stateValue[M, T]
 }
 
 func (ss *stateSet[M, T]) Len() int {
@@ -166,7 +173,7 @@ func (ss *stateSet[M, T]) Less(i, j int) bool {
 }
 
 func (ss *stateSet[M, T]) Push(x interface{}) {
-	ss.values = append(ss.values, x.(*StateValue[M, T]))
+	ss.values = append(ss.values, x.(*stateValue[M, T]))
 }
 
 func (ss *stateSet[M, T]) Pop() interface{} {
@@ -181,12 +188,12 @@ func (ss *stateSet[M, T]) Swap(i, j int) {
 	ss.values[j] = tmp
 }
 
-type StateValue[M, T any] struct {
+type stateValue[M, T any] struct {
 	state T
 	dist  int
-	prev *StateValue[M, T]
+	prev *stateValue[M, T]
 }
 
-func (sv *StateValue[M, T]) String() string {
+func (sv *stateValue[M, T]) String() string {
 	return fmt.Sprintf("(%d) %v", sv.dist, sv.state)
 }
