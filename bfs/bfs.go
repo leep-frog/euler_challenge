@@ -40,6 +40,8 @@ type StateValue[M, T any] interface {
 }
 
 type OffsetState[M, T any] interface {
+	// Code returns a unique code for a given state. Used to ensure we don't check the same state
+	// more than once.
 	Code() string
 	// Returns if the given state is in a final position. The first input is a contextual variable
 	// that is passed along from ShortestPath. The second input is the depth.
@@ -47,7 +49,6 @@ type OffsetState[M, T any] interface {
 	// Returns all pairs of the adjacent states and those states offsets from this state.
 	// The input is a contextual variable that is passed along from ShortestPath.
 	AdjacentStates(M) []*AdjacentState[T]
-	// 
 }
 
 // offsetState is a type that converts an OffsetState interface to a State one.
