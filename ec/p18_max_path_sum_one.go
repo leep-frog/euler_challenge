@@ -2,6 +2,7 @@ package eulerchallenge
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 
 	"github.com/leep-frog/command"
@@ -62,12 +63,12 @@ func (p *place) Code() string {
 	return fmt.Sprintf("%d_%d", p.row, p.col)
 }
 
-func (p *place) Done(ctx *bfs.Context[[][]int, *place], dist int) bool {
+func (p *place) Done(ctx *bfs.Context[[][]int, *place]) bool {
 	return p.row == len(ctx.GlobalContext)-1
 }
 
-func (p *place) AdjacentStates(tower [][]int) []*bfs.AdjacentState[[][]int, *place] {
-	return []*bfs.AdjacentState[[][]int, *place]{
+func (p *place) AdjacentStates(tower [][]int) []*bfs.AdjacentState[*place] {
+	return []*bfs.AdjacentState[*place]{
 		{
 			State: &place{
 				col: p.col,

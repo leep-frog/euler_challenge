@@ -57,6 +57,10 @@ type offsetState[M any, T OffsetState[M, T]] struct {
 	dist int
 }
 
+func (os *offsetState[M, T]) OS() T {
+	return os.os
+}
+
 func (os *offsetState[M, T]) String() string {
 	return fmt.Sprintf("(%d) %v", os.dist, os.os)
 }
@@ -69,9 +73,34 @@ func (os *offsetState[M, T]) Distance(M) int {
 	return os.dist
 }
 
+type osv[M any, T OffsetState[M, T]] struct {
+	//sv StateValue[M, T]
+	os *offsetState[M, T]
+	prev StateValue[M, *offsetState[M, T]]
+}
+
+func (o *osv[M, T]) State() T {
+	return o.os.os
+}
+
+func (o *osv[M, T]) Dist() int {
+	return o.os.dist
+}
+
+func (o *osv[M, T]) Prev() StateValue[M, T] {
+	return &osv[M, T]{
+		os: o.prev.State(),
+		prev: o.prev.Prev(),
+	}
+}
+
 func (os *offsetState[M, T]) Done(m *Context[M, *offsetState[M, T]]) bool {
 	ctx := &Context[M, T]{
 		GlobalContext: m.GlobalContext,
+		StateValue: &osv[M, T]{
+			m.StateValue.State(),
+			m.StateValue.Prev(),
+		},
 	}
 	return os.os.Done(ctx)
 }
