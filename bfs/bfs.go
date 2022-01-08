@@ -43,7 +43,7 @@ type OffsetState[M, T any] interface {
 	Code() string
 	// Returns if the given state is in a final position. The first input is a contextual variable
 	// that is passed along from ShortestPath. The second input is the depth.
-	Done(*Context[M, T], int) bool
+	Done(*Context[M, T]) bool
 	// Returns all pairs of the adjacent states and those states offsets from this state.
 	// The input is a contextual variable that is passed along from ShortestPath.
 	AdjacentStates(M) []*AdjacentState[M, T]
@@ -72,7 +72,7 @@ func (os *offsetState[M, T]) Done(m *Context[M, *offsetState[M, T]]) bool {
 	ctx := &Context[M, T]{
 		GlobalContext: m.GlobalContext,
 	}
-	return os.os.Done(ctx, os.dist)
+	return os.os.Done(ctx)
 }
 
 func (os *offsetState[M, T]) AdjacentStates(m M) []*offsetState[M, T] {
@@ -139,6 +139,7 @@ func ShortestPath[M any, T State[M, T]](initState T, globalContext M) ([]T, int)
 
 	for states.Len() > 0 {
 		sv := heap.Pop(states).(*stateValue[M, T])
+		ctx.StateValue = sv
 		if code := sv.state.Code(); checked[code] {
 			continue
 		} else {
@@ -196,4 +197,16 @@ type stateValue[M, T any] struct {
 
 func (sv *stateValue[M, T]) String() string {
 	return fmt.Sprintf("(%d) %v", sv.dist, sv.state)
+}
+
+func (sv *stateValue[M, T]) State() T {
+	return sv.state
+}
+
+func (sv *stateValue[M, T]) Dist() int {
+	return sv.dist
+}
+
+func (sv *stateValue[M, T]) Prev() StateValue[M, T] {
+	return sv.prev
 }
