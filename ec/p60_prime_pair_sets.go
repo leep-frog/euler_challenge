@@ -31,8 +31,29 @@ func P60() *command.Node {
 	)
 }
 
-/*type primePair struct {
-	startPrime int
+type primePair struct {
+	prime int
 }
 
-func */
+func (p *primePair) inList(ctx *Context[map[int]int, *primePair]) bool {
+	for cur := ctx.StateValue; cur != nil; cur = cur.Prev() {
+		if cur.State().prime == p.prime {
+			return true
+		}
+	}
+	return false
+}
+
+func (p *primePair) Code(ctx *Context[map[int]int, T]) string {
+	// Always return a unique number because we are looking for cycles
+	ctx.GlobalContext[p.prime]++
+	return fmt.Sprintf("%d_%d", p.prime, ctx.GlobalContext[p.prime])
+}
+
+func (p *primePair) Done(*Context[M, T]) bool {
+
+}
+
+func (p *primePair) AdjacentStates(*Context[M, T]) bool {
+	// Only get adjacent states if this is the first instance of intera
+}

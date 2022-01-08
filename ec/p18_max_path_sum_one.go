@@ -2,7 +2,6 @@ package eulerchallenge
 
 import (
 	"fmt"
-	"reflect"
 	"strings"
 
 	"github.com/leep-frog/command"
@@ -34,7 +33,6 @@ func P18() *command.Node {
 			path, dist := bfs.ShortestOffsetPath(&place{0,0}, maxValue-tower[0][0], tower)
 			for _, p := range path {
 				o.Stdoutln(p)
-				o.Stdoutln(reflect.TypeOf(p))
 			}
 			o.Stdoutln((maxValue * len(tower)) - dist)
 		}),
