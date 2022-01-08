@@ -14,12 +14,7 @@ type State[M, T any] interface {
 
 func ShortestPath[M any, T State[M, T]](initState T, globalContext M) ([]T, int) {
 	ph := &pathHelper[M, T, T]{
-		distFunc: func(ctx *Context[M, T], as T) int {
-			if ctx.StateValue == nil {
-				return 0
-			}
-			return ctx.StateValue.Dist() + 1
-		},
+		distFunc: simpleDistFunc[M, T](),
 		convFunc: identityConvFunc[M, T](),
 	}
 	return shortestPath(initState, 0, globalContext, ph)

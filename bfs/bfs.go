@@ -70,6 +70,30 @@ func identityConvFunc[M, T any]() func( *Context[M, T], T) T {
 	}
 }
 
+func adjStateDistFunc[M, T any]() func( *Context[M, T], *AdjacentState[T]) int {
+	return func(ctx *Context[M, T], as *AdjacentState[T]) int {
+		if ctx.StateValue == nil {
+			return as.Offset
+		}
+		return ctx.StateValue.Dist() + as.Offset
+	}
+}
+
+func adjStateConvFunc[M, T any]() func( *Context[M, T], *AdjacentState[T]) T {
+	return func(_ *Context[M, T], as *AdjacentState[T]) T {
+		return as.State
+	}
+}
+
+func simpleDistFunc[M, T any]() func( *Context[M, T], T) int {
+	return func(ctx *Context[M, T], as T) int {
+		if ctx.StateValue == nil {
+			return 0
+		}
+		return ctx.StateValue.Dist() + 1
+	}
+}
+
 func shortestPath[M, AS any, T pathable[M, T, AS]](initState T, initDist int, globalContext M, ph *pathHelper[M, T, AS]) ([]T, int) {
 	ctx := &Context[M, T]{
 		GlobalContext: globalContext,

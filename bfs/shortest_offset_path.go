@@ -19,15 +19,8 @@ type AdjacentState[T any] struct {
 
 func ShortestOffsetPath[M any, T OffsetState[M, T]](initState T, initDist int, globalContext M) ([]T, int) {
 	ph := &pathHelper[M, T, *AdjacentState[T]]{
-		distFunc: func(ctx *Context[M, T], as *AdjacentState[T]) int {
-			if ctx.StateValue == nil {
-				return as.Offset
-			}
-			return ctx.StateValue.Dist() + as.Offset
-		},
-		convFunc: func(ctx *Context[M, T], as *AdjacentState[T]) T {
-			return as.State
-		},
+		distFunc: adjStateDistFunc[M, T](),
+		convFunc: adjStateConvFunc[M, T](),
 	}
 	return shortestPath(initState, initDist, globalContext, ph)
 }
