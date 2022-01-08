@@ -6,8 +6,8 @@ import (
 )
 
 // Breadth first search stuff
-type AdjacentState[M, T any] struct {
-	State  OffsetState[M, T]
+type AdjacentState[T any] struct {
+	State  T
 	Offset int
 }
 
@@ -46,13 +46,13 @@ type OffsetState[M, T any] interface {
 	Done(*Context[M, T]) bool
 	// Returns all pairs of the adjacent states and those states offsets from this state.
 	// The input is a contextual variable that is passed along from ShortestPath.
-	AdjacentStates(M) []*AdjacentState[M, T]
+	AdjacentStates(M) []*AdjacentState[T]
 	// 
 }
 
 // offsetState is a type that converts an OffsetState interface to a State one.
-type offsetState[M, T any] struct {
-	os   OffsetState[M, T]
+type offsetState[M any, T OffsetState[M, T]] struct {
+	os   T
 	dist int
 }
 
@@ -88,7 +88,7 @@ func ShortestOffsetPath[M any, T OffsetState[M, T]](initState T, initDist int, g
 	r, d := ShortestPath[M, *offsetState[M, T]](state, globalContext)
 	var path []T
 	for _, s := range r {
-		path = append(path, s.os.(T))
+		path = append(path, s.os)
 	}
 	return path, d
 }
