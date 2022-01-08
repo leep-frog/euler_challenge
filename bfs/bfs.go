@@ -64,7 +64,13 @@ type pathHelper[M, T, AS any] struct {
 	skipUnique bool
 }
 
-func shortestPath[M any, AS any, T pathable[M, T, AS]](initState T, initDist int, globalContext M, ph *pathHelper[M, T, AS]) ([]T, int) {
+func identityConvFunc[M, T any]() func( *Context[M, T], T) T {
+	return func(_ *Context[M, T], as T) T {
+		return as
+	}
+}
+
+func shortestPath[M, AS any, T pathable[M, T, AS]](initState T, initDist int, globalContext M, ph *pathHelper[M, T, AS]) ([]T, int) {
 	ctx := &Context[M, T]{
 		GlobalContext: globalContext,
 	}
