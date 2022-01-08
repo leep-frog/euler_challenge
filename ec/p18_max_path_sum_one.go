@@ -34,6 +34,7 @@ func P18() *command.Node {
 			path, dist := bfs.ShortestOffsetPath(&place{0,0}, maxValue-tower[0][0], tower)
 			for _, p := range path {
 				o.Stdoutln(p)
+				o.Stdoutln(reflect.TypeOf(p))
 			}
 			o.Stdoutln((maxValue * len(tower)) - dist)
 		}),
@@ -56,18 +57,19 @@ type place struct {
 }
 
 func (p *place) String() string {
-	return p.Code()
+	return fmt.Sprintf("%d_%d", p.row, p.col)
 }
 
-func (p *place) Code() string {
-	return fmt.Sprintf("%d_%d", p.row, p.col)
+func (p *place) Code(*bfs.Context[[][]int, *place]) string {
+	return p.String()
 }
 
 func (p *place) Done(ctx *bfs.Context[[][]int, *place]) bool {
 	return p.row == len(ctx.GlobalContext)-1
 }
 
-func (p *place) AdjacentStates(tower [][]int) []*bfs.AdjacentState[*place] {
+func (p *place) AdjacentStates(ctx *bfs.Context[[][]int, *place]) []*bfs.AdjacentState[*place] {
+	tower := ctx.GlobalContext
 	return []*bfs.AdjacentState[*place]{
 		{
 			State: &place{
