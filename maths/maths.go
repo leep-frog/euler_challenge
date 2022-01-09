@@ -809,6 +809,18 @@ func (b *Binary) Equals(that *Binary) bool {
 	return true
 }
 
+type Intable interface {
+	ToInt() int
+}
+
+func SumType[T Intable](ts []T) int{
+	var sum int
+	for _, t := range ts {
+		sum += t.ToInt()
+	}
+	return sum
+}
+
 // TODO: map package
 func Set[K1, K2 comparable, V any](m map[K1]map[K2]V, k1 K1, k2 K2, v V) {
 	if m[k1] == nil {

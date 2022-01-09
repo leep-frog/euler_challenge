@@ -3,6 +3,12 @@ package bfs
 import (
 	"container/heap"
 	"fmt"
+	"reflect"
+	"strings"
+)
+
+var (
+	debug = false
 )
 
 // Breadth first search stuff
@@ -108,6 +114,8 @@ func shortestPath[M, AS any, T pathable[M, T, AS]](initState T, initDist int, gl
 			}
 		}
 
+		fmt.Println("CHECKING: ", sv.PathString())
+
 		if sv.state.Done(ctx) {
 			var path []T
 			for cur := sv; cur != nil; cur = cur.Prev() {
@@ -157,6 +165,17 @@ type StateValue[T any] struct {
 	state T
 	dist  int
 	prev  func() *StateValue[T]
+}
+
+func (sv *StateValue[T]) PathString() string {
+	return strings.Join(append(sv.path(), reflect.TypeOf(sv.state).String()), ", ")
+}
+
+func (sv *StateValue[T]) path() []string {
+	if sv == nil {
+		return []string{}
+	}
+	return append(sv.Prev().path(), sv.String())
 }
 
 func (sv *StateValue[T]) String() string {

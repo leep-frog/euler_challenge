@@ -19,3 +19,12 @@ func ShortestPath[M any, T State[M, T]](initState T, globalContext M) ([]T, int)
 	}
 	return shortestPath(initState, 0, globalContext, ph)
 }
+
+func ShortestPathNonUnique[M any, T State[M, T]](initState T, globalContext M) ([]T, int) {
+	ph := &pathHelper[M, T, T]{
+		distFunc: simpleDistFunc[M, T](),
+		convFunc: identityConvFunc[M, T](),
+		skipUnique: true,
+	}
+	return shortestPath(initState, 0, globalContext, ph)
+}

@@ -9,6 +9,7 @@ type OffsetState[M, T any] interface {
 	Done(*Context[M, T]) bool
 	// Returns all pairs of the adjacent states and those states offsets from this state.
 	// The input is a contextual variable that is passed along from ShortestPath.
+	// TODO: change this interface to just include a Offset() functio
 	AdjacentStates(*Context[M, T]) []*AdjacentState[T]
 }
 
@@ -21,6 +22,15 @@ func ShortestOffsetPath[M any, T OffsetState[M, T]](initState T, initDist int, g
 	ph := &pathHelper[M, T, *AdjacentState[T]]{
 		distFunc: adjStateDistFunc[M, T](),
 		convFunc: adjStateConvFunc[M, T](),
+	}
+	return shortestPath(initState, initDist, globalContext, ph)
+}
+
+func ShortestOffsetPathNonUnique[M any, T OffsetState[M, T]](initState T, initDist int, globalContext M) ([]T, int) {
+	ph := &pathHelper[M, T, *AdjacentState[T]]{
+		distFunc: adjStateDistFunc[M, T](),
+		convFunc: adjStateConvFunc[M, T](),
+		skipUnique: true,
 	}
 	return shortestPath(initState, initDist, globalContext, ph)
 }
