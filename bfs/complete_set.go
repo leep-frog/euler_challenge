@@ -30,11 +30,7 @@ func (cs *setState[M, T]) Offset(ctx *Context[M, *setState[M, T]]) int {
 }
 
 func (cs *setState[M, T]) Done(ctx *Context[M, *setState[M, T]]) bool {
-	b := ctx != nil && ctx.StateValue != nil && ctx.StateValue.State().remainingDepth <= 0
-	if b {
-		fmt.Println("HUZZAH", ctx.StateValue.PathString())
-	}
-	return b
+	return ctx != nil && ctx.StateValue != nil && ctx.StateValue.State().remainingDepth <= 0
 }
 
 func (cs *setState[M, T]) AdjacentStates(ctx *Context[M, *setState[M, T]]) []*setState[M, T] {

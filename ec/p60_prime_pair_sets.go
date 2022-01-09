@@ -22,7 +22,6 @@ func P60() *command.Node {
 		command.IntNode(N, "", command.IntPositive()),
 		command.ExecutorNode(func(o command.Output, d *command.Data) {
 			n := d.Int(N)
-			_ = n
 
 			// Get all pairs and then find cycle!
 			p := generator.Primes()
@@ -37,9 +36,6 @@ func P60() *command.Node {
 					sp := strconv.Itoa(spn)
 					np := strconv.Itoa(npn)
 					r, l := parse.Atoi(sp+np), parse.Atoi(np+sp)
-					if spn == 31 && npn == 391 {
-						o.Stdoutln("hello")
-					}
 					if generator.IsPrime(r, p) && generator.IsPrime(l, p) {
 						pairs[spn] = append(pairs[spn], &primePair{npn, n})
 						pairs[npn] = append(pairs[npn], &primePair{spn, n})
@@ -52,35 +48,6 @@ func P60() *command.Node {
 			ctx := &pairCtx{pairs, edges}
 			path := bfs.CompleteSets(primes, ctx, n)
 			o.Stdoutln(maths.SumType(path), path)
-
-			/*for i := 1; i < 2; i++ {
-				fmt.Println("===========")
-				// TODO: return all states that were checked?
-				cycle, length := bfs.CyclePath(&primePair{p.Nth(i), n}, pairs)
-				if length > 0 {
-					o.Stdoutln("yippee", length, cycle)
-					for cur := range cycle {
-						o.Stdoutln(cur)
-					}
-					return
-				}
-			}*/
-
-			/*pairs := map[int]map[int]bool{}
-			p := generator.Primes()
-			for start := 0; p.Nth(start) < 10_000; start++ {
-				for next := start + 1; p.Nth(next) < 10_000; next++ {
-					spn, npn := p.Nth(start), p.Nth(next)
-					sp := strconv.Itoa(spn)
-					np := strconv.Itoa(npn)
-					r, l := parse.Atoi(sp+np), parse.Atoi(np+sp)
-					if generator.IsPrime(r, p) && generator.IsPrime(l, p) {
-						maths.Set(pairs, spn, npn, true)
-						maths.Set(pairs, npn, spn, true)
-					}
-				}
-			}
-			o.Stdoutln(pairs)*/
 		}),
 	)
 }
@@ -99,16 +66,12 @@ func (p *primePair) Offset(_ *bfs.Context[*pairCtx, *primePair]) int {
 }
 
 func (p *primePair) String() string {
-	return fmt.Sprintf("primePair: %d", p.prime)
+	return fmt.Sprintf("%d", p.prime)
 }
 
 func (p *primePair) Code(_ *bfs.Context[*pairCtx, *primePair]) string {
 	return strconv.Itoa(p.prime)
 }
-
-/*func (p *primePair) AdjacentStates(ctx *bfs.Context[map[int][]*primePair, *primePair]) []*primePair {
-	return ctx.GlobalContext[p.prime]
-}*/
 
 func (p *primePair) AdjacentStates(ctx *bfs.Context[*pairCtx, *primePair]) []*primePair {
 	return ctx.GlobalContext.adjPairs[p.prime]
@@ -121,45 +84,3 @@ func (p *primePair) BiggerThan(that *primePair) bool {
 func (p *primePair) HasEdge(ctx *bfs.Context[*pairCtx, *primePair], that *primePair) bool {
 	return ctx.GlobalContext.edges[p.prime][that.prime]
 }
-
-func (p *primePair) DoneCycle(ctx *bfs.Context[map[int][]*primePair, *primePair]) bool {
-	// Iterate back until we get the current prime
-	var count int
-	fmt.Println("DC START")
-	if ctx == nil || ctx.StateValue == nil {
-		return false
-	}
-	for cur := ctx.StateValue.Prev(); cur != nil; cur = cur.Prev() {
-		count++
-		fmt.Println(cur)
-		if cur.State().prime == p.prime {
-			fmt.Println("DC END", count, p.n)
-			return count >= p.n
-		}
-	}
-	return false
-}
-
-/*func (p *primePair) inList(ctx *Context[map[int]int, *primePair]) bool {
-	for cur := ctx.StateValue; cur != nil; cur = cur.Prev() {
-		if cur.State().prime == p.prime {
-			return true
-		}
-	}
-	return false
-}
-
-func (p *primePair) Code(ctx *Context[map[int]int, T]) string {
-	// Always return a unique number because we are looking for cycles
-	ctx.GlobalContext[p.prime]++
-	return fmt.Sprintf("%d_%d", p.prime, ctx.GlobalContext[p.prime])
-}
-
-func (p *primePair) Done(*Context[M, T]) bool {
-
-}
-
-func (p *primePair) AdjacentStates(*Context[M, T]) bool {
-	// Only get adjacent states if this is the first instance of intera
-}
-*/

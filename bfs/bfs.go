@@ -77,8 +77,6 @@ func shortestPath[M, AS any, T pathable[M, T, AS]](initState T, initDistFunc fun
 			}
 		}
 
-		fmt.Println("CHECKING: ", sv.PathString())
-
 		if sv.state.Done(ctx) {
 			var path []T
 			for cur := sv; cur != nil; cur = cur.Prev() {
