@@ -8,12 +8,16 @@ type WeightedState[M, T any] interface {
 	Distance(*Context[M, T]) int
 }
 
-func ShortestWeightedPath[M any, T WeightedState[M, T]](initState T, globalContext M) ([]T, int) {
+func initDistFunc[M any, T WeightedState[M, T]](ctx *Context[M, T], t T) int {
+	return t.Distance(ctx)
+}
+
+func ShortestWeightedPath[M any, T WeightedState[M, T]](initStates []T, globalContext M) ([]T, int) {
 	ph := &pathHelper[M, T, T]{
 		distFunc: func(ctx *Context[M, T], as T) int {
 			return as.Distance(ctx)
 		},
 		convFunc: identityConvFunc[M, T](),
 	}
-	return shortestPath(initState, initState.Distance, globalContext, ph)
+	return shortestPath(initStates, initDistFunc[M, T], globalContext, ph)
 }

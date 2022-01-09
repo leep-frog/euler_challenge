@@ -30,7 +30,7 @@ func P18() *command.Node {
 				tower = append(tower, row)
 			}
 
-			path, dist := bfs.ShortestOffsetPath(&place{0, 0}, tower)
+			path, dist := bfs.ShortestOffsetPath([]*place{&place{0, 0}}, tower)
 			for _, p := range path {
 				o.Stdoutln(p)
 			}

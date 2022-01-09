@@ -53,16 +53,18 @@ func simpleDistFunc[M, T any]() func(*Context[M, T], T) int {
 	}
 }
 
-func shortestPath[M, AS any, T pathable[M, T, AS]](initState T, initDistFunc func(*Context[M, T]) int, globalContext M, ph *pathHelper[M, T, AS]) ([]T, int) {
+func shortestPath[M, AS any, T pathable[M, T, AS]](initStates []T, initDistFunc func(*Context[M, T], T) int, globalContext M, ph *pathHelper[M, T, AS]) ([]T, int) {
 	ctx := &Context[M, T]{
 		GlobalContext: globalContext,
 	}
 	states := &stateSet[T]{}
-	var initDist int
-	if initDistFunc != nil {
-		initDist = initDistFunc(ctx)
+	for _, initState := range initStates {
+		var initDist int
+		if initDistFunc != nil {
+			initDist = initDistFunc(ctx, initState)
+		}
+		states.Push(&StateValue[T]{initState, initDist, nil})
 	}
-	states.Push(&StateValue[T]{initState, initDist, nil})
 
 	checked := map[string]bool{}
 

@@ -12,19 +12,19 @@ type State[M, T any] interface {
 	AdjacentStates(*Context[M, T]) []T
 }
 
-func ShortestPath[M any, T State[M, T]](initState T, globalContext M) ([]T, int) {
+func ShortestPath[M any, T State[M, T]](initStates []T, globalContext M) ([]T, int) {
 	ph := &pathHelper[M, T, T]{
 		distFunc: simpleDistFunc[M, T](),
 		convFunc: identityConvFunc[M, T](),
 	}
-	return shortestPath(initState, nil, globalContext, ph)
+	return shortestPath(initStates, nil, globalContext, ph)
 }
 
-func ShortestPathNonUnique[M any, T State[M, T]](initState T, globalContext M) ([]T, int) {
+func ShortestPathNonUnique[M any, T State[M, T]](initStates []T, globalContext M) ([]T, int) {
 	ph := &pathHelper[M, T, T]{
-		distFunc:   simpleDistFunc[M, T](),
-		convFunc:   identityConvFunc[M, T](),
+		distFunc: simpleDistFunc[M, T](),
+		convFunc: identityConvFunc[M, T](),
 		skipUnique: true,
 	}
-	return shortestPath(initState, nil, globalContext, ph)
+	return shortestPath(initStates, nil, globalContext, ph)
 }

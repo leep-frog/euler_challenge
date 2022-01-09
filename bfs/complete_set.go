@@ -77,66 +77,15 @@ func fromSetContext[M any, T Set[M, T]](ctx *Context[M, *setState[M, T]]) *Conte
 	}
 }
 
-/*
-Check if a is in a complete set, then
-*/
-
 func CompleteSets[M any, T Set[M, T]](sets []T, globalContext M, size int) []T {
-	/*ph := &pathHelper[M, *setState[M, T], *setState[M, T]]{
-		distFunc: simpleDistFunc[M, *setState[M, T]](),
-		convFunc: identityConvFunc[M, *setState[M, T]](),
-		skipUnique: true,
-	}*/
+	var setStates []*setState[M, T]
 	for _, s := range sets {
-		//path, _ := ShortestPath(&setState[M, T]{s, size}, globalContext)
-		//path, _ := shortestPath(&setState[M, T]{s, size}, 0, globalContext, ph)
-		//path, _ := ShortestPathNonUnique(&setState[M, T]{s, size}, globalContext)
-		path, _ := ShortestOffsetPathNonUnique(&setState[M, T]{s, size}, globalContext)
-		if path != nil {
+		setStates = append(setStates, &setState[M, T]{s, size})
+	}
+	path, _ := ShortestOffsetPathNonUnique(setStates, globalContext)
 			var ts []T
 			for _, p := range path {
 				ts = append(ts, p.s)
 			}
 			return ts
-		}
-	}
-	return nil
 }
-
-/*func CompleteSets[C any](sets []Set[C], size int) [][]Set[C] {
-	// Find all the complete sets of size 2 and then 3 and so on
-	var completeSets [][]Set[C]
-	for _, s := range sets {
-		completeSets = append(completeSets, s)
-	}
-	for i := 0 ;; i++ {
-		var biggerSets [][]Set[C]
-		// compare every complete set
-		for a, s1 := range completeSets {
-			for b := a + 1; b < len(completeSets); b++ {
-				s2 := completeSets[b]
-				// If every edge in s1
-				for s1_i := range
-			}
-		}
-	}
-}
-
-type CompleteSet[C any, S Set[C]] struct {
-	sets []S
-	contents map[string]bool
-}
-
-func (cs *CompleteSet[C, S]) TryAdding(ctx C, s S) *CompleteSet[C, S] {
-	if cs.contents[s.Code(ctx)] {
-		return nil
-	}
-	var newS
-	for _, set := range cs.sets {
-		if !s.HasEdge(set) {
-			return nil
-		}
-	}
-	cs.contents[s.Code(ctx)] = true
-	cs.sets = append(cs.sets)
-}*/

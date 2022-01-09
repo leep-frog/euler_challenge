@@ -289,10 +289,10 @@ func BigFibonaccis() *Generator[*maths.Int] {
 }
 
 func Triangulars() *Generator[int] {
-	return shapeNumberGenerator(3)
+	return ShapeNumberGenerator(3)
 }
 
-func shapeNumberGenerator(n int) *Generator[int] {
+func ShapeNumberGenerator(n int) *Generator[int] {
 	i := 1
 	return NewGenerator(triName, 1, newIntGeneratable(), func(g *Generator[int]) int {
 		i += n - 2
@@ -301,9 +301,9 @@ func shapeNumberGenerator(n int) *Generator[int] {
 }
 
 func Pentagonals() *Generator[int] {
-	return shapeNumberGenerator(5)
+	return ShapeNumberGenerator(5)
 }
 
 func Hexagonals() *Generator[int] {
-	return shapeNumberGenerator(6)
+	return ShapeNumberGenerator(6)
 }
