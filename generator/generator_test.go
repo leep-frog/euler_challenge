@@ -117,13 +117,14 @@ func TestIsHexagonal(t *testing.T) {
 }
 
 func fakeCache(t *testing.T) {
-	oldFunc := newCache
+	var _ *cache.Cache
+	/*oldFunc := newCache
 	newCache = func() *cache.Cache {
 		return cache.NewTestCache(t)
 	}
 	t.Cleanup(func() {
 		newCache = oldFunc
-	})
+	})*/
 }
 
 func TestContains(t *testing.T) {
