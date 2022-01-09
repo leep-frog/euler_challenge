@@ -58,13 +58,13 @@ type pathHelper[M, T, AS any] struct {
 	skipUnique bool
 }
 
-func identityConvFunc[M, T any]() func( *Context[M, T], T) T {
+func identityConvFunc[M, T any]() func(*Context[M, T], T) T {
 	return func(_ *Context[M, T], as T) T {
 		return as
 	}
 }
 
-func adjStateDistFunc[M, T any]() func( *Context[M, T], *AdjacentState[T]) int {
+func adjStateDistFunc[M, T any]() func(*Context[M, T], *AdjacentState[T]) int {
 	return func(ctx *Context[M, T], as *AdjacentState[T]) int {
 		if ctx.StateValue == nil {
 			return as.Offset
@@ -73,13 +73,13 @@ func adjStateDistFunc[M, T any]() func( *Context[M, T], *AdjacentState[T]) int {
 	}
 }
 
-func adjStateConvFunc[M, T any]() func( *Context[M, T], *AdjacentState[T]) T {
+func adjStateConvFunc[M, T any]() func(*Context[M, T], *AdjacentState[T]) T {
 	return func(_ *Context[M, T], as *AdjacentState[T]) T {
 		return as.State
 	}
 }
 
-func simpleDistFunc[M, T any]() func( *Context[M, T], T) int {
+func simpleDistFunc[M, T any]() func(*Context[M, T], T) int {
 	return func(ctx *Context[M, T], as T) int {
 		if ctx.StateValue == nil {
 			return 0
@@ -110,7 +110,7 @@ func shortestPath[M, AS any, T pathable[M, T, AS]](initState T, initDist int, gl
 
 		if sv.state.Done(ctx) {
 			var path []T
-			for cur := sv; cur != nil; cur = cur.prev {
+			for cur := sv; cur != nil; cur = cur.Prev() {
 				path = append(path, cur.state)
 			}
 			return path, sv.dist
@@ -119,7 +119,7 @@ func shortestPath[M, AS any, T pathable[M, T, AS]](initState T, initDist int, gl
 		for _, adjState := range sv.state.AdjacentStates(ctx) {
 			dist := ph.distFunc(ctx, adjState)
 			newT := ph.convFunc(ctx, adjState)
-			heap.Push(states, &StateValue[T]{newT, dist, sv})
+			heap.Push(states, &StateValue[T]{newT, dist, func() *StateValue[T] { return sv }})
 		}
 	}
 	return nil, -1
@@ -156,7 +156,7 @@ func (ss *stateSet[T]) Swap(i, j int) {
 type StateValue[T any] struct {
 	state T
 	dist  int
-	prev  *StateValue[T]
+	prev  func() *StateValue[T]
 }
 
 func (sv *StateValue[T]) String() string {
@@ -172,5 +172,8 @@ func (sv *StateValue[T]) Dist() int {
 }
 
 func (sv *StateValue[T]) Prev() *StateValue[T] {
-	return sv.prev
+	if sv.prev == nil {
+		return nil
+	}
+	return sv.prev()
 }

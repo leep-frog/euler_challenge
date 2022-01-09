@@ -1,14 +1,14 @@
 package bfs
 
 type popCtx[T any] struct {
-	pop bool
+	pop        bool
 	stateValue *StateValue[T]
 }
 
 type anyPathHelper[M, T, AS any] struct {
-	popFunc func(*Context[M, T], T)
+	popFunc  func(*Context[M, T], T)
 	pushFunc func(*Context[M, T], T)
-	ph *pathHelper[M, T, AS]
+	ph       *pathHelper[M, T, AS]
 }
 
 /*type CycleState[M, T any] interface {
@@ -33,7 +33,7 @@ func CyclePath[map[string]bool, T State[map[string]bool, T]](initState T) ([]T, 
 		 0,
 		  globalContext,
 			 &anyPathHelper[M, T]{
-				 ph: 
+				 ph:
 			 })
 }*/
 
@@ -48,10 +48,10 @@ func anyPath[M, AS any, T dfsPathable[M, T, AS]](initState T, initDist int, glob
 		GlobalContext: globalContext,
 	}
 	states := []*popCtx[T]{{
-		pop: false,
+		pop:        false,
 		stateValue: &StateValue[T]{initState, initDist, nil},
 	}}
-	
+
 	for len(states) > 0 {
 		svp := states[len(states)-1]
 		states = states[:len(states)-1]
@@ -61,12 +61,12 @@ func anyPath[M, AS any, T dfsPathable[M, T, AS]](initState T, initDist int, glob
 			continue
 		}
 		aph.pushFunc(ctx, sv.state)
-		
+
 		ctx.StateValue = sv
 		if sv.state.Done(ctx) {
 			var path []T
 			// TODO: make function on stateValue
-			for cur := sv; cur != nil; cur = cur.prev {
+			for cur := sv; cur != nil; cur = cur.Prev() {
 				path = append(path, cur.state)
 			}
 			return path, sv.dist
@@ -76,7 +76,7 @@ func anyPath[M, AS any, T dfsPathable[M, T, AS]](initState T, initDist int, glob
 		for _, adjState := range sv.state.AdjacentStates(ctx) {
 			dist := aph.ph.distFunc(ctx, adjState)
 			newT := aph.ph.convFunc(ctx, adjState)
-			states = append(states, &popCtx[T]{false, &StateValue[T]{newT, dist, sv}})
+			states = append(states, &popCtx[T]{false, &StateValue[T]{newT, dist, func() *StateValue[T] { return sv }}})
 		}
 	}
 	return nil, -1
