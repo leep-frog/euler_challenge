@@ -809,6 +809,28 @@ func (b *Binary) Equals(that *Binary) bool {
 	return true
 }
 
+func Reverse[T any](ts []T) []T {
+	st := make([]T, len(ts))
+	for i, v := range ts {
+		st[len(ts)-1-i] = v
+	}
+	return st
+}
+
+func CopyMap[K comparable, V any](m map[K]V, except ...K) map[K]V {
+	ignore := map[K]bool{}
+	for _, k := range except {
+		ignore[k] = true
+	}
+	r := map[K]V{}
+	for k, v := range m {
+		if !ignore[k] {
+			r[k] = v
+		}
+	}
+	return r
+}
+
 type Intable interface {
 	ToInt() int
 }

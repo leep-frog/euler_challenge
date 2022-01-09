@@ -3,9 +3,10 @@ package eulerchallenge
 import (
 	"fmt"
 
-	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/bfs"
+	"github.com/leep-frog/euler_challenge/generator"
+	"github.com/leep-frog/euler_challenge/maths"
 )
 
 func P61() *command.Node {
@@ -14,11 +15,10 @@ func P61() *command.Node {
 		command.IntNode(N, "", command.IntPositive()),
 		command.ExecutorNode(func(o command.Output, d *command.Data) {
 			n := d.Int(N)
-			o.Stdoutln(n)
 
-			/*generators := map[int]*generator.Generator[int]{}
+			generators := map[int]*generator.Generator[int]{}
 			startMap := map[int]int{}
-			for i := 0; i < n; i++ {
+			for i := 1; i < n; i++ {
 				shape := i + 3
 				g := generator.ShapeNumberGenerator(shape)
 				generators[shape] = g
@@ -27,9 +27,19 @@ func P61() *command.Node {
 				startMap[shape] = start
 			}
 
-			for i := 0; generators[3].Nth(i) < 10_000; i++ {
-
-			}*/
+			var initStates []*cycFigNum
+			triG := generator.ShapeNumberGenerator(3)
+			for i := 0; triG.Nth(i) < 10_000; i++ {
+				if triG.Nth(i) < 1000 {
+					continue
+				}
+				initStates = append(initStates, &cycFigNum{
+					triG.Nth(i),
+					maths.CopyMap(generators),
+				})
+			}
+			path, _ := bfs.ShortestPathNonUnique(initStates, startMap)
+			o.Stdoutln(maths.SumType(path), maths.Reverse(path))
 		}),
 	)
 }
@@ -38,16 +48,19 @@ type cycFigNum struct {
 	n int
 	remainingShapes map[int]*generator.Generator[int]
 }
+func (cfn *cycFigNum) ToInt() int {
+	return cfn.n
+}
 
 func (cfn *cycFigNum) Cycles(that *cycFigNum) bool {
-	return cfn.String()[:2] == that.String()[2:]
+	return cfn.String()[2:] == that.String()[:2]
 }
 
 func (cfn *cycFigNum) CyclesInt(that int) bool {
-	return cfn.String()[:2] == fmt.Sprintf("%d", that)[2:]
+	return cfn.String()[2:] == fmt.Sprintf("%d", that)[:2]
 }
 
-func (cfn *cycFigNum) Code(*bfs.Context[int, *cycFigNum]) string {
+func (cfn *cycFigNum) Code(*bfs.Context[map[int]int, *cycFigNum]) string {
 	return cfn.String()
 }
 
@@ -55,12 +68,15 @@ func (cfn *cycFigNum) Code(*bfs.Context[int, *cycFigNum]) string {
 	return fmt.Sprintf("%d", cfn.n)
 }
 
-func (cfn *cycFigNum) Done(ctx *bfs.Context[int, *cycFigNum]) bool {
+func (cfn *cycFigNum) Done(ctx *bfs.Context[map[int]int, *cycFigNum]) bool {
+	if len(cfn.remainingShapes) > 0 {
+		return false
+	}
 	var first *cycFigNum
 	for cur := ctx.StateValue; cur != nil; cur = cur.Prev() {
 		first = cur.State()
 	}
-	return len(cfn.remainingShapes) == 0 && cfn.Cycles(first)
+	return cfn.Cycles(first)
 }
 
 func (cfn *cycFigNum) AdjacentStates(ctx *bfs.Context[map[int]int, *cycFigNum]) []*cycFigNum {
@@ -70,16 +86,11 @@ func (cfn *cycFigNum) AdjacentStates(ctx *bfs.Context[map[int]int, *cycFigNum]) 
 		for i := startMap[shape]; gen.Nth(i) < 10_000; i++ {
 			gn := gen.Nth(i)
 			if cfn.CyclesInt(gn) {
-				cfn := &cycFigNum{
+				newN := &cycFigNum{
 					gn,
-					map[int]*generator.Generator[int]{},
+					maths.CopyMap(cfn.remainingShapes, shape),
 				}
-				for k, v := range cfn.remainingShapes {
-					if k != shape {
-						cfn.remainingShapes[k] = v
-					}
-				}
-				r = append(r, cfn)
+				r = append(r, newN)
 			}
 		}
 	}
