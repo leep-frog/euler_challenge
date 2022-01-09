@@ -15,5 +15,5 @@ func ShortestWeightedPath[M any, T WeightedState[M, T]](initState T, globalConte
 		},
 		convFunc: identityConvFunc[M, T](),
 	}
-	return shortestPath(initState, initState.Distance(&Context[M, T]{GlobalContext: globalContext}), globalContext, ph)
+	return shortestPath(initState, initState.Distance, globalContext, ph)
 }

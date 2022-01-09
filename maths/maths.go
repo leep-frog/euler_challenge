@@ -813,7 +813,7 @@ type Intable interface {
 	ToInt() int
 }
 
-func SumType[T Intable](ts []T) int{
+func SumType[T Intable](ts []T) int {
 	var sum int
 	for _, t := range ts {
 		sum += t.ToInt()

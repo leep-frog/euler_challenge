@@ -5,15 +5,15 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/command/cache"
+	"github.com/leep-frog/euler_challenge/maths"
 )
 
 func TestIsTriangular(t *testing.T) {
 	for _, test := range []struct {
-		t int
+		t    int
 		want bool
-	} {
+	}{
 		{-1, false},
 		{1, true},
 		{2, false},
@@ -43,9 +43,9 @@ func TestIsTriangular(t *testing.T) {
 
 func TestIsPentagonal(t *testing.T) {
 	for _, test := range []struct {
-		t int
+		t    int
 		want bool
-	} {
+	}{
 		{-1, false},
 		{1, true},
 		{2, false},
@@ -78,9 +78,9 @@ func TestIsPentagonal(t *testing.T) {
 
 func TestIsHexagonal(t *testing.T) {
 	for _, test := range []struct {
-		t int
+		t    int
 		want bool
-	} {
+	}{
 		{-1, false},
 		{1, true},
 		{2, false},

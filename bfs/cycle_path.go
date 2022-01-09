@@ -64,7 +64,7 @@ func (cs *cycleState[M, T]) Done(ctx *Context[*cycleContext[M], *cycleState[M, T
 }
 
 func (cs *cycleState[M, T]) AdjacentStates(ctx *Context[*cycleContext[M], *cycleState[M, T]]) []*cycleState[M, T] {
-	// 
+	//
 	oCtx := fromCycleCtx[M, T](ctx)
 	code := cs.cs.Code(oCtx)
 	if ctx.GlobalContext.checked[code] {
@@ -95,10 +95,10 @@ func CyclePath[M any, T CycleState[M, T]](initState T, globalContext M) ([]T, in
 		&cycleState[M, T]{initState},
 		0,
 		&cycleContext[M]{
-			m: globalContext,
+			m:       globalContext,
 			checked: map[string]bool{},
-			},
-			aph,
+		},
+		aph,
 	)
 	var ts []T
 	for _, cs := range css {

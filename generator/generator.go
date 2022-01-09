@@ -9,8 +9,8 @@ import (
 
 const (
 	primesName = "primes"
-	fibName = "fibonaccis"
-	triName = "triangulars"
+	fibName    = "fibonaccis"
+	triName    = "triangulars"
 )
 
 type Generatable[T any] interface {
@@ -23,7 +23,7 @@ func newBigGeneratable() Generatable[*maths.Int] {
 	return &bigGeneratable{}
 }
 
-type bigGeneratable struct {}
+type bigGeneratable struct{}
 
 func (bg *bigGeneratable) LTE(this, that *maths.Int) bool {
 	return this.LTE(that)
@@ -33,7 +33,7 @@ func (bg *bigGeneratable) String(i *maths.Int) string {
 	return i.String()
 }
 
-func (bg *bigGeneratable) FromString(s string)*maths.Int {
+func (bg *bigGeneratable) FromString(s string) *maths.Int {
 	return maths.MustIntFromString(s)
 }
 
@@ -41,7 +41,7 @@ func newIntGeneratable() Generatable[int] {
 	return &intGeneratable{}
 }
 
-type intGeneratable struct {}
+type intGeneratable struct{}
 
 func (ig *intGeneratable) LTE(this, that int) bool {
 	return this <= that
@@ -106,7 +106,6 @@ func (g *Generator[T]) getNext() T {
 	}
 )*/
 
-
 func (g *Generator[T]) Contains(t T) bool {
 	for ; g.len() == 0 || g.g.LTE(g.last(), t); g.getNext() {
 	}
@@ -142,7 +141,7 @@ func putCache[T any](name string, sl []T, g Generatable[T]) {
 func NewGenerator[T any](name string, start T, g Generatable[T], f func(*Generator[T]) T) *Generator[T] {
 	gt := &Generator[T]{
 		name: name,
-		g: g,
+		g:    g,
 		f: func(g *Generator[T]) T {
 			if len(g.values) == 0 {
 				return start
@@ -205,22 +204,23 @@ func IsHexagonal(tn int) bool {
 	if tn < 1 {
 		return false
 	}
-	
-	n := maths.Sqrt((tn ) / 2)
-	for ; n * (2 * n - 1)  < tn; n ++ {}
-	return n * (2 * n - 1) == tn
-}
 
+	n := maths.Sqrt((tn) / 2)
+	for ; n*(2*n-1) < tn; n++ {
+	}
+	return n*(2*n-1) == tn
+}
 
 // t_n  = n(3n−1)/2
 func IsPentagonal(tn int) bool {
 	if tn < 1 {
 		return false
 	}
-	
-	n := maths.Sqrt((2 * tn ) / 3)
-	for ; n * (3 * n - 1) / 2 < tn; n ++ {}
-	return n * (3 * n - 1) / 2 == tn
+
+	n := maths.Sqrt((2 * tn) / 3)
+	for ; n*(3*n-1)/2 < tn; n++ {
+	}
+	return n*(3*n-1)/2 == tn
 }
 
 // t_n = n(n+1)/2
@@ -230,7 +230,7 @@ func IsTriangular(tn int) bool {
 	}
 	n2 := tn * 2
 	n := maths.Sqrt(n2)
-	return n * (n + 1) / 2 == tn
+	return n*(n+1)/2 == tn
 }
 
 func IsPrime(n int, p *Generator[int]) bool {
@@ -238,10 +238,10 @@ func IsPrime(n int, p *Generator[int]) bool {
 		return false
 	}
 	ogIdx := p.idx
-	defer func() {p.idx = ogIdx}()
+	defer func() { p.idx = ogIdx }()
 	p.Reset()
-	for pn := p.Next(); pn * pn <= n; pn = p.Next() {
-		if n % pn == 0 {
+	for pn := p.Next(); pn*pn <= n; pn = p.Next() {
+		if n%pn == 0 {
 			return false
 		}
 	}

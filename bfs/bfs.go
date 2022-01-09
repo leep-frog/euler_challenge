@@ -23,41 +23,6 @@ type pathable[M, T, AS any] interface {
 	AdjacentStates(*Context[M, T]) []AS
 }
 
-/*type pathOrPop[T any] struct {
-	t T
-	pop bool
-	popCode string
-}
-
-/*func AnyPath[M any, T State[M, T]](initState T, globalContext M) []T {
-	pops := []pathOrPop[T]{{initState, false}}
-	path := []T{}
-	inPath := map[string]bool{}
-	for len(pops) > 0 {
-		pop := pops[len(path)-1]
-		pops = pops[:len(pops)-1]
-
-		if pop.pop {
-			path = path[:len(path)-1]
-			delete(inPath, pop.popCode)
-			continue
-		}
-
-		state := pop.t
-		path = append(path, state)
-		inPath[state.Code()] = true
-
-		if state.Done(globalContext) {
-			return path
-		}
-
-		pops = append(pops, &pathOrPop{nil, true})
-		for _, adjState := range state.AdjacentStates(globalContext) {
-			pops = append(pops, &pathOrPop{adjState, false})
-		}
-	}
-}*/
-
 type pathHelper[M, T, AS any] struct {
 	distFunc   func(*Context[M, T], AS) int
 	convFunc   func(*Context[M, T], AS) T
@@ -70,18 +35,12 @@ func identityConvFunc[M, T any]() func(*Context[M, T], T) T {
 	}
 }
 
-func adjStateDistFunc[M, T any]() func(*Context[M, T], *AdjacentState[T]) int {
-	return func(ctx *Context[M, T], as *AdjacentState[T]) int {
+func adjStateDistFunc[M any, T OffsetState[M, T]]() func(*Context[M, T], T) int {
+	return func(ctx *Context[M, T], os T) int {
 		if ctx.StateValue == nil {
-			return as.Offset
+			return os.Offset(ctx)
 		}
-		return ctx.StateValue.Dist() + as.Offset
-	}
-}
-
-func adjStateConvFunc[M, T any]() func(*Context[M, T], *AdjacentState[T]) T {
-	return func(_ *Context[M, T], as *AdjacentState[T]) T {
-		return as.State
+		return ctx.StateValue.Dist() + os.Offset(ctx)
 	}
 }
 
@@ -94,11 +53,15 @@ func simpleDistFunc[M, T any]() func(*Context[M, T], T) int {
 	}
 }
 
-func shortestPath[M, AS any, T pathable[M, T, AS]](initState T, initDist int, globalContext M, ph *pathHelper[M, T, AS]) ([]T, int) {
+func shortestPath[M, AS any, T pathable[M, T, AS]](initState T, initDistFunc func(*Context[M, T]) int, globalContext M, ph *pathHelper[M, T, AS]) ([]T, int) {
 	ctx := &Context[M, T]{
 		GlobalContext: globalContext,
 	}
 	states := &stateSet[T]{}
+	var initDist int
+	if initDistFunc != nil {
+		initDist = initDistFunc(ctx)
+	}
 	states.Push(&StateValue[T]{initState, initDist, nil})
 
 	checked := map[string]bool{}

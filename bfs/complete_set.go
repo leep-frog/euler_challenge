@@ -1,18 +1,19 @@
 package bfs
+
 import (
 	"fmt"
 )
 
 type Set[M, T any] interface {
 	Code(*Context[M, T]) string
-	AdjacentStates(*Context[M, T]) []*AdjacentState[T]
+	AdjacentStates(*Context[M, T]) []T
 	BiggerThan(T) bool
 	HasEdge(*Context[M, T], T) bool
-	Value() int
+	Offset(*Context[M, T]) int
 }
 
 type setState[M any, T Set[M, T]] struct {
-	s T
+	s              T
 	remainingDepth int
 }
 
@@ -21,8 +22,11 @@ func (cs *setState[M, T]) String() string {
 }
 
 func (cs *setState[M, T]) Code(ctx *Context[M, *setState[M, T]]) string {
-	// Return unique code
 	return cs.s.Code(fromSetContext(ctx))
+}
+
+func (cs *setState[M, T]) Offset(ctx *Context[M, *setState[M, T]]) int {
+	return cs.s.Offset(fromSetContext(ctx))
 }
 
 func (cs *setState[M, T]) Done(ctx *Context[M, *setState[M, T]]) bool {
@@ -33,34 +37,37 @@ func (cs *setState[M, T]) Done(ctx *Context[M, *setState[M, T]]) bool {
 	return b
 }
 
-func (cs *setState[M, T]) AdjacentStates(ctx *Context[M, *setState[M, T]]) []*AdjacentState[*setState[M, T]] {
+func (cs *setState[M, T]) AdjacentStates(ctx *Context[M, *setState[M, T]]) []*setState[M, T] {
 	// If already bigger than size, then no need to check more
 	if ctx != nil && ctx.StateValue != nil && ctx.StateValue.State().remainingDepth <= 0 {
 		return nil
 	}
-	var r []*AdjacentState[*setState[M, T]]
+	var r []*setState[M, T]
 	for _, as := range cs.s.AdjacentStates(fromSetContext(ctx)) {
-		if !as.State.BiggerThan(cs.s) {
+		if !as.BiggerThan(cs.s) {
 			continue
 		}
 		edgeToAll := true
 		for cur := ctx.StateValue; cur != nil; cur = cur.Prev() {
-				if !as.State.HasEdge(fromSetContext(ctx), cur.State().s) {
+			if !as.HasEdge(fromSetContext(ctx), cur.State().s) {
 				edgeToAll = false
 				break
 			}
 		}
 		if edgeToAll {
-		r = append(r, &AdjacentState[*setState[M, T]]{&setState[M, T]{as.State, cs.remainingDepth-1}, as.Offset})
+			r = append(r, &setState[M, T]{as, cs.remainingDepth - 1})
 		}
 	}
 	return r
 }
 
 func convertSetState[M any, T Set[M, T]](sv *StateValue[*setState[M, T]]) *StateValue[T] {
+	if sv == nil {
+		return nil
+	}
 	return &StateValue[T]{
 		state: sv.state.s,
-		dist: sv.dist,
+		dist:  sv.dist,
 		prev: func() *StateValue[T] {
 			return convertSetState[M, T](sv.Prev())
 		},
@@ -75,7 +82,7 @@ func fromSetContext[M any, T Set[M, T]](ctx *Context[M, *setState[M, T]]) *Conte
 }
 
 /*
-Check if a is in a complete set, then 
+Check if a is in a complete set, then
 */
 
 func CompleteSets[M any, T Set[M, T]](sets []T, globalContext M, size int) []T {
@@ -88,7 +95,7 @@ func CompleteSets[M any, T Set[M, T]](sets []T, globalContext M, size int) []T {
 		//path, _ := ShortestPath(&setState[M, T]{s, size}, globalContext)
 		//path, _ := shortestPath(&setState[M, T]{s, size}, 0, globalContext, ph)
 		//path, _ := ShortestPathNonUnique(&setState[M, T]{s, size}, globalContext)
-		path, _ := ShortestOffsetPathNonUnique(&setState[M, T]{s, size}, s.Value(), globalContext)
+		path, _ := ShortestOffsetPathNonUnique(&setState[M, T]{s, size}, globalContext)
 		if path != nil {
 			var ts []T
 			for _, p := range path {
@@ -113,7 +120,7 @@ func CompleteSets[M any, T Set[M, T]](sets []T, globalContext M, size int) []T {
 			for b := a + 1; b < len(completeSets); b++ {
 				s2 := completeSets[b]
 				// If every edge in s1
-				for s1_i := range 
+				for s1_i := range
 			}
 		}
 	}

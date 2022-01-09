@@ -73,7 +73,7 @@ func anyPath[M, AS any, T pathable[M, T, AS]](initState T, initDist int, globalC
 		}
 		svp := states[len(states)-1]
 		states = states[:len(states)-1]
-		sv := svp.stateValue		
+		sv := svp.stateValue
 		if svp.pop {
 			fmt.Println("POPPING", sv)
 			aph.popFunc(ctx, sv.state)
@@ -95,7 +95,6 @@ func anyPath[M, AS any, T pathable[M, T, AS]](initState T, initDist int, globalC
 		} else {
 			checked[code] = true
 		}
-
 
 		var path []string
 		for cur := sv; cur != nil; cur = cur.Prev() {
