@@ -540,6 +540,19 @@ func (i *Int) Times(that *Int) *Int {
 	return v
 }
 
+func BigMin(is []*Int) *Int {
+	if len(is) == 0 {
+		return Zero()
+	}
+	min := is[0]
+	for _, i := range is {
+		if i.LT(min) {
+			min = i
+		}
+	}
+	return min
+}
+
 func (i *Int) MagMinus(that *Int) *Int {
 	var r *Int
 	magsOnlyFunc(i, that, func(i1, i2 *Int) {
