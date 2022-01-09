@@ -106,6 +106,14 @@ func (g *Generator[T]) getNext() T {
 	}
 )*/
 
+func PowerGenerator(power int) *Generator[*maths.Int] {
+	n := 1
+	return NewGenerator("power", maths.One(), newBigGeneratable(), func(g *Generator[*maths.Int]) *maths.Int {
+		n++
+		return maths.BigPow(n, power)
+	})
+}
+
 func (g *Generator[T]) Contains(t T) bool {
 	for ; g.len() == 0 || g.g.LTE(g.last(), t); g.getNext() {
 	}

@@ -251,6 +251,7 @@ func TestBigGenerators(t *testing.T) {
 		name string
 		g    *Generator[*maths.Int]
 		want []int
+		wantInts []*maths.Int
 	}{
 		{
 			name: "Generates big fibonaccis",
@@ -259,15 +260,35 @@ func TestBigGenerators(t *testing.T) {
 				1, 1, 2, 3, 5, 8, 13, 21,
 			},
 		},
+		{
+			name: "Generates cubes",
+			g:    PowerGenerator(3),
+			want: []int{
+				1, 8, 27, 64,125, 216, 343,512,
+			},
+		},
+		{
+			name: "Generates powers of 4",
+			g:    PowerGenerator(4),
+			want: []int{
+				1, 16, 81, 256,
+			},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
+
 			if test.g.len() != 0 {
 				t.Errorf("Generator.len() returned %d; want 0", test.g.len())
 			}
 
-			var want, nexts, lasts, nths []*maths.Int
-			for i, w := range test.want {
-				want = append(want, maths.NewInt(int64(w)))
+			want := test.wantInts 
+			if len(want) == 0 {
+				for _, w := range test.want {
+					want = append(want, maths.NewInt(int64(w)))
+				}
+			}
+			var nexts, lasts, nths []*maths.Int
+			for i := range want {
 				nexts = append(nexts, test.g.Next())
 				lasts = append(lasts, test.g.last())
 				nths = append(nths, test.g.Nth(i))
