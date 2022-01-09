@@ -36,32 +36,39 @@ func (cs *cycleState[M, T]) Done(ctx *Context[*cycleContext[M], *cycleState[M, T
 	return ctx.GlobalContext.checked[code]
 }
 
-func (cs *cycleState[M, T]) AdjacentStates(ctx *Context[*cycleContext[M], T]) []T {
-	return cs.cs.AdjacentStates(&Context[M, T]{ctx.GlobalContext.m, ctx.StateValue})
+func (cs *cycleState[M, T]) AdjacentStates(ctx *Context[*cycleContext[M], *cycleState[M, T]]) []*cycleState[M, T] {
+	var css []*cycleState[M, T]
+	for _, as := range cs.cs.AdjacentStates(&Context[M, T]{ctx.GlobalContext.m, convertCycleStateValue(ctx.StateValue)}) {
+		css = append(css, &cycleState[M, T]{as})
+	}
+	return css
 }
 
 func ShortestCyclePath[M any, T CycleState[M, T]](initState T, globalContext M) ([]T, int) {
-	aph := &anyPathHelper[*cycleContext[M], *cycleState[M, T], T]{
+	aph := &anyPathHelper[*cycleContext[M], *cycleState[M, T], *cycleState[M, T]]{
 		popFunc: func(ctx *Context[*cycleContext[M], *cycleState[M, T]], cs *cycleState[M, T]) {
 			delete(ctx.GlobalContext.checked, cs.cs.Code(fromCycleCtx(ctx)))
 		},
-		/*pushFunc: func(ctx *Context[*cycleState[M], T], t T) {
-			ctx.GlobalContext.checked[t.Code()] = true
+		pushFunc: func(ctx *Context[*cycleContext[M], *cycleState[M, T]], cs *cycleState[M, T]) {
+			ctx.GlobalContext.checked[cs.cs.Code(fromCycleCtx(ctx))] = true
 		},
-		ph: &pathHelper[M, T, AS]{
-			convFunc: identityConvFunc(),
-			distFunc: simpleDistFunc(),
-		},*/
+		ph: &pathHelper[*cycleContext[M], *cycleState[M, T], *cycleState[M, T]]{
+			convFunc: identityConvFunc[*cycleContext[M], *cycleState[M, T]](),
+			distFunc: simpleDistFunc[*cycleContext[M], *cycleState[M, T]](),
+		},
 	}
-	_ = aph
-	return nil, 0
-	/*return anyPath(
+	css, dist := anyPath(
 		&cycleState[M, T]{initState},
 		0,
 		&cycleContext[M]{
 			m: globalContext,
 			checked: map[string]bool{},
 			},
-
-	)*/
+			aph,
+	)
+	var ts []T
+	for _, cs := range css {
+		ts = append(ts, cs.cs)
+	}
+	return ts, dist
 }
