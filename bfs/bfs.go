@@ -8,13 +8,7 @@ import (
 // Breadth first search stuff
 type Context[M, T any] struct {
 	GlobalContext M
-	StateValue    StateValue[M, T]
-}
-
-type StateValue[M, T any] interface {
-	State() T
-	Dist() int
-	Prev() StateValue[M, T]
+	StateValue    *StateValue[T]
 }
 
 type pathable[M, T, AS any] interface {
@@ -98,13 +92,13 @@ func shortestPath[M, AS any, T pathable[M, T, AS]](initState T, initDist int, gl
 	ctx := &Context[M, T]{
 		GlobalContext: globalContext,
 	}
-	states := &stateSet[M, T]{}
-	states.Push(&stateValue[M, T]{initState, initDist, nil})
+	states := &stateSet[T]{}
+	states.Push(&StateValue[T]{initState, initDist, nil})
 
 	checked := map[string]bool{}
 
 	for states.Len() > 0 {
-		sv := heap.Pop(states).(*stateValue[M, T])
+		sv := heap.Pop(states).(*StateValue[T])
 		ctx.StateValue = sv
 		if !ph.skipUnique {
 			if code := sv.state.Code(ctx); checked[code] {
@@ -125,58 +119,58 @@ func shortestPath[M, AS any, T pathable[M, T, AS]](initState T, initDist int, gl
 		for _, adjState := range sv.state.AdjacentStates(ctx) {
 			dist := ph.distFunc(ctx, adjState)
 			newT := ph.convFunc(ctx, adjState)
-			heap.Push(states, &stateValue[M, T]{newT, dist, sv})
+			heap.Push(states, &StateValue[T]{newT, dist, sv})
 		}
 	}
 	return nil, -1
 }
 
-type stateSet[M, T any] struct {
-	values []*stateValue[M, T]
+type stateSet[T any] struct {
+	values []*StateValue[T]
 }
 
-func (ss *stateSet[M, T]) Len() int {
+func (ss *stateSet[T]) Len() int {
 	return len(ss.values)
 }
 
-func (ss *stateSet[M, T]) Less(i, j int) bool {
+func (ss *stateSet[T]) Less(i, j int) bool {
 	return ss.values[i].dist < ss.values[j].dist
 }
 
-func (ss *stateSet[M, T]) Push(x interface{}) {
-	ss.values = append(ss.values, x.(*stateValue[M, T]))
+func (ss *stateSet[T]) Push(x interface{}) {
+	ss.values = append(ss.values, x.(*StateValue[T]))
 }
 
-func (ss *stateSet[M, T]) Pop() interface{} {
+func (ss *stateSet[T]) Pop() interface{} {
 	r := ss.values[len(ss.values)-1]
 	ss.values = ss.values[:len(ss.values)-1]
 	return r
 }
 
-func (ss *stateSet[M, T]) Swap(i, j int) {
+func (ss *stateSet[T]) Swap(i, j int) {
 	tmp := ss.values[i]
 	ss.values[i] = ss.values[j]
 	ss.values[j] = tmp
 }
 
-type stateValue[M, T any] struct {
+type StateValue[T any] struct {
 	state T
 	dist  int
-	prev  *stateValue[M, T]
+	prev  *StateValue[T]
 }
 
-func (sv *stateValue[M, T]) String() string {
+func (sv *StateValue[T]) String() string {
 	return fmt.Sprintf("(%d) %v", sv.dist, sv.state)
 }
 
-func (sv *stateValue[M, T]) State() T {
+func (sv *StateValue[T]) State() T {
 	return sv.state
 }
 
-func (sv *stateValue[M, T]) Dist() int {
+func (sv *StateValue[T]) Dist() int {
 	return sv.dist
 }
 
-func (sv *stateValue[M, T]) Prev() StateValue[M, T] {
+func (sv *StateValue[T]) Prev() *StateValue[T] {
 	return sv.prev
 }

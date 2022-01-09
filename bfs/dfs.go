@@ -1,8 +1,8 @@
 package bfs
 
-type popCtx[M, T any] struct {
+type popCtx[T any] struct {
 	pop bool
-	stateValue *stateValue[M, T]
+	stateValue *StateValue[T]
 }
 
 type anyPathHelper[M, T, AS any] struct {
@@ -37,14 +37,19 @@ func CyclePath[map[string]bool, T State[map[string]bool, T]](initState T) ([]T, 
 			 })
 }*/
 
+type dfsPathable[M, T, AS any] interface {
+	Done(*Context[M, T]) bool
+	AdjacentStates(*Context[M, T]) []AS
+}
+
 // anyPath implements a generic depth first search.
-func anyPath[M, AS any, T pathable[M, T, AS]](initState T, initDist int, globalContext M, aph *anyPathHelper[M, T, AS]) ([]T, int) {
+func anyPath[M, AS any, T dfsPathable[M, T, AS]](initState T, initDist int, globalContext M, aph *anyPathHelper[M, T, AS]) ([]T, int) {
 	ctx := &Context[M, T]{
 		GlobalContext: globalContext,
 	}
-	states := []*popCtx[M, T]{{
+	states := []*popCtx[T]{{
 		pop: false,
-		stateValue: &stateValue[M, T]{initState, initDist, nil},
+		stateValue: &StateValue[T]{initState, initDist, nil},
 	}}
 	
 	for len(states) > 0 {
@@ -67,11 +72,11 @@ func anyPath[M, AS any, T pathable[M, T, AS]](initState T, initDist int, globalC
 			return path, sv.dist
 		}
 
-		states = append(states, &popCtx[M, T]{true, sv})
+		states = append(states, &popCtx[T]{true, sv})
 		for _, adjState := range sv.state.AdjacentStates(ctx) {
 			dist := aph.ph.distFunc(ctx, adjState)
 			newT := aph.ph.convFunc(ctx, adjState)
-			states = append(states, &popCtx[M, T]{false, &stateValue[M, T]{newT, dist, sv}})
+			states = append(states, &popCtx[T]{false, &StateValue[T]{newT, dist, sv}})
 		}
 	}
 	return nil, -1

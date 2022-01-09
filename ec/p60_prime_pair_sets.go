@@ -35,7 +35,7 @@ type primePair struct {
 	prime int
 }
 
-func (p *primePair) inList(ctx *Context[map[int]int, *primePair]) bool {
+/*func (p *primePair) inList(ctx *Context[map[int]int, *primePair]) bool {
 	for cur := ctx.StateValue; cur != nil; cur = cur.Prev() {
 		if cur.State().prime == p.prime {
 			return true
@@ -57,3 +57,4 @@ func (p *primePair) Done(*Context[M, T]) bool {
 func (p *primePair) AdjacentStates(*Context[M, T]) bool {
 	// Only get adjacent states if this is the first instance of intera
 }
+*/
