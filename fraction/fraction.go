@@ -3,29 +3,56 @@ package fraction
 import (
 	"fmt"
 
-	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
-type Fraction struct {
-	N int
-	D int
+type Fraction[T any] struct {
+	N T
+	D T
+	plus func(T, T) T
+	times func(T, T) T
 }
 
-func New(n, d int) *Fraction {
-	return &Fraction{n, d}
+func New(n, d int) *Fraction[int] {
+	return &Fraction[int]{
+		n, 
+		d,
+		func(a, b int) int { return a + b },
+		func(a, b int) int { return a * b },
+	}
 }
 
-func (f *Fraction) String() string {
-	return fmt.Sprintf("%d/%d", f.N, f.D)
+func NewBig(n, d *maths.Int) *Fraction[*maths.Int] {
+	return &Fraction[*maths.Int]{
+		n, 
+		d,
+		func(a, b *maths.Int) *maths.Int { return a.Plus(b) },
+		func(a, b *maths.Int) *maths.Int { return a.Times(b) },
+	}
 }
 
-func (f *Fraction) Copy() *Fraction {
-	return New(f.N, f.D)
+func (f *Fraction[T]) Invert() *Fraction[T] {
+	tmp := f.N
+	f.N = f.D
+	f.D = tmp
+	return f
+}
+
+func (f *Fraction[T]) Plus(t T) *Fraction[T] {
+	f.N = f.plus(f.N, f.times(f.D, t))
+	return f
+}
+
+func (f *Fraction[T]) String() string {
+	return fmt.Sprintf("%v/%v", f.N, f.D)
+}
+
+func (f *Fraction[T]) Copy() *Fraction[T] {
+	return &Fraction[T]{f.N, f.D, f.plus, f.times}
 }
 
 // Return a fraction to allow for chaining.
-func (f *Fraction) Simplify(p *generator.Generator[int]) *Fraction {
+/*func (f *Fraction[T]) Simplify(p *generator.Generator[T]) *Fraction[T] {
 	nfs := generator.PrimeFactors(f.N, p)	
 	dfs := generator.PrimeFactors(f.D, p)	
 
@@ -50,4 +77,4 @@ func (f *Fraction) Simplify(p *generator.Generator[int]) *Fraction {
 	}
 	f.N, f.D = newN, newD
 	return f
-}
+}*/
