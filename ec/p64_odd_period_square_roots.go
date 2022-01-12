@@ -13,28 +13,8 @@ func P64() *command.Node {
 			n := d.Int(N)
 			var count int
 			for k := 2; k <= n; k++ {
-				if maths.IsSquare(k) {
-					continue
-				}
-				remainder := map[int]map[int]bool{}
-				as := []int{1}
-				for i := 1; i*i < k; i++ {
-					as[0] = i
-				}
-				num := 1
-				den := as[0]
-				for !remainder[num][den] && num != 0 {
-					maths.Set(remainder, num, den, true)
-					tmpDen := (k - den*den) / num
-					newNum := den
-					count := 0
-					for ; (as[0] + newNum) >= tmpDen; newNum -= tmpDen {
-						count++
-					}
-					as = append(as, count)
-					num, den = tmpDen, -newNum
-				}
-				if len(as)%2 == 0 {
+				_, period := maths.SquareRootPeriod(k)
+				if len(period)%2 == 1 {
 					count++
 				}
 			}

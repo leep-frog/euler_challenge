@@ -23,7 +23,8 @@ func P61() *command.Node {
 				g := generator.ShapeNumberGenerator(shape)
 				generators[shape] = g
 				start := 0
-				for ; g.Nth(start) < 1000; start++ {}
+				for ; g.Nth(start) < 1000; start++ {
+				}
 				startMap[shape] = start
 			}
 
@@ -45,9 +46,10 @@ func P61() *command.Node {
 }
 
 type cycFigNum struct {
-	n int
+	n               int
 	remainingShapes map[int]*generator.Generator[int]
 }
+
 func (cfn *cycFigNum) ToInt() int {
 	return cfn.n
 }
@@ -64,7 +66,7 @@ func (cfn *cycFigNum) Code(*bfs.Context[map[int]int, *cycFigNum]) string {
 	return cfn.String()
 }
 
-	func (cfn *cycFigNum) String() string {
+func (cfn *cycFigNum) String() string {
 	return fmt.Sprintf("%d", cfn.n)
 }
 

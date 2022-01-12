@@ -21,7 +21,7 @@ func TestAll(t *testing.T) {
 		long bool
 	}{
 		// TEST_START (needed for file_generator.go)
-		{
+		/*{
 			name: "p66",
 			args: []string{"66", "1000"},
 			want: []string{"272"},
@@ -30,8 +30,8 @@ func TestAll(t *testing.T) {
 			name: "p66 example",
 			args: []string{"66", "7"},
 			want: []string{"17"},
-		},
-		/*{
+		},*/
+		{
 			name: "p65",
 			args: []string{"65", "100"},
 			want: []string{"272"},
@@ -40,11 +40,6 @@ func TestAll(t *testing.T) {
 			name: "p65 example",
 			args: []string{"65", "10"},
 			want: []string{"17"},
-		},
-		{
-			name: "p65 example",
-			args: []string{"65", "13"},
-			want: []string{"4"},
 		},
 		{
 			name: "p64",
@@ -694,7 +689,7 @@ func TestAll(t *testing.T) {
 		if test.long == runLongTests {
 			t.Run(test.name, func(t *testing.T) {
 				etc := &command.ExecuteTestCase{
-					Node:          command.BranchNode(Branches(), nil, true),
+					Node:          command.BranchNode(Branches(), nil),
 					Args:          test.args,
 					WantStdout:    test.want,
 					SkipDataCheck: true,

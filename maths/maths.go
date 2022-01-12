@@ -1012,3 +1012,31 @@ func FactorialI(n int) int {
 	}
 	return r
 }
+
+func SquareRootPeriod(n int) (int, []int) {
+	if IsSquare(n) {
+		return Sqrt(n), nil
+	}
+
+
+	remainder := map[int]map[int]bool{}
+	start :=1 
+	for i := 1; i*i < n; i++ {
+		start = i
+	}
+	num := 1
+	den := start
+	var as []int
+	for !remainder[num][den] && num != 0 {
+		Set(remainder, num, den, true)
+		tmpDen := (n - den*den) / num
+		newNum := den
+		count := 0
+		for ; (start + newNum) >= tmpDen; newNum -= tmpDen {
+			count++
+		}
+		as = append(as, count)
+		num, den = tmpDen, -newNum
+	}
+	return start, as
+}
