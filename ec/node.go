@@ -71,6 +71,7 @@ func Branches() map[string]*command.Node {
 		"64": P64(),
 		"65": P65(),
 		"66": P66(),
+		// TODO: make classes for each type
 		// END_LIST (needed for file_generator.go)
 	}
 }

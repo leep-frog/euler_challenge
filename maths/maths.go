@@ -719,30 +719,30 @@ func palindromeLeft(n int, cur, r *[]string) {
 	}
 }
 
-type Bester struct {
-	better func(int, int) bool
-	best   int
+type Bester[T any] struct {
+	better func(T, T) bool
+	best   T
 	bestI  int
 
 	set bool
 }
 
-func (b *Bester) Best() int {
+func (b *Bester[T]) Best() T {
 	return b.best
 }
 
-func (b *Bester) BestIndex() int {
+func (b *Bester[T]) BestIndex() int {
 	return b.bestI
 }
 
-func (b *Bester) Check(v int) {
+func (b *Bester[T]) Check(v T) {
 	if !b.set || b.better(v, b.best) {
 		b.best = v
 		b.set = true
 	}
 }
 
-func (b *Bester) IndexCheck(idx, v int) {
+func (b *Bester[T]) IndexCheck(idx int, v T) {
 	if !b.set || b.better(v, b.best) {
 		b.best = v
 		b.bestI = idx
@@ -750,16 +750,24 @@ func (b *Bester) IndexCheck(idx, v int) {
 	}
 }
 
-func Largest() *Bester {
-	return &Bester{
+func Largest() *Bester[int] {
+	return &Bester[int]{
 		better: func(i, j int) bool {
 			return i > j
 		},
 	}
 }
 
-func Smallest() *Bester {
-	return &Bester{
+func BigLargest() *Bester[*Int] {
+	return &Bester[*Int]{
+		better: func(i, j *Int) bool {
+			return i.GT(j)
+		},
+	}
+}
+
+func Smallest() *Bester[int] {
+	return &Bester[int]{
 		better: func(i, j int) bool {
 			return i < j
 		},
@@ -767,7 +775,7 @@ func Smallest() *Bester {
 }
 
 type IncrementalBester struct {
-	b *Bester
+	b *Bester[int]
 	m map[int]int
 }
 
@@ -1018,7 +1026,6 @@ func SquareRootPeriod(n int) (int, []int) {
 		return Sqrt(n), nil
 	}
 
-
 	remainder := map[int]map[int]bool{}
 	start :=1 
 	for i := 1; i*i < n; i++ {
@@ -1039,4 +1046,12 @@ func SquareRootPeriod(n int) (int, []int) {
 		num, den = tmpDen, -newNum
 	}
 	return start, as
+}
+
+func Biggify(is []int) []*Int {
+	var r []*Int
+	for _, i := range is {
+		r = append(r, NewInt(int64(i)))
+	}
+	return r
 }
