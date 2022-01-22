@@ -7,6 +7,6 @@ import (
 
 func main() {
 	command.RunNodes(command.BranchNode(
-		eulerchallenge.Branches(), nil, false,
+		eulerchallenge.Branches(), nil, command.DontCompleteSubcommands(),
 	))
 }

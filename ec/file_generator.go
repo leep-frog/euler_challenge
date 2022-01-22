@@ -29,17 +29,6 @@ func FileGenerator() *command.Node {
 			num := d.Int(pn)
 			noInput := d.Bool(ni)
 
-			arg := "    command.IntNode(N, \"\", command.IntPositive()),"
-			loader := "      n := n"
-			printer := "      o.Stdoutln(n)"
-			if fileInput {
-				arg = "    command.StringNode(\"FILE\", \"\"),"
-				loader = "      lines := parse.ReadFileLines(d.String(\"FILE\"))"
-				printer = "      o.Stdoutln(lines)"
-			} else if noInput {
-				printer = "      o.Stdoutln(0)"
-			}
-
 			template := []string{
 				"package eulerchallenge",
 				"",
@@ -103,7 +92,7 @@ func FileGenerator() *command.Node {
 			}
 			return []string{
 				// Add line to node.go
-				fmt.Sprintf("r \"(^.*END_LIST.*$)\" '\t\tP%d(),\n$1' node.go", num, num),
+				fmt.Sprintf("r \"(^.*END_LIST.*$)\" '\t\tP%d(),\n$1' node.go", num),
 				// Add tests to ec_test.go
 				testStr,
 			}, nil
