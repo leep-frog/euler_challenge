@@ -71,7 +71,7 @@ func (g *Generator[T]) Reset() {
 	g.idx = 0
 }
 
-func (g *Generator[T]) last() T {
+func (g *Generator[T]) Last() T {
 	return g.values[len(g.values)-1]
 }
 
@@ -115,7 +115,7 @@ func PowerGenerator(power int) *Generator[*maths.Int] {
 }
 
 func (g *Generator[T]) Contains(t T) bool {
-	for ; g.len() == 0 || g.g.LTE(g.last(), t); g.getNext() {
+	for ; g.len() == 0 || g.g.LTE(g.Last(), t); g.getNext() {
 	}
 	return g.set[g.g.String(t)]
 }
@@ -188,7 +188,7 @@ func PrimeFactors(n int, p *Generator[int]) map[int]int {
 
 func Primes() *Generator[int] {
 	return NewGenerator(primesName, 2, newIntGeneratable(), func(g *Generator[int]) int {
-		for i := g.last() + 1; ; i++ {
+		for i := g.Last() + 1; ; i++ {
 			newPrime := true
 			for _, p := range g.values {
 				// Only need to check up to square root of i.
@@ -258,7 +258,7 @@ func IsPrime(n int, p *Generator[int]) bool {
 
 func BigPrimes() *Generator[*maths.Int] {
 	return NewGenerator(primesName, maths.NewInt(2), newBigGeneratable(), func(g *Generator[*maths.Int]) *maths.Int {
-		for i := g.last().Plus(maths.One()); ; i.PP() {
+		for i := g.Last().Plus(maths.One()); ; i.PP() {
 			newPrime := true
 			for _, p := range g.values {
 				if p.Times(p).GT(i) {
@@ -304,7 +304,7 @@ func ShapeNumberGenerator(n int) *Generator[int] {
 	i := 1
 	return NewGenerator(triName, 1, newIntGeneratable(), func(g *Generator[int]) int {
 		i += n - 2
-		return g.last() + i
+		return g.Last() + i
 	})
 }
 

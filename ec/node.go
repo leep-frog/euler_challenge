@@ -78,6 +78,7 @@ func Branches() map[string]*command.Node {
 		P66(),
 		// 67 is a bigger version of problem 18
 		// 68 was solved in python
+		P69(),
 		// END_LIST (needed for file_generator.go)
 	}
 
