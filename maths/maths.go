@@ -13,6 +13,45 @@ import (
 	"github.com/leep-frog/euler_challenge/parse"
 )
 
+type Operable[T any] interface {
+	Plus(T) T
+	Times(T) T
+	Div(T) (T, T)
+	Comparable[T]
+}
+
+type Comparable[T any] interface {
+	LT(T) bool
+}
+
+type Mathable interface {
+	~int
+}
+
+type mathableOperator[T Mathable] struct {
+	m T
+}
+
+func newMo[T Mathable](t T) *mathableOperator[T] {
+	return &mathableOperator[T]{t}
+}
+
+func (mo *mathableOperator[T]) Plus(that *mathableOperator[T]) *mathableOperator[T] {
+	return newMo[T](mo.m + that.m)
+}
+
+func (mo *mathableOperator[T]) Times(that *mathableOperator[T]) *mathableOperator[T] {
+	return newMo[T](mo.m * that.m)
+}
+
+func (mo *mathableOperator[T]) Div(that *mathableOperator[T]) (*mathableOperator[T], *mathableOperator[T]) {
+	return newMo[T](mo.m / that.m), newMo[T](mo.m % that.m)
+}
+
+func (mo *mathableOperator[T]) LT(that *mathableOperator[T]) bool {
+	return mo.m <= that.m
+}
+
 func Divisors(i int) []int {
 	var r []int
 	for j := 1; j*j <= i; j++ {
@@ -43,32 +82,6 @@ func Abs(a int) int {
 		return -a
 	}
 	return a
-}
-
-func Min(as ...int) int {
-	if len(as) == 0 {
-		return 0
-	}
-	min := as[0]
-	for _, a := range as {
-		if a < min {
-			min = a
-		}
-	}
-	return min
-}
-
-func Max(as ...int) int {
-	if len(as) == 0 {
-		return 0
-	}
-	max := as[0]
-	for _, a := range as {
-		if a > max {
-			max = a
-		}
-	}
-	return max
 }
 
 type Int struct {
@@ -463,19 +476,19 @@ func (i *Int) EQ(that *Int) bool {
 }
 
 func (i *Int) NEQ(that *Int) bool {
-	return !i.EQ(that)
+	return NEQ[*Int](i, that)
 }
 
 func (i *Int) GT(that *Int) bool {
-	return that.LT(i)
+	return GT[*Int](i, that)
 }
 
 func (i *Int) GTE(that *Int) bool {
-	return !i.LT(that)
+	return GTE[*Int](i, that)
 }
 
 func (i *Int) LTE(that *Int) bool {
-	return !i.GT(that)
+	return LTE[*Int](i, that)
 }
 
 // Magnitude less than.
@@ -719,92 +732,34 @@ func palindromeLeft(n int, cur, r *[]string) {
 	}
 }
 
-type Bester[T any] struct {
-	better func(T, T) bool
-	best   T
-	bestI  int
-
-	set bool
-}
-
-func (b *Bester[T]) Best() T {
-	return b.best
-}
-
-func (b *Bester[T]) BestIndex() int {
-	return b.bestI
-}
-
-func (b *Bester[T]) Check(v T) {
-	if !b.set || b.better(v, b.best) {
-		b.best = v
-		b.set = true
-	}
-}
-
-func (b *Bester[T]) IndexCheck(idx int, v T) {
-	if !b.set || b.better(v, b.best) {
-		b.best = v
-		b.bestI = idx
-		b.set = true
-	}
-}
-
-func Largest() *Bester[int] {
-	return &Bester[int]{
-		better: func(i, j int) bool {
-			return i > j
-		},
-	}
-}
-
-func BigLargest() *Bester[*Int] {
-	return &Bester[*Int]{
-		better: func(i, j *Int) bool {
-			return i.GT(j)
-		},
-	}
-}
-
-func Smallest() *Bester[int] {
-	return &Bester[int]{
-		better: func(i, j int) bool {
-			return i < j
-		},
-	}
-}
-
-type IncrementalBester struct {
-	b *Bester[int]
-	m map[int]int
-}
-
-func (ib *IncrementalBester) Best() int {
-	return ib.b.best
-}
-
-func (ib *IncrementalBester) BestIndex() int {
-	return ib.b.bestI
-}
-
-func (ib *IncrementalBester) Increment(v int) {
-	ib.m[v]++
-	ib.b.IndexCheck(v, ib.m[v])
-}
-
-func LargestIncremental() *IncrementalBester {
-	return &IncrementalBester{
-		b: Largest(),
-		m: map[int]int{},
-	}
-}
-
 func Digits(n int) []int {
 	var r []int
 	for v, i := strconv.Itoa(n), 0; i < len(v); i++ {
 		r = append(r, parse.Atoi(v[i:i+1]))
 	}
 	return r
+}
+
+func DigitMap(n int) map[int]int {
+	m := map[int]int{}
+	for v, i := strconv.Itoa(n), 0; i < len(v); i++ {
+		m[parse.Atoi(v[i:i+1])]++
+	}
+	return m
+}
+
+func Anagram(j, k int) bool {
+	jm := DigitMap(j)
+	km := DigitMap(k)
+	if len(jm) != len(km) {
+		return false
+	}
+	for k, v := range jm {
+		if v != km[k] {
+			return false
+		}
+	}
+	return true
 }
 
 func (b *Binary) Palindrome() bool {

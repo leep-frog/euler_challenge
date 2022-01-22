@@ -764,42 +764,42 @@ func TestIntsToInt(t *testing.T) {
 			{
 				name:  "Min value",
 				fName: "Min",
-				f:     Min,
+				f:     Min[int],
 				input: []int{0, 4, -2, 9},
 				want:  -2,
 			},
 			{
 				name:  "Min value with single input",
 				fName: "Min",
-				f:     Min,
+				f:     Min[int],
 				input: []int{9},
 				want:  9,
 			},
 			{
 				name:  "Min value with no input",
 				fName: "Min",
-				f:     Min,
+				f:     Min[int],
 				want:  0,
 			},
 			// Max
 			{
 				name:  "Max value",
 				fName: "Max",
-				f:     Max,
+				f:     Max[int],
 				input: []int{0, 4, -2, 9},
 				want:  9,
 			},
 			{
 				name:  "Max value with single input",
 				fName: "Max",
-				f:     Max,
+				f:     Max[int],
 				input: []int{3},
 				want:  3,
 			},
 			{
 				name:  "Max value with no input",
 				fName: "Max",
-				f:     Max,
+				f:     Max[int],
 				want:  0,
 			},
 		} {
