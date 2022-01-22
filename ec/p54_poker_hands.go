@@ -86,7 +86,7 @@ func newHand(sl []string) *hand {
 
 func (h *hand) flushScore() int {
 	suit := h.cards[0].suit
-	best := maths.Largest()
+	best := maths.Largest[int]()
 	for _, c := range h.cards {
 		if c.suit != suit {
 			return 0
@@ -112,7 +112,7 @@ func (h *hand) straightScore(flush bool) int {
 		}
 	}
 
-	best := maths.Largest()
+	best := maths.Largest[int]()
 	var count int
 	suitCounts := make([]int, len(suitMap))
 	for i := 14; i >= 1; i-- {
@@ -191,7 +191,7 @@ func (h *hand) pairs() int {
 }
 
 func (h *hand) highCard() int {
-	best := maths.Largest()
+	best := maths.Largest[int]()
 	for _, c := range h.cards {
 		best.Check(c.value)
 	}

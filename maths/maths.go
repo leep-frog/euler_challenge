@@ -16,7 +16,7 @@ import (
 type Operable[T any] interface {
 	Plus(T) T
 	Times(T) T
-	Div(T) (T, T)
+	//Div(T) (T, T)
 	Comparable[T]
 }
 
@@ -25,7 +25,7 @@ type Comparable[T any] interface {
 }
 
 type Mathable interface {
-	~int
+	~int | ~float64
 }
 
 type mathableOperator[T Mathable] struct {
@@ -44,9 +44,9 @@ func (mo *mathableOperator[T]) Times(that *mathableOperator[T]) *mathableOperato
 	return newMo[T](mo.m * that.m)
 }
 
-func (mo *mathableOperator[T]) Div(that *mathableOperator[T]) (*mathableOperator[T], *mathableOperator[T]) {
+/*func (mo *mathableOperator[T]) Div(that *mathableOperator[T]) (*mathableOperator[T], *mathableOperator[T]) {
 	return newMo[T](mo.m / that.m), newMo[T](mo.m % that.m)
-}
+}*/
 
 func (mo *mathableOperator[T]) LT(that *mathableOperator[T]) bool {
 	return mo.m <= that.m
