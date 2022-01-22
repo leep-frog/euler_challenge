@@ -27,8 +27,3 @@ func P70() *problem {
 		return
 	})
 }
-
-type factorMapNode struct {
-	numbers       map[int]bool
-	deeperFactors map[int]*factorMapNode
-}

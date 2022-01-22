@@ -95,6 +95,7 @@ func FileGenerator() *command.Node {
 				fmt.Sprintf("r \"(^.*END_LIST.*$)\" '\t\tP%d(),\n$1' node.go", num),
 				// Add tests to ec_test.go
 				testStr,
+				// TODO: remove comment start"r "/*"
 			}, nil
 		}),
 	)
