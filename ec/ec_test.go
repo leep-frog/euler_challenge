@@ -536,7 +536,7 @@ func TestAll(t *testing.T) {
 				"7273",
 			},
 		},
-		/*{
+		{
 			name: "p17 example",
 			args: []string{"17", "5"},
 			want: []string{"19"},
@@ -574,7 +574,7 @@ func TestAll(t *testing.T) {
 		},
 		{
 			name: "p13",
-			args: []string{"13"},
+			args: []string{"13", "p13.txt"},
 			want: []string{"5537376230"},
 		},
 		{

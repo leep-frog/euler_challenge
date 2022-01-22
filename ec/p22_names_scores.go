@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/leep-frog/command"
-	"github.com/leep-frog/euler_challenge/parse"
 )
 
 var (
@@ -32,21 +31,17 @@ func wordScore(s string) int {
 	return sum
 }
 
-func P22() *command.Node {
-	return command.SerialNodes(
-		command.Description("Sorts the names in the provided file and computes the total of the name scores"),
-		command.StringNode("FILE", ""),
-		command.ExecutorNode(func(o command.Output, d *command.Data) {
-			namesStr := parse.ReadFileLines(d.String("FILE"))[0]
+func P22() *problem {
+	return fileInputNode(22, func(lines []string, o command.Output) {
+		namesStr := lines[0]
 
-			names := strings.Split(strings.ReplaceAll(namesStr, `"`, ""), ",")
-			sort.Strings(names)
+		names := strings.Split(strings.ReplaceAll(namesStr, `"`, ""), ",")
+		sort.Strings(names)
 
-			var score int
-			for i, name := range names {
-				score += wordScore(name) * (i + 1)
-			}
-			o.Stdoutln(score)
-		}),
-	)
+		var score int
+		for i, name := range names {
+			score += wordScore(name) * (i + 1)
+		}
+		o.Stdoutln(score)
+	})
 }

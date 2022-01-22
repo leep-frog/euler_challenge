@@ -10,7 +10,7 @@ import (
 	"github.com/leep-frog/euler_challenge/parse"
 )
 
-func D22_JIC() *command.Node {
+func D22_JIC() *problem {
 	return command.SerialNodes(
 		command.Description(""),
 		command.ExecutorNode(func(o command.Output, d *command.Data) error {

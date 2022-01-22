@@ -5,37 +5,34 @@ import (
 	"github.com/leep-frog/euler_challenge/generator"
 )
 
-func P49() *command.Node {
-	return command.SerialNodes(
-		command.Description("https://projecteuler.net/problem=49"),
-		command.ExecutorNode(func(o command.Output, d *command.Data) {
-			primes := generator.Primes()
+func P49() *problem {
+	return noInputNode(49, func(o command.Output) {
+		primes := generator.Primes()
 
-			var fourDig []int
-			for p := primes.Next(); p < 10_000; p = primes.Next() {
-				if p >= 1000 {
-					fourDig = append(fourDig, p)
+		var fourDig []int
+		for p := primes.Next(); p < 10_000; p = primes.Next() {
+			if p >= 1000 {
+				fourDig = append(fourDig, p)
+			}
+		}
+
+		for i := 0; i < len(fourDig); i++ {
+			pi := fourDig[i]
+			for j := i + 1; j < len(fourDig) && 2*fourDig[j]-pi < 10_000; j++ {
+				pj := fourDig[j]
+				pk := 2*pj - pi
+				if !sameDigits(pi, pj) {
+					continue
+				}
+				if !sameDigits(pi, pk) {
+					continue
+				}
+				if generator.IsPrime(pk, primes) {
+					o.Stdoutf("%d%d%d", pi, pj, pk)
 				}
 			}
-
-			for i := 0; i < len(fourDig); i++ {
-				pi := fourDig[i]
-				for j := i + 1; j < len(fourDig) && 2*fourDig[j]-pi < 10_000; j++ {
-					pj := fourDig[j]
-					pk := 2*pj - pi
-					if !sameDigits(pi, pj) {
-						continue
-					}
-					if !sameDigits(pi, pk) {
-						continue
-					}
-					if generator.IsPrime(pk, primes) {
-						o.Stdoutf("%d%d%d", pi, pj, pk)
-					}
-				}
-			}
-		}),
-	)
+		}
+	})
 }
 
 func sameDigits(this, that int) bool {

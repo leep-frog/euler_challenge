@@ -7,25 +7,20 @@ import (
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/maths"
-	"github.com/leep-frog/euler_challenge/parse"
 )
 
-func P54() *command.Node {
-	return command.SerialNodes(
-		command.Description("https://projecteuler.net/problem=54"),
-		command.StringNode("FILE", ""),
-		command.ExecutorNode(func(o command.Output, d *command.Data) {
-			var count int
-			for _, line := range parse.ReadFileLines(d.String("FILE")) {
-				cards := strings.Split(line, " ")
-				this, that := newHand(cards[:5]), newHand(cards[5:])
-				if this.beats(that) {
-					count++
-				}
+func P54() *problem {
+	return fileInputNode(54, func(lines []string, o command.Output) {
+		var count int
+		for _, line := range lines {
+			cards := strings.Split(line, " ")
+			this, that := newHand(cards[:5]), newHand(cards[5:])
+			if this.beats(that) {
+				count++
 			}
-			o.Stdoutln(count)
-		}),
-	)
+		}
+		o.Stdoutln(count)
+	})
 }
 
 var (

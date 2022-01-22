@@ -21,8 +21,8 @@ func FileGenerator() *command.Node {
 			command.BoolFlag(x, 'x', "If set, include example stuff in tests"),
 			command.BoolFlag(ni, 'n', "If set, no input"),
 		),
-		command.IntNode(pn, "Problem number", command.IntPositive()),
-		command.StringNode(fs, "suffix for file name"),
+		command.Arg[int](pn, "Problem number", command.Positive[int]()),
+		command.Arg[string](fs, "suffix for file name"),
 		command.ExecutableNode(func(o command.Output, d *command.Data) ([]string, error) {
 			includeExample := d.Bool(x)
 			fileInput := d.Bool(fi)
@@ -47,7 +47,7 @@ func FileGenerator() *command.Node {
 			o.Stdout(body)*/
 
 			arg := "    command.IntNode(N, \"\", command.IntPositive()),"
-			loader := "      n := d.Int(N)"
+			loader := "      n := n"
 			printer := "      o.Stdoutln(n)"
 			if fileInput {
 				arg = "    command.StringNode(\"FILE\", \"\"),"
@@ -71,7 +71,7 @@ func FileGenerator() *command.Node {
 			template = append(template,
 				")",
 				"",
-				fmt.Sprintf("func P%d() *command.Node {", num),
+				fmt.Sprintf("func P%d() *problem {", num),
 				"  return command.SerialNodes(",
 				fmt.Sprintf("    command.Description(\"https://projecteuler.net/problem=%d\"),", num),
 			)

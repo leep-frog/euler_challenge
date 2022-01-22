@@ -11,7 +11,7 @@ func main() {
 }
 
 // Separate method for testing purposes.
-func node() *command.Node {
+func node() *problem {
 	return command.BranchNode(map[string]*command.Node{
 		"1":  eulerchallenge.P1(),
 		"2":  eulerchallenge.P2(),

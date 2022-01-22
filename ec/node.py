@@ -64,3 +64,8 @@ def next_cycle(remaining, sum, last, prev, cur):
       continue
     rs += has_cycle
   return rs
+
+def primes(n):
+  primes = [2, 3]
+  while primes[-1] < 1_000_000:
+    

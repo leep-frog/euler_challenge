@@ -38,38 +38,32 @@ var (
 	}
 )
 
-func P17() *command.Node {
-	return command.SerialNodes(
-		command.Description("Sum the letter counts of the numbers up to N"),
-		command.IntNode(N, "", command.IntPositive()),
-		command.ExecutorNode(func(o command.Output, d *command.Data) {
-			n := d.Int(N)
-
-			var counts []string
-			for i := 1; i < 100; i++ {
-				if i < 20 {
-					counts = append(counts, letterNumberMap[i])
-				} else {
-					counts = append(counts, twoDigits[i/10]+letterNumberMap[i%10])
-				}
+func P17() *problem {
+	return intInputNode(17, func(o command.Output, n int) {
+		var counts []string
+		for i := 1; i < 100; i++ {
+			if i < 20 {
+				counts = append(counts, letterNumberMap[i])
+			} else {
+				counts = append(counts, twoDigits[i/10]+letterNumberMap[i%10])
 			}
+		}
 
-			for i := 1; i <= 9; i++ {
-				curHun := letterNumberMap[i] + "hundred"
-				counts = append(counts, curHun)
-				for i := 0; i < 99; i++ {
-					counts = append(counts, curHun+"and"+counts[i])
-				}
+		for i := 1; i <= 9; i++ {
+			curHun := letterNumberMap[i] + "hundred"
+			counts = append(counts, curHun)
+			for i := 0; i < 99; i++ {
+				counts = append(counts, curHun+"and"+counts[i])
 			}
+		}
 
-			counts = append(counts, "onethousand")
+		counts = append(counts, "onethousand")
 
-			var sum int
-			for i := 0; i < n; i++ {
-				sum += len(counts[i])
-			}
+		var sum int
+		for i := 0; i < n; i++ {
+			sum += len(counts[i])
+		}
 
-			o.Stdoutln(sum)
-		}),
-	)
+		o.Stdoutln(sum)
+	})
 }

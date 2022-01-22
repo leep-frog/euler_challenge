@@ -4,16 +4,13 @@ import (
 	"github.com/leep-frog/command"
 )
 
-func P31() *command.Node {
-	return command.SerialNodes(
-		command.Description("https://projecteuler.net/problem=31"),
-		command.ExecutorNode(func(o command.Output, d *command.Data) {
-			coins := []int{
-				1, 2, 5, 10, 20, 50, 100, 200,
-			}
-			o.Stdoutln(try(coins, 0, 0))
-		}),
-	)
+func P31() *problem {
+	return noInputNode(31, func(o command.Output) {
+		coins := []int{
+			1, 2, 5, 10, 20, 50, 100, 200,
+		}
+		o.Stdoutln(try(coins, 0, 0))
+	})
 }
 
 func try(coins []int, index, curSum int) int {

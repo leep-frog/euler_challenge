@@ -1,77 +1,141 @@
 package eulerchallenge
 
-import "github.com/leep-frog/command"
+import (
+	"fmt"
+	"log"
+	"path/filepath"
+
+	"github.com/leep-frog/command"
+)
 
 func Branches() map[string]*command.Node {
-	return map[string]*command.Node{
+	problems := []*problem{
+		P1(),
+		P2(),
+		P3(),
+		P4(),
+		P5(),
+		P6(),
+		P7(),
+		P8(),
+		P9(),
+		P10(),
+		P11(),
+		P12(),
+		P13(),
+		P14(),
+		P15(),
+		P16(),
+		P17(),
+		P18(),
+		P19(),
+		P20(),
+		P21(),
+		P22(),
+		P23(),
+		P24(),
+		P25(),
+		P26(),
+		P27(),
+		P28(),
+		P29(),
+		P30(),
+		P31(),
+		P32(),
+		P33(),
+		P34(),
+		P35(),
+		P36(),
+		P37(),
+		P38(),
+		P39(),
+		P40(),
+		P41(),
+		P42(),
+		P43(),
+		P44(),
+		P45(),
+		P46(),
+		P47(),
+		P48(),
+		P49(),
+		P50(),
+		P51(),
+		P52(),
+		P53(),
+		P54(),
+		P55(),
+		P56(),
+		P57(),
+		P58(),
+		P59(),
+		P60(),
+		P61(),
+		P62(),
+		P63(),
+		P64(),
+		P65(),
+		P66(),
+	}
+
+	m := map[string]*command.Node{
 		"fg": FileGenerator(),
-		"1":  P1(),
-		"2":  P2(),
-		"3":  P3(),
-		"4":  P4(),
-		"5":  P5(),
-		"6":  P6(),
-		"7":  P7(),
-		"8":  P8(),
-		"9":  P9(),
-		"10": P10(),
-		"11": P11(),
-		"12": P12(),
-		"13": P13(),
-		"14": P14(),
-		"15": P15(),
-		"16": P16(),
-		"17": P17(),
-		"18": P18(),
-		"19": P19(),
-		"20": P20(),
-		"21": P21(),
-		"22": P22(),
-		"23": P23(),
-		"24": P24(),
-		"25": P25(),
-		"26": P26(),
-		"27": P27(),
-		"28": P28(),
-		"29": P29(),
-		"30": P30(),
-		"31": P31(),
-		"32": P32(),
-		"33": P33(),
-		"34": P34(),
-		"35": P35(),
-		"36": P36(),
-		"37": P37(),
-		"38": P38(),
-		"39": P39(),
-		"40": P40(),
-		"41": P41(),
-		"42": P42(),
-		"43": P43(),
-		"44": P44(),
-		"45": P45(),
-		"46": P46(),
-		"47": P47(),
-		"48": P48(),
-		"49": P49(),
-		"50": P50(),
-		"51": P51(),
-		"52": P52(),
-		"53": P53(),
-		"54": P54(),
-		"55": P55(),
-		"56": P56(),
-		"57": P57(),
-		"58": P58(),
-		"59": P59(),
-		"60": P60(),
-		"61": P61(),
-		"62": P62(),
-		"63": P63(),
-		"64": P64(),
-		"65": P65(),
-		"66": P66(),
-		// TODO: make classes for each type
-		// END_LIST (needed for file_generator.go)
+	}
+	for i, p := range problems {
+		pStr := fmt.Sprintf("%d", p.num)
+		if _, ok := m[pStr]; ok {
+			log.Fatalf("Duplicate problem entry: %d, %d", i, p.num)
+		}
+		m[pStr] = p.n
+	}
+	return m
+}
+
+func descNode(problem int) command.Processor {
+	return command.Descriptionf("https://projecteuler.net/problem=%d", problem)
+}
+
+func intInputNode(num int, f func(command.Output, int)) *problem {
+	return &problem{
+		num: num,
+		n: command.SerialNodes(
+			descNode(num),
+			command.Arg[int](N, "", command.Positive[int]()),
+			command.ExecutorNode(func(o command.Output, d *command.Data) {
+				f(o, d.Int(N))
+			}),
+		),
+	}
+}
+
+type problem struct {
+	num int
+	n   *command.Node
+}
+
+func fileInputNode(num int, f func([]string, command.Output)) *problem {
+	return &problem{
+		num: num,
+		n: command.SerialNodes(
+			descNode(num),
+			command.FileContents("FILE", "", command.NewTransformer[string](func(s string) (string, error) {
+				return filepath.Join("input", s), nil
+			}, false)),
+			command.ExecutorNode(func(o command.Output, d *command.Data) {
+				f(d.StringList("FILE"), o)
+			}),
+		),
+	}
+}
+
+func noInputNode(num int, f func(command.Output)) *problem {
+	return &problem{
+		num: num,
+		n: command.SerialNodes(
+			descNode(num),
+			command.ExecutorNode(func(o command.Output, d *command.Data) {
+				f(o)
+			}),
+		),
 	}
 }

@@ -16,19 +16,15 @@ Which is
  =
 */
 
-func P15() *command.Node {
-	return command.SerialNodes(
-		command.Description("Find the number of unique lattice paths for an n x n grid"),
-		command.IntNode(N, "", command.IntPositive()),
-		command.ExecutorNode(func(o command.Output, d *command.Data) {
-			n := maths.NewInt(int64(d.Int(N)))
+func P15() *problem {
+	return intInputNode(15, func(o command.Output, ni int) {
+		n := maths.NewInt(int64(ni))
 
-			var top, bottom, i = maths.NewInt(1), maths.NewInt(1), maths.NewInt(1)
-			for ; i.LTE(n); i.PP() {
-				top = top.Times(i.Plus(n))
-				bottom = bottom.Times(i)
-			}
-			o.Stdoutln(top.Div(bottom))
-		}),
-	)
+		var top, bottom, i = maths.NewInt(1), maths.NewInt(1), maths.NewInt(1)
+		for ; i.LTE(n); i.PP() {
+			top = top.Times(i.Plus(n))
+			bottom = bottom.Times(i)
+		}
+		o.Stdoutln(top.Div(bottom))
+	})
 }

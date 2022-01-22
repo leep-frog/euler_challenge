@@ -9,61 +9,55 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
-func P51() *command.Node {
-	return command.SerialNodes(
-		command.Description("https://projecteuler.net/problem=51"),
-		command.IntNode(N, "", command.IntPositive()),
-		command.ExecutorNode(func(o command.Output, d *command.Data) {
-			n := d.Int(N)
-
-			primes := generator.Primes()
-			m := map[string]map[int]bool{}
-			for pn := primes.Next(); ; pn = primes.Next() {
-				if pn < 10 {
+func P51() *problem {
+	return intInputNode(51, func(o command.Output, n int) {
+		primes := generator.Primes()
+		m := map[string]map[int]bool{}
+		for pn := primes.Next(); ; pn = primes.Next() {
+			if pn < 10 {
+				continue
+			}
+			checked := map[int]bool{}
+			digits := maths.Digits(pn)
+			for _, d := range digits {
+				if checked[d] {
 					continue
 				}
-				checked := map[int]bool{}
-				digits := maths.Digits(pn)
-				for _, d := range digits {
-					if checked[d] {
-						continue
+				checked[d] = true
+
+				var positions []int
+				for i, d2 := range digits {
+					if d2 == d {
+						positions = append(positions, i)
 					}
-					checked[d] = true
+				}
 
-					var positions []int
-					for i, d2 := range digits {
-						if d2 == d {
-							positions = append(positions, i)
+				pnStr := strings.Split(strconv.Itoa(pn), "")
+				cp := make([]string, len(pnStr))
+				copy(cp, pnStr)
+				for _, s := range maths.Sets(positions) {
+					for _, pos := range s {
+						pnStr[pos] = "_"
+					}
+					coded := strings.Join(pnStr, "")
+					if m[coded] == nil {
+						m[coded] = map[int]bool{}
+					}
+					m[coded][d] = true
+					if len(m[coded]) >= n {
+						min := 10
+						for k := range m[coded] {
+							min = maths.Min(min, k)
 						}
+						o.Stdoutln(coded, strings.ReplaceAll(coded, "_", strconv.Itoa(min)))
+						return
 					}
 
-					pnStr := strings.Split(strconv.Itoa(pn), "")
-					cp := make([]string, len(pnStr))
-					copy(cp, pnStr)
-					for _, s := range maths.Sets(positions) {
-						for _, pos := range s {
-							pnStr[pos] = "_"
-						}
-						coded := strings.Join(pnStr, "")
-						if m[coded] == nil {
-							m[coded] = map[int]bool{}
-						}
-						m[coded][d] = true
-						if len(m[coded]) >= n {
-							min := 10
-							for k := range m[coded] {
-								min = maths.Min(min, k)
-							}
-							o.Stdoutln(coded, strings.ReplaceAll(coded, "_", strconv.Itoa(min)))
-							return
-						}
-
-						for _, pos := range s {
-							pnStr[pos] = cp[pos]
-						}
+					for _, pos := range s {
+						pnStr[pos] = cp[pos]
 					}
 				}
 			}
-		}),
-	)
+		}
+	})
 }

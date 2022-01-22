@@ -4,35 +4,31 @@ import (
 	"github.com/leep-frog/command"
 )
 
-func P14() *command.Node {
-	return command.SerialNodes(
-		command.Description("Find the longest Collatz series under N"),
-		command.IntNode(N, "", command.IntPositive()),
-		command.ExecutorNode(func(o command.Output, d *command.Data) {
-			found := map[int]int{}
-			n := d.Int(N)
-			var max, maxI int
-			for i := 2; i < n; i++ {
-				count := 1
-				for j := i; j != 1; {
-					if j%2 == 0 {
-						j /= 2
-					} else {
-						j = 3*j + 1
-					}
+func P14() *problem {
+	return intInputNode(14, func(o command.Output, n int) {
+		found := map[int]int{}
+		var max, maxI int
+		for i := 2; i < n; i++ {
+			count := 1
+			for j := i; j != 1; {
+				if j%2 == 0 {
+					j /= 2
+				} else {
+					j = 3*j + 1
+				}
 
-					if v, ok := found[j]; ok {
-						count += v
-						break
-					}
-					count++
+				if v, ok := found[j]; ok {
+					count += v
+					break
 				}
-				found[i] = count
-				if count > max {
-					max = count
-					maxI = i
-				}
+				count++
 			}
-			o.Stdoutln(maxI)
-		}))
+			found[i] = count
+			if count > max {
+				max = count
+				maxI = i
+			}
+		}
+		o.Stdoutln(maxI)
+	})
 }

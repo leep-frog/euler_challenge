@@ -16,13 +16,8 @@ type pairCtx struct {
 	edges    map[int]map[int]bool
 }
 
-func P60() *command.Node {
-	return command.SerialNodes(
-		command.Description("https://projecteuler.net/problem=60"),
-		command.IntNode(N, "", command.IntPositive()),
-		command.ExecutorNode(func(o command.Output, d *command.Data) {
-			n := d.Int(N)
-
+func P60() *problem {
+	return intInputNode(60, func(o command.Output, n int) {
 			// Get all pairs and then find cycle!
 			p := generator.Primes()
 			pairs := map[int][]*primePair{}
@@ -48,8 +43,7 @@ func P60() *command.Node {
 			ctx := &pairCtx{pairs, edges}
 			path := bfs.CompleteSets(primes, ctx, n)
 			o.Stdoutln(maths.SumType(path), path)
-		}),
-	)
+		})
 }
 
 type primePair struct {

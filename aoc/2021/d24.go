@@ -12,7 +12,7 @@ import (
 	"github.com/leep-frog/euler_challenge/parse"
 )
 
-func D24() *command.Node {
+func D24() *problem {
 	return command.SerialNodes(
 		command.Description(""),
 		command.ExecutorNode(func(o command.Output, d *command.Data) error {

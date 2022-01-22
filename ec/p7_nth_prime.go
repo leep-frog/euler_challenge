@@ -5,12 +5,8 @@ import (
 	"github.com/leep-frog/euler_challenge/generator"
 )
 
-func P7() *command.Node {
-	return command.SerialNodes(
-		command.Description("Find the Nth prime number"),
-		command.IntNode(N, "", command.IntPositive()),
-		command.ExecutorNode(func(o command.Output, d *command.Data) {
-			o.Stdoutln(generator.Primes().Nth(d.Int(N) - 1))
-		}),
-	)
+func P7() *problem {
+	return intInputNode(7, func(o command.Output, n int) {
+		o.Stdoutln(generator.Primes().Nth(n - 1))
+	})
 }

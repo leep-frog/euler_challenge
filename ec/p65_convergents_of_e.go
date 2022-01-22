@@ -6,13 +6,15 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
-func P65() *command.Node {
-	return command.SerialNodes(
+func P65() *problem {
+	return &problem{
+		num: 65,
+		n: command.SerialNodes(
 		command.Description("https://projecteuler.net/problem=65"),
 		command.NewFlagNode(
 			command.BoolFlag("two", 't', "find the convergence for the square root of 2"),
 		),
-		command.IntNode(N, "", command.IntPositive()),
+		command.Arg[int](N, "", command.Positive[int]()),
 		command.ExecutorNode(func(o command.Output, d *command.Data) {
 			n := d.Int(N)
 
@@ -40,5 +42,6 @@ func P65() *command.Node {
 			}
 			o.Stdoutln(f.N.DigitSum())
 		}),
-	)
+	),
+}
 }

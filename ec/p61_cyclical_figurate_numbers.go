@@ -9,13 +9,8 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
-func P61() *command.Node {
-	return command.SerialNodes(
-		command.Description("https://projecteuler.net/problem=61"),
-		command.IntNode(N, "", command.IntPositive()),
-		command.ExecutorNode(func(o command.Output, d *command.Data) {
-			n := d.Int(N)
-
+func P61() *problem {
+	return intInputNode(61, func(o command.Output, n int) {
 			generators := map[int]*generator.Generator[int]{}
 			startMap := map[int]int{}
 			for i := 1; i < n; i++ {
@@ -41,8 +36,7 @@ func P61() *command.Node {
 			}
 			path, _ := bfs.ShortestPathNonUnique(initStates, startMap)
 			o.Stdoutln(maths.SumType(path), maths.Reverse(path))
-		}),
-	)
+		})
 }
 
 type cycFigNum struct {

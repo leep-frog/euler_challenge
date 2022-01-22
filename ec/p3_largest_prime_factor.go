@@ -7,21 +7,17 @@ import (
 
 // TODO: move all of these to helper directory
 
-func P3() *command.Node {
-	return command.SerialNodes(
-		command.Description("Find the largest prime factor of N"),
-		command.IntNode(N, "", command.IntPositive()),
-		command.ExecutorNode(func(o command.Output, d *command.Data) {
-			factors := generator.PrimeFactors(d.Int(N), generator.Primes())
+func P3() *problem {
+	return intInputNode(3, func(o command.Output, n int) {
+		factors := generator.PrimeFactors(n, generator.Primes())
 
-			max := 0
-			for f := range factors {
-				if f > max {
-					max = f
-				}
+		max := 0
+		for f := range factors {
+			if f > max {
+				max = f
 			}
+		}
 
-			o.Stdoutln(max)
-		}),
-	)
+		o.Stdoutln(max)
+	})
 }

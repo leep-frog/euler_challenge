@@ -11,7 +11,7 @@ import (
 	"github.com/leep-frog/euler_challenge/point"
 )
 
-func D19() *command.Node {
+func D19() *problem {
 	return command.SerialNodes(
 		command.Description(""),
 		command.ExecutorNode(func(o command.Output, d *command.Data) error {

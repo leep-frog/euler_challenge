@@ -5,13 +5,8 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
-func P20() *command.Node {
-	return command.SerialNodes(
-		command.Description("Find the sum of the digits of n!"),
-		command.IntNode(N, "", command.IntPositive()),
-		command.ExecutorNode(func(o command.Output, d *command.Data) {
-			n := d.Int(N)
-			o.Stdoutln(maths.Factorial(n).DigitSum())
-		}),
-	)
+func P20() *problem {
+	return intInputNode(20, func(o command.Output, n int) {
+		o.Stdoutln(maths.Factorial(n).DigitSum())
+	})
 }

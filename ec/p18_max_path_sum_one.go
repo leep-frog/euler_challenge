@@ -14,13 +14,8 @@ var (
 	maxValue = 100
 )
 
-func P18() *command.Node {
-	return command.SerialNodes(
-		command.Description(""),
-		command.StringNode("FILE", ""),
-		command.ExecutorNode(func(o command.Output, d *command.Data) {
-			lines := parse.ReadFileLines(d.String("FILE"))
-
+func P18() *problem {
+	return fileInputNode(18, func(lines []string, o command.Output) {
 			var tower [][]int
 			for _, line := range lines {
 				var row []int
@@ -35,8 +30,7 @@ func P18() *command.Node {
 				o.Stdoutln(p)
 			}
 			o.Stdoutln((maxValue * len(tower)) - dist)
-		}),
-	)
+		})
 }
 
 func check(tower [][]int, row, col, sum int) int {

@@ -19,7 +19,7 @@ var (
 	moveCost = []int{1, 10, 100, 1000}
 )
 
-func D23() *command.Node {
+func D23() *problem {
 	return command.SerialNodes(
 		command.Description(""),
 		command.ExecutorNode(func(o command.Output, d *command.Data) error {

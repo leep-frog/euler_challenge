@@ -14,7 +14,7 @@ const (
 	rightCuc = 2
 )
 
-func D25() *command.Node {
+func D25() *problem {
 	return command.SerialNodes(
 		command.Description(""),
 		command.ExecutorNode(func(o command.Output, d *command.Data) error {

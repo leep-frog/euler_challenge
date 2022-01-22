@@ -4,7 +4,7 @@ import (
 	"github.com/leep-frog/command"
 )
 
-func D21() *command.Node {
+func D21() *problem {
 	return command.SerialNodes(
 		command.IntNode("ONE_POS", "Player one's starting position"),
 		command.IntNode("TWO_POS", "Player two's starting position"),
@@ -100,7 +100,7 @@ func oneWins(oneScore, twoScore, onePos, twoPos int, onesTurn bool) (int, int) {
 
 }
 
-func D21_2() *command.Node {
+func D21_2() *problem {
 	return command.SerialNodes(
 		command.IntNode("ONE_POS", "Player one's starting position"),
 		command.IntNode("TWO_POS", "Player two's starting position"),

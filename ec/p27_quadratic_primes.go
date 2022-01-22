@@ -5,39 +5,33 @@ import (
 	"github.com/leep-frog/euler_challenge/generator"
 )
 
-func P27() *command.Node {
-	return command.SerialNodes(
-		command.Description("Find the quadratic that produces the largest set of consecutive primes"),
-		command.IntNode(N, "", command.IntPositive()),
-		command.ExecutorNode(func(o command.Output, d *command.Data) {
-			n := d.Int(N)
+func P27() *problem {
+	return intInputNode(27, func(o command.Output, n int) {
+		p := generator.Primes()
 
-			p := generator.Primes()
+		var max, maxI int
+		for a := -n + 1; a < n; a++ {
+			for b := -n; b <= n; b++ {
+				// Try positive direction
+				k := 0
 
-			var max, maxI int
-			for a := -n + 1; a < n; a++ {
-				for b := -n; b <= n; b++ {
-					// Try positive direction
-					k := 0
+				for ; generator.IsPrime(k*k+a*k+b, p); k++ {
+				}
+				if k > max {
+					max = k
+					maxI = a * b
+				}
 
-					for ; generator.IsPrime(k*k+a*k+b, p); k++ {
-					}
-					if k > max {
-						max = k
-						maxI = a * b
-					}
-
-					// Try negative direction
-					k = 0
-					for ; generator.IsPrime(k*k+a*k+b, p); k-- {
-					}
-					if k > max {
-						max = k
-						maxI = a * b
-					}
+				// Try negative direction
+				k = 0
+				for ; generator.IsPrime(k*k+a*k+b, p); k-- {
+				}
+				if k > max {
+					max = k
+					maxI = a * b
 				}
 			}
-			o.Stdoutln(maxI)
-		}),
-	)
+		}
+		o.Stdoutln(maxI)
+	})
 }
