@@ -29,23 +29,6 @@ func FileGenerator() *command.Node {
 			num := d.Int(pn)
 			noInput := d.Bool(ni)
 
-			/*resp, err := http.Get("https://projecteuler.net/minimal=38")
-			if err != nil {
-				return nil, o.Stderrf("failed to get problem web page: %v", err)
-			}
-
-			bodyBytes, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				return nil, o.Stderrf("failed to read body: %v", err)
-			}
-			body := string(bodyBytes)
-
-			if resp.StatusCode != 200 {
-				return nil, o.Stderrf("response has status code (%d):\n%v", resp.StatusCode, body)
-			}
-
-			o.Stdout(body)*/
-
 			arg := "    command.IntNode(N, \"\", command.IntPositive()),"
 			loader := "      n := n"
 			printer := "      o.Stdoutln(n)"
@@ -62,34 +45,29 @@ func FileGenerator() *command.Node {
 				"",
 				"import (",
 				"  \"github.com/leep-frog/command\"",
-			}
-
-			if fileInput {
-				template = append(template, "  \"github.com/leep-frog/euler_challenge/parse\"")
-			}
-
-			template = append(template,
 				")",
 				"",
 				fmt.Sprintf("func P%d() *problem {", num),
-				"  return command.SerialNodes(",
-				fmt.Sprintf("    command.Description(\"https://projecteuler.net/problem=%d\"),", num),
-			)
+			}
 
-			if !noInput {
+			if fileInput {
 				template = append(template,
-					arg,
-					"    command.ExecutorNode(func(o command.Output, d *command.Data) {",
-					loader,
-					printer,
+					fmt.Sprintf("return fileInputNode(%d, func(lines []string, o command.Output) {", num),
+					"o.Stdoutln(lines)",
+				)
+			} else if noInput {
+				template = append(template,
+					fmt.Sprintf("return fileInputNode(%d, func(o command.Output) {", num),
 				)
 			} else {
-				template = append(template, "    command.ExecutorNode(func(o command.Output, d *command.Data) {")
+				template = append(template,
+					fmt.Sprintf("  return intInputNode(%d, func(o command.Output, n int) {", num),
+					"    o.Stdoutln(n)",
+				)
 			}
 
 			template = append(template,
-				"    }),",
-				"  )",
+				"  })",
 				"}",
 			)
 
@@ -125,7 +103,7 @@ func FileGenerator() *command.Node {
 			}
 			return []string{
 				// Add line to node.go
-				fmt.Sprintf("r \"(^.*END_LIST.*$)\" '\t\t\"%d\": P%d(),\n$1' node.go", num, num),
+				fmt.Sprintf("r \"(^.*END_LIST.*$)\" '\t\tP%d(),\n$1' node.go", num, num),
 				// Add tests to ec_test.go
 				testStr,
 			}, nil
