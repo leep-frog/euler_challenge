@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/leep-frog/euler_challenge/maths"
+	"github.com/leep-frog/euler_challenge/generator"
 )
 
 type Fraction[T any] struct {
@@ -11,7 +12,7 @@ type Fraction[T any] struct {
 	D T
 	plus func(T, T) T
 	times func(T, T) T
-	leq func(T, T) bool
+	lt func(T, T) bool
 }
 
 func New(n, d int) *Fraction[int] {
@@ -20,7 +21,7 @@ func New(n, d int) *Fraction[int] {
 		d,
 		func(a, b int) int { return a + b },
 		func(a, b int) int { return a * b },
-		func(a, b int) bool { return a <= b },
+		func(a, b int) bool { return a < b },
 	}
 }
 
@@ -30,7 +31,7 @@ func NewBig(n, d *maths.Int) *Fraction[*maths.Int] {
 		d,
 		func(a, b *maths.Int) *maths.Int { return a.Plus(b) },
 		func(a, b *maths.Int) *maths.Int { return a.Times(b) },
-		func(a, b *maths.Int) bool { return a.LTE(b) },
+		func(a, b *maths.Int) bool { return a.LT(b) },
 	}
 }
 
@@ -51,17 +52,17 @@ func (f *Fraction[T]) String() string {
 }
 
 func (f *Fraction[T]) Copy() *Fraction[T] {
-	return &Fraction[T]{f.N, f.D, f.plus, f.times, f.leq}
+	return &Fraction[T]{f.N, f.D, f.plus, f.times, f.lt}
 }
 
-func (f *Fraction[T]) LEQ(that *Fraction[T]) bool {
-	return f.leq(f.times(f.N, that.D), f.times(f.D, that.N))
+func (f *Fraction[T]) LT(that *Fraction[T]) bool {
+	return f.lt(f.times(f.N, that.D), f.times(f.D, that.N))
 }
 
 // Return a fraction to allow for chaining.
-/*func (f *Fraction[T]) Simplify(p *generator.Generator[T]) *Fraction[T] {
-	nfs := generator.PrimeFactors(f.N, p)	
-	dfs := generator.PrimeFactors(f.D, p)	
+func Simplify(n, d int, p *generator.Generator[int]) *Fraction[int] {
+	nfs := generator.PrimeFactors(n, p)	
+	dfs := generator.PrimeFactors(d, p)	
 
 	for k, v := range nfs {
 		if dv, ok := dfs[k]; ok {
@@ -82,6 +83,5 @@ func (f *Fraction[T]) LEQ(that *Fraction[T]) bool {
 			newD *= k
 		}
 	}
-	f.N, f.D = newN, newD
-	return f
-}*/
+	return New(newN, newD)
+}

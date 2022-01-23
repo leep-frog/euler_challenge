@@ -3,6 +3,7 @@ package eulerchallenge
 import (
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/fraction"
+	"github.com/leep-frog/euler_challenge/maths"
 )
 
 func P71() *problem {
@@ -13,7 +14,7 @@ func P71() *problem {
 				continue
 			}
 			newF := fraction.New(3*den/7, den)
-			if best.LEQ(newF) {
+			if maths.LTE(best, newF) {
 				best = newF
 			}
 		}

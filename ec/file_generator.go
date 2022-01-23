@@ -91,7 +91,7 @@ func FileGenerator() *command.Node {
 				testStr = fmt.Sprintf("r \"(^.*TEST_START.*)$\" '$1\n%s\n%s' ec_test.go", test, exTest)
 			}
 			return []string{
-				`r "\/\*\{" "{" ec_test.go`
+				`r "\/\*\{" "{" ec_test.go`,
 				// Add line to node.go
 				fmt.Sprintf("r \"(^.*END_LIST.*$)\" '\t\tP%d(),\n$1' node.go", num),
 				// Add tests to ec_test.go
