@@ -11,11 +11,6 @@ func P76() *problem {
 	})
 }
 
-type node76 struct {
-	remaining int
-	value     int
-}
-
 func dfs76(remaining, value int) int {
 	if remaining == 0 {
 		return 1
