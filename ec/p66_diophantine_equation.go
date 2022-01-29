@@ -8,7 +8,7 @@ import (
 func P66() *problem {
 	// See https://mathworld.wolfram.com/PellEquation.html for math info
 	return intInputNode(66, func(o command.Output, n int) {
-		best := maths.LargestT[*maths.Int]()
+		best := maths.LargestT[int, *maths.Int]()
 		for D := 2; D <= n; D++ {
 			start, period := maths.SquareRootPeriod(D)
 			if len(period) == 0 {

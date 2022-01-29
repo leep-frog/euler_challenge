@@ -25,7 +25,7 @@ type Comparable[T any] interface {
 }
 
 type Mathable interface {
-	~int | ~float64
+	~int | ~float64 | ~int64
 }
 
 type mathableOperator[T Mathable] struct {
@@ -77,7 +77,7 @@ func Sqrt(i int) int {
 	return int(math.Sqrt(float64(i)))
 }
 
-func Abs(a int) int {
+func Abs[T Mathable](a T) T {
 	if a < 0 {
 		return -a
 	}
@@ -259,10 +259,18 @@ func (i *Int) get(spot int) uint64 {
 	return i.parts[spot]
 }
 
-func SumInts(is ...int) int {
-	var s int
-	for _, i := range is {
-		s += i
+func Set[T comparable](ts ...T) map[T]bool {
+	m := map[T]bool{}
+	for _, t := range ts {
+		m[t] = true
+	}
+	return m
+}
+
+func SumSys[T Mathable](ts ...T) T {
+	var s T
+	for _, t := range ts {
+		s += t
 	}
 	return s
 }
@@ -350,14 +358,6 @@ func permutations(m []string, remaining map[string]int, r map[string]bool, cur [
 		remaining[p]++
 		cur = (cur)[:len(cur)-1]
 	}
-}
-
-func SumI(is ...int64) *Int {
-	var ints []*Int
-	for _, i := range is {
-		ints = append(ints, NewInt(i))
-	}
-	return Sum(ints...)
 }
 
 func (i *Int) Palindrome() bool {
@@ -655,6 +655,7 @@ func BigPow(a, b int) *Int {
 	return r
 }
 
+// Range returns an empty int slice of length n
 func Range(n int) []int {
 	return make([]int, n)
 }
@@ -824,7 +825,7 @@ func SumType[T Intable](ts []T) int {
 }
 
 // TODO: map package
-func Set[K1, K2 comparable, V any](m map[K1]map[K2]V, k1 K1, k2 K2, v V) {
+func Insert[K1, K2 comparable, V any](m map[K1]map[K2]V, k1 K1, k2 K2, v V) {
 	if m[k1] == nil {
 		m[k1] = map[K2]V{}
 	}
@@ -998,7 +999,7 @@ func SquareRootPeriod(n int) (int, []int) {
 	den := start
 	var as []int
 	for !remainder[num][den] && num != 0 {
-		Set(remainder, num, den, true)
+		Insert(remainder, num, den, true)
 		tmpDen := (n - den*den) / num
 		newNum := den
 		count := 0

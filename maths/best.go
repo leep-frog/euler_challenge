@@ -1,57 +1,66 @@
 package maths
 
-func Smallest[T Mathable]() *Bester[T] {
-	return &Bester[T]{
+func Smallest[I any, T Mathable]() *Bester[I, T] {
+	return &Bester[I, T]{
 		better: func(i, j T) bool {
 			return i < j
 		},
 	}
 }
 
-func Largest[T Mathable]() *Bester[T] {
-	return &Bester[T]{
+func Largest[I any, T Mathable]() *Bester[I, T] {
+	return &Bester[I, T]{
 		better: func(i, j T) bool {
 			return i > j
 		},
 	}
 }
 
-func SmallestT[T Operable[T]]() *Bester[T] {
-	return &Bester[T]{
+func Closest[I any, T Mathable](center T) *Bester[I, T] {
+	return &Bester[I, T]{
+		better: func(i, j T) bool {
+			return Abs(center - i) < Abs(center - j)
+		},
+	}
+}
+
+func SmallestT[I any, T Operable[T]]() *Bester[I, T] {
+	return &Bester[I, T]{
 		better: LT[T],
 	}
 }
 
-func LargestT[T Operable[T]]() *Bester[T] {
-	return &Bester[T]{
+func LargestT[I any, T Operable[T]]() *Bester[I, T] {
+	return &Bester[I, T]{
 		better: GT[T],
 	}
 }
 
-type Bester[T any] struct {
+// T for comparable type, I for index type.
+type Bester[I, T any] struct {
 	better func(T, T) bool
 	best   T
-	bestI  int
+	bestI  I
 
 	set bool
 }
 
-func (b *Bester[T]) Best() T {
+func (b *Bester[I, T]) Best() T {
 	return b.best
 }
 
-func (b *Bester[T]) BestIndex() int {
+func (b *Bester[I, T]) BestIndex() I {
 	return b.bestI
 }
 
-func (b *Bester[T]) Check(v T) {
+func (b *Bester[I, T]) Check(v T) {
 	if !b.set || b.better(v, b.best) {
 		b.best = v
 		b.set = true
 	}
 }
 
-func (b *Bester[T]) IndexCheck(idx int, v T) {
+func (b *Bester[I, T]) IndexCheck(idx I, v T) {
 	if !b.set || b.better(v, b.best) {
 		b.best = v
 		b.bestI = idx
@@ -60,7 +69,7 @@ func (b *Bester[T]) IndexCheck(idx int, v T) {
 }
 
 type IncrementalBester struct {
-	b *Bester[int]
+	b *Bester[int, int]
 	m map[int]int
 }
 
@@ -79,7 +88,7 @@ func (ib *IncrementalBester) Increment(v int) {
 
 func LargestIncremental() *IncrementalBester {
 	return &IncrementalBester{
-		b: Largest[int](),
+		b: Largest[int, int](),
 		m: map[int]int{},
 	}
 }

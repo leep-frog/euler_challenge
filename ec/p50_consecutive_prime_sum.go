@@ -8,7 +8,7 @@ import (
 
 func P50() *problem {
 	return intInputNode(50, func(o command.Output, n int) {
-		best := maths.Largest[int]()
+		best := maths.Largest[int, int]()
 		primes := generator.Primes()
 		for i := 0; primes.Nth(i) < n; i++ {
 			pi := primes.Nth(i)

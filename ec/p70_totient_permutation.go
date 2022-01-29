@@ -11,7 +11,7 @@ func P70() *problem {
 		p := generator.Primes()
 
 		// Probably two primes together
-		best := maths.Smallest[float64]()
+		best := maths.Smallest[int, float64]()
 		for i := 0; p.Nth(i) < n; i++ {
 			pi := p.Nth(i)
 			for j := i + 1; pi*p.Nth(j) < n; j++ {

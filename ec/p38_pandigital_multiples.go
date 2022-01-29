@@ -7,7 +7,7 @@ import (
 
 func P38() *problem {
 	return noInputNode(38, func(o command.Output) {
-		best := maths.Largest[int]()
+		best := maths.Largest[int, int]()
 		for i := 1; i < 1000000; i++ {
 			m := map[int]bool{}
 

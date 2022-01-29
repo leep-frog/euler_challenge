@@ -34,8 +34,8 @@ func P60() *problem {
 					if generator.IsPrime(r, p) && generator.IsPrime(l, p) {
 						pairs[spn] = append(pairs[spn], &primePair{npn, n})
 						pairs[npn] = append(pairs[npn], &primePair{spn, n})
-						maths.Set(edges, spn, npn, true)
-						maths.Set(edges, npn, spn, true)
+						maths.Insert(edges, spn, npn, true)
+						maths.Insert(edges, npn, spn, true)
 					}
 				}
 			}

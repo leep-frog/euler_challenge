@@ -23,7 +23,7 @@ func P79() *problem {
 			for i := 0; i < len(line); i++ {
 				c := line[i : i+1]
 				for _, b := range before {
-					maths.Set(topology, b, c, true)
+					maths.Insert(topology, b, c, true)
 				}
 				before = append(before, c)
 			}

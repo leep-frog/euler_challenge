@@ -11,7 +11,7 @@ func P77() *problem {
 		p := generator.Primes()
 		sumMap := map[int]int{}
 		dfs77(0, 0, 0, sumMap, p)
-		best := maths.Largest[int]()
+		best := maths.Largest[int, int]()
 		for k, v := range sumMap {
 			best.IndexCheck(k, v)
 		}
