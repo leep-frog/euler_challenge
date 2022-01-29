@@ -2,7 +2,6 @@ package eulerchallenge
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/bfs"
@@ -11,15 +10,7 @@ import (
 
 func P81() *problem {
 	return fileInputNode(81, func(lines []string, o command.Output) {
-		var grid [][]int
-		for _, line := range lines {
-			var row []int
-			for _, str := range strings.Split(line, ",") {
-				row = append(row, parse.Atoi(str))
-			}
-			grid = append(grid, row)
-		}
-		_, dist := bfs.ShortestOffsetPath[[][]int, *p81]([]*p81{{}}, grid)
+		_, dist := bfs.ShortestOffsetPath[[][]int, *p81]([]*p81{{}}, parse.ToGrid(lines))
 		o.Stdoutln(dist)
 	})
 }
