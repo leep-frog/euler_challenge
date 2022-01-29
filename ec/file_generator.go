@@ -41,12 +41,12 @@ func FileGenerator() *command.Node {
 
 			if fileInput {
 				template = append(template,
-					fmt.Sprintf("return fileInputNode(%d, func(lines []string, o command.Output) {", num),
-					"o.Stdoutln(lines)",
+					fmt.Sprintf("  return fileInputNode(%d, func(lines []string, o command.Output) {", num),
+					"    o.Stdoutln(lines)",
 				)
 			} else if noInput {
 				template = append(template,
-					fmt.Sprintf("return fileInputNode(%d, func(o command.Output) {", num),
+					fmt.Sprintf("  return noInputNode(%d, func(o command.Output) {", num),
 				)
 			} else {
 				template = append(template,
@@ -88,7 +88,7 @@ func FileGenerator() *command.Node {
 			test := fmt.Sprintf(testFmt, num, "", num, testArg)
 			testStr := fmt.Sprintf("r \"(^.*TEST_START.*)$\" '$1\n%s' ec_test.go", test)
 			if includeExample {
-				testStr = fmt.Sprintf(`r "(^.*TEST_START.*)$\n\s*" '$1\n%s\n%s' ec_test.go`, test, exTest)
+				testStr = fmt.Sprintf("r \"(^.*TEST_START.*$)\" '$1\n%s\n%s' ec_test.go", test, exTest)
 			}
 			return []string{
 				`r "\/\*\{" "{" ec_test.go`,
