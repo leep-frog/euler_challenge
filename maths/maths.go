@@ -98,6 +98,10 @@ func (i *Int) IsZero() bool {
 	return i.EQ(zero)
 }
 
+func (i *Int) Negative() bool {
+	return i.negative
+}
+
 func (i *Int) ToInt() int {
 	d, m := i.Divide(biggestInt)
 	if d.NEQ(zero) {
@@ -935,6 +939,10 @@ func CmpOpts() []cmp.Option {
 			return this.Equals(that)
 		}),
 	}
+}
+
+func (i *Int) Part(idx int) int {
+	return int(i.parts[idx])
 }
 
 func (i *Int) Digits() []int {
