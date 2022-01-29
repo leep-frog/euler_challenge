@@ -63,3 +63,15 @@ func ReadFileLines(f string) []string {
 	}
 	return rs
 }
+
+func ToGrid(lines []string) [][]int {
+	var grid [][]int
+	for _, line := range lines {
+		var row []int
+		for _, str := range strings.Split(line, ",") {
+			row = append(row, Atoi(str))
+		}
+		grid = append(grid, row)
+	}
+	return grid
+}
