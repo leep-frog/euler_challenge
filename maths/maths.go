@@ -314,6 +314,38 @@ func sets(remaining []int, m map[string]bool, cur []int, r *[][]int) {
 	cur = cur[:len(cur)-1]
 }
 
+func ChooseSets(parts []string, n int) [][]string {
+	cur := []string{}
+	var r [][]string
+	chooseSets(parts, map[string]bool{}, n, &cur, &r)
+	return r
+}
+
+func chooseSets(parts []string, ignore map[string]bool, n int, cur *[]string, all *[][]string) {
+	if n == 0 && len(*cur) > 0 {
+		new := make([]string, len(*cur))
+		copy(new, *cur)
+		*all = append(*all, new)
+		return
+	}
+
+	if len(parts) == 0 {
+		return
+	}
+
+	for idx, p := range parts {
+		/*if ignore[p] {
+			continue
+		}
+		ignore[p] = true*/
+		*cur = append(*cur, p)
+		chooseSets(parts[idx+1:], ignore, n - 1, cur, all)
+		*cur = (*cur)[:len(*cur)-1]
+		//chooseSets(parts[1:], ignore, n, cur, all)
+		//delete(ignore, p)
+	}
+}
+
 func Permutations(parts []string) []string {
 	m := map[string]bool{}
 	remaining := map[string]int{}

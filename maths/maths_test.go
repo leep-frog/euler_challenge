@@ -3,6 +3,7 @@ package maths
 import (
 	"fmt"
 	"sort"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -847,6 +848,60 @@ func TestRomanNumerals(t *testing.T) {
 
 			if diff := cmp.Diff(test.decimal, NumeralFromString(test.simplified).ToInt()); diff != "" {
 				t.Errorf("NumeralFromString(%s) produced diff (-want, +got):\n%s", test.simplified, diff)
+			}
+		})
+	}
+}
+
+func TestChooseSets(t *testing.T) {
+	ints := []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
+	for _, test := range []struct {
+		parts []string
+		n     int
+		want  [][]string
+	}{
+		{},
+		{
+			parts: ints,
+		},
+		{
+			parts: ints,
+			n:     1,
+			want: [][]string{
+				{"0"},
+				{"1"},
+				{"2"},
+				{"3"},
+				{"4"},
+				{"5"},
+				{"6"},
+				{"7"},
+				{"8"},
+				{"9"},
+			},
+		},
+		{
+			parts: []string{"1", "2", "3", "4", "5"},
+			n:     2,
+			want: [][]string{
+				{"1", "2"},
+				{"1", "3"},
+				{"1", "4"},
+				{"1", "5"},
+				{"2", "3"},
+				{"2", "4"},
+				{"2", "5"},
+				{"3", "4"},
+				{"3", "5"},
+				{"4", "5"},
+			},
+		},
+	} {
+		t.Run(fmt.Sprintf("ChooseSets(%v, %d)", test.parts, test.n), func(t *testing.T) {
+			got := ChooseSets(test.parts, test.n)
+			sort.SliceStable(got, func(i, j int) bool { return strings.Join(got[i], "") < strings.Join(got[j], "") })
+			if diff := cmp.Diff(test.want, got); diff != "" {
+				t.Errorf("ChooseSets(%v, %d) produced diff (-want, +got):\n%s", test.parts, test.n, diff)
 			}
 		})
 	}
