@@ -393,6 +393,29 @@ func Sum(is ...*Int) *Int {
 	return r
 }
 
+/* Use these when https://github.com/golang/go/issues/47619 is done
+func SortedMap[K comparable, V any](m map[K]V) []V {
+	var ks []K
+	for k := range m {
+		ks = append(ks, k)
+	}
+	sort.SliceOf(ks)
+	var vs []V
+	for _, k := range ks {
+		vs = append(vs, m[k])
+	}
+	return vs
+}
+
+func SortedKeys[K comparable, V any](m map[K]V) []K {
+	var ks []K
+	for k := range m {
+		ks = append(ks, k)
+	}
+	sort.SliceOf(ks)
+	return ks
+}*/
+
 func (i *Int) Plus(that *Int) *Int {
 	if i.negative == that.negative {
 		r := &Int{
