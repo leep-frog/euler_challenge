@@ -434,7 +434,11 @@ func TestIntPlus(t *testing.T) {
 			},
 		} {
 			t.Run(tn(fmt.Sprintf("Add Test %d", idx)), func(t *testing.T) {
-				got := SumI(test.input...)
+				var inputs []*Int
+				for _, in := range test.input {
+					inputs = append(inputs, NewInt(in))
+				}
+				got := Sum(inputs...)
 				if diff := cmp.Diff(test.want, got, CmpOpts()...); diff != "" {
 					t.Errorf("Sum(%v) produced incorrect result (-want, +got):\n%s", test.input, diff)
 				}
@@ -457,21 +461,21 @@ func TestIntToInt(t *testing.T) {
 			{
 				name:  "Absolute value positive number",
 				fName: "Abs",
-				f:     Abs,
+				f:     Abs[int],
 				input: 5,
 				want:  5,
 			},
 			{
 				name:  "Absolute value zero",
 				fName: "Abs",
-				f:     Abs,
+				f:     Abs[int],
 				input: 0,
 				want:  0,
 			},
 			{
 				name:  "Absolute value negative number",
 				fName: "Abs",
-				f:     Abs,
+				f:     Abs[int],
 				input: -14,
 				want:  14,
 			},
@@ -809,5 +813,41 @@ func TestIntsToInt(t *testing.T) {
 				}
 			})
 		}
+	}
+}
+
+func TestRomanNumerals(t *testing.T) {
+	for _, test := range []struct {
+		numeral    string
+		simplified string
+		decimal    int
+	}{
+		{"I", "I", 1},
+		{"II", "II", 2},
+		{"III", "III", 3},
+		{"IIII", "IV", 4},
+		{"IIIII", "V", 5},
+		{"IIIIII", "VI", 6},
+		{"IIIIIII", "VII", 7},
+		{"IIIIIIII", "VIII", 8},
+		{"IIIIIIIII", "IX", 9},
+		{"IIIIIIIIII", "X", 10},
+		{"IIIIIIIIIII", "XI", 11},
+		{"IIIIIIIIIIII", "XII", 12},
+		{"IIIIIIIIIIIII", "XIII", 13},
+	} {
+		t.Run(fmt.Sprintf("RomanNumeral:%s=%d", test.numeral, test.decimal), func(t *testing.T) {
+			if diff := cmp.Diff(test.simplified, RomanNumeral(test.decimal).String()); diff != "" {
+				t.Errorf("RomanNumeral(%d) produced diff (-want, +got):\n%s", test.decimal, diff)
+			}
+
+			if diff := cmp.Diff(test.decimal, NumeralFromString(test.numeral).ToInt()); diff != "" {
+				t.Errorf("NumeralFromString(%s) produced diff (-want, +got):\n%s", test.numeral, diff)
+			}
+
+			if diff := cmp.Diff(test.decimal, NumeralFromString(test.simplified).ToInt()); diff != "" {
+				t.Errorf("NumeralFromString(%s) produced diff (-want, +got):\n%s", test.simplified, diff)
+			}
+		})
 	}
 }
