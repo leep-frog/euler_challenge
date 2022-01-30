@@ -26,7 +26,6 @@ func P88() *problem {
 			}}
 			ps, _ := bfs.ShortestWeightedPath(initStates, 0)
 			final := ps[0].product
-			fmt.Println(k, final)
 			if !got[final] {
 				sum += final
 				got[final] = true
