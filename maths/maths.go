@@ -346,18 +346,74 @@ func chooseSets(parts []string, ignore map[string]bool, n int, cur *[]string, al
 	}
 }
 
-func Permutations(parts []string) []string {
-	m := map[string]bool{}
-	remaining := map[string]int{}
+type trie[T comparable] struct {
+	subTries map[T]*trie[T]
+	endOfSequence bool
+}
+
+func (t *trie[T]) insert(ts []T) {
+	if len(ts) == 0 {
+		t.endOfSequence = true
+		return
+	}
+
+	sub, ok := t.subTries[ts[0]]
+	if !ok {
+		t.subTries[ts[0]] = newTrie[T]()
+		sub = t.subTries[ts[0]]
+	}
+	sub.insert(ts[1:])
+}
+
+func (t *trie[T]) values(cur *[]T, cum *[][]T) {
+	if t.endOfSequence {
+		k := make([]T, len(*cur))
+		copy(k, *cur)
+		*cum = append(*cum, k)
+	}
+
+	for v, sub := range t.subTries {
+		*cur = append(*cur, v)
+		sub.values(cur, cum)
+		*cur = (*cur)[:len(*cur)-1]
+	}
+}
+
+func newTrie[T comparable]() *trie[T] {
+	return &trie[T]{map[T]*trie[T]{}, false}
+}
+
+func Permutations[T comparable](parts []T) [][]T {
+	root := newTrie[T]()
+
+	remaining := map[T]int{}
 	for _, part := range parts {
 		remaining[part]++
 	}
-	permutations(parts, remaining, m, []string{})
-	var r []string
-	for perm := range m {
-		r = append(r, perm)
-	}
+	permutations[T](parts, remaining, []T{}, root)
+
+	var cur []T
+	var r [][]T
+	root.values(&cur, &r)
 	return r
+}
+
+func permutations[T comparable](m []T, remaining map[T]int, cur []T, root *trie[T]) {
+	if len(cur) == len(m) {
+		root.insert(cur)
+		return
+	}
+
+	for _, p := range m {
+		if remaining[p] == 0 {
+			continue
+		}
+		cur = append(cur, p)
+		remaining[p]--
+		permutations(m, remaining, cur, root)
+		remaining[p]++
+		cur = (cur)[:len(cur)-1]
+	}
 }
 
 func (b *Binary) Len() int {
@@ -373,23 +429,6 @@ func (b *Binary) Concat(that *Binary) *Binary {
 		d = append(d, v)
 	}
 	return &Binary{d}
-}
-
-func permutations(m []string, remaining map[string]int, r map[string]bool, cur []string) {
-	if len(cur) == len(m) {
-		r[strings.Join(cur, "")] = true
-	}
-
-	for _, p := range m {
-		if remaining[p] == 0 {
-			continue
-		}
-		cur = append(cur, p)
-		remaining[p]--
-		permutations(m, remaining, r, cur)
-		remaining[p]++
-		cur = (cur)[:len(cur)-1]
-	}
 }
 
 func (i *Int) Palindrome() bool {

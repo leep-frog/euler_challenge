@@ -159,7 +159,11 @@ func TestPermutations(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			got := Permutations(test.parts)
+			gots := Permutations[string](test.parts)
+			var got []string
+			for _, g := range gots {
+				got = append(got, strings.Join(g, ""))
+			}
 			sort.Strings(got)
 			if diff := cmp.Diff(test.want, got); diff != "" {
 				t.Errorf("Permutations(%v) returned incorrect value (-want, +got):\n%s", test.parts, diff)
