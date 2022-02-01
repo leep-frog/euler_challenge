@@ -59,7 +59,8 @@ type Generator[T any] struct {
 	name string
 
 	values []T
-	set    map[string]bool
+	// map from value to index
+	set    map[string]int
 
 	g Generatable[T]
 
@@ -95,7 +96,7 @@ func (g *Generator[T]) getNext() T {
 	i := g.f(g)
 	g.values = append(g.values, i)
 	s := g.g.String(i)
-	g.set[s] = true
+	g.set[s] = len(g.values) - 1
 	//putCache(g.name, g.values, g.g)
 	return i
 }
@@ -114,10 +115,26 @@ func PowerGenerator(power int) *Generator[*maths.Int] {
 	})
 }
 
+func Squares() *Generator[int] {
+	n := 1
+	return NewGenerator("power", 1, newIntGeneratable(), func(g *Generator[int]) int {
+		n++
+		return n*n
+	})
+}
+
 func (g *Generator[T]) Contains(t T) bool {
 	for ; g.len() == 0 || g.g.LTE(g.Last(), t); g.getNext() {
 	}
-	return g.set[g.g.String(t)]
+	_, ok := g.set[g.g.String(t)]
+	return ok
+}
+
+func (g *Generator[T]) Idx(t T) (int, bool) {
+	for ; g.len() == 0 || g.g.LTE(g.Last(), t); g.getNext() {
+	}
+	v, ok := g.set[g.g.String(t)]
+	return v, ok
 }
 
 /*func getFromCache(name string) []string {
@@ -156,7 +173,7 @@ func NewGenerator[T any](name string, start T, g Generatable[T], f func(*Generat
 			}
 			return f(g)
 		},
-		set: map[string]bool{},
+		set: map[string]int{},
 	}
 	/*for _, line := range getFromCache(name) {
 		if line == "" {
