@@ -159,7 +159,7 @@ func TestPermutations(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			gots := Permutations[string](test.parts)
+			gots := Permutations[string](test.parts, len(test.parts), false)
 			var got []string
 			for _, g := range gots {
 				got = append(got, strings.Join(g, ""))

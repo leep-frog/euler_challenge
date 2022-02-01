@@ -383,14 +383,22 @@ func newTrie[T comparable]() *trie[T] {
 	return &trie[T]{map[T]*trie[T]{}, false}
 }
 
-func Permutations[T comparable](parts []T) [][]T {
+func StringPermutations(parts []string) []string {
+	var r []string
+	for _, perm := range Permutations(parts, len(parts), false) {
+		r = append(r, strings.Join(perm, ""))
+	}
+	return r
+}
+
+func Permutations[T comparable](parts []T, length int, allowReplacements bool) [][]T {
 	root := newTrie[T]()
 
 	remaining := map[T]int{}
 	for _, part := range parts {
 		remaining[part]++
 	}
-	permutations[T](parts, remaining, []T{}, root)
+	permutations[T](parts, remaining, []T{}, root, length, allowReplacements)
 
 	var cur []T
 	var r [][]T
@@ -398,8 +406,8 @@ func Permutations[T comparable](parts []T) [][]T {
 	return r
 }
 
-func permutations[T comparable](m []T, remaining map[T]int, cur []T, root *trie[T]) {
-	if len(cur) == len(m) {
+func permutations[T comparable](m []T, remaining map[T]int, cur []T, root *trie[T], length int, allowReplacements bool) {
+	if len(cur) == length {
 		root.insert(cur)
 		return
 	}
@@ -409,9 +417,13 @@ func permutations[T comparable](m []T, remaining map[T]int, cur []T, root *trie[
 			continue
 		}
 		cur = append(cur, p)
-		remaining[p]--
-		permutations(m, remaining, cur, root)
-		remaining[p]++
+		if !allowReplacements {
+			remaining[p]--
+		}
+		permutations(m, remaining, cur, root, length, allowReplacements)
+		if !allowReplacements {
+			remaining[p]++
+		}
 		cur = (cur)[:len(cur)-1]
 	}
 }
@@ -429,6 +441,14 @@ func (b *Binary) Concat(that *Binary) *Binary {
 		d = append(d, v)
 	}
 	return &Binary{d}
+}
+
+func Join[T any](ts []T, s string) string {
+	var r []string
+	for _, t := range ts {
+		r = append(r, fmt.Sprintf("%v", t))
+	}
+	return strings.Join(r, s)
 }
 
 func (i *Int) Palindrome() bool {

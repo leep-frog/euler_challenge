@@ -9,7 +9,7 @@ import (
 
 func P43() *problem {
 	return noInputNode(43, func(o command.Output) {
-		perms := maths.Permutations([]string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"})
+		perms := maths.StringPermutations([]string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"})
 		primes := generator.Primes()
 
 		var sum int
