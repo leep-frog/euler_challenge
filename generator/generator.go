@@ -186,10 +186,26 @@ func NewGenerator[T any](name string, start T, g Generatable[T], f func(*Generat
 	return gt
 }
 
+var (
+	cachedFactors = map[int]map[int]int{}
+)
+
+func copy(m map[int]int) map[int]int {
+	c := map[int]int{}
+	for k, v := range m {
+		c[k] = v
+	}
+	return c
+}
+
 func PrimeFactors(n int, p *Generator[int]) map[int]int {
 	if n <= 1 {
 		return nil
 	}
+	if r, ok := cachedFactors[n]; ok {
+		return copy(r)
+	}
+	ogN := n
 	r := map[int]int{}
 	for i := 0; ; i++ {
 		pi := int(p.Nth(i))
@@ -197,7 +213,15 @@ func PrimeFactors(n int, p *Generator[int]) map[int]int {
 			r[pi]++
 			n = n / pi
 			if n == 1 {
-				return r
+				cachedFactors[ogN] = r
+				return copy(r)
+			}
+			if extra, ok := cachedFactors[n]; ok {
+				for k, v := range extra {
+					r[k] += v
+				}
+				cachedFactors[ogN] = r
+				return copy(r)
 			}
 		}
 	}
