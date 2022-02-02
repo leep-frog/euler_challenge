@@ -52,18 +52,27 @@ func (mo *mathableOperator[T]) LT(that *mathableOperator[T]) bool {
 	return mo.m <= that.m
 }
 
+var (
+	cachedDivisors = map[int][]int{}
+)
+
 func Divisors(i int) []int {
-	var r []int
-	for j := 1; j*j <= i; j++ {
-		if i%j == 0 {
-			if j*j == i {
-				r = append(r, j)
-			} else {
-				r = append(r, j, i/j)
+	v, ok := cachedDivisors[i]
+	if !ok {
+		for j := 1; j*j <= i; j++ {
+			if i%j == 0 {
+				if j*j == i {
+					v = append(v, j)
+				} else {
+					v = append(v, j, i/j)
+				}
 			}
 		}
+		sort.Ints(v)
+		cachedDivisors[i] = v
 	}
-	sort.Ints(r)
+	r := make([]int, len(v))
+	copy(r, v)
 	return r
 }
 

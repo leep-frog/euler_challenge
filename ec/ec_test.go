@@ -22,11 +22,16 @@ func TestAll(t *testing.T) {
 	}{
 		// TEST_START (needed for file_generator.go)
 		{
+			name: "p95",
+			args: []string{"95"},
+			want: []string{"28 14316"},
+		},
+		{
 			name: "p94",
 			args: []string{"94"},
 			want: []string{"518408346"},
 		},
-		/*{
+		{
 			name: "p93",
 			args: []string{"93", "9"},
 			want: []string{"1258 51"},
