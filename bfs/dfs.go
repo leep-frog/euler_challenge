@@ -119,3 +119,26 @@ func anyPath[M, AS any, T pathable[M, T, AS]](initState T, initDist int, globalC
 	}
 	return nil, -1
 }
+
+// TODO: make this a separate package
+// TODO: add this in AnyPath to include search path
+// node for linked list
+/*type node[T any] struct {
+	value T
+	next *node[T]
+}*/
+
+// AnyPath implements depth first search
+/*func AnyPath[M any, T State[M, T]](initStates []T, globalContext M) T {
+	checked := map[string]bool{}
+	for len(initStates) > 0 {
+		cur := initStates[0]
+		initStates = initStates[1:]
+		if checked[cur].Code() {
+			continue
+		}
+	}
+
+	return nil
+}
+*/

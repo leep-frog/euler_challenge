@@ -166,6 +166,12 @@ func IntFromString(s string) (*Int, error) {
 	return r, nil
 }
 
+func (i *Int) TrimDigits(n int) *Int {
+	iStr := i.String()
+	n = Min(n, len(iStr))
+	return MustIntFromString(iStr[len(iStr)-n:])
+}
+
 func MustIntFromString(s string) *Int {
 	r, err := IntFromString(s)
 	if err != nil {
@@ -952,6 +958,16 @@ func Insert[K1, K2 comparable, V any](m map[K1]map[K2]V, k1 K1, k2 K2, v V) {
 		m[k1] = map[K2]V{}
 	}
 	m[k1][k2] = v
+}
+
+func DeepInsert[K1, K2, K3 comparable, V any](m map[K1]map[K2]map[K3]V, k1 K1, k2 K2, k3 K3, v V) {
+	if m[k1] == nil {
+		m[k1] = map[K2]map[K3]V{}
+	}
+	if m[k1][k2] == nil {
+		m[k1][k2] = map[K3]V{}
+	}
+	m[k1][k2][k3] = v
 }
 
 func XOR(a, b int) int {
