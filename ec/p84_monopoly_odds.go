@@ -1,11 +1,16 @@
 package eulerchallenge
 
 import (
+	"fmt"
+	"strings"
+	"sort"
+
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/equilibrium"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
-type spaceProb struct {
+/*type spaceProb struct {
 	space func(int) int
 	prob  float64
 }
@@ -29,10 +34,161 @@ func funcNextUtility() func(int) int {
 		}
 		return 12
 	}
+}*/
+
+func funcNextRail() func(int) int {
+	return func(i int) int {
+		return (((i+5)/10)%4)*10 + 5
+	}
+}
+
+func funcNextUtility() func(int) int {
+	return func(i int) int {
+		if i > 12 && i < 28 {
+			return 28
+		}
+		return 12
+	}
+}
+
+const (
+	JAIL = 10
+	TO_JAIL = 30
+	GO = 0
+)
+var (
+	COMMUNITY_CHEST = map[int]bool{
+		2: true,
+		17: true,
+		33: true,
+	}
+	CHANCE = map[int]bool{
+		7: true,
+		22: true,
+		36: true,
+	}
+)
+
+type monopolySquare struct {
+	idx       int
+	doubles int
+}
+
+type monopolyBoard struct {
+	spaces map[int]*monopolySquare
+	diceSides int
+}
+
+func (mb *monopolyBoard) weight(i int, m map[int]float64) float64 {
+	return m[i] + m[i + doubles[1]] + m[i + doubles[2]]	
+}
+
+var (
+	doubles = []int{0, 1000, 2000}
+)
+
+func (ms *monopolySquare) Code(*monopolyBoard) int {
+	return ms.idx + 1000 * ms.doubles
+}
+
+func (ms *monopolySquare) Paths(board *monopolyBoard) []*equilibrium.WeightedPath[*monopolyBoard, *monopolySquare, int] {
+	mWs := map[int]float64{}
+	for d1 := range maths.Range(board.diceSides) {
+		for d2 := range maths.Range(board.diceSides) {
+			to := (ms.idx + d1 + d2) % 40
+			if d1 == d2 {
+				if ms.doubles == 2 {
+					mWs[JAIL]++
+				} else {
+					mWs[doubles[ms.doubles + 1] + to]++
+				}
+			} else {
+				mWs[to]++
+			}
+		}
+	}
+	/*for j := 0; j < board.diceSides - 1; j++ {
+		smaller := (ms.idx + 2 + j) % 40
+		larger := (ms.idx + 2 * board.diceSides - j) % 40
+		mWs[smaller] += float64(j + 1)
+		mWs[larger] += float64(j + 1)
+	}
+	mWs[(ms.idx + board.diceSides + 1) % 40] += float64(board.diceSides)*/
+
+	// Go to jail if relevant
+	mWs[JAIL] += mWs[TO_JAIL]
+	delete(mWs, TO_JAIL)
+	mWs[JAIL] += mWs[TO_JAIL + doubles[1]]
+	delete(mWs, TO_JAIL + doubles[1])
+	mWs[JAIL] += mWs[TO_JAIL + doubles[2]]
+	delete(mWs, TO_JAIL + doubles[2])
+
+	for k, v := range mWs {
+		numDoubles := k / 1000
+		doubleOffset := numDoubles * 1000
+		simpleK := k % 1000
+		
+		if COMMUNITY_CHEST[simpleK] {
+			mWs[GO + doubleOffset] += v / 16.0
+			mWs[JAIL] += v / 16.0
+			mWs[k] = v * 14 / 16.0
+		}
+		if CHANCE[simpleK] {
+			mWs[GO + doubleOffset] += v / 16.0
+			mWs[JAIL] += v / 16.0
+			mWs[11 + doubleOffset] += v / 16.0
+			mWs[24 + doubleOffset] += v / 16.0
+			mWs[39 + doubleOffset] += v / 16.0
+			mWs[5 + doubleOffset] += v / 16.0
+			mWs[39 + doubleOffset] += v / 16.0
+			mWs[k - 3 + doubleOffset] += v / 16.0
+			mWs[funcNextRail()(k) + doubleOffset]+= v * 2.0 / 16.0 
+			mWs[funcNextUtility()(k) + doubleOffset]+= v * 1.0 / 16.0 
+
+			// Remainder
+			mWs[k] = v * 6 / 16.0
+		}
+	}
+
+	var ws []*equilibrium.WeightedPath[*monopolyBoard, *monopolySquare, int] 
+	for k, v := range mWs {
+		ws = append(ws, &equilibrium.WeightedPath[*monopolyBoard, *monopolySquare, int]{board.spaces[k], v})
+	}
+	return ws
 }
 
 func P84() *problem {
 	return intInputNode(84, func(o command.Output, n int) {
+		board := &monopolyBoard{map[int]*monopolySquare{}, n}
+		var spaces []*monopolySquare
+		for i := 0; i < 40; i++ {
+			board.spaces[i] = &monopolySquare{i, 0}			
+			board.spaces[i + doubles[1]] = &monopolySquare{i, 1}			
+			board.spaces[i + doubles[2]] = &monopolySquare{i, 2}			
+			spaces = append(spaces, board.spaces[i])
+		}
+		ws := equilibrium.Equilibrium[*monopolyBoard, *monopolySquare, int](board, spaces, map[int]float64{0: 1})
+		for i := 0; i <= 10; i++ {
+			fmt.Printf("%5.2f ", 100*board.weight(i, ws))
+		}
+		fmt.Println()
+		for i := 0; i < 9; i++ {
+			fmt.Printf("%5.2f%s%5.2f\n", 100*board.weight(40-1-i, ws), strings.Repeat(" ", 55), 100*board.weight(10+1+i, ws))
+		}
+		for i := 0; i <= 10; i++ {
+			fmt.Printf("%5.2f ", 100*board.weight(30-i, ws))
+		}
+		fmt.Println()
+
+		var arrWs [][]float64
+		for i := 0; i < 40; i++ {
+			arrWs = append(arrWs, []float64{float64(i), board.weight(i, ws)})
+		}
+		sort.SliceStable(arrWs, func(i, j int) bool { return arrWs[i][1] > arrWs[j][1] })
+
+		for i := 0; i < 3; i++ {
+			fmt.Print(arrWs[i][0])
+		}
 		/*fn := float64(n)
 		odds := 1 / (fn * fn)
 
@@ -132,10 +288,11 @@ func P84() *problem {
 	})
 }
 
-func convertBoard(board [][]float64) []float64 {
+/*func convertBoard(board [][]float64) []float64 {
 	var cum []float64
 	for _, vals := range board {
 		cum = append(cum, maths.SumSys(vals...))
 	}
 	return cum
 }
+*/
