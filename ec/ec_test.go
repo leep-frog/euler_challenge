@@ -13,18 +13,21 @@ var (
 	one = maths.One()
 )
 
+type codingChallengeTest struct {
+	name     string
+	args     []string
+	want     []string
+	estimate float64
+	long     bool
+}
+
 func TestAll(t *testing.T) {
-	for _, test := range []struct {
-		name string
-		args []string
-		want []string
-		long bool
-	}{
+	tests := []*codingChallengeTest{
 		// TEST_START (needed for file_generator.go)
 		{
 			name: "p98",
-			args: []string{"98"},
-			want: []string{"0"},
+			args: []string{"98", "words.txt"},
+			want: []string{"18769"},
 		},
 		{
 			name: "p97",
@@ -921,17 +924,28 @@ func TestAll(t *testing.T) {
 			want: []string{"233168"},
 		},
 		/* Useful for commenting out tests. */
-	} {
-		if test.long == runLongTests {
-			t.Run(test.name, func(t *testing.T) {
-				etc := &command.ExecuteTestCase{
-					Node:          command.BranchNode(Branches(), nil),
-					Args:          test.args,
-					WantStdout:    test.want,
-					SkipDataCheck: true,
-				}
-				command.ExecuteTest(t, etc)
-			})
-		}
 	}
+
+	for _, test := range tests {
+		test.test(t)
+	}
+}
+
+func (ct *codingChallengeTest) test(t *testing.T) {
+	// TODO: have time cutoff instead
+	if ct.long {
+		return
+	}
+	t.Run(ct.name, func(t *testing.T) {
+		if ct.estimate == 0 {
+			t.Logf("Estimate is not set")
+		}
+		etc := &command.ExecuteTestCase{
+			Node:          command.BranchNode(Branches(), nil),
+			Args:          ct.args,
+			WantStdout:    ct.want,
+			SkipDataCheck: true,
+		}
+		command.ExecuteTest(t, etc)
+	})
 }

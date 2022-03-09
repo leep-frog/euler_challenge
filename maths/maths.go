@@ -881,6 +881,28 @@ func DigitMap(n int) map[int]int {
 	return m
 }
 
+func FromDigits(digits []int) int {
+	n := 0
+	coef := 1 
+	for i := len(digits)-1; i >= 0; i-- {
+		n += coef * digits[i]
+		coef *= 10
+	}
+	return n
+}
+
+// Anagrams returns all anagram integers of n, not including numbers with leading zeroes.
+func Anagrams(n int) map[int]bool {
+	r := map[int]bool{}
+	digits := Digits(n)
+	for _, p := range Permutations(digits, len(digits), false) {
+		if p[0] != 0 {
+			r[FromDigits(p)] = true
+		}
+	}
+	return r
+}
+
 func Anagram(j, k int) bool {
 	jm := DigitMap(j)
 	km := DigitMap(k)
