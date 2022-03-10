@@ -881,6 +881,17 @@ func DigitMap(n int) map[int]int {
 	return m
 }
 
+func QuadraticRoots(a, b, c float64) []float64 {
+	root :=  b*b - 4*a*c
+	if root < 0 {
+		return nil
+	}
+	return []float64{
+		(-b - math.Sqrt(root)) / (2*a),
+		(-b + math.Sqrt(root)) / (2*a),
+	}
+}
+
 func FromDigits(digits []int) int {
 	n := 0
 	coef := 1 
