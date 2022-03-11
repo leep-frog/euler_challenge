@@ -206,6 +206,10 @@ func TestMatrixInverse(t *testing.T) {
 				t.Errorf("Inverse*Matrix (%v) returned diff (-want, +got):\n%s", test.matrix, diff)
 			}
 
+			if diff := cmp.Diff(IdentityMatrix[float64](len(test.matrix)), MultiplyMatrices(test.matrix, Inverse(test.matrix)), cmpopts.EquateApprox(0, 0.00000000000001)); diff != "" {
+				t.Errorf("Matrix*Inverse (%v) returned diff (-want, +got):\n%s", test.matrix, diff)
+			}
+
 			/*if diff := cmp.Diff(test.wantAdj, AdjugateMatrix(test.matrix)); diff != "" {
 				t.Errorf("AdjugateMatrix(%v) produced diff (-want, +got):\n%s", test.matrix, diff)
 			}*/
