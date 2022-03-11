@@ -1,14 +1,10 @@
 package maths
 
 import (
-	"fmt"
-	"strconv"
-	"strings"
-
 	"github.com/leep-frog/euler_challenge/linkedlist"
 )
 
-type Matrix[T Mathable] struct {
+/*type Matrix[T Mathable] struct {
 	values *[][]T
 	rows []int
 	cols []int
@@ -27,7 +23,7 @@ func NewMatrix[T Mathable](values [][]T) *Matrix[T] {
 	}
 }
 	return &Matrix[T]{&values, rows, cols, map[string]T{}}
-}
+}*/
 
 func Determinant[T Mathable](matrix [][]T) T {
 	nRows := len(matrix)
@@ -45,6 +41,7 @@ func Determinant[T Mathable](matrix [][]T) T {
 }
 
 func determinant[T Mathable](matrix [][]T, nRows, nCols int, rows, cols *linkedlist.Node[int]) T {
+	// TODO: cache already computed determinants
 	if nRows != nCols {
 		panic("can only get determinant of a square matrix")
 	}
@@ -97,43 +94,3 @@ func determinant[T Mathable](matrix [][]T, nRows, nCols int, rows, cols *linkedl
 
 	return det
 }
-
-/*func (m *Matrix[T]) Determinant() T {
-	if len(m.rows) != len(m.cols) {
-		panic("can only get determinant of a square matrix")
-	}
-	if len(m.rows) == 0 {
-		panic("can't get determinant of an empty matrix")
-	}
-
-	if len(m.rows) == 0 {
-		return m.Get(0, 0)
-	}
-
-	code := m.subsetCode()
-	if v, ok := m.determinantCache[code]; ok {
-		return v
-	}
-
-	for _, r := range m.rows {
-		for _, c := range m.cols {
-
-		}
-	}
-}*/
-
-// Get the code for a matrix subset
-func (m *Matrix[T]) subsetCode() string {
-	var r, c []string
-	for _, ri := range m.rows {
-		r = append(r, strconv.Itoa(ri))
-	}
-	for _, ci := range m.cols {
-		c = append(c, strconv.Itoa(ci))
-	}
-	return fmt.Sprintf("%s:%s", strings.Join(r, "_"), strings.Join(c, "_"))
-}
-
-/*func (m *Matrix[T]) Get(r, c int) T {
-	return m.values[m.rows[r]][m.cols[c]]
-}*/
