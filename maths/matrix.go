@@ -25,9 +25,30 @@ func NewMatrix[T Mathable](values [][]T) *Matrix[T] {
 	return &Matrix[T]{&values, rows, cols, map[string]T{}}
 }*/
 
+func Transpose[T Mathable](matrix [][]T) [][]T {
+	var m [][]T
+	if len(matrix) == 0 {
+		return m
+	}
+	for j := range Range(len(matrix[0])) {
+		var col []T
+		for i := range Range(len(matrix)) {
+			col = append(col, matrix[i][j])
+		}
+		m = append(m, col)
+	}
+	return m
+}
+
 func Determinant[T Mathable](matrix [][]T) T {
+	if len(matrix) == 0 {
+		panic("can't get determinant of an empty matrix")
+	}
 	nRows := len(matrix)
 	nCols := len(matrix[0])
+	if nRows != nCols {
+		panic("can only get determinant of a square matrix")
+	}
 
 	var rs, cs []int
 	for i := range Range(nRows) {
@@ -42,13 +63,6 @@ func Determinant[T Mathable](matrix [][]T) T {
 
 func determinant[T Mathable](matrix [][]T, nRows, nCols int, rows, cols *linkedlist.Node[int]) T {
 	// TODO: cache already computed determinants
-	if nRows != nCols {
-		panic("can only get determinant of a square matrix")
-	}
-	if nRows == 0 {
-		panic("can't get determinant of an empty matrix")
-	}
-	
 	if nRows == 1 {
 		return matrix[rows.Value][cols.Value]
 	}
