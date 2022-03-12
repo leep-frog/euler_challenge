@@ -75,3 +75,11 @@ func ToGrid(lines []string) [][]int {
 	}
 	return grid
 }
+
+func IntsToStrings(is []int) []string {
+	var r []string
+	for _, i := range is {
+		r = append(r, strconv.Itoa(i))
+	}
+	return r
+}

@@ -49,6 +49,10 @@ func (b *Bester[I, T]) Best() T {
 	return b.best
 }
 
+func (b *Bester[I, T]) Set() bool {
+	return b.set
+}
+
 func (b *Bester[I, T]) BestIndex() I {
 	return b.bestI
 }
