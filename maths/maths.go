@@ -172,6 +172,13 @@ func (i *Int) TrimDigits(n int) *Int {
 	return MustIntFromString(iStr[len(iStr)-n:])
 }
 
+func Chop(n, from, to int) int {
+	s := fmt.Sprintf("%d", n)
+	from = Max(0, from)
+	to = Min(len(s), to)
+  return parse.Atoi(s[from:to])
+}
+
 func MustIntFromString(s string) *Int {
 	r, err := IntFromString(s)
 	if err != nil {
