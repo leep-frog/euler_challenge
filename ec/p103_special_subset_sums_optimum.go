@@ -29,11 +29,6 @@ func FindSpecialSet(remaining, start, curSum int, values []int, curSet map[int]b
 			}
 		}
 
-		if len(values) > 2 {
-			if values[0] + values[1] < values[len(values)-1] {
-				return
-			}
-		}
 		best.IndexCheck(strings.Join(parse.IntsToStrings(values), ""), curSum)
 		return
 	}
