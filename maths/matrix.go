@@ -1,41 +1,52 @@
 package maths
 
 import (
+	"fmt"
+	"math/big"
+
 	"github.com/leep-frog/euler_challenge/linkedlist"
 )
 
-/*type Matrix[T Mathable] struct {
-	values *[][]T
-	rows []int
-	cols []int
-
-	determinantCache map[string]T
+func BiggifyMatrix(matrix [][]float64) [][]*big.Rat {
+	var m [][]*big.Rat
+	for _, r := range matrix {
+		var row []*big.Rat
+		for _, v := range r {
+			row = append(row, big.NewRat(0, 1).SetFloat64(v))
+		}
+		m = append(m, row)
+	}
+	return m
 }
 
-func NewMatrix[T Mathable](values [][]T) *Matrix[T] {
-	var rows, cols []int
-	for i := range values {
-		rows = append(rows, i)
+func SmallifyMatrix(matrix [][]*big.Rat) [][]float64 {
+	var m [][]float64
+	for _, r := range matrix {
+	var row []float64
+		for _, v := range r {
+			if v == nil {
+				row = append(row, 0)
+			} else {
+				f, _ := v.Float64()
+				row = append(row, f)
+			}
+		}
+		m = append(m, row)
 	}
-	if len(values) > 0 {
-	for i := range values[0] {
-		cols = append(cols, i)
-	}
+	return m
 }
-	return &Matrix[T]{&values, rows, cols, map[string]T{}}
-}*/
 
-func IdentityMatrix[T Mathable](n int) [][]T {
-	var m [][]T
+func IdentityMatrix(n int) [][]*big.Rat {
+	var m [][]*big.Rat
 	for i := 0; i < n; i++ {
-		r := make([]T, n)
-		r[i] = 1
+		r := make([]*big.Rat, n)
+		r[i] = big.NewRat(1.0, 1.0)
 		m = append(m, r)
 	}
 	return m
 }
 
-func MultiplyMatrices[T Mathable](this, that [][]T) [][]T {
+func MultiplyMatrices(this, that [][]*big.Rat) [][]*big.Rat {
 	if len(this) == 0 || len(that) == 0 {
 		panic("cannot multiply empty matrices")
 	}
@@ -44,13 +55,13 @@ func MultiplyMatrices[T Mathable](this, that [][]T) [][]T {
 		panic("cannot multiply matrices with unmatched dimensions")
 	}
 
-	var result [][]T
+	var result [][]*big.Rat
 	for iThis := 0; iThis < len(this); iThis++ {
-		var row []T
+		var row []*big.Rat
 		for iThat := 0; iThat < len(that[0]); iThat++ {
-			var sum T
+			sum := big.NewRat(0, 1)
 			for j := 0; j < len(this[0]); j++ {
-				sum += this[iThis][j]*that[j][iThat]
+				sum.Add(sum, big.NewRat(0, 1).Mul(this[iThis][j], that[j][iThat]))
 			}
 			row = append(row, sum)
 		}
@@ -59,40 +70,49 @@ func MultiplyMatrices[T Mathable](this, that [][]T) [][]T {
 	return result
 }
 
-func Transpose[T Mathable](matrix [][]T) [][]T {
-	var m [][]T
+// Transpose transposes the provided matrix.
+func Transpose(matrix [][]*big.Rat) [][]*big.Rat {
+	var m [][]*big.Rat
 	if len(matrix) == 0 {
 		return m
 	}
 	for j := range Range(len(matrix[0])) {
-		var col []T
+		var col []*big.Rat
 		for i := range Range(len(matrix)) {
-			col = append(col, matrix[i][j])
+			col = append(col, big.NewRat(0, 1).Set(matrix[i][j]))
 		}
 		m = append(m, col)
 	}
 	return m
 }
 
-func Inverse[T Mathable](matrix [][]T) [][]T {
+// Inverse gets the inverse of the provided matrix.
+func Inverse(matrix [][]*big.Rat) [][]*big.Rat {
 	im := AdjugateMatrix(matrix)
 	d := Determinant(matrix)
 	for i := 0; i < len(matrix); i++ {
 		for j := 0; j < len(matrix); j++ {
-			im[i][j] /= d
+			im[i][j].Quo(im[i][j], d)
 		}
 	}
 	return im
 }
 
-func AdjugateMatrix[T Mathable](matrix [][]T) [][]T {
-	//d := Determinant(matrix)
+// AdjugateMatrix creates the adjugate matrix for the provided matrix.
+// This is mainly used for calculating the inverse of a matrix.
+func AdjugateMatrix(matrix [][]*big.Rat) [][]*big.Rat {
 	matrix = Transpose(matrix)
+
+	detCache := map[string]*big.Rat{}
 
 	nRows := len(matrix)
 	nCols := len(matrix[0])
 	if nRows != nCols {
 		panic("can only get adjugate of a square matrix")
+	}
+
+	if nRows == 1 {
+		return [][]*big.Rat{{big.NewRat(1, 1)}}
 	}
 
 	var rs, cs []int
@@ -105,14 +125,14 @@ func AdjugateMatrix[T Mathable](matrix [][]T) [][]T {
 
 	rows, cols := linkedlist.NewList(rs), linkedlist.NewList(cs)
 
-	var adj [][]T
+	var adj [][]*big.Rat
 	firstRow := true
 	for r := rows; r != nil; r = r.Next {
 		rHead := rows
 		if firstRow {
 			rHead = rows.Next
 		}
-		var adjRow []T
+		var adjRow []*big.Rat
 		firstCol := true
 		for c := cols; c != nil; c = c.Next {
 			cHead := cols
@@ -134,10 +154,9 @@ func AdjugateMatrix[T Mathable](matrix [][]T) [][]T {
 				c.Next.Prev = c.Prev
 			}
 
-			//fmt.Println(c.Value, r.Value, rHead, cHead)
-			d := determinant(matrix, nRows - 1, nCols - 1, rHead, cHead,)
+			d := determinant(matrix, nRows - 1, nCols - 1, rHead, cHead, detCache)
 			if (r.Value + c.Value) % 2 == 1 {
-				d *= -1
+				d.Mul(d, big.NewRat(-1, 1))
 			}
 			adjRow = append(adjRow, d)
 
@@ -161,11 +180,10 @@ func AdjugateMatrix[T Mathable](matrix [][]T) [][]T {
 		firstRow = false
 	}
 	return adj
-
-	//return determinant(matrix, nRows, nCols, rows, cols)
 }
 
-func Determinant[T Mathable](matrix [][]T) T {
+// Determinant calculates the determinant of the provided matrix.
+func Determinant(matrix [][]*big.Rat) *big.Rat {
 	if len(matrix) == 0 {
 		panic("can't get determinant of an empty matrix")
 	}
@@ -183,17 +201,23 @@ func Determinant[T Mathable](matrix [][]T) T {
 		cs = append(cs, i)
 	}
 
-	return determinant(matrix, nRows, nCols, linkedlist.NewList(rs), linkedlist.NewList(cs))
+	return determinant(matrix, nRows, nCols, linkedlist.NewList(rs), linkedlist.NewList(cs), map[string]*big.Rat{})
 }
 
-func determinant[T Mathable](matrix [][]T, nRows, nCols int, rows, cols *linkedlist.Node[int]) T {
-	// TODO: cache already computed determinants
+func determinant(matrix [][]*big.Rat, nRows, nCols int, rows, cols *linkedlist.Node[int], detCache map[string]*big.Rat) *big.Rat {
+	code := fmt.Sprintf("%v:%v", rows, cols)
+	if detCache != nil {
+		if r, ok := detCache[code]; ok {
+			return big.NewRat(0, 1).Set(r)
+		}
+	}
+
 	if nRows == 1 {
 		return matrix[rows.Value][cols.Value]
 	}
 
 	pos := true
-	var det T
+	det := big.NewRat(0, 1)
 		firstCol := true
 		rHead := rows.Next
 		for col := cols; col != nil; col = col.Next {
@@ -210,11 +234,11 @@ func determinant[T Mathable](matrix [][]T, nRows, nCols int, rows, cols *linkedl
 				col.Next.Prev = col.Prev
 			}
 			
-			subDet := cell * determinant(matrix, nRows - 1, nCols - 1, rHead, cHead)
+			subDet := big.NewRat(0, 1).Mul(cell, determinant(matrix, nRows - 1, nCols - 1, rHead, cHead, detCache))
 			if pos {
-				det += subDet
+				det.Add(det, subDet)
 			} else {
-				det -= subDet
+				det.Sub(det, subDet)
 			}
 			pos = !pos
 
@@ -228,6 +252,7 @@ func determinant[T Mathable](matrix [][]T, nRows, nCols int, rows, cols *linkedl
 			firstCol = false
 	}
 
+	detCache[code] = det
 	return det
 }
 
