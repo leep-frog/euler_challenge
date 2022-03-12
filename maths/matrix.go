@@ -19,6 +19,18 @@ func BiggifyMatrix(matrix [][]float64) [][]*big.Rat {
 	return m
 }
 
+func BiggifyIntMatrix(matrix [][]int) [][]*big.Rat {
+	var m [][]*big.Rat
+	for _, r := range matrix {
+		var row []*big.Rat
+		for _, v := range r {
+			row = append(row, big.NewRat(int64(v), 1))
+		}
+		m = append(m, row)
+	}
+	return m
+}
+
 func SmallifyMatrix(matrix [][]*big.Rat) [][]float64 {
 	var m [][]float64
 	for _, r := range matrix {
@@ -256,3 +268,13 @@ func determinant(matrix [][]*big.Rat, nRows, nCols int, rows, cols *linkedlist.N
 	return det
 }
 
+func CrossProduct(x1, y1, x2, y2 int) *big.Rat {
+	return Determinant(BiggifyIntMatrix([][]int{
+		{x1, y1},
+		{x2, y2},
+	}))
+}
+
+func CrossProductSign(x1, y1, x2, y2 int) int {
+	return CrossProduct(x1, y1, x2, y2).Sign()
+}

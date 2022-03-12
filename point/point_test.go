@@ -6,6 +6,28 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+func TestCrossProduct(t *testing.T) {
+	for _, test := range []struct {
+		name string
+		p    *Point
+		by   *Point
+		want *Point
+	}{
+		{
+			name: "simple cross product",
+			p:    NewPoint(3, -1, 0),
+			by:   NewPoint(-2, 3, 4),
+			want: NewPoint(-4, -12, 7),
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			if diff := cmp.Diff(test.want, test.p.Cross(test.by)); diff != "" {
+				t.Errorf("(%v).Cross(%v) returned diff (-want, +got):\n%s", test.p, test.by, diff)
+			}
+		})
+	}
+}
+
 func TestPoint(t *testing.T) {
 	for _, test := range []struct {
 		name string

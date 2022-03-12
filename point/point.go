@@ -1,7 +1,12 @@
 package point
 
-import "fmt"
+import (
+	"fmt"
 
+	"github.com/leep-frog/euler_challenge/maths"
+)
+
+// TODO: let this be generic type
 type Point struct {
 	X, Y, Z int
 }
@@ -9,6 +14,27 @@ type Point struct {
 func rotateFunc(x, y, z int, rs ...Rotation) func(*Point) *Point {
 	return func(p *Point) *Point {
 		return p.Rotate(x, y, z, rs...)
+	}
+}
+
+func (p *Point) Cross(s *Point) *Point {
+	iMatrix := [][]int{
+		{p.Y, p.Z},
+		{s.Y, s.Z},
+	}
+	jMatrix := [][]int{
+		{p.X, p.Z},
+		{s.X, s.Z},
+	}
+	kMatrix := [][]int{
+		{p.X, p.Y},
+		{s.X, s.Y},
+	}
+
+	return &Point{
+		int(maths.Determinant(maths.BiggifyIntMatrix(iMatrix)).Num().Int64()),
+		-int(maths.Determinant(maths.BiggifyIntMatrix(jMatrix)).Num().Int64()),
+		int(maths.Determinant(maths.BiggifyIntMatrix(kMatrix)).Num().Int64()),
 	}
 }
 
