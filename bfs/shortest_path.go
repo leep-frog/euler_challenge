@@ -17,7 +17,7 @@ func ShortestPath[M any, T State[M, T]](initStates []T, globalContext M) ([]T, i
 		distFunc: simpleDistFunc[M, T](),
 		convFunc: identityConvFunc[M, T](),
 	}
-	return shortestPath(initStates, nil, globalContext, ph)
+	return searchPath(newBFSSearcher[T](), initStates, nil, globalContext, ph)
 }
 
 func ShortestPathNonUnique[M any, T State[M, T]](initStates []T, globalContext M) ([]T, int) {
@@ -26,5 +26,5 @@ func ShortestPathNonUnique[M any, T State[M, T]](initStates []T, globalContext M
 		convFunc: identityConvFunc[M, T](),
 		skipUnique: true,
 	}
-	return shortestPath(initStates, nil, globalContext, ph)
+	return searchPath(newBFSSearcher[T](), initStates, nil, globalContext, ph)
 }

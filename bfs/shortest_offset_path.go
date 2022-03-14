@@ -18,7 +18,7 @@ func ShortestOffsetPath[M any, T OffsetState[M, T]](initStates []T, globalContex
 		distFunc: adjStateDistFunc[M, T](),
 		convFunc: identityConvFunc[M, T](),
 	}
-	return shortestPath(initStates, offsetDistFunc[M, T], globalContext, ph)
+	return searchPath(newBFSSearcher[T](), initStates, offsetDistFunc[M, T], globalContext, ph)
 }
 
 func ShortestOffsetPathNonUnique[M any, T OffsetState[M, T]](initStates []T, globalContext M) ([]T, int) {
@@ -27,5 +27,5 @@ func ShortestOffsetPathNonUnique[M any, T OffsetState[M, T]](initStates []T, glo
 		convFunc:   identityConvFunc[M, T](),
 		skipUnique: true,
 	}
-	return shortestPath(initStates, offsetDistFunc[M, T], globalContext, ph)
+	return searchPath(newBFSSearcher[T](), initStates, offsetDistFunc[M, T], globalContext, ph)
 }

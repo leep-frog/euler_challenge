@@ -53,23 +53,24 @@ func simpleDistFunc[M, T any]() func(*Context[M, T], T) int {
 	}
 }
 
-func shortestPath[M, AS any, T pathable[M, T, AS]](initStates []T, initDistFunc func(*Context[M, T], T) int, globalContext M, ph *pathHelper[M, T, AS]) ([]T, int) {
+func searchPath[M, AS any, T pathable[M, T, AS]](container stateContainer[T], initStates []T, initDistFunc func(*Context[M, T], T) int, globalContext M, ph *pathHelper[M, T, AS]) ([]T, int) {
 	ctx := &Context[M, T]{
 		GlobalContext: globalContext,
 	}
-	states := &stateSet[T]{}
+	//states := &stateSet[T]{}
 	for _, initState := range initStates {
 		var initDist int
 		if initDistFunc != nil {
 			initDist = initDistFunc(ctx, initState)
 		}
-		states.Push(&StateValue[T]{initState, initDist, nil})
+		container.PushState(&StateValue[T]{initState, initDist, nil})
 	}
 
 	checked := map[string]bool{}
 
-	for states.Len() > 0 {
-		sv := heap.Pop(states).(*StateValue[T])
+	for container.Len() > 0 {
+		sv := container.PopState()
+		//sv := heap.Pop(states).(*StateValue[T])
 		ctx.StateValue = sv
 		if !ph.skipUnique {
 			if code := sv.state.Code(ctx); checked[code] {
@@ -90,38 +91,81 @@ func shortestPath[M, AS any, T pathable[M, T, AS]](initStates []T, initDistFunc 
 		for _, adjState := range sv.state.AdjacentStates(ctx) {
 			dist := ph.distFunc(ctx, adjState)
 			newT := ph.convFunc(ctx, adjState)
-			heap.Push(states, &StateValue[T]{newT, dist, func() *StateValue[T] { return sv }})
+			container.PushState(&StateValue[T]{newT, dist, func() *StateValue[T] { return sv }})
 		}
 	}
 	return nil, -1
 }
 
-type stateSet[T any] struct {
-	values []*StateValue[T]
+type stateContainer[T any] interface {
+	PushState(sv *StateValue[T])
+  PopState() *StateValue[T]
+	Len() int
 }
 
-func (ss *stateSet[T]) Len() int {
-	return len(ss.values)
+// newBFSSearcher returns a searcher for depth first search.
+func newDFSSearcher[T any]() stateContainer[T] {
+	return &dfsSearcher[T]{}
 }
 
-func (ss *stateSet[T]) Less(i, j int) bool {
-	return ss.values[i].dist < ss.values[j].dist
+type dfsSearcher[T any] struct {
+	stack []*StateValue[T]
 }
 
-func (ss *stateSet[T]) Push(x interface{}) {
-	ss.values = append(ss.values, x.(*StateValue[T]))
+func (ds *dfsSearcher[T]) PushState(sv *StateValue[T]) {
+	ds.stack = append(ds.stack, sv)
 }
 
-func (ss *stateSet[T]) Pop() interface{} {
-	r := ss.values[len(ss.values)-1]
-	ss.values = ss.values[:len(ss.values)-1]
+func (ds *dfsSearcher[T]) PopState() *StateValue[T] {
+	r := ds.stack[len(ds.stack)-1]
+	ds.stack = ds.stack[:len(ds.stack)-1]
 	return r
 }
 
-func (ss *stateSet[T]) Swap(i, j int) {
-	tmp := ss.values[i]
-	ss.values[i] = ss.values[j]
-	ss.values[j] = tmp
+func (ds *dfsSearcher[T]) Len() int {
+	return len(ds.stack)
+}
+
+// newBFSSearcher returns a searcher for breadth first search.
+func newBFSSearcher[T any]() stateContainer[T] {
+	return &bfsSearcher[T]{}
+}
+
+type bfsSearcher[T any] struct {
+	values []*StateValue[T]
+}
+
+func (bs *bfsSearcher[T]) PushState(sv *StateValue[T]) {
+	heap.Push(bs, sv)
+}
+
+func (bs *bfsSearcher[T]) PopState() *StateValue[T] {
+	return heap.Pop(bs).(*StateValue[T])
+}
+
+// Below functions needed for heap interface
+func (bs *bfsSearcher[T]) Len() int {
+	return len(bs.values)
+}
+
+func (bs *bfsSearcher[T]) Less(i, j int) bool {
+	return bs.values[i].dist < bs.values[j].dist
+}
+
+func (bs *bfsSearcher[T]) Push(x interface{}) {
+	bs.values = append(bs.values, x.(*StateValue[T]))
+}
+
+func (bs *bfsSearcher[T]) Pop() interface{} {
+	r := bs.values[len(bs.values)-1]
+	bs.values = bs.values[:len(bs.values)-1]
+	return r
+}
+
+func (bs *bfsSearcher[T]) Swap(i, j int) {
+	tmp := bs.values[i]
+	bs.values[i] = bs.values[j]
+	bs.values[j] = tmp
 }
 
 type StateValue[T any] struct {

@@ -21,5 +21,5 @@ func ShortestWeightedPath[M any, T WeightedState[M, T]](initStates []T, globalCo
 		},
 		convFunc: identityConvFunc[M, T](),
 	}
-	return shortestPath(initStates, initDistFunc[M, T], globalContext, ph)
+	return searchPath(newBFSSearcher[T](), initStates, initDistFunc[M, T], globalContext, ph)
 }

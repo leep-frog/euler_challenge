@@ -1,12 +1,8 @@
 package bfs
 
-import (
-	"fmt"
-)
-
 // TODO: this file still needs work
 
-type CycleState[M, T any] interface {
+/*type CycleState[M, T any] interface {
 	Code(*Context[M, T]) string
 	AdjacentStates(*Context[M, T]) []T
 
@@ -106,3 +102,4 @@ func CyclePath[M any, T CycleState[M, T]](initState T, globalContext M) ([]T, in
 	}
 	return ts, dist
 }
+*/
