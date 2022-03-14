@@ -53,6 +53,14 @@ func CyclePath[map[string]bool, T State[map[string]bool, T]](initState T) ([]T, 
 	AdjacentStates(*Context[M, T]) []AS
 }*/
 
+func AnyPath[M any, T State[M, T]](initStates []T, globalContext M) ([]T, int) {
+	ph := &pathHelper[M, T, T]{
+		distFunc: simpleDistFunc[M, T](),
+		convFunc: identityConvFunc[M, T](),
+	}
+	return searchPath(newDFSSearcher[T](), initStates, nil, globalContext, ph)
+}
+
 // anyPath implements a generic depth first search.
 func anyPath[M, AS any, T pathable[M, T, AS]](initState T, initDist int, globalContext M, aph *anyPathHelper[M, T, AS]) ([]T, int) {
 	ctx := &Context[M, T]{
