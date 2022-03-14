@@ -25,6 +25,23 @@ func TestAll(t *testing.T) {
 	tests := []*codingChallengeTest{
 		// TEST_START (needed for file_generator.go)
 		{
+			name: "p110",
+			args: []string{"108", "4000000"},
+			want: []string{"9350130049860600"},
+		},
+		{
+			name:     "p110 example",
+			args:     []string{"108", "100"},
+			want:     []string{"1260"},
+			estimate: 2,
+		},
+		{
+			name:     "p108",
+			args:     []string{"108", "1000"},
+			want:     []string{"180180"},
+			estimate: 2,
+		},
+		/*{
 			name: "p107",
 			args: []string{"107", "p107_network.txt"},
 			want: []string{"259679"},
@@ -34,7 +51,7 @@ func TestAll(t *testing.T) {
 			args: []string{"107", "p107_example.txt"},
 			want: []string{"150"},
 		},
-		/*{
+		{
 			name:     "p106",
 			args:     []string{"106", "12"},
 			want:     []string{"21384"},

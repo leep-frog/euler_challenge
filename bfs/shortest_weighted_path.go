@@ -12,6 +12,8 @@ func initDistFunc[M any, T WeightedState[M, T]](ctx *Context[M, T], t T) int {
 	return t.Distance(ctx)
 }
 
+// TODO: change this and interface to cumulative or something. Weighted should
+// be the offset (since edges are actually weighted there).
 func ShortestWeightedPath[M any, T WeightedState[M, T]](initStates []T, globalContext M) ([]T, int) {
 	ph := &pathHelper[M, T, T]{
 		distFunc: func(ctx *Context[M, T], as T) int {
