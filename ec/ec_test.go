@@ -24,10 +24,10 @@ type codingChallengeTest struct {
 func TestAll(t *testing.T) {
 	tests := []*codingChallengeTest{
 		// TEST_START (needed for file_generator.go)
-		/*{
+		{
 			name: "p112",
 			args: []string{"112", "99"},
-			want: []string{"21780"},
+			want: []string{"1587000"},
 		},
 		{
 			name: "p112 example",
@@ -38,431 +38,431 @@ func TestAll(t *testing.T) {
 			name: "p112 example",
 			args: []string{"112", "50"},
 			want: []string{"538"},
-		},*/
-		/*{
+		},
+		{
 			name: "p111",
 			args: []string{"111", "10"},
-			want: []string{"0"},
+			want: []string{"612407567715"},
 		},
 		{
 			name:     "p111 example",
 			args:     []string{"111", "4"},
 			want:     []string{"273700"},
 			estimate: 0.25,
-		},
-		{
-			name: "p110",
-			args: []string{"108", "4000000"},
-			want: []string{"9350130049860600"},
-		},
-		{
-			name:     "p110 example",
-			args:     []string{"108", "100"},
-			want:     []string{"1260"},
-			estimate: 2,
-		},
-		{
-			name:     "p109",
-			args:     []string{"109", "100"},
-			want:     []string{"38182"},
-			estimate: 1,
-		},
-		{
-			name:     "p109 example",
-			args:     []string{"109", "6"},
-			want:     []string{"11"},
-			estimate: 1,
-		},
-		{
-			name:     "p108",
-			args:     []string{"108", "1000"},
-			want:     []string{"180180"},
-			estimate: 2,
-		},
-		{
-			name:     "p107",
-			args:     []string{"107", "p107_network.txt"},
-			want:     []string{"259679"},
-			estimate: 0.1,
-		},
-		{
-			name:     "p107 example",
-			args:     []string{"107", "p107_example.txt"},
-			want:     []string{"150"},
-			estimate: 0.1,
-		},
-		{
-			name:     "p106",
-			args:     []string{"106", "12"},
-			want:     []string{"21384"},
-			estimate: 0.25,
-		},
-		{
-			name:     "p106",
-			args:     []string{"106", "7"},
-			want:     []string{"70"},
-			estimate: 0.25,
-		},
-		{
-			name:     "p106 example",
-			args:     []string{"106", "4"},
-			want:     []string{"1"},
-			estimate: 0.25,
-		},
-		{
-			name: "p105",
-			args: []string{"105", "p105_sets.txt"},
-			want: []string{"73702"},
-		},
-		{
-			name:     "p104",
-			args:     []string{"104"},
-			want:     []string{"329468"},
-			estimate: 0.5,
-		},
-		{
-			name: "p103",
-			args: []string{"103", "7"},
-			want: []string{"20313839404245"},
-		},
-		{
-			name: "p103 example",
-			args: []string{"103", "6"},
-			want: []string{"111819202225"},
-		},
-		{
-			name: "p103 example",
-			args: []string{"103", "5"},
-			want: []string{"69111213"},
-		},
-		{
-			name: "p103 example",
-			args: []string{"103", "4"},
-			want: []string{"3567"},
-		},
-		{
-			name: "p103 example",
-			args: []string{"103", "3"},
-			want: []string{"234"},
-		},
-		{
-			name: "p103 example",
-			args: []string{"103", "2"},
-			want: []string{"12"},
-		},
-		{
-			name: "p103 example",
-			args: []string{"103", "1"},
-			want: []string{"1"},
-		},
-		{
-			name: "p102",
-			args: []string{"102", "p102_triangles.txt"},
-			want: []string{"228"},
-		},
-		{
-			name:     "p101",
-			args:     []string{"101", "2"},
-			want:     []string{"37076114526"},
-			estimate: 0.5,
-		},
-		{
-			name:     "p101",
-			args:     []string{"101", "1"},
-			want:     []string{"74"},
-			estimate: 0.25,
-		},
-		{
-			name: "p100",
-			args: []string{"100"},
-			want: []string{"756872327473"},
-		},
-		{
-			name: "p99",
-			args: []string{"99", "p099.txt"},
-			want: []string{"709"},
-		},
-		{
-			name: "p98",
-			args: []string{"98", "words.txt"},
-			want: []string{"18769"},
-		},
-		{
-			name: "p97",
-			args: []string{"97"},
-			want: []string{"8739992577"},
-			long: true, // 16 seconds
-		},
-		{
-			name: "p96",
-			args: []string{"96", "p96.txt"},
-			want: []string{"24702"},
-			long: true, // sometimes infinite loops or at least long loops
-		},
-		{
-			name: "p96 example",
-			args: []string{"96", "p96_example.txt"},
-			want: []string{"483"},
-		},
-		{
-			name: "p95",
-			args: []string{"95"},
-			want: []string{"28 14316"},
-		},
-		{
-			name: "p94",
-			args: []string{"94"},
-			want: []string{"518408346"},
-		},
-		{
-			name: "p93",
-			args: []string{"93", "9"},
-			want: []string{"1258 51"},
-		},
-		{
-			name: "p93 example",
-			args: []string{"93", "4"},
-			want: []string{"1234 28"},
-		},
-		{
-			name: "p92",
-			args: []string{"92"},
-			want: []string{"8581146"},
-			long: true, // 6 seconds
-		},
-		{
-			name: "p91",
-			args: []string{"91", "50"},
-			want: []string{"14234"},
-		},
-		{
-			name: "p91 example",
-			args: []string{"91", "2"},
-			want: []string{"14"},
-		},
-		{
-			name: "p90",
-			args: []string{"90"},
-			want: []string{"1217"},
-		},
-		{
-			name: "p89",
-			args: []string{"89", "p89.txt"},
-			want: []string{"743"},
-		},
-		{
-			name: "p88",
-			args: []string{"88", "12000"},
-			want: []string{"7587457"},
-			long: true, // 20 minutes
-		},
-		{
-			name: "p88 example 2",
-			args: []string{"88", "12"},
-			want: []string{"61"},
-		},
-		{
-			name: "p88 example 1",
-			args: []string{"88", "6"},
-			want: []string{"30"},
-		},
-		{
-			name: "p87",
-			args: []string{"87", "50000000"},
-			want: []string{"1097343"},
-		},
-		{
-			name: "p87 example",
-			args: []string{"87", "50"},
-			want: []string{"4"},
-		},
-		{
-			name: "p86",
-			args: []string{"86", "1000000"},
-			want: []string{"1818"},
-		},
-		{
-			name: "p86 example",
-			args: []string{"86", "2000"},
-			want: []string{"100"},
-		},
-		{
-			name: "p85",
-			args: []string{"85"},
-			want: []string{"2772 7999992"},
-		},
-		{
-			// ended up getting correct answer (101524) with 6 dice lol
-			// so I guess bug + wrong dice = success!
-			name: "p84",
-			args: []string{"84", "6"},
-			want: []string{"0"},
-			long: true, // doesn't actually work?
-		},
-		{
-			name: "p84 example",
-			args: []string{"84", "6"},
-			want: []string{"0"},
-			long: true, // doesn't actually work?
-		},
-		{
-			name: "p83",
-			args: []string{"83", "p83.txt"},
-			want: []string{"425185"},
-		},
-		{
-			name: "p82",
-			args: []string{"82", "p82.txt"},
-			want: []string{"260324"},
-		},
-		{
-			name: "p81 example",
-			args: []string{"81", "p81_example.txt"},
-			want: []string{"2427"},
-		},
-		{
-			name: "p81",
-			args: []string{"81", "p81.txt"},
-			want: []string{"427337"},
-		},
-		{
-			name: "p80",
-			args: []string{"80"},
-			want: []string{"40886"},
-		},
-		{
-			name: "p79",
-			args: []string{"79", "p79.txt"},
-			want: []string{"73162890 true"},
-		},
-		{
-			name: "p78",
-			args: []string{"78", "1000000"},
-			want: []string{"55374 36325300925435785930832331577396761646715836173633893227071086460709268608053489541731404543537668438991170680745272159154493740615385823202158167635276250554555342115855424598920159035413044811245082197335097953570911884252410730174907784762924663654000000"},
-			long: true,
-		},
-		{
-			name: "p77",
-			args: []string{"77"},
-			want: []string{"71 5006"},
-		},
-		{
-			name: "p76",
-			args: []string{"76", "100"},
-			want: []string{"190569291"},
-		},
-		{
-			name: "p76 example",
-			args: []string{"76", "5"},
-			want: []string{"6"},
-		},
-		{
-			name: "p75",
-			args: []string{"75", "1500000"},
-			want: []string{"161667"},
-			long: true,
-		},
-		{
-			name: "p75 example",
-			args: []string{"75", "48"},
-			want: []string{"6"},
-		},
-		{
-			name: "p74",
-			args: []string{"74", "1000000"},
-			want: []string{"402"},
-		},
-		{
-			name: "p73",
-			args: []string{"73", "12000"},
-			want: []string{"7295372"},
-		},
-		{
-			name: "p73 example",
-			args: []string{"73", "8"},
-			want: []string{"3"},
-		},
-		{
-			name: "p72",
-			args: []string{"72", "1000000"},
-			want: []string{"303963552391"},
-			long: true,
-		},
-		{
-			name: "p72 example",
-			args: []string{"72", "8"},
-			want: []string{"21"},
-		},
-		{
-			name: "p71",
-			args: []string{"71", "1000000"},
-			want: []string{"428570/999997"},
-		},
-		{
-			name: "p71 example",
-			args: []string{"71", "8"},
-			want: []string{"2/5"},
-		},
-		{
-			name: "p70",
-			args: []string{"70", "10000000"},
-			want: []string{"8319823"},
-		},
-		{
-			name: "p69",
-			args: []string{"69", "1000000"},
-			want: []string{"510510"},
-		},
-		{
-			name: "p69 example",
-			args: []string{"69", "10"},
-			want: []string{"6"},
-		},
-		{
-			name: "p66",
-			args: []string{"66", "1000"},
-			want: []string{"661"},
-		},
-		{
-			name: "p66 example",
-			args: []string{"66", "7"},
-			want: []string{"5"},
-		},
-		{
-			name: "p65",
-			args: []string{"65", "100"},
-			want: []string{"272"},
-		},
-		{
-			name: "p65 example",
-			args: []string{"65", "10"},
-			want: []string{"17"},
-		},
-		{
-			name: "p64",
-			args: []string{"64", "10000"},
-			want: []string{"1322"},
-		},
-		{
-			name: "p64 example",
-			args: []string{"64", "13"},
-			want: []string{"4"},
-		},
-		{
-			name: "p63",
-			args: []string{"63"},
-			want: []string{"49"},
-		},
-		{
-			name: "p62",
-			args: []string{"62", "5"},
-			want: []string{"127035954683"},
-		},
-		{
-			name: "p62 example",
-			args: []string{"62", "3"},
-			want: []string{"41063625"},
-		},*/
+		}, /*
+			{
+				name: "p110",
+				args: []string{"108", "4000000"},
+				want: []string{"9350130049860600"},
+			},
+			{
+				name:     "p110 example",
+				args:     []string{"108", "100"},
+				want:     []string{"1260"},
+				estimate: 2,
+			},
+			{
+				name:     "p109",
+				args:     []string{"109", "100"},
+				want:     []string{"38182"},
+				estimate: 1,
+			},
+			{
+				name:     "p109 example",
+				args:     []string{"109", "6"},
+				want:     []string{"11"},
+				estimate: 1,
+			},
+			{
+				name:     "p108",
+				args:     []string{"108", "1000"},
+				want:     []string{"180180"},
+				estimate: 2,
+			},
+			{
+				name:     "p107",
+				args:     []string{"107", "p107_network.txt"},
+				want:     []string{"259679"},
+				estimate: 0.1,
+			},
+			{
+				name:     "p107 example",
+				args:     []string{"107", "p107_example.txt"},
+				want:     []string{"150"},
+				estimate: 0.1,
+			},
+			{
+				name:     "p106",
+				args:     []string{"106", "12"},
+				want:     []string{"21384"},
+				estimate: 0.25,
+			},
+			{
+				name:     "p106",
+				args:     []string{"106", "7"},
+				want:     []string{"70"},
+				estimate: 0.25,
+			},
+			{
+				name:     "p106 example",
+				args:     []string{"106", "4"},
+				want:     []string{"1"},
+				estimate: 0.25,
+			},
+			{
+				name: "p105",
+				args: []string{"105", "p105_sets.txt"},
+				want: []string{"73702"},
+			},
+			{
+				name:     "p104",
+				args:     []string{"104"},
+				want:     []string{"329468"},
+				estimate: 0.5,
+			},
+			{
+				name: "p103",
+				args: []string{"103", "7"},
+				want: []string{"20313839404245"},
+			},
+			{
+				name: "p103 example",
+				args: []string{"103", "6"},
+				want: []string{"111819202225"},
+			},
+			{
+				name: "p103 example",
+				args: []string{"103", "5"},
+				want: []string{"69111213"},
+			},
+			{
+				name: "p103 example",
+				args: []string{"103", "4"},
+				want: []string{"3567"},
+			},
+			{
+				name: "p103 example",
+				args: []string{"103", "3"},
+				want: []string{"234"},
+			},
+			{
+				name: "p103 example",
+				args: []string{"103", "2"},
+				want: []string{"12"},
+			},
+			{
+				name: "p103 example",
+				args: []string{"103", "1"},
+				want: []string{"1"},
+			},
+			{
+				name: "p102",
+				args: []string{"102", "p102_triangles.txt"},
+				want: []string{"228"},
+			},
+			{
+				name:     "p101",
+				args:     []string{"101", "2"},
+				want:     []string{"37076114526"},
+				estimate: 0.5,
+			},
+			{
+				name:     "p101",
+				args:     []string{"101", "1"},
+				want:     []string{"74"},
+				estimate: 0.25,
+			},
+			{
+				name: "p100",
+				args: []string{"100"},
+				want: []string{"756872327473"},
+			},
+			{
+				name: "p99",
+				args: []string{"99", "p099.txt"},
+				want: []string{"709"},
+			},
+			{
+				name: "p98",
+				args: []string{"98", "words.txt"},
+				want: []string{"18769"},
+			},
+			{
+				name: "p97",
+				args: []string{"97"},
+				want: []string{"8739992577"},
+				long: true, // 16 seconds
+			},
+			{
+				name: "p96",
+				args: []string{"96", "p96.txt"},
+				want: []string{"24702"},
+				long: true, // sometimes infinite loops or at least long loops
+			},
+			{
+				name: "p96 example",
+				args: []string{"96", "p96_example.txt"},
+				want: []string{"483"},
+			},
+			{
+				name: "p95",
+				args: []string{"95"},
+				want: []string{"28 14316"},
+			},
+			{
+				name: "p94",
+				args: []string{"94"},
+				want: []string{"518408346"},
+			},
+			{
+				name: "p93",
+				args: []string{"93", "9"},
+				want: []string{"1258 51"},
+			},
+			{
+				name: "p93 example",
+				args: []string{"93", "4"},
+				want: []string{"1234 28"},
+			},
+			{
+				name: "p92",
+				args: []string{"92"},
+				want: []string{"8581146"},
+				long: true, // 6 seconds
+			},
+			{
+				name: "p91",
+				args: []string{"91", "50"},
+				want: []string{"14234"},
+			},
+			{
+				name: "p91 example",
+				args: []string{"91", "2"},
+				want: []string{"14"},
+			},
+			{
+				name: "p90",
+				args: []string{"90"},
+				want: []string{"1217"},
+			},
+			{
+				name: "p89",
+				args: []string{"89", "p89.txt"},
+				want: []string{"743"},
+			},
+			{
+				name: "p88",
+				args: []string{"88", "12000"},
+				want: []string{"7587457"},
+				long: true, // 20 minutes
+			},
+			{
+				name: "p88 example 2",
+				args: []string{"88", "12"},
+				want: []string{"61"},
+			},
+			{
+				name: "p88 example 1",
+				args: []string{"88", "6"},
+				want: []string{"30"},
+			},
+			{
+				name: "p87",
+				args: []string{"87", "50000000"},
+				want: []string{"1097343"},
+			},
+			{
+				name: "p87 example",
+				args: []string{"87", "50"},
+				want: []string{"4"},
+			},
+			{
+				name: "p86",
+				args: []string{"86", "1000000"},
+				want: []string{"1818"},
+			},
+			{
+				name: "p86 example",
+				args: []string{"86", "2000"},
+				want: []string{"100"},
+			},
+			{
+				name: "p85",
+				args: []string{"85"},
+				want: []string{"2772 7999992"},
+			},
+			{
+				// ended up getting correct answer (101524) with 6 dice lol
+				// so I guess bug + wrong dice = success!
+				name: "p84",
+				args: []string{"84", "6"},
+				want: []string{"0"},
+				long: true, // doesn't actually work?
+			},
+			{
+				name: "p84 example",
+				args: []string{"84", "6"},
+				want: []string{"0"},
+				long: true, // doesn't actually work?
+			},
+			{
+				name: "p83",
+				args: []string{"83", "p83.txt"},
+				want: []string{"425185"},
+			},
+			{
+				name: "p82",
+				args: []string{"82", "p82.txt"},
+				want: []string{"260324"},
+			},
+			{
+				name: "p81 example",
+				args: []string{"81", "p81_example.txt"},
+				want: []string{"2427"},
+			},
+			{
+				name: "p81",
+				args: []string{"81", "p81.txt"},
+				want: []string{"427337"},
+			},
+			{
+				name: "p80",
+				args: []string{"80"},
+				want: []string{"40886"},
+			},
+			{
+				name: "p79",
+				args: []string{"79", "p79.txt"},
+				want: []string{"73162890 true"},
+			},
+			{
+				name: "p78",
+				args: []string{"78", "1000000"},
+				want: []string{"55374 36325300925435785930832331577396761646715836173633893227071086460709268608053489541731404543537668438991170680745272159154493740615385823202158167635276250554555342115855424598920159035413044811245082197335097953570911884252410730174907784762924663654000000"},
+				long: true,
+			},
+			{
+				name: "p77",
+				args: []string{"77"},
+				want: []string{"71 5006"},
+			},
+			{
+				name: "p76",
+				args: []string{"76", "100"},
+				want: []string{"190569291"},
+			},
+			{
+				name: "p76 example",
+				args: []string{"76", "5"},
+				want: []string{"6"},
+			},
+			{
+				name: "p75",
+				args: []string{"75", "1500000"},
+				want: []string{"161667"},
+				long: true,
+			},
+			{
+				name: "p75 example",
+				args: []string{"75", "48"},
+				want: []string{"6"},
+			},
+			{
+				name: "p74",
+				args: []string{"74", "1000000"},
+				want: []string{"402"},
+			},
+			{
+				name: "p73",
+				args: []string{"73", "12000"},
+				want: []string{"7295372"},
+			},
+			{
+				name: "p73 example",
+				args: []string{"73", "8"},
+				want: []string{"3"},
+			},
+			{
+				name: "p72",
+				args: []string{"72", "1000000"},
+				want: []string{"303963552391"},
+				long: true,
+			},
+			{
+				name: "p72 example",
+				args: []string{"72", "8"},
+				want: []string{"21"},
+			},
+			{
+				name: "p71",
+				args: []string{"71", "1000000"},
+				want: []string{"428570/999997"},
+			},
+			{
+				name: "p71 example",
+				args: []string{"71", "8"},
+				want: []string{"2/5"},
+			},
+			{
+				name: "p70",
+				args: []string{"70", "10000000"},
+				want: []string{"8319823"},
+			},
+			{
+				name: "p69",
+				args: []string{"69", "1000000"},
+				want: []string{"510510"},
+			},
+			{
+				name: "p69 example",
+				args: []string{"69", "10"},
+				want: []string{"6"},
+			},
+			{
+				name: "p66",
+				args: []string{"66", "1000"},
+				want: []string{"661"},
+			},
+			{
+				name: "p66 example",
+				args: []string{"66", "7"},
+				want: []string{"5"},
+			},
+			{
+				name: "p65",
+				args: []string{"65", "100"},
+				want: []string{"272"},
+			},
+			{
+				name: "p65 example",
+				args: []string{"65", "10"},
+				want: []string{"17"},
+			},
+			{
+				name: "p64",
+				args: []string{"64", "10000"},
+				want: []string{"1322"},
+			},
+			{
+				name: "p64 example",
+				args: []string{"64", "13"},
+				want: []string{"4"},
+			},
+			{
+				name: "p63",
+				args: []string{"63"},
+				want: []string{"49"},
+			},
+			{
+				name: "p62",
+				args: []string{"62", "5"},
+				want: []string{"127035954683"},
+			},
+			{
+				name: "p62 example",
+				args: []string{"62", "3"},
+				want: []string{"41063625"},
+			},*/
 		{
 			name: "p61",
 			args: []string{"61", "6"},
@@ -473,7 +473,7 @@ func TestAll(t *testing.T) {
 			args: []string{"61", "3"},
 			want: []string{"19291 [8128 2882 8281]"},
 		},
-		/*{
+		{
 			name: "p60",
 			args: []string{"60", "3"},
 			want: []string{
@@ -487,7 +487,7 @@ func TestAll(t *testing.T) {
 				"26033 [8389 6733 5701 5197 13]",
 			},
 		},
-		{
+		/*{
 			name: "p59",
 			args: []string{"59", "p59.txt"},
 			want: []string{"129448"},

@@ -1,8 +1,6 @@
 package eulerchallenge
 
 import (
-	"fmt"
-
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
@@ -69,9 +67,7 @@ func P111() *problem {
 				var os []int
 				p110Generator(d, n, j, []int{}, &os, g)
 				if len(os) > 0 {
-					fmt.Println(d, "sum", maths.SumSys(os...))
 					sum += maths.SumSys(os...)
-					fmt.Println(os)
 					break
 				}
 			}
@@ -83,7 +79,6 @@ func P111() *problem {
 func p110Generator(d, remainingLen, remainingDs int, cur []int, opts *[]int, g *generator.Generator[int]) {
 	if remainingLen == 0 {
 		v := maths.FromDigits(cur)
-		//fmt.Println(v)
 		if remainingDs == 0 && generator.IsPrime(v, g) {
 			*opts = append(*opts, v)
 		}

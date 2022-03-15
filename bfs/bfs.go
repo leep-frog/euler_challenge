@@ -1,7 +1,6 @@
 package bfs
 
 import (
-	"container/heap"
 	"fmt"
 	"reflect"
 	"strings"
@@ -95,9 +94,13 @@ func searchPath[M, AS any, T pathable[M, T, AS]](container stateContainer[T], in
 	return nil, -1
 }
 
+// TODO: get rid of this and just have this be a private wrapper depending on
+// search type
 type StateValue[T any] struct {
 	state T
+	// This can be replaced by wrapping type for specific search type wrapper
 	dist  int
+	// TODO: this can be replaced by improving container method (to include CurrentPath() function)
 	prev  func() *StateValue[T]
 }
 

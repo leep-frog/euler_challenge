@@ -22,6 +22,7 @@ func ShortestPath[M any, T State[M, T]](initStates []T, globalContext M) ([]T, i
 }
 
 // TODO: change this to accept interface without Code
+// TODO: actually remove this (use CyclePath instead). Shortest path while ignoring uniques doesn't make sense
 func ShortestPathNonUnique[M any, T State[M, T]](initStates []T, globalContext M) ([]T, int) {
 	ph := &pathHelper[M, T, T]{
 		distFunc: simpleDistFunc[M, T](),
