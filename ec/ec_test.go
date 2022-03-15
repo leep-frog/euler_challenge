@@ -25,6 +25,41 @@ func TestAll(t *testing.T) {
 	tests := []*codingChallengeTest{
 		// TEST_START (needed for file_generator.go)
 		{
+			name: "p117",
+			args: []string{"117", "50"},
+			want: []string{"100808458960497"},
+		},
+		{
+			name: "p117 example",
+			args: []string{"117", "5"},
+			want: []string{"15"},
+		},
+		/*{
+			name: "p116",
+			args: []string{"116", "50"},
+			want: []string{"20492570929"},
+		},
+		{
+			name: "p116 example",
+			args: []string{"116", "5"},
+			want: []string{"12"},
+		},
+		{
+			name: "p115",
+			args: []string{"115", "50"},
+			want: []string{"168"},
+		},
+		{
+			name: "p115 example",
+			args: []string{"115", "10"},
+			want: []string{"57"},
+		},
+		{
+			name: "p115 example",
+			args: []string{"115", "3"},
+			want: []string{"30"},
+		},
+		{
 			name: "p114",
 			args: []string{"114", "50"},
 			want: []string{"16475640049"},
@@ -34,7 +69,7 @@ func TestAll(t *testing.T) {
 			args: []string{"114", "7"},
 			want: []string{"17"},
 		},
-		/*{
+		{
 			name: "p113",
 			args: []string{"113", "100"},
 			want: []string{"51161058134250"},
@@ -59,7 +94,7 @@ func TestAll(t *testing.T) {
 			args: []string{"113", "1"},
 			want: []string{"9"},
 		},
-		/*{
+		{
 			name: "p112",
 			args: []string{"112", "99"},
 			want: []string{"1587000"},
