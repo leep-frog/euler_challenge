@@ -223,7 +223,7 @@ func TestGenerators(t *testing.T) {
 			var nexts, lasts, nths []int
 			for i := range test.want {
 				nexts = append(nexts, test.g.Next())
-				lasts = append(lasts, test.g.last())
+				lasts = append(lasts, test.g.Last())
 				nths = append(nths, test.g.Nth(i))
 				if test.g.len() != i+1 {
 					t.Errorf("Generator.len() returned %d; want %d", test.g.len(), i+1)
@@ -290,7 +290,7 @@ func TestBigGenerators(t *testing.T) {
 			var nexts, lasts, nths []*maths.Int
 			for i := range want {
 				nexts = append(nexts, test.g.Next())
-				lasts = append(lasts, test.g.last())
+				lasts = append(lasts, test.g.Last())
 				nths = append(nths, test.g.Nth(i))
 				if test.g.len() != i+1 {
 					t.Errorf("Generator.len() returned %d; want %d", test.g.len(), i+1)

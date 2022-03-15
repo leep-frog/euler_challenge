@@ -1,7 +1,7 @@
 package bfs
 
 type State[M, T any] interface {
-	// A unique code that represents the current state of the world.
+	// A unique code for the current state.
 	Code(*Context[M, T]) string
 	// Returns if the given state is in a final position. The input is a contextual variable
 	// that is passed along from ShortestPath.

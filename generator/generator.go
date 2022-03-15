@@ -159,7 +159,7 @@ func putCache[T any](name string, sl []T, g Generatable[T]) {
 	c := newCache()
 	name = fmt.Sprintf("coding_challenge_%s", name)
 	if err := c.Put(name, strings.Join(r, "\n")); err != nil {
-		panic(fmt.Sprintf("failed to write to struct: %v", err))
+		panic(Sprintf("failed to write to struct: %v", err))
 	}
 }*/
 
@@ -236,7 +236,7 @@ func Primes() *Generator[int] {
 				if p*p > i {
 					break
 				}
-				if rem := i % p; rem == 0 {
+				if i % p == 0 {
 					newPrime = false
 					break
 				}
