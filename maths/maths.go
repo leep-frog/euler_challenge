@@ -966,6 +966,14 @@ func Reverse[T any](ts []T) []T {
 	return st
 }
 
+func CopySlice[T any](ts []T) []T {
+	var r []T
+	for _, t := range ts {
+		r = append(r, t)
+	}
+	return r
+}
+
 func CopyMap[K comparable, V any](m map[K]V, except ...K) map[K]V {
 	ignore := map[K]bool{}
 	for _, k := range except {
