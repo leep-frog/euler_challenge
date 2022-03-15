@@ -9,3 +9,20 @@ func AnyPath[M any, T State[M, T]](initStates []T, globalContext M) ([]T, int) {
 	}
 	return searchPath(newDFSSearcher[T](), initStates, nil, globalContext, ph)
 }
+
+/*type cycleState[M any, T Set[M, T]] struct {
+	state T
+}
+
+func (cs *cycleState) Done() bool {
+	// return cs.Code is in 
+}
+
+type cycleContext[M any, T Set[M, T]] struct {
+
+}
+
+// CyclePath finds cycles
+func CyclePath() {
+	//return ShortestPathNonUnique()
+}*/

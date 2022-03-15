@@ -462,7 +462,7 @@ func TestAll(t *testing.T) {
 			name: "p62 example",
 			args: []string{"62", "3"},
 			want: []string{"41063625"},
-		},
+		},*/
 		{
 			name: "p61",
 			args: []string{"61", "6"},
@@ -473,7 +473,7 @@ func TestAll(t *testing.T) {
 			args: []string{"61", "3"},
 			want: []string{"19291 [8128 2882 8281]"},
 		},
-		{
+		/*{
 			name: "p60",
 			args: []string{"60", "3"},
 			want: []string{
@@ -792,7 +792,7 @@ func TestAll(t *testing.T) {
 			name: "p19",
 			args: []string{"19"},
 			want: []string{"171"},
-		},
+		},*/
 		{
 			name: "p18 example",
 			args: []string{"18", "p18_example.txt"},
@@ -826,7 +826,7 @@ func TestAll(t *testing.T) {
 				"1074",
 			},
 		},
-		{
+		/*{
 			name: "p67",
 			args: []string{"18", "p67.txt"},
 			want: []string{

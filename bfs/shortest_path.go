@@ -20,6 +20,7 @@ func ShortestPath[M any, T State[M, T]](initStates []T, globalContext M) ([]T, i
 	return searchPath(newBFSSearcher[T](), initStates, nil, globalContext, ph)
 }
 
+// TODO: change this to accept interface without Code
 func ShortestPathNonUnique[M any, T State[M, T]](initStates []T, globalContext M) ([]T, int) {
 	ph := &pathHelper[M, T, T]{
 		distFunc: simpleDistFunc[M, T](),

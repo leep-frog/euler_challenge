@@ -11,32 +11,32 @@ import (
 
 func P61() *problem {
 	return intInputNode(61, func(o command.Output, n int) {
-			generators := map[int]*generator.Generator[int]{}
-			startMap := map[int]int{}
-			for i := 1; i < n; i++ {
-				shape := i + 3
-				g := generator.ShapeNumberGenerator(shape)
-				generators[shape] = g
-				start := 0
-				for ; g.Nth(start) < 1000; start++ {
-				}
-				startMap[shape] = start
+		generators := map[int]*generator.Generator[int]{}
+		startMap := map[int]int{}
+		for i := 1; i < n; i++ {
+			shape := i + 3
+			g := generator.ShapeNumberGenerator(shape)
+			generators[shape] = g
+			start := 0
+			for ; g.Nth(start) < 1000; start++ {
 			}
+			startMap[shape] = start
+		}
 
-			var initStates []*cycFigNum
-			triG := generator.ShapeNumberGenerator(3)
-			for i := 0; triG.Nth(i) < 10_000; i++ {
-				if triG.Nth(i) < 1000 {
-					continue
-				}
-				initStates = append(initStates, &cycFigNum{
-					triG.Nth(i),
-					maths.CopyMap(generators),
-				})
+		var initStates []*cycFigNum
+		triG := generator.ShapeNumberGenerator(3)
+		for i := 0; triG.Nth(i) < 10_000; i++ {
+			if triG.Nth(i) < 1000 {
+				continue
 			}
-			path, _ := bfs.ShortestPathNonUnique(initStates, startMap)
-			o.Stdoutln(maths.SumType(path), maths.Reverse(path))
-		})
+			initStates = append(initStates, &cycFigNum{
+				triG.Nth(i),
+				maths.CopyMap(generators),
+			})
+		}
+		path, _ := bfs.ShortestPathNonUnique(initStates, startMap)
+		o.Stdoutln(maths.SumType(path), maths.Reverse(path))
+	})
 }
 
 type cycFigNum struct {
@@ -82,11 +82,10 @@ func (cfn *cycFigNum) AdjacentStates(ctx *bfs.Context[map[int]int, *cycFigNum]) 
 		for i := startMap[shape]; gen.Nth(i) < 10_000; i++ {
 			gn := gen.Nth(i)
 			if cfn.CyclesInt(gn) {
-				newN := &cycFigNum{
+				r = append(r, &cycFigNum{
 					gn,
 					maths.CopyMap(cfn.remainingShapes, shape),
-				}
-				r = append(r, newN)
+				})
 			}
 		}
 	}
