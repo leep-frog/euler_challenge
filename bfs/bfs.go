@@ -68,6 +68,9 @@ func searchPath[M, AS any, T pathable[M, T, AS]](container stateContainer[T], in
 
 	for container.Len() > 0 {
 		sv := container.PopState()
+		if sv == nil {
+			continue
+		}
 		ctx.StateValue = sv
 		if !ph.skipUnique {
 			if code := sv.state.Code(ctx); checked[code] {

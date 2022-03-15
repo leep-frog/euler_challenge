@@ -122,6 +122,8 @@ func Branches() map[string]*command.Node {
 		// P110 is P108 with a different input
 		P111(),
 		P112(),
+		P113(),
+		P114(),
 		// END_LIST (needed for file_generator.go)
 	}
 

@@ -8,7 +8,7 @@ type stateContainer[T any] interface {
 	PushState(*StateValue[T])
   PopState() *StateValue[T]
 	Len() int
-	CurrentPath() []*StateValue[T]
+	//CurrentPath() []*StateValue[T]
 }
 
 // newBFSSearcher returns a searcher for depth first search.
@@ -17,35 +17,14 @@ func newDFSSearcher[T any]() stateContainer[T] {
 }
 
 type dfsSearcher[T any] struct {
-	//stack []*StateValue[T]
-	stack []*dfsItem[T]
-	path []*StateValue[T]
-}
-
-type dfsItem[T any] struct {
-	popPath bool
-	item *StateValue[T]
+	stack []*StateValue[T]
 }
 
 func (ds *dfsSearcher[T]) PushState(sv *StateValue[T]) {
-	ds.pushState(false, sv)
-}
-
-func (ds *dfsSearcher[T]) pushState(popPath bool, sv *StateValue[T]) {
-	ds.stack = append(ds.stack, &dfsItem[T]{popPath, sv})
+	ds.stack = append(ds.stack, sv)
 }
 
 func (ds *dfsSearcher[T]) PopState() *StateValue[T] {
-	item := ds.popState()
-	for ; item.popPath; item = ds.popState() {
-		ds.path = ds.path[:len(ds.path)-1]
-	}
-	ds.pushState(true, nil)
-	ds.path = append(ds.path, item.item)
-	return item.item
-}
-
-func (ds *dfsSearcher[T]) popState() *dfsItem[T] {
 	r := ds.stack[len(ds.stack)-1]
 	ds.stack = ds.stack[:len(ds.stack)-1]
 	return r
@@ -55,9 +34,9 @@ func (ds *dfsSearcher[T]) Len() int {
 	return len(ds.stack)
 }
 
-func (ds *dfsSearcher[T]) CurrentPath() []*StateValue[T] {
+/*func (ds *dfsSearcher[T]) CurrentPath() []*StateValue[T] {
 	return ds.path
-}
+}*/
 
 // newBFSSearcher returns a searcher for breadth first search.
 func newBFSSearcher[T any]() stateContainer[T] {
