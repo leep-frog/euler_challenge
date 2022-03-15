@@ -24,6 +24,43 @@ type codingChallengeTest struct {
 func TestAll(t *testing.T) {
 	tests := []*codingChallengeTest{
 		// TEST_START (needed for file_generator.go)
+		/*{
+			name: "p112",
+			args: []string{"112", "99"},
+			want: []string{"21780"},
+		},
+		{
+			name: "p112 example",
+			args: []string{"112", "90"},
+			want: []string{"21780"},
+		},
+		{
+			name: "p112 example",
+			args: []string{"112", "50"},
+			want: []string{"538"},
+		},*/
+		/*{
+			name: "p111",
+			args: []string{"111", "10"},
+			want: []string{"0"},
+		},
+		{
+			name:     "p111 example",
+			args:     []string{"111", "4"},
+			want:     []string{"273700"},
+			estimate: 0.25,
+		},
+		{
+			name: "p110",
+			args: []string{"108", "4000000"},
+			want: []string{"9350130049860600"},
+		},
+		{
+			name:     "p110 example",
+			args:     []string{"108", "100"},
+			want:     []string{"1260"},
+			estimate: 2,
+		},
 		{
 			name:     "p109",
 			args:     []string{"109", "100"},
@@ -36,17 +73,6 @@ func TestAll(t *testing.T) {
 			want:     []string{"11"},
 			estimate: 1,
 		},
-		/*{
-			name: "p110",
-			args: []string{"108", "4000000"},
-			want: []string{"9350130049860600"},
-		},
-		{
-			name:     "p110 example",
-			args:     []string{"108", "100"},
-			want:     []string{"1260"},
-			estimate: 2,
-		},
 		{
 			name:     "p108",
 			args:     []string{"108", "1000"},
@@ -54,14 +80,16 @@ func TestAll(t *testing.T) {
 			estimate: 2,
 		},
 		{
-			name: "p107",
-			args: []string{"107", "p107_network.txt"},
-			want: []string{"259679"},
+			name:     "p107",
+			args:     []string{"107", "p107_network.txt"},
+			want:     []string{"259679"},
+			estimate: 0.1,
 		},
 		{
-			name: "p107 example",
-			args: []string{"107", "p107_example.txt"},
-			want: []string{"150"},
+			name:     "p107 example",
+			args:     []string{"107", "p107_example.txt"},
+			want:     []string{"150"},
+			estimate: 0.1,
 		},
 		{
 			name:     "p106",
