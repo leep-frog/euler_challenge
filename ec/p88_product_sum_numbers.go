@@ -1,97 +1,90 @@
 package eulerchallenge
 
 import (
-	"sort"
 	"fmt"
-	"strings"
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/bfs"
-	"github.com/leep-frog/euler_challenge/maths"
+	"github.com/leep-frog/euler_challenge/generator"
 )
 
 func P88() *problem {
 	return intInputNode(88, func(o command.Output, n int) {
+		g := generator.Primes()
+
+		kMap := map[int]int{}
+		// Max solution for a given k is 2k:
+		// 2k = 1 * 1 * ... * 1 * 1 * 2 * k
+		// sum = (k - 2)*1 + 2 + k = k - 2 + k = 2k
+		for i := 2; i <= 2*n; i++ {
+			ctx := &context88{i, kMap, g}
+			bfs.AnyPath([]*node88{{nil, i, 0}}, ctx)
+		}
 
 		var sum int
-		got := map[int]bool{}
+		unique := map[int]bool{}
 		for k := 2; k <= n; k++ {
-			initStates := []*p88{{
-				m: map[int]int{
-					1: k,
-				},
-				product: 1,
-				sum: k,
-				k: k,
-			}}
-			ps, _ := bfs.ShortestWeightedPath(initStates, 0)
-			final := ps[0].product
-			if !got[final] {
-				sum += final
-				got[final] = true
-			}
+			unique[kMap[k]] = true
+		}
+		for v := range unique {
+			sum += v
 		}
 		o.Stdoutln(sum)
 	})
 }
 
-type p88 struct {
-	// map from int to count
-	m       map[int]int
-	product int
-	sum     int
-	k int
+type node88 struct {
+	factors []int
+	remaining int
+	sum int
 }
 
-func (p *p88) Code(*bfs.Context[int, *p88]) string {
-	return p.String()
+type context88 struct {
+	n int
+	kMap map[int]int
+	g *generator.Generator[int]
 }
 
-func (p *p88) String() string {
-	var ks []int
-	for k := range p.m {
-		ks = append(ks, k)
+func (n *node88) Code(*bfs.Context[*context88, *node88]) string {
+	//c := fmt.Sprintf("%d: %v", n.remaining, n.factors)
+	//fmt.Println(c)
+	return fmt.Sprintf("%d: %v", n.remaining, n.factors)
+}
+
+func (n *node88) Done(ctx *bfs.Context[*context88, *node88]) bool {
+	if n.remaining != 1 {
+		return false
 	}
-	sort.Ints(ks)
-	var sl []string
-	for _, k := range ks {
-		sl = append(sl, fmt.Sprintf("%d:%d", k, p.m[k]))
+	if n.sum > ctx.GlobalContext.n {
+		return false
 	}
-	return "{" + fmt.Sprintf("%d", p.product) + " " + strings.Join(sl, ", ") + "}"
-}
-
-func (p *p88) Done(*bfs.Context[int, *p88]) bool {
-	return p.sum == p.product
-}
-
-func (p *p88) Distance(*bfs.Context[int, *p88]) int {
-	return maths.Max(p.product*p.product, p.sum*p.sum)
-	//return maths.Max(p.product, p.sum)
-	//return p.sum
-}
-
-func (p *p88) AdjacentStates(*bfs.Context[int, *p88]) []*p88 {
-	// Increment each value
-	var states []*p88
-	for k, v := range p.m {
-		c := maths.CopyMap(p.m)
-		if v == 1 {
-			delete(c, k)
-		} else {
-			c[k]--
+	numberOfOnes := ctx.GlobalContext.n - n.sum
+	numberOfTerms := numberOfOnes + len(n.factors)
+	m := ctx.GlobalContext.kMap
+	if v, ok := m[numberOfTerms]; ok {
+		if ctx.GlobalContext.n < v {
+			m[numberOfTerms] = ctx.GlobalContext.n
 		}
-		c[k+1]++
-		
-		new := &p88{
-			m: c,
-			product: (p.product / k) * (k + 1),
-			sum: p.sum + 1,
-			k: p.k,
-		}
-		if new.product > p.k*p.k {
+	} else {
+		m[numberOfTerms] = ctx.GlobalContext.n
+	}
+	return false
+}
+
+func (n *node88) AdjacentStates(ctx *bfs.Context[*context88, *node88]) []*node88 {
+	if n.remaining == 1 {
+		return nil
+	}
+	if n.sum >= ctx.GlobalContext.n {
+		return nil
+	}
+
+	var r []*node88
+	for _, i := range generator.Factors(n.remaining, ctx.GlobalContext.g) {
+		if i == 1 {
 			continue
 		}
-		states = append(states, new)
+		r = append(r, &node88{append(n.factors, i), n.remaining/i, n.sum + i})	
 	}
-	return states
+	return r
 }

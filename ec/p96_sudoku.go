@@ -25,7 +25,7 @@ func P96() *problem {
 				}
 				board = append(board, row)
 			}
-			boards = append(boards, &sudokuBoard{n, maths.Sqrt(n), board, n*n, false})
+			boards = append(boards, &sudokuBoard{n, maths.Sqrt(n), board, n*n, false, 0})
 			lines = lines[n:]
 		}
 
@@ -53,6 +53,8 @@ type sudokuBoard struct {
 	board [][]*sudokuCell
 	remaining int
 	broken bool
+
+	guesses int
 }
 
 func (sb *sudokuBoard) String() string {
@@ -187,17 +189,6 @@ func (sc *sudokuCell) updateBoard(sb *sudokuBoard) bool {
 	return true
 }
 
-/*func (sc *sudokuCell) delOp(i int) {
-	delete(sc.options, i)
-	if len(sc.options) == 0 {
-		panic("sudoku cell has no options")
-	}
-	if len(sc.options) == 1 {
-		k := i
-		sc.value = &k
-	}
-}*/
-
 var (
 	cachedNumberSets = map[int]map[int][][][]int{}
 )
@@ -290,10 +281,15 @@ func (sb *sudokuBoard) copy() *sudokuBoard {
 		}
 		newBoard = append(newBoard, row)
 	}
-	return &sudokuBoard{sb.n, sb.sn, newBoard, sb.remaining, sb.broken}
+	return &sudokuBoard{sb.n, sb.sn, newBoard, sb.remaining, sb.broken, sb.guesses}
 }
 
 func (sb *sudokuBoard) AdjacentStates(*bfs.Context[int, *sudokuBoard]) []*sudokuBoard {
+	// don't do more than 3 guesses
+	if sb.guesses > 3 {
+		return nil
+	}
+
 	var neighbors []*sudokuBoard
 	for row := range maths.Range(sb.n) {
 		for col := range maths.Range(sb.n) {
@@ -306,6 +302,7 @@ func (sb *sudokuBoard) AdjacentStates(*bfs.Context[int, *sudokuBoard]) []*sudoku
 					new := sb.copy()
 					new.board[row][col].options = map[int]bool{k: true}
 					new.board[row][col].updateBoard(new)
+					new.guesses++
 					if !new.broken {
 						neighbors = append(neighbors, new)
 					}

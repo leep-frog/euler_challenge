@@ -2,6 +2,7 @@ package eulerchallenge
 
 import (
 	"testing"
+	"time"
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/maths"
@@ -18,12 +19,17 @@ type codingChallengeTest struct {
 	args     []string
 	want     []string
 	estimate float64
-	long     bool
+	skip     string
 }
 
 func TestAll(t *testing.T) {
 	tests := []*codingChallengeTest{
 		// TEST_START (needed for file_generator.go)
+		/*{
+			name: "p122",
+			args: []string{"122"},
+			want: []string{"0"},
+		},*/
 		{
 			name:     "p121",
 			args:     []string{"121", "15"},
@@ -36,7 +42,7 @@ func TestAll(t *testing.T) {
 			want:     []string{"10"},
 			estimate: 0.2,
 		},
-		/*{
+		{
 			name:     "p120",
 			args:     []string{"120"},
 			want:     []string{"333082500"},
@@ -44,15 +50,15 @@ func TestAll(t *testing.T) {
 		},
 		{
 			name:     "p119",
-			args:     []string{"119", "10"},
+			args:     []string{"119", "30"},
 			want:     []string{"248155780267521"},
-			estimate: 95,
+			estimate: 0.5,
 		},
 		{
 			name:     "p118",
 			args:     []string{"118", "1"},
 			want:     []string{"44680"},
-			estimate: 7,
+			estimate: 5,
 		},
 		{
 			name: "p117",
@@ -125,9 +131,10 @@ func TestAll(t *testing.T) {
 			want: []string{"9"},
 		},
 		{
-			name: "p112",
-			args: []string{"112", "99"},
-			want: []string{"1587000"},
+			name:     "p112",
+			args:     []string{"112", "99"},
+			want:     []string{"1587000"},
+			estimate: 0.25,
 		},
 		{
 			name: "p112 example",
@@ -180,28 +187,26 @@ func TestAll(t *testing.T) {
 			estimate: 2,
 		},
 		{
-			name:     "p107",
-			args:     []string{"107", "p107_network.txt"},
-			want:     []string{"259679"},
-			estimate: 0.1,
+			name: "p107",
+			args: []string{"107", "p107_network.txt"},
+			want: []string{"259679"},
 		},
 		{
-			name:     "p107 example",
-			args:     []string{"107", "p107_example.txt"},
-			want:     []string{"150"},
-			estimate: 0.1,
+			name: "p107 example",
+			args: []string{"107", "p107_example.txt"},
+			want: []string{"150"},
 		},
 		{
 			name:     "p106",
 			args:     []string{"106", "12"},
 			want:     []string{"21384"},
-			estimate: 0.25,
+			estimate: 0.5,
 		},
 		{
-			name:     "p106",
+			name:     "p106 example",
 			args:     []string{"106", "7"},
 			want:     []string{"70"},
-			estimate: 0.25,
+			estimate: 0.5,
 		},
 		{
 			name:     "p106 example",
@@ -221,9 +226,10 @@ func TestAll(t *testing.T) {
 			estimate: 0.5,
 		},
 		{
-			name: "p103",
-			args: []string{"103", "7"},
-			want: []string{"20313839404245"},
+			name:     "p103",
+			args:     []string{"103", "7"},
+			want:     []string{"20313839404245"},
+			estimate: 1.5,
 		},
 		{
 			name: "p103 example",
@@ -291,13 +297,12 @@ func TestAll(t *testing.T) {
 			name: "p97",
 			args: []string{"97"},
 			want: []string{"8739992577"},
-			long: true, // 16 seconds
 		},
 		{
-			name: "p96",
-			args: []string{"96", "p96.txt"},
-			want: []string{"24702"},
-			long: true, // sometimes infinite loops or at least long loops
+			name:     "p96",
+			args:     []string{"96", "p96.txt"},
+			want:     []string{"24702"},
+			estimate: 0.5,
 		},
 		{
 			name: "p96 example",
@@ -305,14 +310,16 @@ func TestAll(t *testing.T) {
 			want: []string{"483"},
 		},
 		{
-			name: "p95",
-			args: []string{"95"},
-			want: []string{"28 14316"},
+			name:     "p95",
+			args:     []string{"95"},
+			want:     []string{"28 14316"},
+			estimate: 7,
 		},
 		{
-			name: "p94",
-			args: []string{"94"},
-			want: []string{"518408346"},
+			name:     "p94",
+			args:     []string{"94"},
+			want:     []string{"518408346"},
+			estimate: 2.5,
 		},
 		{
 			name: "p93",
@@ -325,15 +332,16 @@ func TestAll(t *testing.T) {
 			want: []string{"1234 28"},
 		},
 		{
-			name: "p92",
-			args: []string{"92"},
-			want: []string{"8581146"},
-			long: true, // 6 seconds
+			name:     "p92",
+			args:     []string{"92"},
+			want:     []string{"8581146"},
+			estimate: 7,
 		},
 		{
-			name: "p91",
-			args: []string{"91", "50"},
-			want: []string{"14234"},
+			name:     "p91",
+			args:     []string{"91", "50"},
+			want:     []string{"14234"},
+			estimate: 0.5,
 		},
 		{
 			name: "p91 example",
@@ -351,10 +359,10 @@ func TestAll(t *testing.T) {
 			want: []string{"743"},
 		},
 		{
-			name: "p88",
-			args: []string{"88", "12000"},
-			want: []string{"7587457"},
-			long: true, // 20 minutes
+			name:     "p88",
+			args:     []string{"88", "12000"},
+			want:     []string{"7587457"},
+			estimate: 25,
 		},
 		{
 			name: "p88 example 2",
@@ -367,9 +375,10 @@ func TestAll(t *testing.T) {
 			want: []string{"30"},
 		},
 		{
-			name: "p87",
-			args: []string{"87", "50000000"},
-			want: []string{"1097343"},
+			name:     "p87",
+			args:     []string{"87", "50000000"},
+			want:     []string{"1097343"},
+			estimate: 0.3,
 		},
 		{
 			name: "p87 example",
@@ -377,9 +386,10 @@ func TestAll(t *testing.T) {
 			want: []string{"4"},
 		},
 		{
-			name: "p86",
-			args: []string{"86", "1000000"},
-			want: []string{"1818"},
+			name:     "p86",
+			args:     []string{"86", "1000000"},
+			want:     []string{"1818"},
+			estimate: 2.5,
 		},
 		{
 			name: "p86 example",
@@ -397,13 +407,13 @@ func TestAll(t *testing.T) {
 			name: "p84",
 			args: []string{"84", "6"},
 			want: []string{"0"},
-			long: true, // doesn't actually work?
+			skip: "doesn't actually work",
 		},
 		{
 			name: "p84 example",
 			args: []string{"84", "6"},
 			want: []string{"0"},
-			long: true, // doesn't actually work?
+			skip: "doesn't actually work",
 		},
 		{
 			name: "p83",
@@ -426,9 +436,10 @@ func TestAll(t *testing.T) {
 			want: []string{"427337"},
 		},
 		{
-			name: "p80",
-			args: []string{"80"},
-			want: []string{"40886"},
+			name:     "p80",
+			args:     []string{"80"},
+			want:     []string{"40886"},
+			estimate: 0.6,
 		},
 		{
 			name: "p79",
@@ -438,8 +449,9 @@ func TestAll(t *testing.T) {
 		{
 			name: "p78",
 			args: []string{"78", "1000000"},
-			want: []string{"55374 36325300925435785930832331577396761646715836173633893227071086460709268608053489541731404543537668438991170680745272159154493740615385823202158167635276250554555342115855424598920159035413044811245082197335097953570911884252410730174907784762924663654000000"},
-			long: true,
+			//want:     []string{"55374 36325300925435785930832331577396761646715836173633893227071086460709268608053489541731404543537668438991170680745272159154493740615385823202158167635276250554555342115855424598920159035413044811245082197335097953570911884252410730174907784762924663654000000"},
+			want:     []string{"55374"},
+			estimate: 0.45,
 		},
 		{
 			name: "p77",
@@ -447,9 +459,10 @@ func TestAll(t *testing.T) {
 			want: []string{"71 5006"},
 		},
 		{
-			name: "p76",
-			args: []string{"76", "100"},
-			want: []string{"190569291"},
+			name:     "p76",
+			args:     []string{"76", "100"},
+			want:     []string{"190569291"},
+			estimate: 3,
 		},
 		{
 			name: "p76 example",
@@ -457,10 +470,10 @@ func TestAll(t *testing.T) {
 			want: []string{"6"},
 		},
 		{
-			name: "p75",
-			args: []string{"75", "1500000"},
-			want: []string{"161667"},
-			long: true,
+			name:     "p75",
+			args:     []string{"75", "1500000"},
+			want:     []string{"161667"},
+			estimate: 0.25,
 		},
 		{
 			name: "p75 example",
@@ -468,14 +481,16 @@ func TestAll(t *testing.T) {
 			want: []string{"6"},
 		},
 		{
-			name: "p74",
-			args: []string{"74", "1000000"},
-			want: []string{"402"},
+			name:     "p74",
+			args:     []string{"74", "1000000"},
+			want:     []string{"402"},
+			estimate: 0.5,
 		},
 		{
-			name: "p73",
-			args: []string{"73", "12000"},
-			want: []string{"7295372"},
+			name:     "p73",
+			args:     []string{"73", "12000"},
+			want:     []string{"7295372"},
+			estimate: 8,
 		},
 		{
 			name: "p73 example",
@@ -483,10 +498,10 @@ func TestAll(t *testing.T) {
 			want: []string{"3"},
 		},
 		{
-			name: "p72",
-			args: []string{"72", "1000000"},
-			want: []string{"303963552391"},
-			long: true,
+			name:     "p72",
+			args:     []string{"72", "1000000"},
+			want:     []string{"303963552391"},
+			estimate: 6,
 		},
 		{
 			name: "p72 example",
@@ -504,9 +519,10 @@ func TestAll(t *testing.T) {
 			want: []string{"2/5"},
 		},
 		{
-			name: "p70",
-			args: []string{"70", "10000000"},
-			want: []string{"8319823"},
+			name:     "p70",
+			args:     []string{"70", "10000000"},
+			want:     []string{"8319823"},
+			estimate: 2,
 		},
 		{
 			name: "p69",
@@ -579,6 +595,7 @@ func TestAll(t *testing.T) {
 			want: []string{
 				"792 [673 109 7 3]",
 			},
+			estimate: 0.5,
 		},
 		{
 			name: "p60",
@@ -586,11 +603,13 @@ func TestAll(t *testing.T) {
 			want: []string{
 				"26033 [8389 6733 5701 5197 13]",
 			},
+			estimate: 0.5,
 		},
 		{
-			name: "p59",
-			args: []string{"59", "p59.txt"},
-			want: []string{"129448"},
+			name:     "p59",
+			args:     []string{"59", "p59.txt"},
+			want:     []string{"129448"},
+			estimate: 1,
 		},
 		{
 			name: "p58",
@@ -603,9 +622,10 @@ func TestAll(t *testing.T) {
 			want: []string{"153"},
 		},
 		{
-			name: "p56",
-			args: []string{"56"},
-			want: []string{"972"},
+			name:     "p56",
+			args:     []string{"56"},
+			want:     []string{"972"},
+			estimate: 1.5,
 		},
 		{
 			name: "p55",
@@ -623,9 +643,10 @@ func TestAll(t *testing.T) {
 			want: []string{"3"},
 		},
 		{
-			name: "p53",
-			args: []string{"53"},
-			want: []string{"4075"},
+			name:     "p53",
+			args:     []string{"53"},
+			want:     []string{"4075"},
+			estimate: 3,
 		},
 		{
 			name: "p52",
@@ -638,9 +659,10 @@ func TestAll(t *testing.T) {
 			want: []string{"125874"},
 		},
 		{
-			name: "p51",
-			args: []string{"51", "8"},
-			want: []string{"_2_3_3 121313"},
+			name:     "p51",
+			args:     []string{"51", "8"},
+			want:     []string{"_2_3_3 121313"},
+			estimate: 1,
 		},
 		{
 			name: "p51 example 2",
@@ -683,9 +705,10 @@ func TestAll(t *testing.T) {
 			want: []string{"405071317"},
 		},
 		{
-			name: "p47",
-			args: []string{"47", "4"},
-			want: []string{"134043"},
+			name:     "p47",
+			args:     []string{"47", "4"},
+			want:     []string{"134043"},
+			estimate: 0.35,
 		},
 		{
 			name: "p47 example 2",
@@ -708,14 +731,16 @@ func TestAll(t *testing.T) {
 			want: []string{"1533776805"},
 		},
 		{
-			name: "p44",
-			args: []string{"44"},
-			want: []string{"5482660"},
+			name:     "p44",
+			args:     []string{"44"},
+			want:     []string{"5482660"},
+			estimate: 1,
 		},
 		{
-			name: "p43",
-			args: []string{"43"},
-			want: []string{"16695334890"},
+			name:     "p43",
+			args:     []string{"43"},
+			want:     []string{"16695334890"},
+			estimate: 6,
 		},
 		{
 			name: "p42",
@@ -733,14 +758,16 @@ func TestAll(t *testing.T) {
 			want: []string{"210"},
 		},
 		{
-			name: "p39",
-			args: []string{"39"},
-			want: []string{"840"},
+			name:     "p39",
+			args:     []string{"39"},
+			want:     []string{"840"},
+			estimate: 0.25,
 		},
 		{
-			name: "p38",
-			args: []string{"38"},
-			want: []string{"932718654 9327"},
+			name:     "p38",
+			args:     []string{"38"},
+			want:     []string{"932718654 9327"},
+			estimate: 0.25,
 		},
 		{
 			name: "p37",
@@ -758,9 +785,10 @@ func TestAll(t *testing.T) {
 			want: []string{"25"},
 		},
 		{
-			name: "p35",
-			args: []string{"35", "1000000"},
-			want: []string{"55"},
+			name:     "p35",
+			args:     []string{"35", "1000000"},
+			want:     []string{"55"},
+			estimate: 0.25,
 		},
 		{
 			name: "p35 example",
@@ -779,9 +807,10 @@ func TestAll(t *testing.T) {
 			want: []string{"387296 38729600"},
 		},
 		{
-			name: "p32",
-			args: []string{"32"},
-			want: []string{"45228"},
+			name:     "p32",
+			args:     []string{"32"},
+			want:     []string{"45228"},
+			estimate: 0.75,
 		},
 		{
 			name: "p31",
@@ -834,9 +863,10 @@ func TestAll(t *testing.T) {
 			want: []string{"7"},
 		},
 		{
-			name: "p25",
-			args: []string{"25", "1000"},
-			want: []string{"4782"},
+			name:     "p25",
+			args:     []string{"25", "1000"},
+			want:     []string{"4782"},
+			estimate: 0.2,
 		},
 		{
 			name: "p25 example 2",
@@ -864,9 +894,10 @@ func TestAll(t *testing.T) {
 			want: []string{"0987654321"},
 		},
 		{
-			name: "p23",
-			args: []string{"23", "28123"},
-			want: []string{"4179871"},
+			name:     "p23",
+			args:     []string{"23", "28123"},
+			want:     []string{"4179871"},
+			estimate: 0.6,
 		},
 		{
 			name: "p22",
@@ -1064,10 +1095,10 @@ func TestAll(t *testing.T) {
 			want: []string{"137846528820"},
 		},
 		{
-			name: "p14",
-			args: []string{"14", "1000000"},
-			want: []string{"5537376230"},
-			long: true,
+			name:     "p14",
+			args:     []string{"14", "1000000"},
+			want:     []string{"837799"},
+			estimate: 0.4,
 		},
 		{
 			name: "p13",
@@ -1080,15 +1111,15 @@ func TestAll(t *testing.T) {
 			want: []string{"28"},
 		},
 		{
-			name: "p12",
-			args: []string{"12", "500"},
-			want: []string{"76576500"},
+			name:     "p12",
+			args:     []string{"12", "500"},
+			want:     []string{"76576500"},
+			estimate: 0.2,
 		},
 		{
 			name: "p11",
 			args: []string{"11", "4"},
 			want: []string{"70600674"},
-			long: true,
 		},
 		{
 			name: "p10 example",
@@ -1099,7 +1130,6 @@ func TestAll(t *testing.T) {
 			name: "p10",
 			args: []string{"10", "2000000"},
 			want: []string{"142913828922"},
-			long: true,
 		},
 		{
 			name: "p9",
@@ -1183,21 +1213,17 @@ func TestAll(t *testing.T) {
 		},
 		/* Useful for commenting out tests. */
 	}
-
 	for _, test := range tests {
 		test.test(t)
 	}
 }
 
 func (ct *codingChallengeTest) test(t *testing.T) {
-	// TODO: have time cutoff instead
-	if ct.long {
-		return
-	}
 	t.Run(ct.name, func(t *testing.T) {
-		if ct.estimate == 0 {
-			t.Logf("Estimate is not set")
+		if ct.skip != "" {
+			t.Skip(ct.skip)
 		}
+		start := time.Now()
 		etc := &command.ExecuteTestCase{
 			Node:          command.BranchNode(Branches(), nil),
 			Args:          ct.args,
@@ -1205,5 +1231,17 @@ func (ct *codingChallengeTest) test(t *testing.T) {
 			SkipDataCheck: true,
 		}
 		command.ExecuteTest(t, etc)
+
+		estimate := ct.estimate
+		if estimate == 0 {
+			estimate = 0.1
+		} else if ct.estimate <= 0.1 {
+			t.Fatalf("redundant estimate (default is 0.1)")
+		}
+
+		elapsed := float64(time.Now().Sub(start).Microseconds()) / 1_000_000.0
+		if elapsed > 1.5*estimate {
+			t.Fatalf("Test took %5.2f seconds, expected %5.2f", elapsed, estimate)
+		}
 	})
 }

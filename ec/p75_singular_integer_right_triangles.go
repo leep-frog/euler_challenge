@@ -2,56 +2,41 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/generator"
 )
 
 func P75() *problem {
-	return intInputNode(75, func(o command.Output, n int) {
-		m := map[int][][]int{}
-		// c^2 = x^2 + y^2 > x^2 + x^2 = 2x^2
-		// c = Sqrt(2) * x
-		// L = x + y + c > x + x + c > x + x + x*Sqrt(2) = 3.4141 * x > 3.4 * x
-		//   3.4x < L -> x < L / 3.4 = 10 * L / 34
-		for x := 1; x <= 10*n/34; x++ {
-			// x^2 + y^2 = (y + k)^2
-			// x^2 + y^2 = y^2 + 2yk + k^2
-			// x^2 = 2yk + k^2
-			// [k=1] x^2 = 2y + 1
-			// [k=1] x^2 = 4y + 4
-			// [k=1] x^2 = 6y + 9
-			// [k=1] x^2 = 8y + 16
-			// [var] x^2 = ay + b
-
-			// 2y = (x^2 / k) - k
-			// L = x + 2*y + k
-			//   = x + (2x^2 / k) - k + k
-			//   = x + 2x^2 / k
-			// k = (x + 2x^2) / L
-			// k >= (x + 2x^2) / L_max
-			//    = (x + 2x^2) / n // didn't work last time
-			x2 := x * x
-			for k := 1; k < x; k++ {
-				a, b := 2*k, k*k
-				y := (x2 - b) / a
-				L := x + y + y + k
-				if L > n || y <= x {
+	return intInputNode(75, func(o command.Output, L int) {
+		// https://en.wikipedia.org/wiki/Pythagorean_triple
+		// a = m^2 - n^2
+		// b = 2mn
+		// c = m^2 + n^2
+		// L = 2m^2 + 2mn
+		counts := map[int]int{}
+		g := generator.Primes()
+		for m := 2; 2*m*m+2*m <= L; m++ {
+			for n := 1; n < m; n++ {
+				if n%2 == 1 && m%2 == 1 {
 					continue
 				}
-				if x2 < b {
-					// this would make a negative
-					break
+				if n > 1 && generator.Coprimes(m, n, g) {
+					continue
 				}
-				rem := x2 - b
-				if rem%a == 0 {
-					m[L] = append(m[L], []int{x, y, y + k})
+				a := m*m - n*n
+				b := 2 * m * n
+				c := m*m + n*n
+				perimeter := a + b + c
+				for l := perimeter; l <= L; l += perimeter {
+					counts[l]++
 				}
 			}
 		}
-		total := 0
-		for _, v := range m {
-			if len(v) == 1 {
-				total++
+		var count int
+		for _, v := range counts {
+			if v == 1 {
+				count++
 			}
 		}
-		o.Stdoutln(total)
+		o.Stdoutln(count)
 	})
 }

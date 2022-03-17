@@ -1,7 +1,7 @@
 package eulerchallenge
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/maths"
@@ -9,16 +9,17 @@ import (
 
 func P97() *problem {
 	return noInputNode(97, func(o command.Output) {
-		v := int64(1)
-		for i := 0; i < 7830457; i++ {
+		// coef * 2^exp + 1
+		coef := 28433
+		exp := 7830457
+
+		mod := maths.Pow(10, 10)
+
+		v := coef
+		for i := 0; i < exp; i++ {
 			v *= 2
-			v = v % 1_000_000_000_000_000_000
+			v = v % mod
 		}
-		v = v % 1_000_000_000_000
-		v *= 28433
-		v += 1
-		vStr := fmt.Sprintf("%d", v)
-		k := maths.Max(len(vStr)-10, 0)
-		o.Stdoutln(vStr[k:])
+		o.Stdoutln(strconv.Itoa((v + 1) % mod))
 	})
 }

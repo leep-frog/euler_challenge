@@ -1,7 +1,6 @@
 package eulerchallenge
 
 import (
-	"fmt"
 	"math/big"
 
 	"github.com/leep-frog/command"
@@ -25,6 +24,5 @@ func blueDiscs(turns, needBlue, numRed int64) *big.Rat {
 	blueDraw := big.NewRat(0, 1).Mul(big.NewRat(1, numRed+1), blueDiscs(turns-1, needBlue-1, numRed+1))
 	redDraw := big.NewRat(0, 1).Mul(big.NewRat(numRed, numRed+1), blueDiscs(turns-1, needBlue, numRed+1))
 	r := big.NewRat(0, 1).Add(redDraw, blueDraw)
-	fmt.Println(turns, needBlue, numRed, r)
 	return r
 }

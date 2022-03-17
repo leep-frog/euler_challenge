@@ -187,7 +187,8 @@ func NewGenerator[T any](name string, start T, g Generatable[T], f func(*Generat
 }
 
 var (
-	cachedFactors = map[int]map[int]int{}
+	cachedPrimeFactors = map[int]map[int]int{}
+	cachedFactors = map[int][]int{}
 )
 
 func copy(m map[int]int) map[int]int {
@@ -198,12 +199,77 @@ func copy(m map[int]int) map[int]int {
 	return c
 }
 
+func Coprimes(a, b int, p *Generator[int]) bool {
+	bFactors := PrimeFactors(b, p)
+	for k := range PrimeFactors(a, p) {
+		if _, ok := bFactors[k]; ok {
+			return true
+		}
+	}
+	return false
+}
+
 func PrimeFactors(n int, p *Generator[int]) map[int]int {
+	return copy(primeFactors(n, p))
+}
+
+func Factors(n int, p *Generator[int]) []int {
 	if n <= 1 {
 		return nil
 	}
 	if r, ok := cachedFactors[n]; ok {
-		return copy(r)
+		return r
+	}
+
+	if IsPrime(n, p) {
+		r := []int{1, n}
+		cachedFactors[n] = r
+		return r
+	}
+
+	for i := 0; ; i++ {
+		pi := int(p.Nth(i))
+		if n % pi != 0 {
+			continue
+		}
+		// pi is guaranteed to be the smallest factor and n/pi the largest
+		additional := Factors(n/pi, p)
+		var mAdditional []int
+		for _, a := range additional {
+			mAdditional = append(mAdditional, a*pi)
+		}
+		// merge sort the two
+		merged := []int{1}
+		for ai, mi := 0, 0; ai < len(additional) || mi < len(mAdditional); {
+			var contender int
+			if ai == len(additional) {
+				contender = mAdditional[mi]
+				mi++
+			} else if mi == len(mAdditional) {
+				contender = additional[ai]
+				ai++
+			} else if additional[ai] <= mAdditional[mi] {
+				contender = additional[ai]
+				ai++
+			} else {
+				contender = mAdditional[mi]
+				mi++
+			}
+			if contender != merged[len(merged)-1] {
+				merged = append(merged, contender)
+			}
+		}
+		cachedFactors[n] = merged
+		return merged
+	}
+}
+
+func primeFactors(n int, p *Generator[int]) map[int]int {
+	if n <= 1 {
+		return nil
+	}
+	if r, ok := cachedPrimeFactors[n]; ok {
+		return r
 	}
 	ogN := n
 	r := map[int]int{}
@@ -213,15 +279,15 @@ func PrimeFactors(n int, p *Generator[int]) map[int]int {
 			r[pi]++
 			n = n / pi
 			if n == 1 {
-				cachedFactors[ogN] = r
-				return copy(r)
+				cachedPrimeFactors[ogN] = r
+				return r
 			}
-			if extra, ok := cachedFactors[n]; ok {
+			if extra, ok := cachedPrimeFactors[n]; ok {
 				for k, v := range extra {
 					r[k] += v
 				}
-				cachedFactors[ogN] = r
-				return copy(r)
+				cachedPrimeFactors[ogN] = r
+				return r
 			}
 		}
 	}

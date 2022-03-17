@@ -2,28 +2,27 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
-	"github.com/leep-frog/euler_challenge/fraction"
 	"github.com/leep-frog/euler_challenge/generator"
-	"github.com/leep-frog/euler_challenge/maths"
 )
 
 func P73() *problem {
 	return intInputNode(73, func(o command.Output, n int) {
-		lower := fraction.New(1, 3)
-		upper := fraction.New(1, 2)
 		p := generator.Primes()
-		unique := map[string]bool{}
+		var unique int
 		for den := 4; den <= n; den++ {
 			for num := den / 3; ; num++ {
-				f := fraction.New(num, den)
-				if maths.GTE(f, upper) {
+				if num*2 >= den {
 					break
 				}
-				if maths.GT(f, lower) {
-					unique[fraction.Simplify(f.N, f.D, p).String()] = true
+				if num*3 <= den {
+					continue
 				}
+				if generator.Coprimes(num, den, p) {
+					continue
+				}
+				unique++
 			}
 		}
-		o.Stdoutln(len(unique))
+		o.Stdoutln(unique)
 	})
 }

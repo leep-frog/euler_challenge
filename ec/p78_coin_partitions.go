@@ -2,22 +2,21 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
-	"github.com/leep-frog/euler_challenge/maths"
 )
 
 func P78() *problem {
 	return intInputNode(78, func(o command.Output, n int) {
-		totals := map[int]*maths.Int{
-			0: maths.One(),
-			1: maths.One(),
+		totals := map[int]int{
+			0: 1,
+			1: 1,
 		}
 
 		for i := 2; ; i++ {
-			totals[i] = maths.Zero()
+			totals[i] = 0
 			var jump int
 			oddOffset, evenOffset := 1, 1
 			var indicator, positive bool
-			sum := maths.Zero()
+			var sum int
 			for j := i; j >= 0; j -= jump {
 				if indicator {
 					jump = oddOffset
@@ -29,14 +28,15 @@ func P78() *problem {
 				}
 				indicator = !indicator
 				if positive {
-					sum = sum.Plus(totals[j])
+					sum += totals[j]
 				} else {
-					sum = sum.Minus(totals[j])
+					sum += 1_000_000 - totals[j]
 				}
 			}
+			sum = sum % 1_000_000
 			totals[i] = sum
-			if totals[i].Part(0)%1000000 == 0 {
-				o.Stdoutln(i, sum)
+			if sum == 0 {
+				o.Stdoutln(i)
 				return
 			}
 		}

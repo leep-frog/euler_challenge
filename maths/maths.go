@@ -778,16 +778,60 @@ func (i *Int) divInt(by16 uint16) (*Int, uint16) {
 	return ret, rem
 }
 
+var (
+	powCache = map[int][]*Int{}
+)
+
 func BigPow(a, b int) *Int {
 	if b == 0 {
 		return One()
 	}
-	ai := NewInt(int64(a))
-	r := NewInt(int64(a))
-	for i := 1; i < b; i++ {
-		r = r.Times(ai)
+
+	// check cache
+	//fmt.Println(powCache[a])
+	var start *Int
+	if r, ok := powCache[a]; ok {
+		if b < len(r) {
+			//if !r[b].EQ(OldBigPow(a, b)) {
+//				panic(fmt.Sprintf("%d %d: %v", a, b, r))
+			//}
+			return r[b].Copy()
+		}
+		start = r[len(r)-1]
+		//fmt.Println("thanks cache", b, len(r))
+		b = b + 1 - len(r)
+	} else {
+		start = One()
+		powCache[a] = []*Int{start}
 	}
-	return r
+
+	ai := NewInt(int64(a))
+	for i := 1; i <= b; i++ {
+		start = start.Times(ai)
+		powCache[a] = append(powCache[a], start.Copy())
+	}
+	//fmt.Println(powCache[a], start)
+	return start.Copy()
+}
+
+func Sort(is []*Int) {
+	sort.SliceStable(is, func(i, j int) bool {
+		return is[i].LTE(is[j])
+	})
+}
+
+func OldBigPow(a, b int) *Int {
+	if b == 0 {
+		return One()
+	}
+
+	start := One()
+	ai := NewInt(int64(a))
+	for i := 1; i <= b; i++ {
+		start = start.Times(ai)
+		//powCache[a] = append(powCache[a], start)
+	}
+	return start.Copy()
 }
 
 // Range returns an empty int slice of length n

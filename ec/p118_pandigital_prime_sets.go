@@ -15,7 +15,7 @@ func P118() *problem {
 		ctx := &context118{map[string]bool{}, generator.Primes()}
 		perms := maths.Permutations([]int{1, 2, 3, 4, 5, 6, 7, 8, 9}, 9, false)
 		for _, p := range perms {
-			bfs.AnyPath([]*pandigitalOrdering{{p, nil}}, ctx)
+			bfs.DFS([]*pandigitalOrdering{{p, nil}}, ctx)
 		}
 		o.Stdoutln(len(ctx.validSets))
 	})
