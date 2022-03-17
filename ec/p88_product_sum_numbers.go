@@ -18,7 +18,7 @@ func P88() *problem {
 		// sum = (k - 2)*1 + 2 + k = k - 2 + k = 2k
 		for i := 2; i <= 2*n; i++ {
 			ctx := &context88{i, kMap, g}
-			bfs.AnyPath([]*node88{{nil, i, 0}}, ctx)
+			bfs.DFS([]*node88{{nil, i, 0}}, ctx)
 		}
 
 		var sum int
