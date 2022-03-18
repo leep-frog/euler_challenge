@@ -4,67 +4,38 @@ import (
 	"fmt"
 )
 
-/*type OffsetState[M, T any] interface {
-	State[M, T]
-	Offsetable[M, T]
-}
-
-type Offsetable[M, T any] interface {
-	Offset(*Context[M, T]) int
-}*/
-
-/*type offsetableWrapper[M any, T OffsetState[M, T]] struct {
-	state T
-	dist int
-}
-
-func (ow *offsetableWrapper[M, T]) Code(ctx *Context[M, T]) string {
-	return ow.state.Code(ctx)
-}
-
-func (ow *offsetableWrapper[M, T]) Done(ctx *Context[M, T]) bool {
-	return ow.state.Done(ctx)
-}
-
-func (ow *offsetableWrapper[M, T]) Distance(ctx *Context[M, T]) int {
-	return ow.dist
-}
-
-func (ow *offsetableWrapper[M, T]) AdjacentStates(ctx *Context[M, T]) []*offsetableWrapper[M, T] {
-	var r []*offsetableWrapper[M, T]
-	for _, as := range ow.state.AdjacentStates(ctx) {
-		r = append(r, &offsetableWrapper[M, T]{as, ow.dist + as.Offset(ctx)})
+func ShortestOffsetPath[T Searchable[T]](initStates []T, opts ...Option) ([]T, int) {
+	toConverter := toACPConverter[T]()
+	var input []*offsetWrapper[int, *addContextAndPathWrapper[T]]
+	for _, is := range initStates {
+		input = append(input, &offsetWrapper[int, *addContextAndPathWrapper[T]]{toConverter.convert(is), is.Distance()})
 	}
-	return r
-}*/
-
-/*func offsetDistFunc[M any, T Offsetable[M, T]](ctx *Context[M, T], t T) int {
-	return t.Offset(ctx)
-}*/
-
-/*func ShortestOffsetPath[M any, T OffsetState[M, T]](initStates []T, globalContext M) ([]T, int) {
-	ph := &pathHelper[M, T, T]{
-		distFunc: adjStateDistFunc[M, T](),
-		convFunc: identityConvFunc[M, T](),
-	}
-	return searchPath(newBFSSearcher[T](), initStates, offsetDistFunc[M, T], globalContext, ph)
+	fromConverter := joinConverters(fromOffsetConverter[int, *addContextAndPathWrapper[T]](), fromACPConverter[T]())
+	ts, dist := newSearch(input, 0, opts...)
+	return fromConverter.convertPath(ts), dist
 }
 
-func ShortestOffsetPathNonUnique[M any, T OffsetState[M, T]](initStates []T, globalContext M) ([]T, int) {
-	ph := &pathHelper[M, T, T]{
-		distFunc:   adjStateDistFunc[M, T](),
-		convFunc:   identityConvFunc[M, T](),
-		skipUnique: true,
+func ContextualShortestOffsetPath[M any, T SearchableWithContext[M, T]](initStates []T, m M, opts ...Option) ([]T, int) {
+	toConverter := toAPWConverter[M, T]()
+	var input []*offsetWrapper[M, *addPathWrapper[M, T]]
+	for _, is := range initStates {
+		input = append(input, &offsetWrapper[M, *addPathWrapper[M, T]]{toConverter.convert(is), is.Distance(m)})
 	}
-	return searchPath(newBFSSearcher[T](), initStates, offsetDistFunc[M, T], globalContext, ph)
+	fromConverter := joinConverters(fromOffsetConverter[M, *addPathWrapper[M, T]](), fromAPWConverter[M, T]())
+	ts, dist := newSearch(input, m, opts...)
+	return fromConverter.convertPath(ts), dist
 }
-*/
 
-/*func toOffsetConverter[M any, T SearchableWithContextAndPath[M, T]]() converter[T, *offset[M, T]] {
-	return func(t T) *offsetWrapper[M, T]{
-		return &offset[M, T]{t, t.Distance}
+func ContextualShortestOffsetPathWithPath[M any, T SearchableWithContextAndPath[M, T]](initStates []T, m M, opts ...Option) ([]T, int) {
+	var input []*offsetWrapper[M, T]
+	for _, is := range initStates {
+		input = append(input, &offsetWrapper[M, T]{is, is.Distance(m, nil)})
 	}
-}*/
+	fromConverter := fromOffsetConverter[M, T]()
+	ts, dist := newSearch(input, m, opts...)
+	return fromConverter.convertPath(ts), dist
+}
+
 
 func fromOffsetConverter[M any, T SearchableWithContextAndPath[M, T]]() converter[*offsetWrapper[M, T], T] {
 	return func(ow *offsetWrapper[M, T]) T {

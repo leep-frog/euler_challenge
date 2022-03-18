@@ -219,20 +219,3 @@ func DFSWithContextAndPath[M any, T DepthSearchableWithContextAndPath[M, T]](ini
 	}
 	return nil
 }
-
-/*type cycleState[M any, T Set[M, T]] struct {
-	state T
-}
-
-func (cs *cycleState) Done() bool {
-	// return cs.Code is in 
-}
-
-type cycleContext[M any, T Set[M, T]] struct {
-
-}
-
-// CyclePath finds cycles
-func CyclePath() {
-	//return ShortestPathNonUnique()
-}*/
