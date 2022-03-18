@@ -34,8 +34,8 @@ func P61() *problem {
 				maths.CopyMap(generators),
 			})
 		}
-		path, _ := bfs.ShortestPathNonUnique(initStates, startMap)
-		o.Stdoutln(maths.SumType(path), maths.Reverse(path))
+		path, _ := bfs.ContextualShortestPathWithPath(initStates, startMap, bfs.CheckDuplicates())
+		o.Stdoutln(maths.SumType(path))
 	})
 }
 
@@ -48,6 +48,10 @@ func (cfn *cycFigNum) ToInt() int {
 	return cfn.n
 }
 
+func (cfn *cycFigNum) Distance(m map[int]int, path bfs.Path[*cycFigNum]) int {
+	return -path.Len()
+}
+
 func (cfn *cycFigNum) Cycles(that *cycFigNum) bool {
 	return cfn.String()[2:] == that.String()[:2]
 }
@@ -56,7 +60,7 @@ func (cfn *cycFigNum) CyclesInt(that int) bool {
 	return cfn.String()[2:] == fmt.Sprintf("%d", that)[:2]
 }
 
-func (cfn *cycFigNum) Code(*bfs.Context[map[int]int, *cycFigNum]) string {
+func (cfn *cycFigNum) Code(map[int]int, bfs.Path[*cycFigNum]) string {
 	return cfn.String()
 }
 
@@ -64,19 +68,14 @@ func (cfn *cycFigNum) String() string {
 	return fmt.Sprintf("%d", cfn.n)
 }
 
-func (cfn *cycFigNum) Done(ctx *bfs.Context[map[int]int, *cycFigNum]) bool {
+func (cfn *cycFigNum) Done(m map[int]int, path bfs.Path[*cycFigNum]) bool {
 	if len(cfn.remainingShapes) > 0 {
 		return false
 	}
-	var first *cycFigNum
-	for cur := ctx.StateValue; cur != nil; cur = cur.Prev() {
-		first = cur.State()
-	}
-	return cfn.Cycles(first)
+	return cfn.Cycles(path.Fetch()[0])
 }
 
-func (cfn *cycFigNum) AdjacentStates(ctx *bfs.Context[map[int]int, *cycFigNum]) []*cycFigNum {
-	startMap := ctx.GlobalContext
+func (cfn *cycFigNum) AdjacentStates(startMap map[int]int, path bfs.Path[*cycFigNum]) []*cycFigNum {
 	var r []*cycFigNum
 	for shape, gen := range cfn.remainingShapes {
 		for i := startMap[shape]; gen.Nth(i) < 10_000; i++ {

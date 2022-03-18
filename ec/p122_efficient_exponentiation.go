@@ -1,61 +1,62 @@
 package eulerchallenge
 
 import (
-	"fmt"
-	"sort"
+	"strconv"
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/bfs"
-	"github.com/leep-frog/euler_challenge/maths"
 )
 
 func P122() *problem {
 	return noInputNode(122, func(o command.Output) {
 		var sum int
 		for k := 1; k <= 200; k++ {
-			_, dist := bfs.ShortestPath([]*node122{{map[int]bool{1: true}, k}}, 0)
-			sum += dist
-			fmt.Println(k, dist)
+			for i := 1;; i++ {
+				path := bfs.DFSWithContextAndPath([]*node122{{1}}, &context122{k, i}, bfs.AllowDFSCycles(), bfs.AllowDFSDuplicates())
+				if len(path) != 0 {
+					sum += len(path) - 1
+					break
+				}
+			}
 		}
-		fmt.Println(sum)
+		o.Stdoutln(sum)
 	})
 }
 
 type node122 struct {
-	options map[int]bool
-	n       int
+	pow       int
 }
 
-func (n *node122) Code(*bfs.Context[int, *node122]) string {
-	var opts []int
-	for o := range n.options {
-		opts = append(opts, o)
+type context122 struct {
+	pow int
+	maxDepth int
+}
+
+func (n *node122) String() string {
+	return strconv.Itoa(n.pow)
+}
+
+func (n *node122) Code(ctx *context122, path bfs.DFSPath[*node122]) string {
+	return strconv.Itoa(n.pow)
+}
+
+func (n *node122) Done(ctx *context122, path bfs.DFSPath[*node122]) bool {
+	return n.pow == ctx.pow
+}
+
+func (n *node122) AdjacentStates(ctx *context122, path bfs.DFSPath[*node122]) []*node122 {
+	if path.Len() >= ctx.maxDepth {
+		return nil
 	}
-	sort.Ints(opts)
-	c := fmt.Sprintf("%v", opts)
-	//fmt.Println(c)
-	return c
-}
-
-func (n *node122) Done(*bfs.Context[int, *node122]) bool {
-	return n.options[n.n]
-}
-
-// TODO: prepop and post pop for bfs.AnyPath
-func (n *node122) AdjacentStates(*bfs.Context[int, *node122]) []*node122 {
 	var r []*node122
-	for oi := range n.options {
-		for oj := range n.options {
-			if oj > oi {
-				continue
-			}
-			if n.options[oi+oj] {
-				continue
-			}
-			cp := maths.CopyMap(n.options)
-			cp[oi+oj] = true
-			r = append(r, &node122{cp, n.n})
+	for _, p := range path.Path() {
+		if path.Contains(strconv.Itoa(n.pow + p.pow)) {
+			continue
 		}
+		if n.pow + p.pow > ctx.pow {
+			continue
+		}
+		r = append(r, &node122{p.pow+n.pow})
 	}
 	return r
 }

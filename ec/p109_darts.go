@@ -26,7 +26,7 @@ func P109() *problem {
 
 		initStates := []*dartRound{{nil, n}}
 		count := 0
-		bfs.DFS(initStates, &count)
+		bfs.DFSWithContext(initStates, &count)
 		o.Stdoutln(count)
 	})
 }
@@ -46,18 +46,18 @@ func (d *dart) String() string {
 }
 
 func (d *dart) getScore() int {
-	return d.score*d.multiplier
+	return d.score * d.multiplier
 }
 
 type dartRound struct {
 	darts []*dart
-	n int
+	n     int
 }
 
-func (dr *dartRound) Code(*bfs.Context[*int, *dartRound]) string {
+func (dr *dartRound) Code(*int) string {
 	var r []string
 	if len(dr.darts) > 0 {
-		sort.SliceStable(dr.darts[:len(dr.darts)-1], func(i, j int) bool { return dr.darts[i].String() < dr.darts[j].String()})
+		sort.SliceStable(dr.darts[:len(dr.darts)-1], func(i, j int) bool { return dr.darts[i].String() < dr.darts[j].String() })
 	}
 	for _, d := range dr.darts {
 		r = append(r, d.String())
@@ -65,7 +65,7 @@ func (dr *dartRound) Code(*bfs.Context[*int, *dartRound]) string {
 	return strings.Join(r, " ")
 }
 
-func (dr *dartRound) Done(ctx *bfs.Context[*int, *dartRound]) bool {
+func (dr *dartRound) Done(count *int) bool {
 	if len(dr.darts) == 0 || len(dr.darts) > 3 {
 		return false
 	}
@@ -76,19 +76,19 @@ func (dr *dartRound) Done(ctx *bfs.Context[*int, *dartRound]) bool {
 
 	var score int
 	for _, d := range dr.darts {
-		score += d.score*d.multiplier
+		score += d.score * d.multiplier
 	}
 
 	if score >= dr.n {
 		return false
 	}
 
-	*ctx.GlobalContext += 1
+	*count += 1
 	// return false because we want to explore all of them
 	return false
 }
 
-func (dr *dartRound) AdjacentStates(ctx *bfs.Context[*int, *dartRound]) []*dartRound {
+func (dr *dartRound) AdjacentStates(*int) []*dartRound {
 	if len(dr.darts) >= 3 {
 		return nil
 	}

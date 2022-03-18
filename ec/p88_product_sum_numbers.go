@@ -18,7 +18,7 @@ func P88() *problem {
 		// sum = (k - 2)*1 + 2 + k = k - 2 + k = 2k
 		for i := 2; i <= 2*n; i++ {
 			ctx := &context88{i, kMap, g}
-			bfs.DFS([]*node88{{nil, i, 0}}, ctx)
+			bfs.DFSWithContext([]*node88{{nil, i, 0}}, ctx)
 		}
 
 		var sum int
@@ -45,42 +45,42 @@ type context88 struct {
 	g *generator.Generator[int]
 }
 
-func (n *node88) Code(*bfs.Context[*context88, *node88]) string {
+func (n *node88) Code(*context88) string {
 	//c := fmt.Sprintf("%d: %v", n.remaining, n.factors)
 	//fmt.Println(c)
 	return fmt.Sprintf("%d: %v", n.remaining, n.factors)
 }
 
-func (n *node88) Done(ctx *bfs.Context[*context88, *node88]) bool {
+func (n *node88) Done(ctx *context88) bool {
 	if n.remaining != 1 {
 		return false
 	}
-	if n.sum > ctx.GlobalContext.n {
+	if n.sum > ctx.n {
 		return false
 	}
-	numberOfOnes := ctx.GlobalContext.n - n.sum
+	numberOfOnes := ctx.n - n.sum
 	numberOfTerms := numberOfOnes + len(n.factors)
-	m := ctx.GlobalContext.kMap
+	m := ctx.kMap
 	if v, ok := m[numberOfTerms]; ok {
-		if ctx.GlobalContext.n < v {
-			m[numberOfTerms] = ctx.GlobalContext.n
+		if ctx.n < v {
+			m[numberOfTerms] = ctx.n
 		}
 	} else {
-		m[numberOfTerms] = ctx.GlobalContext.n
+		m[numberOfTerms] = ctx.n
 	}
 	return false
 }
 
-func (n *node88) AdjacentStates(ctx *bfs.Context[*context88, *node88]) []*node88 {
+func (n *node88) AdjacentStates(ctx *context88) []*node88 {
 	if n.remaining == 1 {
 		return nil
 	}
-	if n.sum >= ctx.GlobalContext.n {
+	if n.sum >= ctx.n {
 		return nil
 	}
 
 	var r []*node88
-	for _, i := range generator.Factors(n.remaining, ctx.GlobalContext.g) {
+	for _, i := range generator.Factors(n.remaining, ctx.g) {
 		if i == 1 {
 			continue
 		}

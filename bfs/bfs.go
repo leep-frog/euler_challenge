@@ -11,7 +11,7 @@ var (
 )
 
 // Breadth first search stuff
-type Context[M, T any] struct {
+/*type Context[M, T any] struct {
 	GlobalContext M
 	StateValue    *StateValue[T]
 }
@@ -50,9 +50,9 @@ func simpleDistFunc[M, T any]() func(*Context[M, T], T) int {
 		}
 		return ctx.StateValue.Dist() + 1
 	}
-}
+}*/
 
-func searchPath[M, AS any, T pathable[M, T, AS]](container stateContainer[T], initStates []T, initDistFunc func(*Context[M, T], T) int, globalContext M, ph *pathHelper[M, T, AS]) ([]T, int) {
+/*func searchPath[M, AS any, T pathable[M, T, AS]](container stateContainer[T], initStates []T, initDistFunc func(*Context[M, T], T) int, globalContext M, ph *pathHelper[M, T, AS]) ([]T, int) {
 	ctx := &Context[M, T]{
 		GlobalContext: globalContext,
 	}
@@ -61,7 +61,7 @@ func searchPath[M, AS any, T pathable[M, T, AS]](container stateContainer[T], in
 		if initDistFunc != nil {
 			initDist = initDistFunc(ctx, initState)
 		}
-		container.PushState(&StateValue[T]{initState, initDist, nil})
+		container.PushState(&StateValue[T]{initState, initDist, nil, 0})
 	}
 
 	checked := map[string]bool{}
@@ -91,11 +91,11 @@ func searchPath[M, AS any, T pathable[M, T, AS]](container stateContainer[T], in
 		for _, adjState := range sv.state.AdjacentStates(ctx) {
 			dist := ph.distFunc(ctx, adjState)
 			newT := ph.convFunc(ctx, adjState)
-			container.PushState(&StateValue[T]{newT, dist, func() *StateValue[T] { return sv }})
+			container.PushState(&StateValue[T]{newT, dist, func() *StateValue[T] { return sv }, 0})
 		}
 	}
 	return nil, -1
-}
+}*/
 
 // TODO: get rid of this and just have this be a private wrapper depending on
 // search type
@@ -105,6 +105,8 @@ type StateValue[T any] struct {
 	dist  int
 	// TODO: this can be replaced by improving container method (to include CurrentPath() function)
 	prev  func() *StateValue[T]
+	// 
+	pathLen int
 }
 
 func (sv *StateValue[T]) PathString() string {

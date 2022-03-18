@@ -1,10 +1,6 @@
 package bfs
 
-import (
-	"fmt"
-)
-
-type Set[M, T any] interface {
+/*type Set[M, T any] interface {
 	Code(*Context[M, T]) string
 	AdjacentStates(*Context[M, T]) []T
 	BiggerThan(T) bool
@@ -77,7 +73,7 @@ func fromSetContext[M any, T Set[M, T]](ctx *Context[M, *setState[M, T]]) *Conte
 	}
 }
 
-func CompleteSets[M any, T Set[M, T]](sets []T, globalContext M, size int) []T {
+/*func CompleteSets[M any, T Set[M, T]](sets []T, globalContext M, size int) []T {
 	var setStates []*setState[M, T]
 	for _, s := range sets {
 		setStates = append(setStates, &setState[M, T]{s, size})
@@ -88,4 +84,4 @@ func CompleteSets[M any, T Set[M, T]](sets []T, globalContext M, size int) []T {
 				ts = append(ts, p.s)
 			}
 			return ts
-}
+}*/

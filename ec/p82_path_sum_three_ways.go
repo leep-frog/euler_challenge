@@ -1,11 +1,12 @@
 package eulerchallenge
 
 import (
-	"github.com/leep-frog/command"
 	"fmt"
 
-	"github.com/leep-frog/euler_challenge/parse"
+	"github.com/leep-frog/command"
+
 	"github.com/leep-frog/euler_challenge/bfs"
+	"github.com/leep-frog/euler_challenge/parse"
 )
 
 func P82() *problem {
@@ -15,8 +16,8 @@ func P82() *problem {
 		for i := 0; i < len(grid); i++ {
 			initStates = append(initStates, &p82{i, 0})
 		}
-			_, dist := bfs.ShortestOffsetPath[[][]int, *p82](initStates, grid)
-			o.Stdoutln(dist)
+		_, dist := bfs.ContextualShortestOffsetPath[[][]int](initStates, grid)
+		o.Stdoutln(dist)
 	})
 }
 
@@ -24,30 +25,28 @@ type p82 struct {
 	i, j int
 }
 
-func (p *p82) Code(ctx *bfs.Context[[][]int, *p82]) string {
+func (p *p82) Code(grid [][]int) string {
 	return fmt.Sprintf("%d_%d", p.i, p.j)
 }
 
-func (p *p82) Offset(ctx *bfs.Context[[][]int, *p82]) int {
-	grid := ctx.GlobalContext
+func (p *p82) Distance(grid [][]int) int {
 	return grid[p.i][p.j]
 }
 
-func (p *p82) Done(ctx *bfs.Context[[][]int, *p82]) bool {
-	return p.j == len(ctx.GlobalContext[p.i]) - 1
+func (p *p82) Done(grid [][]int) bool {
+	return p.j == len(grid[p.i])-1
 }
 
-func (p *p82) AdjacentStates(ctx *bfs.Context[[][]int, *p82]) []*p82 {
-	grid := ctx.GlobalContext
+func (p *p82) AdjacentStates(grid [][]int) []*p82 {
 	r := []*p82{}
-	if p.i < len(grid) - 1 {
-		r = append(r, &p82{p.i+1, p.j})
+	if p.i < len(grid)-1 {
+		r = append(r, &p82{p.i + 1, p.j})
 	}
-	if p.j < len(grid[p.i]) - 1 {
-		r = append(r, &p82{p.i, p.j+1})
+	if p.j < len(grid[p.i])-1 {
+		r = append(r, &p82{p.i, p.j + 1})
 	}
 	if p.i > 0 {
-		r = append(r, &p82{p.i-1, p.j})
+		r = append(r, &p82{p.i - 1, p.j})
 	}
 	return r
 }

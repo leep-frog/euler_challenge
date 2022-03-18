@@ -2,7 +2,8 @@ package eulerchallenge
 
 import (
 	"fmt"
-  "github.com/leep-frog/command"
+
+	"github.com/leep-frog/command"
 
 	"github.com/leep-frog/euler_challenge/bfs"
 	"github.com/leep-frog/euler_challenge/parse"
@@ -10,7 +11,7 @@ import (
 
 func P83() *problem {
 	return fileInputNode(83, func(lines []string, o command.Output) {
-		_, dist := bfs.ShortestOffsetPath[[][]int, *p83]([]*p83{{}}, parse.ToGrid(lines))
+		_, dist := bfs.ContextualShortestOffsetPath[[][]int]([]*p83{{}}, parse.ToGrid(lines))
 		o.Stdoutln(dist)
 	})
 }
@@ -19,33 +20,31 @@ type p83 struct {
 	i, j int
 }
 
-func (p *p83) Code(ctx *bfs.Context[[][]int, *p83]) string {
+func (p *p83) Code(grid [][]int) string {
 	return fmt.Sprintf("%d_%d", p.i, p.j)
 }
 
-func (p *p83) Offset(ctx *bfs.Context[[][]int, *p83]) int {
-	grid := ctx.GlobalContext
+func (p *p83) Distance(grid [][]int) int {
 	return grid[p.i][p.j]
 }
 
-func (p *p83) Done(ctx *bfs.Context[[][]int, *p83]) bool {
-	return p.i == len(ctx.GlobalContext) - 1 && p.j == len(ctx.GlobalContext[p.i]) - 1
+func (p *p83) Done(grid [][]int) bool {
+	return p.i == len(grid)-1 && p.j == len(grid[p.i])-1
 }
 
-func (p *p83) AdjacentStates(ctx *bfs.Context[[][]int, *p83]) []*p83 {
-	grid := ctx.GlobalContext
+func (p *p83) AdjacentStates(grid [][]int) []*p83 {
 	r := []*p83{}
-	if p.i < len(grid) - 1 {
-		r = append(r, &p83{p.i+1, p.j})
+	if p.i < len(grid)-1 {
+		r = append(r, &p83{p.i + 1, p.j})
 	}
-	if p.j < len(grid[p.i]) - 1 {
-		r = append(r, &p83{p.i, p.j+1})
+	if p.j < len(grid[p.i])-1 {
+		r = append(r, &p83{p.i, p.j + 1})
 	}
 	if p.i > 0 {
-		r = append(r, &p83{p.i-1, p.j})
+		r = append(r, &p83{p.i - 1, p.j})
 	}
 	if p.j > 0 {
-		r = append(r, &p83{p.i, p.j-1})
+		r = append(r, &p83{p.i, p.j - 1})
 	}
 	return r
 }

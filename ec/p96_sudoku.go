@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/leep-frog/command"
-	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/bfs"
+	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/parse"
 )
 
@@ -25,7 +25,7 @@ func P96() *problem {
 				}
 				board = append(board, row)
 			}
-			boards = append(boards, &sudokuBoard{n, maths.Sqrt(n), board, n*n, false, 0})
+			boards = append(boards, &sudokuBoard{n, maths.Sqrt(n), board, n * n, false, 0})
 			lines = lines[n:]
 		}
 
@@ -33,26 +33,27 @@ func P96() *problem {
 
 		for idx, board := range boards {
 			board.Solve()
-			path, _ := bfs.ShortestWeightedPath([]*sudokuBoard{board}, 0)
+			path, _ := bfs.ShortestPath([]*sudokuBoard{board})
 			if len(path) == 0 {
 				o.Stderrln("unsolved board ", idx)
 				o.Stderrln(board)
 				return
 			}
-			sum += *(path[0].board[0][0].value) * 100
-			sum += *(path[0].board[0][1].value) * 10
-			sum += *(path[0].board[0][2].value)
+			finalBoard := path[len(path)-1].board
+			sum += *(finalBoard[0][0].value) * 100
+			sum += *(finalBoard[0][1].value) * 10
+			sum += *(finalBoard[0][2].value)
 		}
 		o.Stdoutln(sum)
 	})
 }
 
 type sudokuBoard struct {
-	n     int
-	sn    int
-	board [][]*sudokuCell
+	n         int
+	sn        int
+	board     [][]*sudokuCell
 	remaining int
-	broken bool
+	broken    bool
 
 	guesses int
 }
@@ -102,10 +103,10 @@ func sudokuSquareIndicesFromNumber(square, n, sn int) [][]int {
 }
 
 type sudokuCell struct {
-	row int
-	col int
-	options  map[int]bool
-	value    *int
+	row     int
+	col     int
+	options map[int]bool
+	value   *int
 }
 
 func (sc *sudokuCell) copy() *sudokuCell {
@@ -259,16 +260,16 @@ func (sb *sudokuBoard) Solve() bool {
 	return true
 }
 
-func (sb *sudokuBoard) Code(*bfs.Context[int, *sudokuBoard]) string {
+func (sb *sudokuBoard) Code() string {
 	return sb.String()
 }
 
-func (sb *sudokuBoard) Done(*bfs.Context[int, *sudokuBoard]) bool {
+func (sb *sudokuBoard) Done() bool {
 	sb.Solve()
 	return !sb.broken && sb.remaining == 0
 }
 
-func (sb *sudokuBoard) Distance(*bfs.Context[int, *sudokuBoard]) int {
+func (sb *sudokuBoard) Distance() int {
 	return sb.remaining
 }
 
@@ -284,7 +285,7 @@ func (sb *sudokuBoard) copy() *sudokuBoard {
 	return &sudokuBoard{sb.n, sb.sn, newBoard, sb.remaining, sb.broken, sb.guesses}
 }
 
-func (sb *sudokuBoard) AdjacentStates(*bfs.Context[int, *sudokuBoard]) []*sudokuBoard {
+func (sb *sudokuBoard) AdjacentStates() []*sudokuBoard {
 	// don't do more than 3 guesses
 	if sb.guesses > 3 {
 		return nil

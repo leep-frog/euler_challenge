@@ -16,21 +16,22 @@ var (
 
 func P18() *problem {
 	return fileInputNode(18, func(lines []string, o command.Output) {
-			var tower [][]int
-			for _, line := range lines {
-				var row []int
-				for _, c := range strings.Split(line, " ") {
-					row = append(row, parse.Atoi(c))
-				}
-				tower = append(tower, row)
+		var tower [][]int
+		for _, line := range lines {
+			var row []int
+			for _, c := range strings.Split(line, " ") {
+				row = append(row, parse.Atoi(c))
 			}
+			tower = append(tower, row)
+		}
 
-			path, dist := bfs.ShortestOffsetPath([]*place{&place{0, 0}}, tower)
-			for _, p := range path {
-				o.Stdoutln(p)
-			}
-			o.Stdoutln((maxValue * len(tower)) - dist)
-		})
+		//path, dist := bfs.ShortestOffsetPath([]*place{&place{0, 0}}, tower)
+		path, dist := bfs.ContextualShortestOffsetPath([]*place{&place{0, 0}}, tower)
+		for _, p := range path {
+			o.Stdoutln(p)
+		}
+		o.Stdoutln((maxValue * len(tower)) - dist)
+	})
 }
 
 func check(tower [][]int, row, col, sum int) int {
@@ -52,19 +53,19 @@ func (p *place) String() string {
 	return fmt.Sprintf("%d_%d", p.row, p.col)
 }
 
-func (p *place) Code(*bfs.Context[[][]int, *place]) string {
+func (p *place) Code([][]int) string {
 	return p.String()
 }
 
-func (p *place) Done(ctx *bfs.Context[[][]int, *place]) bool {
-	return p.row == len(ctx.GlobalContext)-1
+func (p *place) Done(tower [][]int) bool {
+	return p.row == len(tower)-1
 }
 
-func (p *place) Offset(ctx *bfs.Context[[][]int, *place]) int {
-	return maxValue - ctx.GlobalContext[p.row][p.col]
+func (p *place) Distance(tower [][]int) int {
+	return maxValue - tower[p.row][p.col]
 }
 
-func (p *place) AdjacentStates(ctx *bfs.Context[[][]int, *place]) []*place {
+func (p *place) AdjacentStates([][]int) []*place {
 	return []*place{
 		{
 			col: p.col,

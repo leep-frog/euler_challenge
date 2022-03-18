@@ -19,7 +19,7 @@ func P108() *problem {
 			generator.Primes(),
 			n,
 		}}
-		bfs.ShortestWeightedPath(initStates, best)
+		bfs.ContextualShortestPath(initStates, best)
 		o.Stdoutln(best.Best())
 	})
 }
@@ -56,7 +56,51 @@ func (dr *diophantineReciprocals) String() string {
 	return strings.Join(r, "_")
 }
 
-func (dr *diophantineReciprocals) Code(*bfs.Context[*maths.Bester[int, int], *diophantineReciprocals]) string {
+func (dr *diophantineReciprocals) Code(*maths.Bester[int, int]) string {
+	return dr.String()
+}
+
+func (dr *diophantineReciprocals) Done(*maths.Bester[int, int]) bool {
+	// AdjacentStates will eventually return nothing, so we just check all states
+	return false
+}
+
+func (dr *diophantineReciprocals) Distance(best *maths.Bester[int, int]) int {
+	nf := dr.numFractions()
+	iv := dr.intValue()
+	if nf >= dr.n {
+		best.IndexCheck(nf, iv)
+	}
+	return -1_000*nf/maths.Sqrt(iv)
+}
+
+func (dr *diophantineReciprocals) AdjacentStates(best *maths.Bester[int, int]) []*diophantineReciprocals {
+	if best.Set() {
+		iv := dr.intValue()
+		if iv > best.Best() {
+			return nil
+		}
+	}
+	var neighbors []*diophantineReciprocals
+	for i, p := range dr.parts {
+		if i != 0 && p + 1 > dr.parts[i-1] {
+			continue
+		}
+		arr := make([]int, len(dr.parts), len(dr.parts))
+		copy(arr, dr.parts)
+		arr[i]++
+		neighbors = append(neighbors, &diophantineReciprocals{arr, dr.g, dr.n})
+	}
+
+	arr := make([]int, len(dr.parts), len(dr.parts))
+	copy(arr, dr.parts)
+	arr = append(arr, 1)
+	neighbors = append(neighbors, &diophantineReciprocals{arr, dr.g, dr.n})
+	return neighbors
+}
+
+
+/*func (dr *diophantineReciprocals) Code(*bfs.Context[*maths.Bester[int, int], *diophantineReciprocals]) string {
 	return dr.String()
 }
 
@@ -98,3 +142,4 @@ func (dr *diophantineReciprocals) AdjacentStates(ctx *bfs.Context[*maths.Bester[
 	neighbors = append(neighbors, &diophantineReciprocals{arr, dr.g, dr.n})
 	return neighbors
 }
+*/

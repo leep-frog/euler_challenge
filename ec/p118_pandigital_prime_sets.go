@@ -15,7 +15,7 @@ func P118() *problem {
 		ctx := &context118{map[string]bool{}, generator.Primes()}
 		perms := maths.Permutations([]int{1, 2, 3, 4, 5, 6, 7, 8, 9}, 9, false)
 		for _, p := range perms {
-			bfs.DFS([]*pandigitalOrdering{{p, nil}}, ctx)
+			bfs.DFSWithContext([]*pandigitalOrdering{{p, nil}}, ctx)
 		}
 		o.Stdoutln(len(ctx.validSets))
 	})
@@ -48,23 +48,23 @@ func (po *pandigitalOrdering) parts() []int {
 	return append(r, maths.FromDigits(po.perm[start:]))
 }
 
-func (po *pandigitalOrdering) Code(*bfs.Context[*context118, *pandigitalOrdering]) string {
+func (po *pandigitalOrdering) Code(*context118) string {
 	return fmt.Sprintf("%v", po.parts())
 }
 
-func (po *pandigitalOrdering) Done(ctx *bfs.Context[*context118, *pandigitalOrdering]) bool {
+func (po *pandigitalOrdering) Done(ctx *context118) bool {
 	parts := po.parts()
 	for _, p := range parts {
-		if !generator.IsPrime(p, ctx.GlobalContext.primes) {
+		if !generator.IsPrime(p, ctx.primes) {
 			return false
 		}
 	}
 	sort.Ints(parts)
-	ctx.GlobalContext.validSets[fmt.Sprintf("%v", parts)] = true
+	ctx.validSets[fmt.Sprintf("%v", parts)] = true
 	return false
 }
 
-func (po *pandigitalOrdering) AdjacentStates(ctx *bfs.Context[*context118, *pandigitalOrdering]) []*pandigitalOrdering {
+func (po *pandigitalOrdering) AdjacentStates(ctx *context118) []*pandigitalOrdering {
 	var r []*pandigitalOrdering
 	start := 0
 	if len(po.breaks) > 0 {
@@ -73,7 +73,7 @@ func (po *pandigitalOrdering) AdjacentStates(ctx *bfs.Context[*context118, *pand
 	for i := start+1; i <= len(po.perm)-1; i++ {
 		cp := po.copy()
 		cp.breaks = append(cp.breaks, i)
-		if generator.IsPrime(maths.FromDigits(cp.perm[start:i]), ctx.GlobalContext.primes) {
+		if generator.IsPrime(maths.FromDigits(cp.perm[start:i]), ctx.primes) {
 			r = append(r, cp)
 		}
 	}
