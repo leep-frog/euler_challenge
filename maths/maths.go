@@ -482,6 +482,16 @@ func (i *Int) Palindrome() bool {
 	return true
 }
 
+func Palindrome(n int) bool {
+	s := strconv.Itoa(n)
+	for idx := range s {
+		if s[idx:idx+1] != s[len(s)-idx-1:len(s)-idx] {
+			return false
+		}
+	}
+	return true
+}
+
 func (i *Int) Reverse() *Int {
 	var r []string
 	magOnlyFunc(i, func(pos *Int) {
