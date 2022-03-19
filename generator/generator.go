@@ -199,18 +199,36 @@ func copy(m map[int]int) map[int]int {
 	return c
 }
 
+var (
+	coprimeCache = map[int]map[int]bool{}
+)
+
 func Coprimes(a, b int, p *Generator[int]) bool {
+	if b < a {
+		a, b = b, a
+	}
+	if m, ok := coprimeCache[a]; ok {
+		if v, ok2 := m[b]; ok2 {
+			return v
+		}
+	}
 	bFactors := PrimeFactors(b, p)
 	for k := range PrimeFactors(a, p) {
 		if _, ok := bFactors[k]; ok {
+			maths.Insert(coprimeCache, a, b, true)
 			return true
 		}
 	}
+	maths.Insert(coprimeCache, a, b, false)
 	return false
 }
 
-func PrimeFactors(n int, p *Generator[int]) map[int]int {
+func MutablePrimeFactors(n int, p *Generator[int]) map[int]int {
 	return copy(primeFactors(n, p))
+}
+
+func PrimeFactors(n int, p *Generator[int]) map[int]int {
+	return primeFactors(n, p)
 }
 
 func Factors(n int, p *Generator[int]) []int {
@@ -269,6 +287,11 @@ func primeFactors(n int, p *Generator[int]) map[int]int {
 		return nil
 	}
 	if r, ok := cachedPrimeFactors[n]; ok {
+		return r
+	}
+	if IsPrime(n, p) {
+		r := map[int]int{n: 1}
+		cachedPrimeFactors[n] = r
 		return r
 	}
 	ogN := n
@@ -352,6 +375,11 @@ func IsPrime(n int, p *Generator[int]) bool {
 	if n <= 1 {
 		return false
 	}
+	if len(p.values) > 0 && p.Last() >= n {
+		if _, has := p.set[strconv.Itoa(n)]; has {
+			return true
+		}
+	} 
 	ogIdx := p.idx
 	defer func() { p.idx = ogIdx }()
 	p.Reset()

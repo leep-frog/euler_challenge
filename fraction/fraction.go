@@ -61,8 +61,8 @@ func (f *Fraction[T]) LT(that *Fraction[T]) bool {
 
 // Return a fraction to allow for chaining.
 func Simplify(n, d int, p *generator.Generator[int]) *Fraction[int] {
-	nfs := generator.PrimeFactors(n, p)	
-	dfs := generator.PrimeFactors(d, p)	
+	nfs := generator.MutablePrimeFactors(n, p)	
+	dfs := generator.MutablePrimeFactors(d, p)	
 
 	for k, v := range nfs {
 		if dv, ok := dfs[k]; ok {

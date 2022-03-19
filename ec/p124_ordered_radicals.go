@@ -34,10 +34,22 @@ func (r *radical) String() string {
 	return fmt.Sprintf("%d:%d", r.n, r.rad_n)
 }
 
-func newRadical(n int, g *generator.Generator[int]) *radical {
-	prod := 1
-	for f, _ := range generator.PrimeFactors(n, g) {
-		prod *= f
+var (
+	radicalCache = []int{}
+	pnc = false
+)
+
+func calcRadical(n int, g *generator.Generator[int]) int {
+	for len(radicalCache) < n {
+		prod := 1
+		for f, _ := range generator.PrimeFactors(len(radicalCache) + 1, g) {
+			prod *= f
+		}
+		radicalCache = append(radicalCache, prod)
 	}
-	return &radical{n, prod}
+	return radicalCache[n-1]
+}
+
+func newRadical(n int, g *generator.Generator[int]) *radical {	
+	return &radical{n, calcRadical(n, g)}
 }
