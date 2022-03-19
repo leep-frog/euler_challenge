@@ -60,7 +60,7 @@ func P93() *problem {
 					for a := b - 1; a >= 0; a-- {
 						values := map[int]bool{}
 						for _, order := range maths.Permutations([]float64{a, b, c, d}, 4, false) {
-							m := maths.Set(order...)
+							m := maths.NewSimpleSet(order...)
 							bad := false
 							for k := range m {
 								if m[-k] {

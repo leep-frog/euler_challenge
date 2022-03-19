@@ -17,6 +17,10 @@ func rotateFunc(x, y, z int, rs ...Rotation) func(*Point) *Point {
 	}
 }
 
+func (p *Point) Code() string {
+	return p.String()
+}
+
 func (p *Point) Cross(s *Point) *Point {
 	iMatrix := [][]int{
 		{p.Y, p.Z},

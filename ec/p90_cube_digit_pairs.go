@@ -14,9 +14,9 @@ func P90() *problem {
 		opts := []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
 		unique := map[string]bool{}
 		for _, dieOneSlice := range maths.ChooseSets(opts, 6) {
-			dieOne := maths.Set(dieOneSlice...)
+			dieOne := maths.NewSimpleSet(dieOneSlice...)
 			for _, dieTwoSlice := range maths.ChooseSets(opts, 6) {
-				dieTwo := maths.Set(dieTwoSlice...)
+				dieTwo := maths.NewSimpleSet(dieTwoSlice...)
 
 				hasAll := true
 				for _, square := range squares {

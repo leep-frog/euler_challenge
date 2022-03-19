@@ -280,14 +280,6 @@ func (i *Int) get(spot int) uint64 {
 	return i.parts[spot]
 }
 
-func Set[T comparable](ts ...T) map[T]bool {
-	m := map[T]bool{}
-	for _, t := range ts {
-		m[t] = true
-	}
-	return m
-}
-
 func SumSys[T Mathable](ts ...T) T {
 	var s T
 	for _, t := range ts {
@@ -480,6 +472,128 @@ func (i *Int) Palindrome() bool {
 		}
 	}
 	return true
+}
+
+// TODO: separate package for this
+type Mappable interface {
+	Code() string
+}
+
+type Map[K Mappable, V any] struct {
+	m map[string]V
+	km map[string]K
+}
+
+func NewMap[K Mappable, V any]() *Map[K, V] {
+	return &Map[K, V]{
+		m: map[string]V{},
+		km: map[string]K{},
+	}
+}
+
+func (m *Map[K, V]) ForKs(f func(K) bool) {
+	for _, k := range m.km {
+		if f(k) {
+			break
+		}
+	}
+}
+
+func (m *Map[K, V]) ForKVs(f func(K, V) bool) {
+	for c, k := range m.km {
+		v := m.m[c]
+		if f(k, v) {
+			break
+		}
+	}
+}
+
+func (m *Map[K, V]) ForVs(f func(V) bool) {
+	for c := range m.km {
+		v := m.m[c]
+		if f(v) {
+			break
+		}
+	}
+}
+
+func (m *Map[K, V]) Delete(k K) {
+	c := k.Code()
+	delete(m.m, c)
+	delete(m.km, c)
+}
+
+func (m *Map[K, V]) Set(k K, v V) {
+	c := k.Code()
+	m.m[c] = v
+	m.km[c] = k
+}
+
+func (m *Map[K, V]) Get(k K) V {
+	return m.m[k.Code()]
+}
+
+func (m *Map[K, V]) GetB(k K) (V, bool) {
+	v, ok := m.m[k.Code()]
+	return v, ok
+}
+
+func (m *Map[K, V]) Contains(k K) bool {
+	_, ok := m.m[k.Code()]
+	return ok
+}
+
+func (m *Map[K, V]) Len() int {
+	return len(m.m)
+}
+
+type Set[K Mappable] struct {
+	m *Map[K, bool]
+}
+
+func (s *Set[K]) String() string {
+	var r []string
+	s.For(func(k K) bool {
+		r = append(r, fmt.Sprintf("%v", k))
+		return false
+	})
+	return fmt.Sprintf("{%v}", strings.Join(r, ", "))
+}
+
+func NewSimpleSet[T comparable](ts ...T) map[T]bool {
+	m := map[T]bool{}
+	for _, t := range ts {
+		m[t] = true
+	}
+	return m
+}
+
+func NewSet[K Mappable](ks ...K) *Set[K] {
+	s := &Set[K]{m: NewMap[K, bool]()}
+	for _, k := range ks {
+		s.Add(k)
+	}
+	return s
+}
+
+func (s *Set[K]) For(f func(K) bool) {
+	s.m.ForKs(f)
+}
+
+func (s *Set[K]) Add(k K) {
+	s.m.Set(k, true)
+}
+
+func (s *Set[K]) Delete(k K) {
+	s.m.Delete(k)
+}
+
+func (s *Set[K]) Contains(k K) bool {
+	return s.m.Contains(k)
+}
+
+func (s *Set[K]) Len() int {
+	return s.m.Len()
 }
 
 func Palindrome(n int) bool {
