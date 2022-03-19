@@ -17,15 +17,15 @@ type addContextAndPathWrapperDFS[T DepthSearchable[T]] struct {
 	state T
 }
 
-func (acp *addContextAndPathWrapperDFS[T]) Code(_ int, _ DFSPath[*addContextAndPathWrapperDFS[T]]) string {
+func (acp *addContextAndPathWrapperDFS[T]) Code(_ int, _ DFSPath[T]) string {
 	return acp.state.Code()
 }
 
-func (acp *addContextAndPathWrapperDFS[T]) Done(_ int, _ DFSPath[*addContextAndPathWrapperDFS[T]]) bool {
+func (acp *addContextAndPathWrapperDFS[T]) Done(_ int, _ DFSPath[T]) bool {
 	return acp.state.Done()
 }
 
-func (acp *addContextAndPathWrapperDFS[T]) AdjacentStates(_ int, _ DFSPath[*addContextAndPathWrapperDFS[T]]) []*addContextAndPathWrapperDFS[T] {
+func (acp *addContextAndPathWrapperDFS[T]) AdjacentStates(_ int, _ DFSPath[T]) []*addContextAndPathWrapperDFS[T] {
 	var r []*addContextAndPathWrapperDFS[T]
 	for _, n := range acp.state.AdjacentStates() {
 		r = append(r, &addContextAndPathWrapperDFS[T]{n})
@@ -50,15 +50,15 @@ type addPathWrapperDFS[M any, T DepthSearchableWithContext[M, T]] struct {
 	state T
 }
 
-func (apw *addPathWrapperDFS[M, T]) Code(m M, _ DFSPath[*addPathWrapperDFS[M, T]]) string {
+func (apw *addPathWrapperDFS[M, T]) Code(m M, _ DFSPath[T]) string {
 	return apw.state.Code(m)
 }
 
-func (apw *addPathWrapperDFS[M, T]) Done(m M, _ DFSPath[*addPathWrapperDFS[M, T]]) bool {
+func (apw *addPathWrapperDFS[M, T]) Done(m M, _ DFSPath[T]) bool {
 	return apw.state.Done(m)
 }
 
-func (apw *addPathWrapperDFS[M, T]) AdjacentStates(m M, _ DFSPath[*addPathWrapperDFS[M, T]]) []*addPathWrapperDFS[M, T] {
+func (apw *addPathWrapperDFS[M, T]) AdjacentStates(m M, _ DFSPath[T]) []*addPathWrapperDFS[M, T] {
 	var r []*addPathWrapperDFS[M, T]
 	for _, n := range apw.state.AdjacentStates(m) {
 		r = append(r, &addPathWrapperDFS[M, T]{n})
@@ -118,28 +118,22 @@ type dfsAction[T any] struct {
 	state T	
 }
 
-func DFSWithContext[M any, T DepthSearchableWithContext[M, T]](initStates []T, m M) []T {
+func DFSWithContext[M any, T DepthSearchableWithContext[M, T]](initStates []T, m M, opts ...DFSOption) []T {
 	var r []*addPathWrapperDFS[M, T]
 	for _, is := range initStates {
 		r = append(r, &addPathWrapperDFS[M, T]{is})
 	}
-	var ts []T
-	for _, wrapped := range DFSWithContextAndPath(r, m) {
-		ts = append(ts, wrapped.state)
-	}
-	return ts
+	c := func(apw *addPathWrapperDFS[M, T]) T { return apw.state}
+	return dfsFinal(r, m, c, opts...)
 }
 
-func DFS[M any, T DepthSearchable[T]](initStates []T) []T {
+func DFS[M any, T DepthSearchable[T]](initStates []T, opts ...DFSOption) []T {
 	var r []*addContextAndPathWrapperDFS[T]
 	for _, is := range initStates {
 		r = append(r, &addContextAndPathWrapperDFS[T]{is})
 	}
-	var ts []T
-	for _, wrapped := range DFSWithContextAndPath(r, 0) {
-		ts = append(ts, wrapped.state)
-	}
-	return ts
+	c := func(apw *addContextAndPathWrapperDFS[T]) T { return apw.state}
+	return dfsFinal(r, 0, c, opts...)
 }
 
 type DFSOption func(o *dfsOption)
@@ -158,6 +152,27 @@ func AllowDFSDuplicates() DFSOption {
 }
 
 func DFSWithContextAndPath[M any, T DepthSearchableWithContextAndPath[M, T]](initStates []T, m M, opts ...DFSOption) []T {
+	return dfsFinal(initStates, m, identityConverter[T](), opts...)
+}
+
+type depthSearchableFinal[M, T, T2 any] interface {
+	// A unique code for the current state. This may be called multiple times
+	// so this should be cached in the implementing code if computation is expensive.
+	Code(M, DFSPath[T2]) string
+	// Returns if the given state is in a final position. The input is a contextual variable
+	// that is passed along from ShortestPath.
+	Done(M, DFSPath[T2]) bool
+	// Returns all of the adjacent states. The input is a contextual variable
+	// that is passed along from ShortestPath.
+	// T should always be State[M], but we cannot do that here without having a recursive type
+	AdjacentStates(M, DFSPath[T2]) []T
+}
+
+func identityConverter[T any]() converter[T, T] {
+	return func(t T) T { return t }
+}
+
+func dfsFinal[M, T2 any, T depthSearchableFinal[M, T, T2]](initStates []T, m M, convert converter[T, T2], opts ...DFSOption) []T2 {
 	opt := &dfsOption{}
 	for _, o := range opts {
 		o(opt)
@@ -173,7 +188,7 @@ func DFSWithContextAndPath[M any, T DepthSearchableWithContextAndPath[M, T]](ini
 
 	checkedNodes := map[string]bool{}
 
-	dp := &dfsPath[T]{nil, map[string]bool{}}
+	dp := &dfsPath[T2]{nil, map[string]bool{}}
 
 	for len(actions) > 0 {
 		a := actions[len(actions)-1]
@@ -204,7 +219,7 @@ func DFSWithContextAndPath[M any, T DepthSearchableWithContextAndPath[M, T]](ini
 		actions = append(actions, &dfsAction[T]{&c, state})
 
 		// Update path variables
-		dp.push(state, c)
+		dp.push(convert(state), c)
 		checkedNodes[c] = true
 
 		// Check if node is done

@@ -62,7 +62,7 @@ func TestAll(t *testing.T) {
 			want:     []string{"21417"},
 			estimate: 0.5,
 		},
-		/*{
+		{
 			name:     "p123",
 			args:     []string{"123", "10"},
 			want:     []string{"21035"},
