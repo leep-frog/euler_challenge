@@ -1,6 +1,7 @@
 package eulerchallenge
 
 import (
+	"sort"
 	"testing"
 	"time"
 
@@ -20,6 +21,8 @@ type codingChallengeTest struct {
 	want     []string
 	estimate float64
 	skip     string
+
+	elapsed float64
 }
 
 func TestAll(t *testing.T) {
@@ -35,7 +38,7 @@ func TestAll(t *testing.T) {
 			args: []string{"127", "120000"},
 			want: []string{"0"},
 		},
-		/* /
+		/*/
 		{
 			name: "p126",
 			args: []string{"126", "1000"},
@@ -213,28 +216,26 @@ func TestAll(t *testing.T) {
 			want: []string{"9350130049860600"},
 		},
 		{
-			name:     "p110 example",
-			args:     []string{"108", "100"},
-			want:     []string{"1260"},
-			estimate: 2,
-		},*/
+			name: "p110 example",
+			args: []string{"108", "100"},
+			want: []string{"1260"},
+		},
 		{
 			name:     "p109",
 			args:     []string{"109", "100"},
 			want:     []string{"38182"},
-			estimate: 1,
+			estimate: 0.5,
 		},
 		{
 			name:     "p109 example",
 			args:     []string{"109", "6"},
 			want:     []string{"11"},
-			estimate: 1,
+			estimate: 0.5,
 		},
-		/*{
-			name:     "p108",
-			args:     []string{"108", "1000"},
-			want:     []string{"180180"},
-			estimate: 2,
+		{
+			name: "p108",
+			args: []string{"108", "1000"},
+			want: []string{"180180"},
 		},
 		{
 			name: "p107",
@@ -273,7 +274,7 @@ func TestAll(t *testing.T) {
 			name:     "p104",
 			args:     []string{"104"},
 			want:     []string{"329468"},
-			estimate: 1,
+			estimate: 0.5,
 		},
 		{
 			name:     "p103",
@@ -412,7 +413,7 @@ func TestAll(t *testing.T) {
 			name:     "p88",
 			args:     []string{"88", "12000"},
 			want:     []string{"7587457"},
-			estimate: 25,
+			estimate: 1,
 		},
 		{
 			name: "p88 example 2",
@@ -672,10 +673,9 @@ func TestAll(t *testing.T) {
 			want: []string{"153"},
 		},
 		{
-			name:     "p56",
-			args:     []string{"56"},
-			want:     []string{"972"},
-			estimate: 1.5,
+			name: "p56",
+			args: []string{"56"},
+			want: []string{"972"},
 		},
 		{
 			name: "p55",
@@ -1266,6 +1266,15 @@ func TestAll(t *testing.T) {
 	for _, test := range tests {
 		test.test(t)
 	}
+	sort.SliceStable(tests, func(i, j int) bool {
+		return tests[i].elapsed > tests[j].elapsed
+	})
+	t.Logf("==================")
+	t.Logf("Long tests:")
+	for i := 1; i < maths.Max(5, len(tests)) && tests[i].elapsed > 5; i++ {
+		test := tests[i]
+		t.Logf("Test %q took %5.2f seconds", test.name, test.elapsed)
+	}
 }
 
 func (ct *codingChallengeTest) test(t *testing.T) {
@@ -1289,9 +1298,12 @@ func (ct *codingChallengeTest) test(t *testing.T) {
 			t.Fatalf("redundant estimate (default is 0.1)")
 		}
 
-		elapsed := float64(time.Now().Sub(start).Microseconds()) / 1_000_000.0
-		if elapsed > 1.5*estimate {
-			t.Logf("Test took %5.2f seconds, expected %5.2f", elapsed, estimate)
+		ct.elapsed = float64(time.Now().Sub(start).Microseconds()) / 1_000_000.0
+		if ct.elapsed > 2*estimate {
+			t.Logf("(Too long) Test took %5.2f seconds, expected %5.2f", ct.elapsed, estimate)
+		}
+		if estimate > 0.5 && ct.elapsed < 0.25*estimate {
+			t.Logf("(Bad estimate) Test took %5.2f seconds, expected %5.2f", ct.elapsed, estimate)
 		}
 	})
 }

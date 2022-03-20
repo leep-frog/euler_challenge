@@ -17,8 +17,8 @@ func P88() *problem {
 		// 2k = 1 * 1 * ... * 1 * 1 * 2 * k
 		// sum = (k - 2)*1 + 2 + k = k - 2 + k = 2k
 		for i := 2; i <= 2*n; i++ {
-			ctx := &context88{i, kMap, g}
-			bfs.DFS([]*node88{{nil, i, 0}}, ctx)
+			ctx := &ctx88{nil, i, kMap, g}
+			bfs.PoppableContextualDFS([]*n88{{i, 0, 0}}, ctx)
 		}
 
 		var sum int
@@ -33,33 +33,33 @@ func P88() *problem {
 	})
 }
 
-type node88 struct {
-	factors []int
+type n88 struct {
 	remaining int
 	sum int
+	f int
 }
 
-type context88 struct {
+type ctx88 struct {
+	factors []int
 	n int
 	kMap map[int]int
 	g *generator.Generator[int]
 }
 
-func (n *node88) Code(*context88) string {
-	//c := fmt.Sprintf("%d: %v", n.remaining, n.factors)
-	//fmt.Println(c)
-	return fmt.Sprintf("%d: %v", n.remaining, n.factors)
+func (n *n88) Code(ctx *ctx88, dp bfs.DFSPath[*n88]) string {
+	return fmt.Sprintf("%d,%d,%d", n.remaining, n.sum, dp.Len())
 }
 
-func (n *node88) Done(ctx *context88) bool {
-	if n.remaining != 1 {
+func (n *n88) Done(ctx *ctx88, dp bfs.DFSPath[*n88]) bool {
+ if n.remaining != 1 {
 		return false
 	}
 	if n.sum > ctx.n {
 		return false
 	}
+	
 	numberOfOnes := ctx.n - n.sum
-	numberOfTerms := numberOfOnes + len(n.factors)
+	numberOfTerms := numberOfOnes + len(ctx.factors) - 1
 	m := ctx.kMap
 	if v, ok := m[numberOfTerms]; ok {
 		if ctx.n < v {
@@ -71,7 +71,15 @@ func (n *node88) Done(ctx *context88) bool {
 	return false
 }
 
-func (n *node88) AdjacentStates(ctx *context88) []*node88 {
+func (n *n88) OnPush(ctx *ctx88, dp bfs.DFSPath[*n88])  {
+	ctx.factors = append(ctx.factors, n.f)
+}
+
+func (n *n88) OnPop(ctx *ctx88, dp bfs.DFSPath[*n88])  {
+	ctx.factors = ctx.factors[:len(ctx.factors)-1]
+}
+
+func (n *n88) AdjacentStates(ctx *ctx88, dp bfs.DFSPath[*n88]) []*n88 {
 	if n.remaining == 1 {
 		return nil
 	}
@@ -79,12 +87,16 @@ func (n *node88) AdjacentStates(ctx *context88) []*node88 {
 		return nil
 	}
 
-	var r []*node88
+	minFactor := 2
+	if len(ctx.factors) > 0 {
+		minFactor = ctx.factors[len(ctx.factors)-1]
+	}
+	var r []*n88
 	for _, i := range generator.Factors(n.remaining, ctx.g) {
-		if i == 1 {
+		if i == 1 || i < minFactor {
 			continue
 		}
-		r = append(r, &node88{append(n.factors, i), n.remaining/i, n.sum + i})	
+		r = append(r, &n88{n.remaining/i, n.sum + i, i})	
 	}
 	return r
 }
