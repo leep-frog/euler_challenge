@@ -24,16 +24,29 @@ func P109() *problem {
 		}
 		allDarts = append(allDarts, &dart{25, 1}, &dart{25, 2})
 
-		initStates := []*dartRound{{nil, n}}
-		count := 0
-		bfs.DFS(initStates, &count)
-		o.Stdoutln(count)
+		ctx := &dartContext{n, 0, 0}
+		bfs.PoppableContextualDFS(allDarts, ctx)
+		o.Stdoutln(ctx.count)
 	})
+}
+
+type dartContext struct {
+	n     int
+	score int
+	count int
 }
 
 type dart struct {
 	score      int
 	multiplier int
+}
+
+func (d *dart) OnPush(ctx *dartContext, dp bfs.DFSPath[*dart]) {
+	ctx.score += d.score*d.multiplier
+}
+
+func (d *dart) OnPop(ctx *dartContext, dp bfs.DFSPath[*dart]) {
+	ctx.score -= d.score*d.multiplier
 }
 
 func (d *dart) String() string {
@@ -45,60 +58,38 @@ func (d *dart) String() string {
 	return fmt.Sprintf("%s%d", m[d.multiplier], d.score)
 }
 
-func (d *dart) getScore() int {
-	return d.score * d.multiplier
-}
-
-type dartRound struct {
-	darts []*dart
-	n     int
-}
-
-func (dr *dartRound) Code(*int) string {
+func (d *dart) Code(_ *dartContext, dp bfs.DFSPath[*dart]) string {
+	darts := dp.Path()
 	var r []string
-	if len(dr.darts) > 0 {
-		sort.SliceStable(dr.darts[:len(dr.darts)-1], func(i, j int) bool { return dr.darts[i].String() < dr.darts[j].String() })
+	for _, dart := range darts {
+		r = append(r, dart.String())
 	}
-	for _, d := range dr.darts {
-		r = append(r, d.String())
-	}
+	r = append(r, d.String())
+	sort.Strings(r[:len(r)-1])
 	return strings.Join(r, " ")
 }
 
-func (dr *dartRound) Done(count *int) bool {
-	if len(dr.darts) == 0 || len(dr.darts) > 3 {
+func (d *dart) Done(ctx *dartContext, dp bfs.DFSPath[*dart]) bool {
+	if d.multiplier != 2 {
 		return false
 	}
 
-	if dr.darts[len(dr.darts)-1].multiplier != 2 {
-		return false
+	if ctx.score < ctx.n {
+		ctx.count++
 	}
-
-	var score int
-	for _, d := range dr.darts {
-		score += d.score * d.multiplier
-	}
-
-	if score >= dr.n {
-		return false
-	}
-
-	*count += 1
 	// return false because we want to explore all of them
 	return false
 }
 
-func (dr *dartRound) AdjacentStates(*int) []*dartRound {
-	if len(dr.darts) >= 3 {
+func (d *dart) AdjacentStates(ctx *dartContext, dp bfs.DFSPath[*dart]) []*dart {
+	darts := dp.Path()
+	if len(darts) >= 3 {
 		return nil
 	}
 
-	var ns []*dartRound
-	for _, d := range allDarts {
-		ns = append(ns, &dartRound{
-			append(dr.darts, d),
-			dr.n,
-		})
+	var ns []*dart
+	for _, dt := range allDarts {
+		ns = append(ns, &dart{dt.score, dt.multiplier})
 	}
 	return ns
 }
