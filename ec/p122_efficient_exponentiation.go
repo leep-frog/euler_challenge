@@ -12,7 +12,7 @@ func P122() *problem {
 		var sum int
 		for k := 1; k <= 200; k++ {
 			for i := 1;; i++ {
-				path := bfs.DFSWithContextAndPath([]*node122{{1}}, &context122{k, i}, bfs.AllowDFSCycles(), bfs.AllowDFSDuplicates())
+				path := bfs.ContextualDFS([]*node122{{1}}, &context122{k, i}, bfs.AllowDFSCycles(), bfs.AllowDFSDuplicates())
 				if len(path) != 0 {
 					sum += len(path) - 1
 					break

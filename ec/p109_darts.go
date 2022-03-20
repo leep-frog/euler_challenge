@@ -26,7 +26,7 @@ func P109() *problem {
 
 		initStates := []*dartRound{{nil, n}}
 		count := 0
-		bfs.DFSWithContext(initStates, &count)
+		bfs.DFS(initStates, &count)
 		o.Stdoutln(count)
 	})
 }

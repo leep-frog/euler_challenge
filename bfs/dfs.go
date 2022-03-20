@@ -1,16 +1,47 @@
 package bfs
 
-type DepthSearchable[T any] interface {
-	// A unique code for the current state. This may be called multiple times
-	// so this should be cached in the implementing code if computation is expensive.
-	Code() string
-	// Returns if the given state is in a final position. The input is a contextual variable
-	// that is passed along from ShortestPath.
-	Done() bool
-	// Returns all of the adjacent states. The input is a contextual variable
-	// that is passed along from ShortestPath.
-	// T should always be State[M], but we cannot do that here without having a recursive type
-	AdjacentStates() []T
+type biconverter[T, T2 any] interface {
+	To(T) T2
+	From(T2) T
+}
+
+func toSlice[T, T2 any](b biconverter[T, T2], ts []T) []T2 {
+	var t2s []T2
+	for _, t := range ts {
+		t2s = append(t2s, b.To(t))
+	}
+	return t2s
+}
+
+func fromSlice[T, T2 any](b biconverter[T, T2], t2s []T2) []T {
+	var ts []T
+	for _, t := range t2s {
+		ts = append(ts, b.From(t))
+	}
+	return ts
+}
+
+/*func DFSWithContext[M any, T DepthSearchableWithContext[M, T]](initStates []T, m M, opts ...DFSOption) []T {
+	var r []*addProcessWrapperDFS[M,*addPathWrapperDFS[M, T]]
+	for _, is := range initStates {
+		r = append(r, &addProcessWrapperDFS[M, *addPathWrapperDFS[M, T]]{&addPathWrapperDFS[M, T]{is}})
+	}
+	//c := func(apw *addPathWrapperDFS[M, T]) T { return apw.state}
+	c := func(apw *addProcessWrapperDFS[M, *addPathWrapperDFS[M, T]]) T { return apw.T.state }
+	return dfsFinal(r, m, c, opts...)
+}
+
+func DFS[M any, T DepthSearchable[T]](initStates []T, opts ...DFSOption) []T {
+	var r []*addContextAndPathWrapperDFS[T]
+	for _, is := range initStates {
+		r = append(r, &addContextAndPathWrapperDFS[T]{is})
+	}
+	c := func(apw *addContextAndPathWrapperDFS[T]) T { return apw.state}
+	return dfsFinal(r, 0, c, opts...)
+}
+
+func DFSWithContextAndPath[M any, T DepthSearchableWithContextAndPath[M, T]](initStates []T, m M, opts ...DFSOption) []T {
+	return dfsFinal(initStates, m, identityConverter[T](), opts...)
 }
 
 type addContextAndPathWrapperDFS[T DepthSearchable[T]] struct {
@@ -33,19 +64,6 @@ func (acp *addContextAndPathWrapperDFS[T]) AdjacentStates(_ int, _ DFSPath[T]) [
 	return r
 }
 
-type DepthSearchableWithContext[M, T any] interface {
-	// A unique code for the current state. This may be called multiple times
-	// so this should be cached in the implementing code if computation is expensive.
-	Code(M) string
-	// Returns if the given state is in a final position. The input is a contextual variable
-	// that is passed along from ShortestPath.
-	Done(M) bool
-	// Returns all of the adjacent states. The input is a contextual variable
-	// that is passed along from ShortestPath.
-	// T should always be State[M], but we cannot do that here without having a recursive type
-	AdjacentStates(M) []T
-}
-
 type addPathWrapperDFS[M any, T DepthSearchableWithContext[M, T]] struct {
 	state T
 }
@@ -66,113 +84,23 @@ func (apw *addPathWrapperDFS[M, T]) AdjacentStates(m M, _ DFSPath[T]) []*addPath
 	return r
 }
 
-type DepthSearchableWithContextAndPath[M, T any] interface {
-	// A unique code for the current state. This may be called multiple times
-	// so this should be cached in the implementing code if computation is expensive.
-	Code(M, DFSPath[T]) string
-	// Returns if the given state is in a final position. The input is a contextual variable
-	// that is passed along from ShortestPath.
-	Done(M, DFSPath[T]) bool
-	// Returns all of the adjacent states. The input is a contextual variable
-	// that is passed along from ShortestPath.
-	// T should always be State[M], but we cannot do that here without having a recursive type
-	AdjacentStates(M, DFSPath[T]) []T
+type processWrapperDFS[M any, T DepthSearchable[M, T]] struct {
+	state T
 }
 
-type DFSPath[T any] interface {
-	Path() []T
-	Len() int
-	Contains(string) bool
-}
-
-type dfsPath[T any] struct {
-	path []T
-	// Change value to int so we can keep count of instances?
-	set map[string]bool
-}
-
-func (dp *dfsPath[T]) pop(s string) {
-	dp.path = dp.path[:len(dp.path)-1]
-	delete(dp.set, s)
-}
-
-func (dp *dfsPath[T]) push(t T, s string) {
-	dp.path = append(dp.path, t)
-	dp.set[s] = true
-}
-
-func (dp *dfsPath[T]) Path() []T {
-	return dp.path
-}
-
-func (dp *dfsPath[T]) Len() int {
-	return len(dp.path)
-}
-
-func (dp *dfsPath[T]) Contains(s string) bool {
-	return dp.set[s]
-}
-
-type dfsAction[T any] struct {
-	popPath *string
-	state T	
-}
-
-func DFSWithContext[M any, T DepthSearchableWithContext[M, T]](initStates []T, m M, opts ...DFSOption) []T {
-	var r []*addPathWrapperDFS[M, T]
-	for _, is := range initStates {
-		r = append(r, &addPathWrapperDFS[M, T]{is})
-	}
-	c := func(apw *addPathWrapperDFS[M, T]) T { return apw.state}
-	return dfsFinal(r, m, c, opts...)
-}
-
-func DFS[M any, T DepthSearchable[T]](initStates []T, opts ...DFSOption) []T {
-	var r []*addContextAndPathWrapperDFS[T]
-	for _, is := range initStates {
-		r = append(r, &addContextAndPathWrapperDFS[T]{is})
-	}
-	c := func(apw *addContextAndPathWrapperDFS[T]) T { return apw.state}
-	return dfsFinal(r, 0, c, opts...)
-}
-
-type DFSOption func(o *dfsOption)
-
-type dfsOption struct {
-	allowCycles bool
-	allowDuplicates bool
-}
-
-func AllowDFSCycles() DFSOption {
-	return func(o *dfsOption) {o.allowCycles = true}
-}
-
-func AllowDFSDuplicates() DFSOption {
-	return func(o *dfsOption) {o.allowDuplicates = true}
-}
-
-func DFSWithContextAndPath[M any, T DepthSearchableWithContextAndPath[M, T]](initStates []T, m M, opts ...DFSOption) []T {
-	return dfsFinal(initStates, m, identityConverter[T](), opts...)
-}
-
-type depthSearchableFinal[M, T, T2 any] interface {
-	// A unique code for the current state. This may be called multiple times
-	// so this should be cached in the implementing code if computation is expensive.
-	Code(M, DFSPath[T2]) string
-	// Returns if the given state is in a final position. The input is a contextual variable
-	// that is passed along from ShortestPath.
-	Done(M, DFSPath[T2]) bool
-	// Returns all of the adjacent states. The input is a contextual variable
-	// that is passed along from ShortestPath.
-	// T should always be State[M], but we cannot do that here without having a recursive type
-	AdjacentStates(M, DFSPath[T2]) []T
-}
+func (apw *addProcessWrapperDFS[M, T]) PreProcess(M, DFSPath[T]) { }
+func (apw *addProcessWrapperDFS[M, T]) PostProcess(M, DFSPath[T]) {}*/
 
 func identityConverter[T any]() converter[T, T] {
 	return func(t T) T { return t }
 }
 
-func dfsFinal[M, T2 any, T depthSearchableFinal[M, T, T2]](initStates []T, m M, convert converter[T, T2], opts ...DFSOption) []T2 {
+type dfsAction[T any] struct {
+	popPath *string
+	state T
+}
+
+func dfsFinal[M, T2 any, T completeDepthSearcher[M, T, T2]](initStates []T, m M, convert converter[T, T2], opts ...DFSOption) []T2 {
 	opt := &dfsOption{}
 	for _, o := range opts {
 		o(opt)
@@ -196,8 +124,9 @@ func dfsFinal[M, T2 any, T depthSearchableFinal[M, T, T2]](initStates []T, m M, 
 
 		// Remove from path if relevant.
 		if a.popPath != nil{
+			// TODO: move OnPop into dfsPath implementation
 			dp.pop(*a.popPath)
-			// TODO: postprocess state
+			a.state.OnPop(m, dp)
 			continue
 		}
 
@@ -220,6 +149,7 @@ func dfsFinal[M, T2 any, T depthSearchableFinal[M, T, T2]](initStates []T, m M, 
 
 		// Update path variables
 		dp.push(convert(state), c)
+		state.OnPush(m, dp)
 		checkedNodes[c] = true
 
 		// Check if node is done
