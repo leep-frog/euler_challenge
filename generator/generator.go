@@ -60,7 +60,7 @@ type Generator[T any] struct {
 
 	values []T
 	// map from value to index
-	set    map[string]int
+	set map[string]int
 
 	g Generatable[T]
 
@@ -119,7 +119,7 @@ func Squares() *Generator[int] {
 	n := 1
 	return NewGenerator("power", 1, newIntGeneratable(), func(g *Generator[int]) int {
 		n++
-		return n*n
+		return n * n
 	})
 }
 
@@ -188,7 +188,7 @@ func NewGenerator[T any](name string, start T, g Generatable[T], f func(*Generat
 
 var (
 	cachedPrimeFactors = map[int]map[int]int{}
-	cachedFactors = map[int][]int{}
+	cachedFactors      = map[int][]int{}
 )
 
 func copy(m map[int]int) map[int]int {
@@ -247,7 +247,7 @@ func Factors(n int, p *Generator[int]) []int {
 
 	for i := 0; ; i++ {
 		pi := int(p.Nth(i))
-		if n % pi != 0 {
+		if n%pi != 0 {
 			continue
 		}
 		// pi is guaranteed to be the smallest factor and n/pi the largest
@@ -325,7 +325,7 @@ func Primes() *Generator[int] {
 				if p*p > i {
 					break
 				}
-				if i % p == 0 {
+				if i%p == 0 {
 					newPrime = false
 					break
 				}
@@ -379,7 +379,7 @@ func IsPrime(n int, p *Generator[int]) bool {
 		if _, has := p.set[strconv.Itoa(n)]; has {
 			return true
 		}
-	} 
+	}
 	ogIdx := p.idx
 	defer func() { p.idx = ogIdx }()
 	p.Reset()
