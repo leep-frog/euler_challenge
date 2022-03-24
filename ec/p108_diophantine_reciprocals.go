@@ -5,10 +5,9 @@ import (
 	"strings"
 
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/bfs"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
-	"github.com/leep-frog/euler_challenge/bfs"
-
 )
 
 func P108() *problem {
@@ -28,7 +27,7 @@ type diophantineReciprocals struct {
 	// parts is a decreasing set of positive integers
 	parts []int
 	g     *generator.Generator[int]
-	n int
+	n     int
 }
 
 func (dr *diophantineReciprocals) intValue() int {
@@ -45,7 +44,7 @@ func (dr *diophantineReciprocals) numFractions() int {
 	for _, p := range dr.parts {
 		v *= 2*p + 1
 	}
-	return (v+1)/2
+	return (v + 1) / 2
 }
 
 func (dr *diophantineReciprocals) String() string {
@@ -71,7 +70,7 @@ func (dr *diophantineReciprocals) Distance(best *maths.Bester[int, int]) int {
 	if nf >= dr.n {
 		best.IndexCheck(nf, iv)
 	}
-	return -1_000*nf/maths.Sqrt(iv)
+	return -1_000 * nf / maths.Sqrt(iv)
 }
 
 func (dr *diophantineReciprocals) AdjacentStates(best *maths.Bester[int, int]) []*diophantineReciprocals {
@@ -83,7 +82,7 @@ func (dr *diophantineReciprocals) AdjacentStates(best *maths.Bester[int, int]) [
 	}
 	var neighbors []*diophantineReciprocals
 	for i, p := range dr.parts {
-		if i != 0 && p + 1 > dr.parts[i-1] {
+		if i != 0 && p+1 > dr.parts[i-1] {
 			continue
 		}
 		arr := make([]int, len(dr.parts), len(dr.parts))
@@ -98,7 +97,6 @@ func (dr *diophantineReciprocals) AdjacentStates(best *maths.Bester[int, int]) [
 	neighbors = append(neighbors, &diophantineReciprocals{arr, dr.g, dr.n})
 	return neighbors
 }
-
 
 /*func (dr *diophantineReciprocals) Code(*bfs.Context[*maths.Bester[int, int], *diophantineReciprocals]) string {
 	return dr.String()

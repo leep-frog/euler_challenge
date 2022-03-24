@@ -25,6 +25,7 @@ func P128() *problem {
 			}
 			var numPrimes int
 			for _, neighbor := range neighbors {
+				//if generator.IsPrime(maths.Abs(i-neighbor), g) {
 				if g.Contains(maths.Abs(i - neighbor)) {
 					numPrimes++
 				}

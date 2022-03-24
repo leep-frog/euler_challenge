@@ -10,7 +10,7 @@ func P49() *problem {
 		primes := generator.Primes()
 
 		var fourDig []int
-		for p := primes.Next(); p < 10_000; p = primes.Next() {
+		for i, p := 0, primes.Nth(0); p < 10_000; i, p = i+1, primes.Nth(i+1) {
 			if p >= 1000 {
 				fourDig = append(fourDig, p)
 			}

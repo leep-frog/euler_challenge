@@ -7,8 +7,7 @@ import (
 
 func P45() *problem {
 	return noInputNode(45, func(o command.Output) {
-		h := generator.Hexagonals()
-		for hn := h.Next(); ; hn = h.Next() {
+		for iter, hn := generator.Hexagonals().Start(0); ; hn = iter.Next() {
 			if hn <= 40755 {
 				continue
 			}

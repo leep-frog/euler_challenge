@@ -10,7 +10,7 @@ func P10() *problem {
 		p := generator.Primes()
 
 		var sum int
-		for pn := p.Next(); pn < n; pn = p.Next() {
+		for i, pn := 0, p.Nth(0); pn < n; i, pn = i+1, p.Nth(i+1) {
 			sum += pn
 		}
 		o.Stdoutln(sum)

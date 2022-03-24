@@ -7,7 +7,7 @@ import (
 
 func P69() *problem {
 	return intInputNode(69, func(o command.Output, n int) {
-		p := generator.Primes()
+		p := generator.Primes().Iterator()
 		prod := 1
 		for ; prod < n; prod *= p.Next() {
 		}

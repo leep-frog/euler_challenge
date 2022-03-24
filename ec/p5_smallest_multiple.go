@@ -9,7 +9,6 @@ import (
 func P5() *problem {
 	return intInputNode(5, func(o command.Output, n int) {
 		primer := generator.Primes()
-		primer.Next()
 		primes := map[int]int{}
 		for i := 2; i < n; i++ {
 			for p, cnt := range generator.PrimeFactors(i, primer) {

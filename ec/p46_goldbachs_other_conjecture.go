@@ -13,8 +13,8 @@ func P46() *problem {
 				continue
 			}
 
-			primes.Reset()
-			for a := primes.Next(); a < i; a = primes.Next() {
+			//for i, a := 0, primes.Nth(0); a < i; i, a = i+1, primes.Nth(i+1) {
+			for iter, a := primes.Start(0); a < i; a = iter.Next() {
 				for b := 0; a+2*b*b <= i; b++ {
 					if a+2*b*b == i {
 						goto NEXT

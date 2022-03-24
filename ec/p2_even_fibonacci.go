@@ -7,9 +7,8 @@ import (
 
 func P2() *problem {
 	return intInputNode(2, func(o command.Output, n int) {
-		fibs := generator.Fibonaccis()
 		var sum int
-		for i := fibs.Next(); i < n; i = fibs.Next() {
+		for iter, i := generator.Fibonaccis().Start(0); i < n; i = iter.Next() {
 			if i%2 == 0 {
 				sum += i
 			}

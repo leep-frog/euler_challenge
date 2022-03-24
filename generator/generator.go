@@ -4,7 +4,6 @@ import (
 	"strconv"
 
 	"github.com/leep-frog/euler_challenge/maths"
-	"github.com/leep-frog/euler_challenge/parse"
 )
 
 const (
@@ -13,7 +12,7 @@ const (
 	triName    = "triangulars"
 )
 
-type Generatable[T any] interface {
+/*type Generatable[T any] interface {
 	LTE(T, T) bool
 	String(T) string
 	FromString(string) T
@@ -55,7 +54,7 @@ func (ig *intGeneratable) FromString(s string) int {
 	return parse.Atoi(s)
 }
 
-type Generator[T any] struct {
+type OldGenerator[T any] struct {
 	name string
 
 	values []T
@@ -64,35 +63,35 @@ type Generator[T any] struct {
 
 	g Generatable[T]
 
-	f   func(*Generator[T]) T
+	f   func(*OldGenerator[T]) T
 	idx int
 }
 
-func (g *Generator[T]) Reset() {
+func (g *OldGenerator[T]) Reset() {
 	g.idx = 0
 }
 
-func (g *Generator[T]) Last() T {
+func (g *OldGenerator[T]) Last() T {
 	return g.values[len(g.values)-1]
 }
 
-func (g *Generator[T]) len() int {
+func (g *OldGenerator[T]) len() int {
 	return len(g.values)
 }
 
-func (g *Generator[T]) Nth(i int) T {
+func (g *OldGenerator[T]) Nth(i int) T {
 	for g.len() <= i {
 		g.getNext()
 	}
 	return g.values[i]
 }
 
-func (g *Generator[T]) Next() T {
+func (g *OldGenerator[T]) Next() T {
 	g.idx++
 	return g.Nth(g.idx - 1)
 }
 
-func (g *Generator[T]) getNext() T {
+func (g *OldGenerator[T]) getNext() T {
 	i := g.f(g)
 	g.values = append(g.values, i)
 	s := g.g.String(i)
@@ -105,32 +104,49 @@ func (g *Generator[T]) getNext() T {
 	newCache = func() *cache.Cache{
 		return cache.NewCache()
 	}
-)*/
+)* /
 
-func PowerGenerator(power int) *Generator[*maths.Int] {
+func PowerGenerator(power int) *OldGenerator[*maths.Int] {
 	n := 1
-	return NewGenerator("power", maths.One(), newBigGeneratable(), func(g *Generator[*maths.Int]) *maths.Int {
+	return NewGenerator("power", maths.One(), newBigGeneratable(), func(g *OldGenerator[*maths.Int]) *maths.Int {
 		n++
 		return maths.BigPow(n, power)
 	})
+}*/
+
+func PowerGenerator(power int) *Generator[*maths.Int] {
+	return newBigGen(&powerGen{power})
+	/*n := 1
+	return NewGenerator("power", maths.One(), newBigGeneratable(), func(g *OldGenerator[*maths.Int]) *maths.Int {
+		n++
+		return maths.BigPow(n, power)
+	})*/
 }
 
-func Squares() *Generator[int] {
+type powerGen struct {
+	power int
+}
+
+func (pg *powerGen) Next(g *Generator[*maths.Int]) *maths.Int {
+	return maths.BigPow(len(g.values)+1, pg.power)
+}
+
+/*func Squares() *OldGenerator[int] {
 	n := 1
-	return NewGenerator("power", 1, newIntGeneratable(), func(g *Generator[int]) int {
+	return NewGenerator("power", 1, newIntGeneratable(), func(g *OldGenerator[int]) int {
 		n++
 		return n * n
 	})
 }
 
-func (g *Generator[T]) Contains(t T) bool {
+func (g *OldGenerator[T]) Contains(t T) bool {
 	for ; g.len() == 0 || g.g.LTE(g.Last(), t); g.getNext() {
 	}
 	_, ok := g.set[g.g.String(t)]
 	return ok
 }
 
-func (g *Generator[T]) Idx(t T) (int, bool) {
+func (g *OldGenerator[T]) Idx(t T) (int, bool) {
 	for ; g.len() == 0 || g.g.LTE(g.Last(), t); g.getNext() {
 	}
 	v, ok := g.set[g.g.String(t)]
@@ -163,11 +179,11 @@ func putCache[T any](name string, sl []T, g Generatable[T]) {
 	}
 }*/
 
-func NewGenerator[T any](name string, start T, g Generatable[T], f func(*Generator[T]) T) *Generator[T] {
-	gt := &Generator[T]{
+/*func NewGenerator[T any](name string, start T, g Generatable[T], f func(*OldGenerator[T]) T) *OldGenerator[T] {
+	gt := &OldGenerator[T]{
 		name: name,
 		g:    g,
-		f: func(g *Generator[T]) T {
+		f: func(g *OldGenerator[T]) T {
 			if len(g.values) == 0 {
 				return start
 			}
@@ -182,9 +198,9 @@ func NewGenerator[T any](name string, start T, g Generatable[T], f func(*Generat
 		t := g.FromString(line)
 		gt.values = append(gt.values, t)
 		gt.set[g.String(t)] = true
-	}*/
+	}* /
 	return gt
-}
+}*/
 
 var (
 	cachedPrimeFactors = map[int]map[int]int{}
@@ -316,8 +332,8 @@ func primeFactors(n int, p *Generator[int]) map[int]int {
 	}
 }
 
-func Primes() *Generator[int] {
-	return NewGenerator(primesName, 2, newIntGeneratable(), func(g *Generator[int]) int {
+/*func Primes() *OldGenerator[int] {
+	return NewGenerator(primesName, 2, newIntGeneratable(), func(g *OldGenerator[int]) int {
 		for i := g.Last() + 1; ; i++ {
 			newPrime := true
 			for _, p := range g.values {
@@ -335,7 +351,7 @@ func Primes() *Generator[int] {
 			}
 		}
 	})
-}
+}*/
 
 // t_n  = n(2n−1) >= 2 * n * n
 func IsHexagonal(tn int) bool {
@@ -380,10 +396,11 @@ func IsPrime(n int, p *Generator[int]) bool {
 			return true
 		}
 	}
-	ogIdx := p.idx
-	defer func() { p.idx = ogIdx }()
-	p.Reset()
-	for pn := p.Next(); pn*pn <= n; pn = p.Next() {
+	for i, pn := 0, p.Nth(0); pn*pn <= n; i, pn = i+1, p.Nth(i+1) {
+		/*ogIdx := p.idx
+		defer func() { p.idx = ogIdx }()
+		p.Reset()
+		for pn := p.Next(); pn*pn <= n; pn = p.Next() {*/
 		if n%pn == 0 {
 			return false
 		}
@@ -391,8 +408,9 @@ func IsPrime(n int, p *Generator[int]) bool {
 	return true
 }
 
-func BigPrimes() *Generator[*maths.Int] {
-	return NewGenerator(primesName, maths.NewInt(2), newBigGeneratable(), func(g *Generator[*maths.Int]) *maths.Int {
+/*func BigPrimes() *Generator[*maths.Int] {
+
+	return NewGenerator(primesName, maths.NewInt(2), newBigGeneratable(), func(g *OldGenerator[*maths.Int]) *maths.Int {
 		for i := g.Last().Plus(maths.One()); ; i.PP() {
 			newPrime := true
 			for _, p := range g.values {
@@ -411,36 +429,79 @@ func BigPrimes() *Generator[*maths.Int] {
 	})
 }
 
-func Fibonaccis() *Generator[int] {
+func Fibonaccis() *OldGenerator[int] {
 	a, b := 1, 1
-	return NewGenerator(fibName, 1, newIntGeneratable(), func(g *Generator[int]) int {
+	return NewGenerator(fibName, 1, newIntGeneratable(), func(g *OldGenerator[int]) int {
 		r := b
 		b = a + b
 		a = r
 		return int(a)
 	})
-}
+}*/
 
-func BigFibonaccis() *Generator[*maths.Int] {
+/*func BigFibonaccis() *OldGenerator[*maths.Int] {
 	a, b := maths.One(), maths.One()
-	return NewGenerator(fibName, maths.One(), newBigGeneratable(), func(g *Generator[*maths.Int]) *maths.Int {
+	return NewGenerator(fibName, maths.One(), newBigGeneratable(), func(g *OldGenerator[*maths.Int]) *maths.Int {
 		r := b
 		b = a.Plus(b)
 		a = r
 		return a
 	})
+}*/
+
+type Geniterator[T any] struct {
+	g   *Generator[T]
+	Idx int
+}
+
+func Iterator[T any](g *Generator[T]) *Geniterator[T] {
+	return &Geniterator[T]{g, 0}
+}
+
+// TODO: do these instead of Nth
+func (gi *Geniterator[T]) Start(startIdx int) T {
+	gi.Idx = startIdx
+	return gi.g.Nth(gi.Idx)
+}
+
+func (gi *Geniterator[T]) Last() T {
+	return gi.g.Last()
+}
+
+func (gi *Geniterator[T]) Next() T {
+	r := gi.g.Nth(gi.Idx)
+	gi.Idx++
+	return r
 }
 
 func Triangulars() *Generator[int] {
 	return ShapeNumberGenerator(3)
 }
 
+type shapeNumberGenerator struct {
+	shape int
+	jump  int
+}
+
+/*1, 6, 15, 28, 45, 66, 91*/
+// 5, 9, 13
+//  4, 4
+func (sng *shapeNumberGenerator) Next(g *Generator[int]) int {
+	if len(g.values) == 0 {
+		sng.jump = 1
+		return 1
+	}
+	sng.jump += sng.shape - 2
+	return g.Last() + sng.jump
+}
+
 func ShapeNumberGenerator(n int) *Generator[int] {
-	i := 1
-	return NewGenerator(triName, 1, newIntGeneratable(), func(g *Generator[int]) int {
+	return newIntGen(&shapeNumberGenerator{n, 0})
+	/*i := 1
+	return NewGenerator(triName, 1, newIntGeneratable(), func(g *OldGenerator[int]) int {
 		i += n - 2
 		return g.Last() + i
-	})
+	})*/
 }
 
 func Pentagonals() *Generator[int] {

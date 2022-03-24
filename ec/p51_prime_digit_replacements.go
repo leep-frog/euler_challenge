@@ -13,7 +13,7 @@ func P51() *problem {
 	return intInputNode(51, func(o command.Output, n int) {
 		primes := generator.Primes()
 		m := map[string]map[int]bool{}
-		for pn := primes.Next(); ; pn = primes.Next() {
+		for i, pn := 0, primes.Nth(0); ; i, pn = i+1, primes.Nth(i+1) {
 			if pn < 10 {
 				continue
 			}

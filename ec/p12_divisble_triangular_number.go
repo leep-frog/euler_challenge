@@ -8,7 +8,7 @@ import (
 func P12() *problem {
 	return intInputNode(12, func(o command.Output, n int) {
 		ts := generator.Triangulars()
-		for i := ts.Next(); ; i = ts.Next() {
+		for idx, i := 0, ts.Nth(0); ; idx, i = idx+1, ts.Nth(idx+1) {
 			var count int
 			max := i / 2
 			for j := 1; j < max; j++ {
