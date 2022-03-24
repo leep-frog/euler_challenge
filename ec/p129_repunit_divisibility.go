@@ -28,10 +28,17 @@ func P129() *problem {
 	})
 }
 
+// repunitable returns whether or not n can be a factor of a repunit (111...).
+func repunitable(n int) bool {
+	return n%2 != 0 && n%5 != 0
+}
+
 // repunitSmallest returns the length of the smallest repunit (111...)
-// that has n as a factor.
+// that has n as a factor. Calling functions should verify the input is
+// repunitable before calling this function
+//
 func repunitSmallest(n int) int {
-	if n%2 == 0 || n%5 == 0 {
+	if !repunitable(n) {
 		panic(fmt.Sprintf("repunit for n=%d requires GCD(n, 10) = 0", n))
 	}
 	// Build map from one digit to required multiplier

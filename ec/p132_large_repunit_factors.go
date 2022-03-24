@@ -15,7 +15,7 @@ func P132() *problem {
 		var sum, count int
 		prod := 1
 		for i, pi := 0, g.Nth(0); count < 40 && len(strconv.Itoa(prod)) < rLen; i, pi = i+1, g.Nth(i+1) {
-			if pi%2 == 0 || pi%5 == 0 {
+			if !repunitable(pi) {
 				continue
 			}
 			k := repunitSmallest(pi)
@@ -25,6 +25,6 @@ func P132() *problem {
 				prod *= pi
 			}
 		}
-		o.Stdoutln(sum, count)
+		o.Stdoutln(sum)
 	})
 }
