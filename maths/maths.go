@@ -176,7 +176,7 @@ func Chop(n, from, to int) int {
 	s := fmt.Sprintf("%d", n)
 	from = Max(0, from)
 	to = Min(len(s), to)
-  return parse.Atoi(s[from:to])
+	return parse.Atoi(s[from:to])
 }
 
 func MustIntFromString(s string) *Int {
@@ -352,7 +352,7 @@ func chooseSets(parts []string, ignore map[string]bool, n int, cur *[]string, al
 		}
 		ignore[p] = true*/
 		*cur = append(*cur, p)
-		chooseSets(parts[idx+1:], ignore, n - 1, cur, all)
+		chooseSets(parts[idx+1:], ignore, n-1, cur, all)
 		*cur = (*cur)[:len(*cur)-1]
 		//chooseSets(parts[1:], ignore, n, cur, all)
 		//delete(ignore, p)
@@ -360,7 +360,7 @@ func chooseSets(parts []string, ignore map[string]bool, n int, cur *[]string, al
 }
 
 type trie[T comparable] struct {
-	subTries map[T]*trie[T]
+	subTries      map[T]*trie[T]
 	endOfSequence bool
 }
 
@@ -480,13 +480,13 @@ type Mappable interface {
 }
 
 type Map[K Mappable, V any] struct {
-	m map[string]V
+	m  map[string]V
 	km map[string]K
 }
 
 func NewMap[K Mappable, V any]() *Map[K, V] {
 	return &Map[K, V]{
-		m: map[string]V{},
+		m:  map[string]V{},
 		km: map[string]K{},
 	}
 }
@@ -917,7 +917,7 @@ func BigPow(a, b int) *Int {
 	if r, ok := powCache[a]; ok {
 		if b < len(r) {
 			//if !r[b].EQ(OldBigPow(a, b)) {
-//				panic(fmt.Sprintf("%d %d: %v", a, b, r))
+			//				panic(fmt.Sprintf("%d %d: %v", a, b, r))
 			//}
 			return r[b].Copy()
 		}
@@ -1057,20 +1057,20 @@ func DigitMap(n int) map[int]int {
 }
 
 func QuadraticRoots(a, b, c float64) []float64 {
-	root :=  b*b - 4*a*c
+	root := b*b - 4*a*c
 	if root < 0 {
 		return nil
 	}
 	return []float64{
-		(-b - math.Sqrt(root)) / (2*a),
-		(-b + math.Sqrt(root)) / (2*a),
+		(-b - math.Sqrt(root)) / (2 * a),
+		(-b + math.Sqrt(root)) / (2 * a),
 	}
 }
 
 func FromDigits(digits []int) int {
 	n := 0
-	coef := 1 
-	for i := len(digits)-1; i >= 0; i-- {
+	coef := 1
+	for i := len(digits) - 1; i >= 0; i-- {
 		n += coef * digits[i]
 		coef *= 10
 	}
@@ -1339,13 +1339,31 @@ func FactorialI(n int) int {
 	return r
 }
 
+// DividingPeriod returns the integer and decimal part of num/den.
+// The boolean return value is whether or not the decimal is repeating.
+func DividingPeriod(num, den int) (int, []int, bool) {
+	checked := map[int]bool{}
+	quo := num / den
+	var r []int
+	rem := num % den
+	for rem != 0 && !checked[rem] {
+		checked[rem] = true
+		r = append(r, (rem*10)/den)
+		rem = (rem * 10) % den
+	}
+
+	return quo, r, rem != 0
+}
+
+// SquareRootPeriod returns the whole integer and then repeating decimal
+// of the SquareRootPeriod
 func SquareRootPeriod(n int) (int, []int) {
 	if IsSquare(n) {
 		return Sqrt(n), nil
 	}
 
 	remainder := map[int]map[int]bool{}
-	start :=1 
+	start := 1
 	for i := 1; i*i < n; i++ {
 		start = i
 	}
