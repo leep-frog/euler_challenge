@@ -1355,6 +1355,16 @@ func DividingPeriod(num, den int) (int, []int, bool) {
 	return quo, r, rem != 0
 }
 
+/*type DeepMap[K constraints.Ordered, V any] struct {
+	m     map[K]V
+	next  map[K]DeepMap[K, V]
+	depth int
+}
+
+type DeepSet
+
+*/
+
 // SquareRootPeriod returns the whole integer and then repeating decimal
 // of the SquareRootPeriod
 func SquareRootPeriod(n int) (int, []int) {
