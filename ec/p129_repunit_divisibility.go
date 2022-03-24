@@ -1,6 +1,8 @@
 package eulerchallenge
 
 import (
+	"fmt"
+
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/maths"
 )
@@ -29,6 +31,9 @@ func P129() *problem {
 // repunitSmallest returns the length of the smallest repunit (111...)
 // that has n as a factor.
 func repunitSmallest(n int) int {
+	if n%2 == 0 || n%5 == 0 {
+		panic(fmt.Sprintf("repunit for n=%d requires GCD(n, 10) = 0", n))
+	}
 	// Build map from one digit to required multiplier
 	mults := make([]int, 10, 10)
 	for m := 1; m <= 9; m++ {
