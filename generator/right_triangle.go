@@ -1,6 +1,9 @@
 package generator
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+)
 
 type RightTriangle struct {
 	A, B, C, M, N int
@@ -45,10 +48,18 @@ func (tg *triangleGenerator) Next(g *Generator[*RightTriangle]) *RightTriangle {
 			if tg.n > 1 && Coprimes(tg.m, tg.n, tg.g) {
 				continue
 			}
-			r := &RightTriangle{
+
+			sides := []int{
 				tg.m*tg.m - tg.n*tg.n,
 				2 * tg.m * tg.n,
 				tg.m*tg.m + tg.n*tg.n,
+			}
+			sort.Ints(sides)
+
+			r := &RightTriangle{
+				sides[0],
+				sides[1],
+				sides[2],
 				tg.m,
 				tg.n,
 			}
