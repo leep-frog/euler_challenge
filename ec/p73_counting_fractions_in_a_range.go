@@ -10,10 +10,7 @@ func P73() *problem {
 		p := generator.Primes()
 		var unique int
 		for den := 4; den <= n; den++ {
-			for num := den / 3; ; num++ {
-				if num*2 >= den {
-					break
-				}
+			for num := den / 3; num*2 < den; num++ {
 				if num*3 <= den {
 					continue
 				}
