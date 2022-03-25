@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/leep-frog/euler_challenge/maths"
@@ -85,6 +86,20 @@ func (g *Generator[T]) Contains(t T) bool {
 
 func (g *Generator[T]) Values() []T {
 	return g.values
+}
+
+type CustomGeneratable[T any] interface {
+	fmt.Stringer
+	Less(T) bool
+}
+
+func newCustomGen[T CustomGeneratable[T]](gi GeneratorInterface[T]) *Generator[T] {
+	return &Generator[T]{
+		gi:       gi,
+		less:     func(i, j T) bool { return i.Less(j) },
+		toString: func(i T) string { return i.String() },
+		set:      map[string]bool{},
+	}
 }
 
 func newIntGen(gi GeneratorInterface[int]) *Generator[int] {
