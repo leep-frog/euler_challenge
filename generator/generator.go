@@ -26,8 +26,8 @@ func Iterator[T any](g *Generator[T]) *Geniterator[T] {
 
 // TODO: do these instead of Nth
 func (gi *Geniterator[T]) Start(startIdx int) T {
-	gi.Idx = startIdx
-	return gi.g.Nth(gi.Idx)
+	gi.Idx = startIdx + 1
+	return gi.g.Nth(gi.Idx - 1)
 }
 
 func (gi *Geniterator[T]) Last() T {
