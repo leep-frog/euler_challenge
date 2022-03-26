@@ -13,6 +13,10 @@ func (rt *RightTriangle) Perimeter() int {
 	return rt.A + rt.B + rt.C
 }
 
+func (rt *RightTriangle) GuaranteedMinimumPerimeter() int {
+	return 2*rt.M*rt.M + 2*rt.M
+}
+
 func (rt *RightTriangle) String() string {
 	return fmt.Sprintf("(A=%d, B=%d, C=%d)", rt.A, rt.B, rt.C)
 }
