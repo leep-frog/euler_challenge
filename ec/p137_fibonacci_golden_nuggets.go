@@ -19,6 +19,7 @@ func P137() *problem {
 		//
 		// After finding the first several, noticed that each solution is
 		// f(2*x-1)*f(2*x) for x = 1, 2, 3, ...
+		// Series: 2, 15, 104, 714
 		f := generator.Fibonaccis()
 		o.Stdoutln(f.Nth(2*n-1) * f.Nth(2*n))
 	})

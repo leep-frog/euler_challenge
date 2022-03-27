@@ -18,4 +18,3 @@ func ContextualShortestPathWithPath[M any, T SearchableWithContextAndPath[M, T]]
 	p, dist := newSearch(initStates, m, opts...)
 	return p.Fetch(), dist
 }
-

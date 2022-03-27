@@ -1,10 +1,10 @@
 package bfs
 
 import (
+	"container/heap"
 	"fmt"
 	"reflect"
 	"strings"
-	"container/heap"
 )
 
 type Path[T any] interface {
@@ -40,7 +40,7 @@ func (c converter[F, T]) convertSlice(fs []F) []T {
 }
 
 type pathWrapper[T, T2 any] struct {
-	path Path[T]
+	path      Path[T]
 	converter converter[T, T2]
 }
 
@@ -86,7 +86,7 @@ type Searchable[T any] interface {
 	// T should always be State[M], but we cannot do that here without having a recursive type
 	AdjacentStates() []T
 	// Distance is the total distance
-	// TODO: make this return a mathable
+	// TODO: make this return an heap-able interface
 	Distance() int
 }
 
@@ -107,13 +107,13 @@ type SearchableWithContext[M, T any] interface {
 }
 
 func toAPWConverter[M any, T SearchableWithContext[M, T]]() converter[T, *addPathWrapper[M, T]] {
-	return func(t T) *addPathWrapper[M, T]{
+	return func(t T) *addPathWrapper[M, T] {
 		return &addPathWrapper[M, T]{t}
 	}
 }
 
 func fromAPWConverter[M any, T SearchableWithContext[M, T]]() converter[*addPathWrapper[M, T], T] {
-	return func(apw *addPathWrapper[M, T]) T{
+	return func(apw *addPathWrapper[M, T]) T {
 		return apw.state
 	}
 }
@@ -147,13 +147,13 @@ func (apw *addPathWrapper[M, T]) AdjacentStates(m M, _ Path[*addPathWrapper[M, T
 }
 
 func toACPConverter[T Searchable[T]]() converter[T, *addContextAndPathWrapper[T]] {
-	return func(t T) *addContextAndPathWrapper[T]{
+	return func(t T) *addContextAndPathWrapper[T] {
 		return &addContextAndPathWrapper[T]{t}
 	}
 }
 
 func fromACPConverter[T Searchable[T]]() converter[*addContextAndPathWrapper[T], T] {
-	return func(apw *addContextAndPathWrapper[T]) T{
+	return func(apw *addContextAndPathWrapper[T]) T {
 		return apw.state
 	}
 }
@@ -232,7 +232,7 @@ func newSearch[M any, T SearchableWithContextAndPath[M, T]](initStates []T, m M,
 		p := &path[T]{sv}
 		if !o.checkDuplicates {
 			if code := sv.state.Code(m, p); checked[code] {
-			continue
+				continue
 			} else {
 				checked[code] = true
 			}
@@ -243,7 +243,7 @@ func newSearch[M any, T SearchableWithContextAndPath[M, T]](initStates []T, m M,
 		}
 
 		for _, neighbor := range sv.state.AdjacentStates(m, p) {
-			nodes.PushState(&StateValue[T]{neighbor, neighbor.Distance(m, p), func() *StateValue[T] { return sv }, sv.pathLen+1})
+			nodes.PushState(&StateValue[T]{neighbor, neighbor.Distance(m, p), func() *StateValue[T] { return sv }, sv.pathLen + 1})
 		}
 	}
 	return nil, -1
@@ -291,10 +291,10 @@ func (bh *bfsHeap[T]) Swap(i, j int) {
 type StateValue[T any] struct {
 	state T
 	// This can be replaced by wrapping type for specific search type wrapper
-	dist  int
+	dist int
 	// TODO: this can be replaced by improving container method (to include CurrentPath() function)
-	prev  func() *StateValue[T]
-	// 
+	prev func() *StateValue[T]
+	//
 	pathLen int
 }
 

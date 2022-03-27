@@ -3,14 +3,20 @@ package generator
 import "github.com/leep-frog/euler_challenge/maths"
 
 func Fibonaccis() *Generator[int] {
-	return newIntGen(&fibs{})
+	return newIntGen(&fibs{[]int{1, 1}})
 }
 
-type fibs struct{}
+func CustomFibonacci(a, b int) *Generator[int] {
+	return newIntGen(&fibs{[]int{a, b}})
+}
+
+type fibs struct {
+	start []int
+}
 
 func (f *fibs) Next(g *Generator[int]) int {
 	if len(g.values) < 2 {
-		return 1
+		return f.start[len(g.values)]
 	}
 	return g.values[len(g.values)-1] + g.values[len(g.values)-2]
 }

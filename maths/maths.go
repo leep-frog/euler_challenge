@@ -81,6 +81,11 @@ func IsSquare(i int) bool {
 	return rt*rt == i
 }
 
+func IsUSquare(i uint64) bool {
+	rt := uint64(math.Sqrt(float64(i)))
+	return rt*rt == i
+}
+
 func Sqrt(i int) int {
 	return int(math.Sqrt(float64(i)))
 }
