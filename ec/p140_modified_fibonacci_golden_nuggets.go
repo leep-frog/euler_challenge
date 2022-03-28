@@ -59,6 +59,9 @@ func rationalQuadratic(a, b, c int) (*big.Rat, bool) {
 	detOne := big.NewInt(1).Mul(bb, bb)
 	detTwo := big.NewInt(1).Mul(big.NewInt(-4), big.NewInt(1).Mul(ba, bc))
 	det := big.NewInt(1).Add(detOne, detTwo)
+	if det.Cmp(big.NewInt(0)) < 0 {
+		return nil, false
+	}
 	root := big.NewInt(1).Sqrt(det)
 	if big.NewInt(1).Mul(root, root).Cmp(det) != 0 {
 		return nil, false
