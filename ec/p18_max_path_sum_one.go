@@ -25,12 +25,11 @@ func P18() *problem {
 			tower = append(tower, row)
 		}
 
-		//path, dist := bfs.ShortestOffsetPath([]*place{&place{0, 0}}, tower)
-		path, dist := bfs.ContextualShortestOffsetPath([]*place{&place{0, 0}}, tower)
+		path, dist := bfs.ContextualShortestOffsetPath[bfs.Int]([]*place{&place{0, 0}}, tower)
 		for _, p := range path {
 			o.Stdoutln(p)
 		}
-		o.Stdoutln((maxValue * len(tower)) - dist)
+		o.Stdoutln((maxValue * len(tower)) - int(dist))
 	})
 }
 
@@ -61,8 +60,8 @@ func (p *place) Done(tower [][]int) bool {
 	return p.row == len(tower)-1
 }
 
-func (p *place) Distance(tower [][]int) int {
-	return maxValue - tower[p.row][p.col]
+func (p *place) Distance(tower [][]int) bfs.Int {
+	return bfs.Int(maxValue - tower[p.row][p.col])
 }
 
 func (p *place) AdjacentStates([][]int) []*place {

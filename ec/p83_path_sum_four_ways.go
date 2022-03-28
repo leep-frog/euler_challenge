@@ -11,7 +11,7 @@ import (
 
 func P83() *problem {
 	return fileInputNode(83, func(lines []string, o command.Output) {
-		_, dist := bfs.ContextualShortestOffsetPath[[][]int]([]*p83{{}}, parse.ToGrid(lines))
+		_, dist := bfs.ContextualShortestOffsetPath[bfs.Int]([]*p83{{}}, parse.ToGrid(lines))
 		o.Stdoutln(dist)
 	})
 }
@@ -24,8 +24,8 @@ func (p *p83) Code(grid [][]int) string {
 	return fmt.Sprintf("%d_%d", p.i, p.j)
 }
 
-func (p *p83) Distance(grid [][]int) int {
-	return grid[p.i][p.j]
+func (p *p83) Distance(grid [][]int) bfs.Int {
+	return bfs.Int(grid[p.i][p.j])
 }
 
 func (p *p83) Done(grid [][]int) bool {

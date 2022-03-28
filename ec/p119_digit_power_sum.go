@@ -13,7 +13,7 @@ import (
 func P119() *problem {
 	return intInputNode(119, func(o command.Output, n int) {
 		ctx := &context119{map[string]bool{}, n, nil}
-		bfs.ContextualShortestPath([]*node119{{2, 2, maths.NewInt(4)}}, ctx)
+		bfs.ContextualShortestPath[bfs.Int]([]*node119{{2, 2, maths.NewInt(4)}}, ctx)
 
 		var values []string
 		for k := range ctx.values {
@@ -45,8 +45,8 @@ func (n *node119) Code(*context119) string {
 	return fmt.Sprintf("%v^%d", n.int_, n.pow)
 }
 
-func (n *node119) Distance(*context119) int {
-	return int(float64(n.pow) * math.Log(float64(n.int_)))
+func (n *node119) Distance(*context119) bfs.Int {
+	return bfs.Int(float64(n.pow) * math.Log(float64(n.int_)))
 }
 
 func (n *node119) Done(ctx *context119) bool {

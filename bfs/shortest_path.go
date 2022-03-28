@@ -1,20 +1,25 @@
 package bfs
 
-func ShortestPath[T Searchable[T]](initStates []T, opts ...Option) ([]T, int) {
-	toConverter := toACPConverter[T]()
-	fromConverter := fromACPConverter[T]()
-	ts, dist := newSearch(toConverter.convertSlice(initStates), 0, opts...)
+func ShortestPath[C Comparable[C], T Searchable[C, T]](initStates []T, opts ...Option) ([]T, C) {
+	toConverter := toACPConverter[C, T]()
+	fromConverter := fromACPConverter[C, T]()
+	ts, dist := newSearch[C](toConverter.convertSlice(initStates), 0, opts...)
 	return fromConverter.convertPath(ts), dist
 }
 
-func ContextualShortestPath[M any, T SearchableWithContext[M, T]](initStates []T, m M, opts ...Option) ([]T, int) {
-	toConverter := toAPWConverter[M, T]()
-	fromConverter := fromAPWConverter[M, T]()
-	ts, dist := newSearch(toConverter.convertSlice(initStates), m, opts...)
+func ContextualShortestPath[C Comparable[C], M any, T SearchableWithContext[C, M, T]](initStates []T, m M, opts ...Option) ([]T, C) {
+	toConverter := toAPWConverter[C, M, T]()
+	fromConverter := fromAPWConverter[C, M, T]()
+	ts, dist := newSearch[C](toConverter.convertSlice(initStates), m, opts...)
 	return fromConverter.convertPath(ts), dist
 }
 
-func ContextualShortestPathWithPath[M any, T SearchableWithContextAndPath[M, T]](initStates []T, m M, opts ...Option) ([]T, int) {
-	p, dist := newSearch(initStates, m, opts...)
+func ContextualShortestPathWithPath[C Comparable[C], M any, T SearchableWithContextAndPath[C, M, T]](initStates []T, m M, opts ...Option) ([]T, C) {
+	p, dist := newSearch[C](initStates, m, opts...)
 	return p.Fetch(), dist
 }
+
+type Int int
+
+func (i Int) Less(j Int) bool { return i < j }
+func (i Int) Plus(j Int) Int  { return i + j }

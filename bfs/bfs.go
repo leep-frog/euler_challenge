@@ -52,18 +52,18 @@ func (p *pathWrapper[T, T2]) Fetch() []T2 {
 	return p.converter.convertSlice(p.path.Fetch())
 }
 
-type path[T any] struct {
-	tail *StateValue[T]
+type path[C Comparable[C], T any] struct {
+	tail *StateValue[C, T]
 }
 
-func (p *path[T]) Len() int {
+func (p *path[C, T]) Len() int {
 	if p.tail == nil {
 		return 0
 	}
 	return p.tail.pathLen
 }
 
-func (p *path[T]) Fetch() []T {
+func (p *path[C, T]) Fetch() []T {
 	var r []T
 	for cur := p.tail; cur != nil; cur = cur.Prev() {
 		r = append(r, cur.state)
@@ -74,7 +74,11 @@ func (p *path[T]) Fetch() []T {
 	return r
 }
 
-type Searchable[T any] interface {
+type Comparable[C any] interface {
+	Less(C) bool
+}
+
+type Searchable[C Comparable[C], T any] interface {
 	// A unique code for the current state. This may be called multiple times
 	// so this should be cached in the implementing code if computation is expensive.
 	Code() string
@@ -87,10 +91,10 @@ type Searchable[T any] interface {
 	AdjacentStates() []T
 	// Distance is the total distance
 	// TODO: make this return an heap-able interface
-	Distance() int
+	Distance() C
 }
 
-type SearchableWithContext[M, T any] interface {
+type SearchableWithContext[C Comparable[C], M, T any] interface {
 	// A unique code for the current state. This may be called multiple times
 	// so this should be cached in the implementing code if computation is expensive.
 	Code(M) string
@@ -103,90 +107,90 @@ type SearchableWithContext[M, T any] interface {
 	AdjacentStates(M) []T
 	// Distance is the total distance
 	// TODO: make this return a mathable
-	Distance(M) int
+	Distance(M) C
 }
 
-func toAPWConverter[M any, T SearchableWithContext[M, T]]() converter[T, *addPathWrapper[M, T]] {
-	return func(t T) *addPathWrapper[M, T] {
-		return &addPathWrapper[M, T]{t}
+func toAPWConverter[C Comparable[C], M any, T SearchableWithContext[C, M, T]]() converter[T, *addPathWrapper[C, M, T]] {
+	return func(t T) *addPathWrapper[C, M, T] {
+		return &addPathWrapper[C, M, T]{t}
 	}
 }
 
-func fromAPWConverter[M any, T SearchableWithContext[M, T]]() converter[*addPathWrapper[M, T], T] {
-	return func(apw *addPathWrapper[M, T]) T {
+func fromAPWConverter[C Comparable[C], M any, T SearchableWithContext[C, M, T]]() converter[*addPathWrapper[C, M, T], T] {
+	return func(apw *addPathWrapper[C, M, T]) T {
 		return apw.state
 	}
 }
 
-type addPathWrapper[M any, T SearchableWithContext[M, T]] struct {
+type addPathWrapper[C Comparable[C], M any, T SearchableWithContext[C, M, T]] struct {
 	state T
 }
 
-func (apw *addPathWrapper[M, T]) String() string {
+func (apw *addPathWrapper[C, M, T]) String() string {
 	return fmt.Sprintf("%v", apw.state)
 }
 
-func (apw *addPathWrapper[M, T]) Code(m M, _ Path[*addPathWrapper[M, T]]) string {
+func (apw *addPathWrapper[C, M, T]) Code(m M, _ Path[*addPathWrapper[C, M, T]]) string {
 	return apw.state.Code(m)
 }
 
-func (apw *addPathWrapper[M, T]) Done(m M, _ Path[*addPathWrapper[M, T]]) bool {
+func (apw *addPathWrapper[C, M, T]) Done(m M, _ Path[*addPathWrapper[C, M, T]]) bool {
 	return apw.state.Done(m)
 }
 
-func (apw *addPathWrapper[M, T]) Distance(m M, _ Path[*addPathWrapper[M, T]]) int {
+func (apw *addPathWrapper[C, M, T]) Distance(m M, _ Path[*addPathWrapper[C, M, T]]) C {
 	return apw.state.Distance(m)
 }
 
-func (apw *addPathWrapper[M, T]) AdjacentStates(m M, _ Path[*addPathWrapper[M, T]]) []*addPathWrapper[M, T] {
-	var r []*addPathWrapper[M, T]
+func (apw *addPathWrapper[C, M, T]) AdjacentStates(m M, _ Path[*addPathWrapper[C, M, T]]) []*addPathWrapper[C, M, T] {
+	var r []*addPathWrapper[C, M, T]
 	for _, n := range apw.state.AdjacentStates(m) {
-		r = append(r, &addPathWrapper[M, T]{n})
+		r = append(r, &addPathWrapper[C, M, T]{n})
 	}
 	return r
 }
 
-func toACPConverter[T Searchable[T]]() converter[T, *addContextAndPathWrapper[T]] {
-	return func(t T) *addContextAndPathWrapper[T] {
-		return &addContextAndPathWrapper[T]{t}
+func toACPConverter[C Comparable[C], T Searchable[C, T]]() converter[T, *addContextAndPathWrapper[C, T]] {
+	return func(t T) *addContextAndPathWrapper[C, T] {
+		return &addContextAndPathWrapper[C, T]{t}
 	}
 }
 
-func fromACPConverter[T Searchable[T]]() converter[*addContextAndPathWrapper[T], T] {
-	return func(apw *addContextAndPathWrapper[T]) T {
+func fromACPConverter[C Comparable[C], T Searchable[C, T]]() converter[*addContextAndPathWrapper[C, T], T] {
+	return func(apw *addContextAndPathWrapper[C, T]) T {
 		return apw.state
 	}
 }
 
-type addContextAndPathWrapper[T Searchable[T]] struct {
+type addContextAndPathWrapper[C Comparable[C], T Searchable[C, T]] struct {
 	state T
 }
 
-func (acp *addContextAndPathWrapper[T]) String() string {
+func (acp *addContextAndPathWrapper[C, T]) String() string {
 	return fmt.Sprintf("%v", acp.state)
 }
 
-func (acp *addContextAndPathWrapper[T]) Code(_ int, _ Path[*addContextAndPathWrapper[T]]) string {
+func (acp *addContextAndPathWrapper[C, T]) Code(_ int, _ Path[*addContextAndPathWrapper[C, T]]) string {
 	return acp.state.Code()
 }
 
-func (acp *addContextAndPathWrapper[T]) Done(_ int, _ Path[*addContextAndPathWrapper[T]]) bool {
+func (acp *addContextAndPathWrapper[C, T]) Done(_ int, _ Path[*addContextAndPathWrapper[C, T]]) bool {
 	return acp.state.Done()
 }
 
-func (acp *addContextAndPathWrapper[T]) Distance(_ int, _ Path[*addContextAndPathWrapper[T]]) int {
+func (acp *addContextAndPathWrapper[C, T]) Distance(_ int, _ Path[*addContextAndPathWrapper[C, T]]) C {
 	return acp.state.Distance()
 }
 
-func (acp *addContextAndPathWrapper[T]) AdjacentStates(_ int, _ Path[*addContextAndPathWrapper[T]]) []*addContextAndPathWrapper[T] {
-	var r []*addContextAndPathWrapper[T]
+func (acp *addContextAndPathWrapper[C, T]) AdjacentStates(_ int, _ Path[*addContextAndPathWrapper[C, T]]) []*addContextAndPathWrapper[C, T] {
+	var r []*addContextAndPathWrapper[C, T]
 	for _, n := range acp.state.AdjacentStates() {
-		r = append(r, &addContextAndPathWrapper[T]{n})
+		r = append(r, &addContextAndPathWrapper[C, T]{n})
 	}
 	return r
 }
 
-type SearchableWithContextAndPath[M, T any] interface {
+type SearchableWithContextAndPath[C Comparable[C], M, T any] interface {
 	// A unique code for the current state. This may be called multiple times
 	// so this should be cached in the implementing code if computation is expensive.
 	Code(M, Path[T]) string
@@ -199,7 +203,7 @@ type SearchableWithContextAndPath[M, T any] interface {
 	AdjacentStates(M, Path[T]) []T
 	// Distance is the total distance
 	// TODO: make this return a mathable
-	Distance(M, Path[T]) int
+	Distance(M, Path[T]) C
 }
 
 type Option func(o *option)
@@ -214,22 +218,22 @@ func CheckDuplicates() Option {
 	}
 }
 
-func newSearch[M any, T SearchableWithContextAndPath[M, T]](initStates []T, m M, opts ...Option) (Path[T], int) {
+func newSearch[C Comparable[C], M any, T SearchableWithContextAndPath[C, M, T]](initStates []T, m M, opts ...Option) (Path[T], C) {
 	o := &option{}
 	for _, opt := range opts {
 		opt(o)
 	}
 
-	nodes := &bfsHeap[T]{}
+	nodes := &bfsHeap[C, T]{}
 	for _, is := range initStates {
-		nodes.PushState(&StateValue[T]{is, is.Distance(m, &path[T]{nil}), nil, 1})
+		nodes.PushState(&StateValue[C, T]{is, is.Distance(m, &path[C, T]{nil}), nil, 1})
 	}
 
 	checked := map[string]bool{}
 
 	for nodes.Len() > 0 {
 		sv := nodes.PopState()
-		p := &path[T]{sv}
+		p := &path[C, T]{sv}
 		if !o.checkDuplicates {
 			if code := sv.state.Code(m, p); checked[code] {
 				continue
@@ -243,85 +247,86 @@ func newSearch[M any, T SearchableWithContextAndPath[M, T]](initStates []T, m M,
 		}
 
 		for _, neighbor := range sv.state.AdjacentStates(m, p) {
-			nodes.PushState(&StateValue[T]{neighbor, neighbor.Distance(m, p), func() *StateValue[T] { return sv }, sv.pathLen + 1})
+			nodes.PushState(&StateValue[C, T]{neighbor, neighbor.Distance(m, p), func() *StateValue[C, T] { return sv }, sv.pathLen + 1})
 		}
 	}
-	return nil, -1
+	var nill C
+	return nil, nill
 }
 
-type bfsHeap[T any] struct {
-	values []*StateValue[T]
+type bfsHeap[C Comparable[C], T any] struct {
+	values []*StateValue[C, T]
 }
 
-func (bh *bfsHeap[T]) PushState(sv *StateValue[T]) {
+func (bh *bfsHeap[C, T]) PushState(sv *StateValue[C, T]) {
 	heap.Push(bh, sv)
 }
 
-func (bh *bfsHeap[T]) PopState() *StateValue[T] {
-	return heap.Pop(bh).(*StateValue[T])
+func (bh *bfsHeap[C, T]) PopState() *StateValue[C, T] {
+	return heap.Pop(bh).(*StateValue[C, T])
 }
 
-func (bh *bfsHeap[T]) popState() *StateValue[T] {
-	return heap.Pop(bh).(*StateValue[T])
+func (bh *bfsHeap[C, T]) popState() *StateValue[C, T] {
+	return heap.Pop(bh).(*StateValue[C, T])
 }
 
 // Below functions needed for heap interface
-func (bh *bfsHeap[T]) Len() int {
+func (bh *bfsHeap[C, T]) Len() int {
 	return len(bh.values)
 }
 
-func (bh *bfsHeap[T]) Less(i, j int) bool {
-	return bh.values[i].dist < bh.values[j].dist
+func (bh *bfsHeap[C, T]) Less(i, j int) bool {
+	return bh.values[i].dist.Less(bh.values[j].dist)
 }
 
-func (bh *bfsHeap[T]) Push(x interface{}) {
-	bh.values = append(bh.values, x.(*StateValue[T]))
+func (bh *bfsHeap[C, T]) Push(x interface{}) {
+	bh.values = append(bh.values, x.(*StateValue[C, T]))
 }
 
-func (bh *bfsHeap[T]) Pop() interface{} {
+func (bh *bfsHeap[C, T]) Pop() interface{} {
 	r := bh.values[len(bh.values)-1]
 	bh.values = bh.values[:len(bh.values)-1]
 	return r
 }
 
-func (bh *bfsHeap[T]) Swap(i, j int) {
+func (bh *bfsHeap[C, T]) Swap(i, j int) {
 	bh.values[i], bh.values[j] = bh.values[j], bh.values[i]
 }
 
-type StateValue[T any] struct {
+type StateValue[C Comparable[C], T any] struct {
 	state T
 	// This can be replaced by wrapping type for specific search type wrapper
-	dist int
+	dist C
 	// TODO: this can be replaced by improving container method (to include CurrentPath() function)
-	prev func() *StateValue[T]
+	prev func() *StateValue[C, T]
 	//
 	pathLen int
 }
 
-func (sv *StateValue[T]) PathString() string {
+func (sv *StateValue[C, T]) PathString() string {
 	return strings.Join(append(sv.path(), reflect.TypeOf(sv.state).String()), ", ")
 }
 
-func (sv *StateValue[T]) path() []string {
+func (sv *StateValue[C, T]) path() []string {
 	if sv == nil {
 		return []string{}
 	}
 	return append(sv.Prev().path(), sv.String())
 }
 
-func (sv *StateValue[T]) String() string {
-	return fmt.Sprintf("(%d) %v", sv.dist, sv.state)
+func (sv *StateValue[C, T]) String() string {
+	return fmt.Sprintf("(%v) %v", sv.dist, sv.state)
 }
 
-func (sv *StateValue[T]) State() T {
+func (sv *StateValue[C, T]) State() T {
 	return sv.state
 }
 
-func (sv *StateValue[T]) Dist() int {
+func (sv *StateValue[C, T]) Dist() C {
 	return sv.dist
 }
 
-func (sv *StateValue[T]) Prev() *StateValue[T] {
+func (sv *StateValue[C, T]) Prev() *StateValue[C, T] {
 	if sv.prev == nil {
 		return nil
 	}

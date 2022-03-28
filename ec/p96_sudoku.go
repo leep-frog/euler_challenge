@@ -33,7 +33,7 @@ func P96() *problem {
 
 		for idx, board := range boards {
 			board.Solve()
-			path, _ := bfs.ShortestPath([]*sudokuBoard{board})
+			path, _ := bfs.ShortestPath[bfs.Int]([]*sudokuBoard{board})
 			if len(path) == 0 {
 				o.Stderrln("unsolved board ", idx)
 				o.Stderrln(board)
@@ -269,8 +269,8 @@ func (sb *sudokuBoard) Done() bool {
 	return !sb.broken && sb.remaining == 0
 }
 
-func (sb *sudokuBoard) Distance() int {
-	return sb.remaining
+func (sb *sudokuBoard) Distance() bfs.Int {
+	return bfs.Int(sb.remaining)
 }
 
 func (sb *sudokuBoard) copy() *sudokuBoard {

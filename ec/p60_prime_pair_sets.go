@@ -41,7 +41,7 @@ func P60() *problem {
 		}
 
 		ctx := &pairCtx{pairs, edges}
-		_, dist := bfs.ContextualShortestOffsetPathWithPath(primes, ctx, bfs.CheckDuplicates())
+		_, dist := bfs.ContextualShortestOffsetPathWithPath[bfs.Int](primes, ctx, bfs.CheckDuplicates())
 		o.Stdoutln(dist)
 	})
 }
@@ -55,8 +55,8 @@ func (p *primePair) ToInt() int {
 	return p.prime
 }
 
-func (p *primePair) Distance(*pairCtx, bfs.Path[*primePair]) int {
-	return p.prime
+func (p *primePair) Distance(*pairCtx, bfs.Path[*primePair]) bfs.Int {
+	return bfs.Int(p.prime)
 }
 
 func (p *primePair) String() string {

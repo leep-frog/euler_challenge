@@ -16,7 +16,7 @@ func P82() *problem {
 		for i := 0; i < len(grid); i++ {
 			initStates = append(initStates, &p82{i, 0})
 		}
-		_, dist := bfs.ContextualShortestOffsetPath[[][]int](initStates, grid)
+		_, dist := bfs.ContextualShortestOffsetPath[bfs.Int](initStates, grid)
 		o.Stdoutln(dist)
 	})
 }
@@ -29,8 +29,8 @@ func (p *p82) Code(grid [][]int) string {
 	return fmt.Sprintf("%d_%d", p.i, p.j)
 }
 
-func (p *p82) Distance(grid [][]int) int {
-	return grid[p.i][p.j]
+func (p *p82) Distance(grid [][]int) bfs.Int {
+	return bfs.Int(grid[p.i][p.j])
 }
 
 func (p *p82) Done(grid [][]int) bool {

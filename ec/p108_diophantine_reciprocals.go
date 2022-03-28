@@ -18,7 +18,7 @@ func P108() *problem {
 			generator.Primes(),
 			n,
 		}}
-		bfs.ContextualShortestPath(initStates, best)
+		bfs.ContextualShortestPath[bfs.Int](initStates, best)
 		o.Stdoutln(best.Best())
 	})
 }
@@ -64,13 +64,13 @@ func (dr *diophantineReciprocals) Done(*maths.Bester[int, int]) bool {
 	return false
 }
 
-func (dr *diophantineReciprocals) Distance(best *maths.Bester[int, int]) int {
+func (dr *diophantineReciprocals) Distance(best *maths.Bester[int, int]) bfs.Int {
 	nf := dr.numFractions()
 	iv := dr.intValue()
 	if nf >= dr.n {
 		best.IndexCheck(nf, iv)
 	}
-	return -1_000 * nf / maths.Sqrt(iv)
+	return bfs.Int(-1_000 * nf / maths.Sqrt(iv))
 }
 
 func (dr *diophantineReciprocals) AdjacentStates(best *maths.Bester[int, int]) []*diophantineReciprocals {

@@ -10,7 +10,7 @@ import (
 
 func P81() *problem {
 	return fileInputNode(81, func(lines []string, o command.Output) {
-		_, dist := bfs.ContextualShortestOffsetPath[[][]int]([]*p81{{}}, parse.ToGrid(lines))
+		_, dist := bfs.ContextualShortestOffsetPath[bfs.Int]([]*p81{{}}, parse.ToGrid(lines))
 		o.Stdoutln(dist)
 	})
 }
@@ -23,8 +23,8 @@ func (p *p81) Code([][]int) string {
 	return fmt.Sprintf("%d_%d", p.i, p.j)
 }
 
-func (p *p81) Distance(grid [][]int) int {
-	return grid[p.i][p.j]
+func (p *p81) Distance(grid [][]int) bfs.Int {
+	return bfs.Int(grid[p.i][p.j])
 }
 
 func (p *p81) Done(grid [][]int) bool {

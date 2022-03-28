@@ -34,7 +34,7 @@ func P61() *problem {
 				maths.CopyMap(generators),
 			})
 		}
-		path, _ := bfs.ContextualShortestPathWithPath(initStates, startMap, bfs.CheckDuplicates())
+		path, _ := bfs.ContextualShortestPathWithPath[bfs.Int](initStates, startMap, bfs.CheckDuplicates())
 		o.Stdoutln(maths.SumType(path))
 	})
 }
@@ -48,8 +48,8 @@ func (cfn *cycFigNum) ToInt() int {
 	return cfn.n
 }
 
-func (cfn *cycFigNum) Distance(m map[int]int, path bfs.Path[*cycFigNum]) int {
-	return -path.Len()
+func (cfn *cycFigNum) Distance(m map[int]int, path bfs.Path[*cycFigNum]) bfs.Int {
+	return bfs.Int(-path.Len())
 }
 
 func (cfn *cycFigNum) Cycles(that *cycFigNum) bool {
