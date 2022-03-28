@@ -1395,6 +1395,13 @@ func TestAll(t *testing.T) {
 		},
 		/* Useful for commenting out tests. */
 	}
+
+	var totalEst float64
+	for _, test := range tests {
+		totalEst += test.estimate
+	}
+	t.Logf("Test estimate: %.2f", totalEst)
+
 	for _, test := range tests {
 		test.test(t)
 	}

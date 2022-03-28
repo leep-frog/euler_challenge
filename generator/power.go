@@ -15,7 +15,7 @@ type powerGen struct {
 }
 
 func (pg *powerGen) Next(g *Generator[*maths.Int]) *maths.Int {
-	return maths.BigPow(len(g.values)+1, pg.power)
+	return maths.BigPow(len(g.values), pg.power)
 }
 
 type smallPowerGen struct {
@@ -23,5 +23,5 @@ type smallPowerGen struct {
 }
 
 func (spg *smallPowerGen) Next(g *Generator[int]) int {
-	return maths.Pow(len(g.values)+1, spg.power)
+	return maths.Pow(len(g.values), spg.power)
 }
