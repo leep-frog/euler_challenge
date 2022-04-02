@@ -28,12 +28,27 @@ type codingChallengeTest struct {
 func TestAll(t *testing.T) {
 	tests := []*codingChallengeTest{
 		// TEST_START (needed for file_generator.go)
+		/*{
+			name: "p146",
+			args: []string{"146", "1"},
+			want: []string{"0"},
+		},*/
+		{
+			name: "p145",
+			args: []string{"145", "9"},
+			want: []string{"608720"},
+		},
+		{
+			name: "p145 example",
+			args: []string{"145", "3"},
+			want: []string{"120"},
+		},
 		{
 			name: "p144",
 			args: []string{"144"},
 			want: []string{"354"},
 		},
-		/*{
+		{
 			name: "p143",
 			args: []string{"143", "120000"},
 			want: []string{"30758397"},
