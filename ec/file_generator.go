@@ -22,7 +22,7 @@ func FileGenerator() *command.Node {
 			command.BoolFlag(ni, 'n', "If set, no input"),
 		),
 		command.Arg[int](pn, "Problem number", command.Positive[int]()),
-		command.Arg[string](fs, "suffix for file name"),
+		command.ListArg[string](fs, "suffix for file name", 1, command.UnboundedList),
 		command.ExecutableNode(func(o command.Output, d *command.Data) ([]string, error) {
 			includeExample := d.Bool(x)
 			fileInput := d.Bool(fi)
@@ -61,7 +61,8 @@ func FileGenerator() *command.Node {
 			)
 
 			// Create go file
-			if err := ioutil.WriteFile(fmt.Sprintf("p%d_%s.go", num, d.String(fs)), []byte(strings.Join(template, "\n")), 0644); err != nil {
+			suffix := strings.ToLower(strings.Join(d.StringList(fs), "_"))
+			if err := ioutil.WriteFile(fmt.Sprintf("p%d_%s.go", num, suffix), []byte(strings.Join(template, "\n")), 0644); err != nil {
 				return nil, o.Stderrf("failed to write new file: %v", err)
 			}
 
