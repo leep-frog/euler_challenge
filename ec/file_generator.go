@@ -89,7 +89,7 @@ func FileGenerator() *command.Node {
 			test := fmt.Sprintf(testFmt, num, "", num, testArg)
 			testStr := fmt.Sprintf("r \"(^.*TEST_START.*)$\" '$1\n%s' ec_test.go", test)
 			if includeExample {
-				testStr = fmt.Sprintf("r \"(^.*TEST_START.*$)\" '$1\n%s\n%s' ec_test.go", test, exTest)
+				testStr = fmt.Sprintf("r \"(^.*TEST_START.*$)\" '$1\n%s\n%s' ec_test.go", exTest, test)
 			}
 			return []string{
 				`r "\/\*\{" "{" ec_test.go`,
