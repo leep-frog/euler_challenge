@@ -29,6 +29,10 @@ func P147() *problem {
 
 		for w := 3; w <= W; w++ {
 			for h := 3; h <= w && h <= H; h++ {
+				// The rectangle that is one shorter can be drawn in two positions (all the way right or left)
+				// Removing the rectangle that is two shorter removes the doubly counted rectangles
+				// that are counted by the two w-1 diagCounts.
+				// Then, we just need to count the number of diagonals that include a square on the top and bottom.
 				diagCounts[w][h] = 2*diagCounts[w-1][h] - diagCounts[w-2][h] + newDiagCount(w, h)
 				diagCounts[h][w] = diagCounts[w][h]
 			}
