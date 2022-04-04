@@ -25,7 +25,7 @@ type Comparable[T any] interface {
 }
 
 type Mathable interface {
-	~int | ~float64 | ~int64
+	~int | ~float64 | ~int64 | ~uint64
 }
 
 type mathableOperator[T Mathable] struct {

@@ -7,10 +7,6 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
-func final143(n int) {
-
-}
-
 func P143() *problem {
 	return intInputNode(143, func(o command.Output, n int) {
 		// According to https://en.wikipedia.org/wiki/Fermat_point
