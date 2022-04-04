@@ -22,7 +22,7 @@ func P85() *problem {
 			for j := i; !jOverTarget; j++ {
 				wv := j * (j + 1)
 				jOverTarget = wv*hv >= want
-				best.IndexCheck(i * j, wv*hv)
+				best.IndexCheck(i*j, wv*hv)
 			}
 		}
 		o.Stdoutln(best.BestIndex(), best.Best())

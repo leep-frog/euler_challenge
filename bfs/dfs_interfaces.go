@@ -14,6 +14,7 @@ const nilNoType noType = 0
 type SimpleDepthSearcher[T any] interface {
 	// A unique code for the current state. This may be called multiple times
 	// so this should be cached in the implementing code if computation is expensive.
+	// TODO: make this comparable (string or int or float, etc.)
 	Code() string
 	// Returns if the given state is in a final position. The input is a contextual variable
 	// that is passed along from ShortestPath.
