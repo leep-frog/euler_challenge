@@ -4,12 +4,6 @@ import (
 	"github.com/leep-frog/command"
 )
 
-/*type diagCounts struct {
-	counts [][]int
-}
-
-func (dc *diag)*/
-
 func P147() *problem {
 	return intInputNode(147, func(o command.Output, n int) {
 		W, H := 47, 43
