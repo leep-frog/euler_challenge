@@ -74,7 +74,7 @@ func FileGenerator() *command.Node {
 				}
 			}
 
-			testFmt := "\t\t{\n\t\t\tname: \"p%d%s\",\n\t\t\targs: []string{\"%d\"%s},\n\t\t\twant: []string{\"0\"},\n\t\t},"
+			testFmt := "\t\t{\n\t\t\tname: \"p%d%s\",\n\t\t\targs: []string{\"%d\"%s},\n\t\t\twant: []string{\"0\"},\n\t\t},/*"
 			testArg := ", \"1\""
 			exTestArg := ", \"1\""
 			if fileInput {

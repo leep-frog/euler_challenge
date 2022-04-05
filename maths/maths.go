@@ -1406,3 +1406,14 @@ func Biggify(is []int) []*Int {
 	}
 	return r
 }
+
+func Cumulative(is []int) []int {
+	if len(is) == 0 {
+		return nil
+	}
+	rs := []int{is[0]}
+	for i := 1; i < len(is); i++ {
+		rs = append(rs, is[i]+rs[i-1])
+	}
+	return rs
+}
