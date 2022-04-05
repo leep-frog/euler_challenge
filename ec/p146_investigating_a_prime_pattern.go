@@ -1,8 +1,6 @@
 package eulerchallenge
 
 import (
-	"fmt"
-
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/generator"
 )
@@ -36,9 +34,6 @@ func P146() *problem {
 		}
 
 		for i := 10; i < n; i += 10 {
-			if i%1_000_000 == 0 {
-				fmt.Println(i)
-			}
 			sq := i * i
 			valid := true
 			for k, vs := range allowedMods {

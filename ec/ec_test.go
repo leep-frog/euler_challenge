@@ -151,11 +151,12 @@ func TestAll(t *testing.T) {
 			args: []string{"137", "10"},
 			want: []string{"74049690"},
 		},
-		//{
-		//name: "p136",
-		//args: []string{"136", "50000000"},
-		//want: []string{"0"},
-		//},
+		{
+			name: "p136",
+			args: []string{"136", "50000000"},
+			want: []string{"0"},
+			skip: "takes way too long",
+		},
 		{
 			name: "p136 example",
 			args: []string{"136", "100"},
