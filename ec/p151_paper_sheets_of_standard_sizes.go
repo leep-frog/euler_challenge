@@ -17,7 +17,7 @@ func P151() *problem {
 		}
 
 		ctx := &context151{n, map[int]*big.Rat{}}
-		init := []*node151{{m, big.NewRat(1, 1)}}
+		init := []*node151{{m, n - 1, big.NewRat(1, 1)}}
 		bfs.ContextualDFS(init, ctx, bfs.AllowDFSCycles(), bfs.AllowDFSDuplicates())
 		sm := big.NewRat(0, 1)
 		for i := 0; i < maths.Pow(2, n-1)-1; i++ {
@@ -33,7 +33,12 @@ func P151() *problem {
 type node151 struct {
 	// map from size to count of that size
 	sizes map[int]int
-	freq  *big.Rat
+	// number of sheets in the bag
+	numSheets int
+	// probability we get to this configuration
+	// note we may get to the same configuration two different ways
+	// and that would be represented by separate node151 instances.
+	freq *big.Rat
 }
 
 type context151 struct {
@@ -47,11 +52,7 @@ func (n *node151) Done(ctx *context151, dp bfs.DFSPath[*node151]) bool {
 	if len(n.sizes) == 0 {
 		return false
 	}
-	var sum int
-	for _, v := range n.sizes {
-		sum += v
-	}
-	if sum == 1 {
+	if n.numSheets == 1 {
 		if ctx.dayFreq[dp.Len()] == nil {
 			ctx.dayFreq[dp.Len()] = n.freq
 		} else {
@@ -63,10 +64,6 @@ func (n *node151) Done(ctx *context151, dp bfs.DFSPath[*node151]) bool {
 
 func (n *node151) AdjacentStates(ctx *context151, dp bfs.DFSPath[*node151]) []*node151 {
 	var r []*node151
-	var sum int
-	for _, v := range n.sizes {
-		sum += v
-	}
 	for k, v := range n.sizes {
 		if v == 0 {
 			continue
@@ -82,7 +79,7 @@ func (n *node151) AdjacentStates(ctx *context151, dp bfs.DFSPath[*node151]) []*n
 			newSizes[paper]++
 		}
 
-		r = append(r, &node151{newSizes, ratMul(newRat(v, sum), n.freq)})
+		r = append(r, &node151{newSizes, n.numSheets - 1 + (ctx.n - k), ratMul(newRat(v, n.numSheets), n.freq)})
 	}
 	return r
 }
