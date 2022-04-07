@@ -3,21 +3,21 @@ package fraction
 import (
 	"fmt"
 
-	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/generator"
+	"github.com/leep-frog/euler_challenge/maths"
 )
 
 type Fraction[T any] struct {
-	N T
-	D T
-	plus func(T, T) T
+	N     T
+	D     T
+	plus  func(T, T) T
 	times func(T, T) T
-	lt func(T, T) bool
+	lt    func(T, T) bool
 }
 
 func New(n, d int) *Fraction[int] {
 	return &Fraction[int]{
-		n, 
+		n,
 		d,
 		func(a, b int) int { return a + b },
 		func(a, b int) int { return a * b },
@@ -27,7 +27,7 @@ func New(n, d int) *Fraction[int] {
 
 func NewBig(n, d *maths.Int) *Fraction[*maths.Int] {
 	return &Fraction[*maths.Int]{
-		n, 
+		n,
 		d,
 		func(a, b *maths.Int) *maths.Int { return a.Plus(b) },
 		func(a, b *maths.Int) *maths.Int { return a.Times(b) },
@@ -61,8 +61,8 @@ func (f *Fraction[T]) LT(that *Fraction[T]) bool {
 
 // Return a fraction to allow for chaining.
 func Simplify(n, d int, p *generator.Generator[int]) *Fraction[int] {
-	nfs := generator.MutablePrimeFactors(n, p)	
-	dfs := generator.MutablePrimeFactors(d, p)	
+	nfs := generator.MutablePrimeFactors(n, p)
+	dfs := generator.MutablePrimeFactors(d, p)
 
 	for k, v := range nfs {
 		if dv, ok := dfs[k]; ok {
@@ -72,7 +72,7 @@ func Simplify(n, d int, p *generator.Generator[int]) *Fraction[int] {
 		}
 	}
 
-	newN, newD  := 1, 1
+	newN, newD := 1, 1
 	for k, v := range nfs {
 		for i := 0; i < v; i++ {
 			newN *= k

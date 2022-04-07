@@ -48,6 +48,10 @@ func P143() *problem {
 	})
 }
 
+func newRat[T maths.Mathable](a, b T) *big.Rat {
+	return big.NewRat(int64(a), int64(b))
+}
+
 func ratAdd(a, b *big.Rat) *big.Rat {
 	return big.NewRat(1, 1).Add(a, b)
 }
