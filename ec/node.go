@@ -161,6 +161,7 @@ func Branches() map[string]*command.Node {
 		P149(),
 		P150(),
 		P151(),
+		P152(),
 		// END_LIST (needed for file_generator.go)
 	}
 

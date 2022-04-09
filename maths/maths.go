@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/leep-frog/euler_challenge/parse"
+	"golang.org/x/exp/constraints"
 )
 
 type Operable[T any] interface {
@@ -332,16 +333,16 @@ func sets(remaining []int, m map[string]bool, cur []int, r *[][]int) {
 	cur = cur[:len(cur)-1]
 }
 
-func ChooseSets(parts []string, n int) [][]string {
-	cur := []string{}
-	var r [][]string
-	chooseSets(parts, map[string]bool{}, n, &cur, &r)
+func ChooseSets[T constraints.Ordered](parts []T, n int) [][]T {
+	cur := []T{}
+	var r [][]T
+	chooseSets(parts, map[T]bool{}, n, &cur, &r)
 	return r
 }
 
-func chooseSets(parts []string, ignore map[string]bool, n int, cur *[]string, all *[][]string) {
+func chooseSets[T constraints.Ordered](parts []T, ignore map[T]bool, n int, cur *[]T, all *[][]T) {
 	if n == 0 && len(*cur) > 0 {
-		new := make([]string, len(*cur))
+		new := make([]T, len(*cur))
 		copy(new, *cur)
 		*all = append(*all, new)
 		return
@@ -364,12 +365,12 @@ func chooseSets(parts []string, ignore map[string]bool, n int, cur *[]string, al
 	}
 }
 
-type trie[T comparable] struct {
-	subTries      map[T]*trie[T]
+type Trie[T comparable] struct {
+	subTries      map[T]*Trie[T]
 	endOfSequence bool
 }
 
-func (t *trie[T]) insert(ts []T) {
+func (t *Trie[T]) Insert(ts []T) {
 	if len(ts) == 0 {
 		t.endOfSequence = true
 		return
@@ -377,13 +378,13 @@ func (t *trie[T]) insert(ts []T) {
 
 	sub, ok := t.subTries[ts[0]]
 	if !ok {
-		t.subTries[ts[0]] = newTrie[T]()
+		t.subTries[ts[0]] = NewTrie[T]()
 		sub = t.subTries[ts[0]]
 	}
-	sub.insert(ts[1:])
+	sub.Insert(ts[1:])
 }
 
-func (t *trie[T]) values(cur *[]T, cum *[][]T) {
+func (t *Trie[T]) values(cur *[]T, cum *[][]T) {
 	if t.endOfSequence {
 		k := make([]T, len(*cur))
 		copy(k, *cur)
@@ -397,8 +398,8 @@ func (t *trie[T]) values(cur *[]T, cum *[][]T) {
 	}
 }
 
-func newTrie[T comparable]() *trie[T] {
-	return &trie[T]{map[T]*trie[T]{}, false}
+func NewTrie[T comparable]() *Trie[T] {
+	return &Trie[T]{map[T]*Trie[T]{}, false}
 }
 
 func StringPermutations(parts []string) []string {
@@ -410,13 +411,13 @@ func StringPermutations(parts []string) []string {
 }
 
 func Permutations[T comparable](parts []T, length int, allowReplacements bool) [][]T {
-	root := newTrie[T]()
+	root := NewTrie[T]()
 
 	remaining := map[T]int{}
 	for _, part := range parts {
 		remaining[part]++
 	}
-	permutations[T](parts, remaining, []T{}, root, length, allowReplacements)
+	permutations(parts, remaining, []T{}, root, length, allowReplacements)
 
 	var cur []T
 	var r [][]T
@@ -424,9 +425,9 @@ func Permutations[T comparable](parts []T, length int, allowReplacements bool) [
 	return r
 }
 
-func permutations[T comparable](m []T, remaining map[T]int, cur []T, root *trie[T], length int, allowReplacements bool) {
+func permutations[T comparable](m []T, remaining map[T]int, cur []T, root *Trie[T], length int, allowReplacements bool) {
 	if len(cur) == length {
-		root.insert(cur)
+		root.Insert(cur)
 		return
 	}
 
