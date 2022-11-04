@@ -11,13 +11,26 @@ func P234() *problem {
 		prev := 2
 		sum := maths.NewInt(0)
 		for g, p := generator.Primes().Start(1); prev*prev <= n; p = g.Next() {
+			// prev^2 < p*prev < p^2 < 2*p*prev
+			// Therefore the only semidivisble numbers are all of the numbers
+			// between prev^2 and p^2 that are divisble by prev OR p EXCEPT prev*p.
+			// Since [2*prev*p > p*p], we know that prev*p is the ONLY number that
+			// is divisble by both prev and p, and is between prev^2 and p^2.
+
+			// All of the numbers divisble by prev between prev^2 and p^2 (including prev*p)
 			a1 := maths.NewInt(int64(semidivSums(n, prev*prev, p*p, prev)))
+			// All of the numbers divisble by p    between prev^2 and p^2 (including prev*p)
 			a2 := maths.NewInt(int64(semidivSums(n, prev*prev, p*p, p)))
+			// Subtract prev*p twice ONLY if it is less than n (if it is greater than
+			// n, then semidivSums will not have considered it in its return value).
 			a3 := maths.NewInt(int64(2 * prev * p))
 			if a3.GT(maths.NewInt(int64(2 * n))) {
 				a3 = maths.NewInt(0)
 			}
+
+			// Add up the semidivisble values
 			sum = sum.Plus(a1).Plus(a2).Minus(a3)
+
 			prev = p
 		}
 		o.Stdoutln(sum)
@@ -25,7 +38,7 @@ func P234() *problem {
 }
 
 // Return the sum of numbers between start and end (exclusive)
-// that are divisble by den
+// that are divisble by 'den'.
 func semidivSums(n, start, end, den int) int {
 	s := (start / den) + 1
 	e := maths.Min(n, end-1) / den
