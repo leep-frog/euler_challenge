@@ -162,6 +162,9 @@ func Branches() map[string]*command.Node {
 		P150(),
 		P151(),
 		P152(),
+		P153(),
+		P155(),
+		P234(),
 		// END_LIST (needed for file_generator.go)
 	}
 
@@ -188,9 +191,10 @@ func intInputNode(num int, f func(command.Output, int)) *problem {
 		n: command.SerialNodes(
 			descNode(num),
 			command.Arg[int](N, "", command.Positive[int]()),
-			command.ExecutorNode(func(o command.Output, d *command.Data) {
+			&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
 				f(o, d.Int(N))
-			}),
+				return nil
+			}},
 		),
 	}
 }
@@ -205,12 +209,13 @@ func fileInputNode(num int, f func([]string, command.Output)) *problem {
 		num: num,
 		n: command.SerialNodes(
 			descNode(num),
-			command.FileContents("FILE", "", command.NewTransformer[string](func(s string) (string, error) {
+			command.FileContents("FILE", "", &command.Transformer[string]{F: func(s string, d *command.Data) (string, error) {
 				return filepath.Join("input", s), nil
-			}, false)),
-			command.ExecutorNode(func(o command.Output, d *command.Data) {
+			}}),
+			&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
 				f(d.StringList("FILE"), o)
-			}),
+				return nil
+			}},
 		),
 	}
 }
@@ -220,9 +225,10 @@ func noInputNode(num int, f func(command.Output)) *problem {
 		num: num,
 		n: command.SerialNodes(
 			descNode(num),
-			command.ExecutorNode(func(o command.Output, d *command.Data) {
+			&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
 				f(o)
-			}),
+				return nil
+			}},
 		),
 	}
 }

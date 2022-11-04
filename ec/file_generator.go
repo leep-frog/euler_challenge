@@ -16,7 +16,7 @@ func FileGenerator() *command.Node {
 	x := "example"
 	ni := "no-input"
 	return command.SerialNodes(
-		command.NewFlagNode(
+		command.FlagNode(
 			command.BoolFlag(fi, 'f', "If set, new file will accept a file input; otherwise it accepts an integer, N"),
 			command.BoolFlag(x, 'x', "If set, include example stuff in tests"),
 			command.BoolFlag(ni, 'n', "If set, no input"),
