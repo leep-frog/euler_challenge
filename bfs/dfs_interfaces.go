@@ -51,7 +51,7 @@ func (sds *sdsWrapper[T]) AdjacentStates(noType, DFSPath[T]) []*sdsWrapper[T] {
 
 func SimpleDFS[T SimpleDepthSearcher[T]](initStates []T, opts ...DFSOption) []T {
 	b := &sdsBiconverter[T]{}
-	return dfsFinal[noType, T, *sdsWrapper[T]](
+	return dfsFinal(
 		toSlice[T, *sdsWrapper[T]](b, initStates),
 		nilNoType,
 		b.From,
@@ -92,7 +92,7 @@ func (sds *poppableSDSWrapper[T]) AdjacentStates(noType, DFSPath[T]) []*poppable
 
 func PoppableSimpleDFS[T PoppableSimpleDepthSearcher[T]](initStates []T, opts ...DFSOption) []T {
 	b := &poppableSimpleDSBiconverter[T]{}
-	return dfsFinal[noType, T, *poppableSDSWrapper[T]](
+	return dfsFinal(
 		toSlice[T, *poppableSDSWrapper[T]](b, initStates),
 		nilNoType,
 		b.From,
@@ -137,7 +137,7 @@ func (ds *dsWrapper[M, T]) AdjacentStates(m M, _ DFSPath[T]) []*dsWrapper[M, T] 
 
 func DFS[M any, T DepthSearcher[M, T]](initStates []T, m M, opts ...DFSOption) []T {
 	b := &dsBiconverter[M, T]{}
-	return dfsFinal[M, T, *dsWrapper[M, T]](
+	return dfsFinal(
 		toSlice[T, *dsWrapper[M, T]](b, initStates),
 		m,
 		b.From,
@@ -177,7 +177,7 @@ func (pds *poppableDSWrapper[M, T]) AdjacentStates(m M, _ DFSPath[T]) []*poppabl
 
 func PoppableDFS[M any, T PoppableDepthSearcher[M, T]](initStates []T, m M, opts ...DFSOption) []T {
 	b := &poppableDSBiconverter[M, T]{}
-	return dfsFinal[M, T, *poppableDSWrapper[M, T]](
+	return dfsFinal(
 		toSlice[T, *poppableDSWrapper[M, T]](b, initStates),
 		m,
 		b.From,
@@ -218,7 +218,7 @@ func (cds *contextualDSWrapper[M, T]) AdjacentStates(m M, p DFSPath[T]) []*conte
 
 func ContextualDFS[M any, T ContextualDepthSearcher[M, T]](initStates []T, m M, opts ...DFSOption) []T {
 	b := &contextualDSBiconverter[M, T]{}
-	return dfsFinal[M, T, *contextualDSWrapper[M, T]](
+	return dfsFinal(
 		toSlice[T, *contextualDSWrapper[M, T]](b, initStates),
 		m,
 		b.From,
@@ -232,7 +232,7 @@ type PoppableContextualDepthSearcher[M, T any] interface {
 }
 
 func PoppableContextualDFS[M any, T PoppableContextualDepthSearcher[M, T]](initStates []T, m M, opts ...DFSOption) []T {
-	return dfsFinal[M, T, T](initStates, m, identityConverter[T](), opts...)
+	return dfsFinal(initStates, m, identityConverter[T](), opts...)
 }
 
 // T2 is a different type for more efficient wrappers. Specifically so we don't need

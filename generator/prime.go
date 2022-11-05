@@ -95,8 +95,11 @@ func PrimeFactors(n int, p *Generator[int]) map[int]int {
 }
 
 func Factors(n int, p *Generator[int]) []int {
-	if n <= 1 {
+	if n < 1 {
 		return nil
+	}
+	if n == 1 {
+		return []int{1}
 	}
 	if r, ok := cachedFactors[n]; ok {
 		return r

@@ -30,43 +30,48 @@ type codingChallengeTest struct {
 func TestAll(t *testing.T) {
 	tests := []*codingChallengeTest{
 		// TEST_START (needed for file_generator.go)
-		{
-			name: "p234",
-			args: []string{"234", "999966663332"},
-			want: []string{"1259187438574927161"},
-		},
-		{
-			name: "p234 example",
-			args: []string{"234", "1000"},
-			want: []string{"34825"},
-		},
-		{
-			name: "p234 example",
-			args: []string{"234", "15"},
-			want: []string{"30"},
-		},
 		/*{
-			name: "p155",
-			args: []string{"155", "3"},
-			want: []string{"7"},
+			name: "p235",
+			args: []string{"235"},
+			want: []string{"1.002322108633"},
 		},
 			{
-				name: "p153 example 1",
-				args: []string{"153", "5"},
-				want: []string{"35"},
+				name: "p234",
+				args: []string{"234", "999966663332"},
+				want: []string{"1259187438574927161"},
 			},
 			{
-				name: "p153 example 2",
-				args: []string{"153", "100000"},
-				want: []string{""},
+				name: "p234 example",
+				args: []string{"234", "1000"},
+				want: []string{"34825"},
+			},
+			{
+				name: "p234 example",
+				args: []string{"234", "15"},
+				want: []string{"30"},
+			},
+			{
+				name: "p155",
+				args: []string{"155", "3"},
+				want: []string{"7"},
 			},
 				{
-					name: "p153",
-					args:     []string{"153", "100000000"},
-				want:     []string{"17971254122360635"},
-				estimate: 160,
-				skip: "takes too long and tested well enough by examples",
-				},*/ /*
+					name: "p153 example 1",
+					args: []string{"153", "5"},
+					want: []string{"35"},
+				},
+				{
+					name: "p153 example 2",
+					args: []string{"153", "100000"},
+					want: []string{""},
+				},
+					{
+						name: "p153",
+						args:     []string{"153", "100000000"},
+					want:     []string{"17971254122360635"},
+					estimate: 160,
+					skip: "takes too long and tested well enough by examples",
+					},*/ /*
 			{
 				name:     "p152",
 				args:     []string{"152", "80"},
