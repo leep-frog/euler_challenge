@@ -16,6 +16,7 @@ var (
 	// to keep import
 	one = maths.One()
 	// filter out tests
+	timeLimit  = 3.0
 	testFilter = func(cct *codingChallengeTest) bool {
 		return true
 	}
@@ -55,9 +56,7 @@ func TestAll(t *testing.T) {
 	t.Logf("Test estimate: %.2f", totalEst)
 
 	for _, test := range tests {
-		if testFilter(test) {
-			test.test(t)
-		}
+		test.test(t)
 	}
 	sort.SliceStable(tests, func(i, j int) bool {
 		return tests[i].elapsed > tests[j].elapsed
@@ -77,6 +76,12 @@ func (ct *codingChallengeTest) test(t *testing.T) {
 		}
 		if ct.skip != "" {
 			t.Skip(ct.skip)
+		}
+		if timeLimit != 0 && ct.estimate >= timeLimit {
+			t.Skipf("Skipping due to test length (limit=%.2f, estimate=%.2f)", timeLimit, ct.estimate)
+		}
+		if !testFilter(ct) {
+			t.Skip("Test did not satisfy filter function")
 		}
 		start := time.Now()
 		etc := &command.ExecuteTestCase{
