@@ -30,5 +30,7 @@ func P40() *problem {
 			}
 		}
 		o.Stdoutln(prod)
+	}, &execution{
+		want: "210",
 	})
 }

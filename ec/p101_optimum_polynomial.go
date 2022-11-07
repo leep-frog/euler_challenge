@@ -90,5 +90,16 @@ func P101() *problem {
 			}
 		}
 		o.Stdoutln(fitSum.Num().Int64())
+	}, []*execution{
+		{
+			args:     []string{"2"},
+			want:     "37076114526",
+			estimate: 0.5,
+		},
+		{
+			args:     []string{"1"},
+			want:     "74",
+			estimate: 0.25,
+		},
 	})
 }

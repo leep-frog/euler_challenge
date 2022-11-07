@@ -12,6 +12,15 @@ func P81() *problem {
 	return fileInputNode(81, func(lines []string, o command.Output) {
 		_, dist := bfs.ContextualShortestOffsetPath[bfs.Int]([]*p81{{}}, parse.ToGrid(lines))
 		o.Stdoutln(dist)
+	}, []*execution{
+		{
+			args: []string{"p81_example.txt"},
+			want: "2427",
+		},
+		{
+			args: []string{"p81.txt"},
+			want: "427337",
+		},
 	})
 }
 

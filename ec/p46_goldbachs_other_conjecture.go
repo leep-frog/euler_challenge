@@ -26,5 +26,7 @@ func P46() *problem {
 
 		NEXT:
 		}
+	}, &execution{
+		want: "5777",
 	})
 }

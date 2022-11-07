@@ -62,7 +62,7 @@ func P98() *problem {
 							// Create the mapping
 							mapping := map[int]string{}
 							for i, d := range maths.Digits(square) {
-								mapping[d] = word[i:i+1]
+								mapping[d] = word[i : i+1]
 							}
 
 							// Iterate over anagrams and check if they make words
@@ -91,6 +91,11 @@ func P98() *problem {
 				return
 			}
 		}
+	}, []*execution{
+		{
+			args: []string{"words.txt"},
+			want: "18769",
+		},
 	})
 }
 
@@ -103,9 +108,9 @@ func stringAnagramPattern(nStr string) string {
 	checked := map[string]string{}
 	var r []string
 	for i := 0; i < len(nStr); i++ {
-		c := nStr[i:i+1]
+		c := nStr[i : i+1]
 		if _, ok := checked[c]; !ok {
-			checked[c] = letters[letterIdx:letterIdx+1]
+			checked[c] = letters[letterIdx : letterIdx+1]
 			letterIdx++
 		}
 		r = append(r, checked[c])
@@ -125,8 +130,8 @@ func createAnagramMap(length int) (map[string][]int, map[string]map[int]bool) {
 	// Map from pattern (22171278 (value) becomes AABCBACD (key)) to list of squares with that pattern
 	patternMap := map[string][]int{}
 	for i := start; i <= end; i++ {
-		square := i*i
-		pattern := anagramPattern(square) // AABCBACD	
+		square := i * i
+		pattern := anagramPattern(square) // AABCBACD
 		patternMap[pattern] = append(patternMap[pattern], square)
 	}
 
@@ -134,15 +139,15 @@ func createAnagramMap(length int) (map[string][]int, map[string]map[int]bool) {
 	anagramMap := map[string]map[int]bool{}
 	// TODO: range function for generator
 	for i := start; i <= end; i++ {
-			square := i*i
-			sorted := anagramStringSet(square)		
-			if anagramMap[sorted] == nil {
-				anagramMap[sorted] = map[int]bool{}
-			}
-			anagramMap[sorted][square] = true
+		square := i * i
+		sorted := anagramStringSet(square)
+		if anagramMap[sorted] == nil {
+			anagramMap[sorted] = map[int]bool{}
 		}
+		anagramMap[sorted][square] = true
+	}
 
-		return patternMap, anagramMap
+	return patternMap, anagramMap
 }
 
 func anagramStringSet(n int) string {

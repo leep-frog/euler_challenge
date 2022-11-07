@@ -26,5 +26,15 @@ func P132() *problem {
 			}
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args:     []string{"9"},
+			want:     "843296",
+			estimate: 5,
+		},
+		{
+			args: []string{"1"},
+			want: "9414",
+		},
 	})
 }

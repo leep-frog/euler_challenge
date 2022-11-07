@@ -13,6 +13,27 @@ func P113() *problem {
 			sum += d + i - 9
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args: []string{"100"},
+			want: "51161058134250",
+		},
+		{
+			args: []string{"10"},
+			want: "277032",
+		},
+		{
+			args: []string{"6"},
+			want: "12951",
+		},
+		{
+			args: []string{"2"},
+			want: "99",
+		},
+		{
+			args: []string{"1"},
+			want: "9",
+		},
 	})
 }
 

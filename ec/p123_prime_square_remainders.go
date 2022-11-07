@@ -26,5 +26,16 @@ func P123() *problem {
 				return
 			}
 		}
+	}, []*execution{
+		{
+			args:     []string{"10"},
+			want:     "21035",
+			estimate: 1.5,
+		},
+		{
+			args:     []string{"9"},
+			want:     "7037",
+			estimate: 0.25,
+		},
 	})
 }

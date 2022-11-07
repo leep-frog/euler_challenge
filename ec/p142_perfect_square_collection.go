@@ -27,5 +27,11 @@ func P142() *problem {
 				m[x] = append(m[x], []int{s1, s2})
 			}
 		}
+	}, []*execution{
+		{
+			args:     []string{"1"},
+			want:     "1006193",
+			estimate: 0.25,
+		},
 	})
 }

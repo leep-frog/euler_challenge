@@ -51,6 +51,11 @@ func P140() *problem {
 			sum.Add(sum, solns[i])
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args: []string{"30"},
+			want: "5673835352990",
+		},
 	})
 }
 

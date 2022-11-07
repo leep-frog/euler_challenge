@@ -22,5 +22,14 @@ func P5() *problem {
 			}
 		}
 		o.Stdoutln(product)
+	}, []*execution{
+		{
+			args: []string{"10"},
+			want: "2520",
+		},
+		{
+			args: []string{"20"},
+			want: "232792560",
+		},
 	})
 }

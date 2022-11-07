@@ -25,5 +25,15 @@ func P72() *problem {
 			count += got[i]
 		}
 		o.Stdoutln(count)
+	}, []*execution{
+		{
+			args:     []string{"1000000"},
+			want:     "303963552391",
+			estimate: 6,
+		},
+		{
+			args: []string{"8"},
+			want: "21",
+		},
 	})
 }

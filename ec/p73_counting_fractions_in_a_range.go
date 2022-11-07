@@ -21,5 +21,15 @@ func P73() *problem {
 			}
 		}
 		o.Stdoutln(unique)
+	}, []*execution{
+		{
+			args:     []string{"12000"},
+			want:     "7295372",
+			estimate: 8,
+		},
+		{
+			args: []string{"8"},
+			want: "3",
+		},
 	})
 }

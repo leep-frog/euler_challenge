@@ -25,5 +25,7 @@ func P34() *problem {
 			}
 		}
 		o.Stdoutln(superSum)
+	}, &execution{
+		want: "40730",
 	})
 }

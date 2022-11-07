@@ -23,5 +23,8 @@ func P44() *problem {
 			}
 		}
 		o.Stdoutln(best)
+	}, &execution{
+		want:     "5482660",
+		estimate: 1,
 	})
 }

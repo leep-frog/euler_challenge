@@ -27,6 +27,17 @@ func P109() *problem {
 		ctx := &dartContext{n, 0, 0}
 		bfs.PoppableContextualDFS(allDarts, ctx)
 		o.Stdoutln(ctx.count)
+	}, []*execution{
+		{
+			args:     []string{"100"},
+			want:     "38182",
+			estimate: 0.5,
+		},
+		{
+			args:     []string{"6"},
+			want:     "11",
+			estimate: 0.5,
+		},
 	})
 }
 
@@ -42,11 +53,11 @@ type dart struct {
 }
 
 func (d *dart) OnPush(ctx *dartContext, dp bfs.DFSPath[*dart]) {
-	ctx.score += d.score*d.multiplier
+	ctx.score += d.score * d.multiplier
 }
 
 func (d *dart) OnPop(ctx *dartContext, dp bfs.DFSPath[*dart]) {
-	ctx.score -= d.score*d.multiplier
+	ctx.score -= d.score * d.multiplier
 }
 
 func (d *dart) String() string {

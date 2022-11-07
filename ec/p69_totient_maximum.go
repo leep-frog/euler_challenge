@@ -12,5 +12,14 @@ func P69() *problem {
 		for ; prod < n; prod *= p.Next() {
 		}
 		o.Stdoutln(prod / p.Last())
+	}, []*execution{
+		{
+			args: []string{"1000000"},
+			want: "510510",
+		},
+		{
+			args: []string{"10"},
+			want: "6",
+		},
 	})
 }

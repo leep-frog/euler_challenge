@@ -19,5 +19,14 @@ func P3() *problem {
 		}
 
 		o.Stdoutln(max)
+	}, []*execution{
+		{
+			args: []string{"13195"},
+			want: "29",
+		},
+		{
+			args: []string{"600851475143"},
+			want: "6857",
+		},
 	})
 }

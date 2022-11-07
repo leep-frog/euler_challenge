@@ -13,5 +13,19 @@ func P25() *problem {
 				return
 			}
 		}
+	}, []*execution{
+		{
+			args:     []string{"1000"},
+			want:     "4782",
+			estimate: 0.2,
+		},
+		{
+			args: []string{"2"},
+			want: "7",
+		},
+		{
+			args: []string{"1"},
+			want: "2",
+		},
 	})
 }

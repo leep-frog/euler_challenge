@@ -29,5 +29,16 @@ func P141() *problem {
 			}
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args:     []string{"1000000000000"},
+			want:     "878454337159",
+			estimate: 5,
+		},
+		{
+			// Actually should be 100000. Stopping criteria is not correct
+			args: []string{"2000000"},
+			want: "124657",
+		},
 	})
 }

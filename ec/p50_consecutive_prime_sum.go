@@ -21,5 +21,18 @@ func P50() *problem {
 			}
 		}
 		o.Stdoutln(best.BestIndex(), best.Best())
+	}, []*execution{
+		{
+			args: []string{"1000000"},
+			want: "997651 543",
+		},
+		{
+			args: []string{"1000"},
+			want: "953 21",
+		},
+		{
+			args: []string{"100"},
+			want: "41 6",
+		},
 	})
 }

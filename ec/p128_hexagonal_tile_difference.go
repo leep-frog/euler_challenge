@@ -45,6 +45,15 @@ func P128() *problem {
 			}
 			oneJump = !oneJump
 		}
+	}, []*execution{
+		{
+			args: []string{"2000"},
+			want: "14516824220",
+		},
+		{
+			args: []string{"10"},
+			want: "271",
+		},
 	})
 }
 

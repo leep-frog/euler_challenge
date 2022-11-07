@@ -35,6 +35,9 @@ func P33() *problem {
 			}
 		}
 		o.Stdoutln(topProd, bottomProd)
+	}, &execution{
+		// Answer is actually 100
+		want: "387296 38729600",
 	})
 }
 

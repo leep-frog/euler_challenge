@@ -20,5 +20,19 @@ func P47() *problem {
 				row = 0
 			}
 		}
+	}, []*execution{
+		{
+			args:     []string{"4"},
+			want:     "134043",
+			estimate: 0.35,
+		},
+		{
+			args: []string{"3"},
+			want: "644",
+		},
+		{
+			args: []string{"2"},
+			want: "14",
+		},
 	})
 }

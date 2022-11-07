@@ -17,5 +17,11 @@ func P139() *problem {
 			}
 		}
 		o.Stdoutln(count)
+	}, []*execution{
+		{
+			args:     []string{"1"},
+			want:     "10057761",
+			estimate: 20,
+		},
 	})
 }

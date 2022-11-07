@@ -30,5 +30,11 @@ func P14() *problem {
 			}
 		}
 		o.Stdoutln(maxI)
+	}, []*execution{
+		{
+			args:     []string{"1000000"},
+			want:     "837799",
+			estimate: 0.4,
+		},
 	})
 }

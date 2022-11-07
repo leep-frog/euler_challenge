@@ -15,6 +15,16 @@ func P135() *problem {
 			}
 		}
 		o.Stdoutln(count)
+	}, []*execution{
+		{
+			args:     []string{"1000000"},
+			want:     "4989",
+			estimate: 1,
+		},
+		{
+			args: []string{"1156"},
+			want: "1",
+		},
 	})
 }
 

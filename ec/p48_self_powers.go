@@ -17,5 +17,14 @@ func P48() *problem {
 			res = (res + prod) % largest
 		}
 		o.Stdoutln(res % largest)
+	}, []*execution{
+		{
+			args: []string{"1000"},
+			want: "9110846700",
+		},
+		{
+			args: []string{"10"},
+			want: "405071317",
+		},
 	})
 }

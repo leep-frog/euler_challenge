@@ -11,10 +11,10 @@ func P120() *problem {
 	return noInputNode(120, func(o command.Output) {
 		var sum int
 		for a := 3; a <= 1000; a++ {
-			a2 := a*a
+			a2 := a * a
 			max := maths.Largest[int, int]()
 			has := map[string]bool{}
-			for left, right := (a-1), (a+1);; left, right = (left * (a - 1)) % a2, (right * (a + 1)) % a2	{
+			for left, right := (a - 1), (a + 1); ; left, right = (left*(a-1))%a2, (right*(a+1))%a2 {
 				code := fmt.Sprintf("%d:%d", left, right)
 				if has[code] {
 					break
@@ -25,5 +25,8 @@ func P120() *problem {
 			sum += max.Best()
 		}
 		o.Stdoutln(sum)
+	}, &execution{
+		want:     "333082500",
+		estimate: 0.5,
 	})
 }

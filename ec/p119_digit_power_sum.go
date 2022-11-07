@@ -26,6 +26,12 @@ func P119() *problem {
 			return values[i] < values[j]
 		})
 		o.Stdoutln(values[n-1])
+	}, []*execution{
+		{
+			args:     []string{"30"},
+			want:     "248155780267521",
+			estimate: 0.5,
+		},
 	})
 }
 

@@ -20,5 +20,10 @@ func P99() *problem {
 			best.IndexCheck(idx+1, result)
 		}
 		o.Stdoutln(best.BestIndex())
+	}, []*execution{
+		{
+			args: []string{"p099.txt"},
+			want: "709",
+		},
 	})
 }

@@ -8,6 +8,16 @@ func P76() *problem {
 	return intInputNode(76, func(o command.Output, n int) {
 		// Subtract one because the search includes the single digit summation ([]int{n}).
 		o.Stdoutln(dfs76(n, 1) - 1)
+	}, []*execution{
+		{
+			args:     []string{"100"},
+			want:     "190569291",
+			estimate: 3,
+		},
+		{
+			args: []string{"5"},
+			want: "6",
+		},
 	})
 }
 

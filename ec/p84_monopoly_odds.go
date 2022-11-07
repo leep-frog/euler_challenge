@@ -2,8 +2,8 @@ package eulerchallenge
 
 import (
 	"fmt"
-	"strings"
 	"sort"
+	"strings"
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/equilibrium"
@@ -52,35 +52,36 @@ func funcNextUtility() func(int) int {
 }
 
 const (
-	JAIL = 10
+	JAIL    = 10
 	TO_JAIL = 30
-	GO = 0
+	GO      = 0
 )
+
 var (
 	COMMUNITY_CHEST = map[int]bool{
-		2: true,
+		2:  true,
 		17: true,
 		33: true,
 	}
 	CHANCE = map[int]bool{
-		7: true,
+		7:  true,
 		22: true,
 		36: true,
 	}
 )
 
 type monopolySquare struct {
-	idx       int
+	idx     int
 	doubles int
 }
 
 type monopolyBoard struct {
-	spaces map[int]*monopolySquare
+	spaces    map[int]*monopolySquare
 	diceSides int
 }
 
 func (mb *monopolyBoard) weight(i int, m map[int]float64) float64 {
-	return m[i] + m[i + doubles[1]] + m[i + doubles[2]]	
+	return m[i] + m[i+doubles[1]] + m[i+doubles[2]]
 }
 
 var (
@@ -88,7 +89,7 @@ var (
 )
 
 func (ms *monopolySquare) Code(*monopolyBoard) int {
-	return ms.idx + 1000 * ms.doubles
+	return ms.idx + 1000*ms.doubles
 }
 
 func (ms *monopolySquare) Paths(board *monopolyBoard) []*equilibrium.WeightedPath[*monopolyBoard, *monopolySquare, int] {
@@ -100,7 +101,7 @@ func (ms *monopolySquare) Paths(board *monopolyBoard) []*equilibrium.WeightedPat
 				if ms.doubles == 2 {
 					mWs[JAIL]++
 				} else {
-					mWs[doubles[ms.doubles + 1] + to]++
+					mWs[doubles[ms.doubles+1]+to]++
 				}
 			} else {
 				mWs[to]++
@@ -118,39 +119,39 @@ func (ms *monopolySquare) Paths(board *monopolyBoard) []*equilibrium.WeightedPat
 	// Go to jail if relevant
 	mWs[JAIL] += mWs[TO_JAIL]
 	delete(mWs, TO_JAIL)
-	mWs[JAIL] += mWs[TO_JAIL + doubles[1]]
-	delete(mWs, TO_JAIL + doubles[1])
-	mWs[JAIL] += mWs[TO_JAIL + doubles[2]]
-	delete(mWs, TO_JAIL + doubles[2])
+	mWs[JAIL] += mWs[TO_JAIL+doubles[1]]
+	delete(mWs, TO_JAIL+doubles[1])
+	mWs[JAIL] += mWs[TO_JAIL+doubles[2]]
+	delete(mWs, TO_JAIL+doubles[2])
 
 	for k, v := range mWs {
 		numDoubles := k / 1000
 		doubleOffset := numDoubles * 1000
 		simpleK := k % 1000
-		
+
 		if COMMUNITY_CHEST[simpleK] {
-			mWs[GO + doubleOffset] += v / 16.0
+			mWs[GO+doubleOffset] += v / 16.0
 			mWs[JAIL] += v / 16.0
 			mWs[k] = v * 14 / 16.0
 		}
 		if CHANCE[simpleK] {
-			mWs[GO + doubleOffset] += v / 16.0
+			mWs[GO+doubleOffset] += v / 16.0
 			mWs[JAIL] += v / 16.0
-			mWs[11 + doubleOffset] += v / 16.0
-			mWs[24 + doubleOffset] += v / 16.0
-			mWs[39 + doubleOffset] += v / 16.0
-			mWs[5 + doubleOffset] += v / 16.0
-			mWs[39 + doubleOffset] += v / 16.0
-			mWs[k - 3 + doubleOffset] += v / 16.0
-			mWs[funcNextRail()(k) + doubleOffset]+= v * 2.0 / 16.0 
-			mWs[funcNextUtility()(k) + doubleOffset]+= v * 1.0 / 16.0 
+			mWs[11+doubleOffset] += v / 16.0
+			mWs[24+doubleOffset] += v / 16.0
+			mWs[39+doubleOffset] += v / 16.0
+			mWs[5+doubleOffset] += v / 16.0
+			mWs[39+doubleOffset] += v / 16.0
+			mWs[k-3+doubleOffset] += v / 16.0
+			mWs[funcNextRail()(k)+doubleOffset] += v * 2.0 / 16.0
+			mWs[funcNextUtility()(k)+doubleOffset] += v * 1.0 / 16.0
 
 			// Remainder
 			mWs[k] = v * 6 / 16.0
 		}
 	}
 
-	var ws []*equilibrium.WeightedPath[*monopolyBoard, *monopolySquare, int] 
+	var ws []*equilibrium.WeightedPath[*monopolyBoard, *monopolySquare, int]
 	for k, v := range mWs {
 		ws = append(ws, &equilibrium.WeightedPath[*monopolyBoard, *monopolySquare, int]{board.spaces[k], v})
 	}
@@ -162,12 +163,12 @@ func P84() *problem {
 		board := &monopolyBoard{map[int]*monopolySquare{}, n}
 		var spaces []*monopolySquare
 		for i := 0; i < 40; i++ {
-			board.spaces[i] = &monopolySquare{i, 0}			
-			board.spaces[i + doubles[1]] = &monopolySquare{i, 1}			
-			board.spaces[i + doubles[2]] = &monopolySquare{i, 2}			
+			board.spaces[i] = &monopolySquare{i, 0}
+			board.spaces[i+doubles[1]] = &monopolySquare{i, 1}
+			board.spaces[i+doubles[2]] = &monopolySquare{i, 2}
 			spaces = append(spaces, board.spaces[i])
 		}
-		ws := equilibrium.Equilibrium[*monopolyBoard, *monopolySquare, int](board, spaces, map[int]float64{0: 1})
+		ws := equilibrium.Equilibrium(board, spaces, map[int]float64{0: 1})
 		for i := 0; i <= 10; i++ {
 			fmt.Printf("%5.2f ", 100*board.weight(i, ws))
 		}
@@ -285,6 +286,19 @@ func P84() *problem {
 		for i, val := range convertBoard(board) {
 			o.Stdoutln(i, val)
 		}*/
+	}, []*execution{
+		{
+			// ended up getting correct answer (101524) with 6 dice lol
+			// so I guess bug + wrong dice = success!
+			args: []string{"6"},
+			want: "0",
+			skip: "doesn't actually work",
+		},
+		{
+			args: []string{"6"},
+			want: "0",
+			skip: "doesn't actually work",
+		},
 	})
 }
 

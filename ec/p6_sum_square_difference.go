@@ -13,5 +13,14 @@ func P6() *problem {
 		}
 		squareSums *= squareSums
 		o.Stdoutln(squareSums - sumSquares)
+	}, []*execution{
+		{
+			args: []string{"10"},
+			want: "2640",
+		},
+		{
+			args: []string{"100"},
+			want: "25164150",
+		},
 	})
 }

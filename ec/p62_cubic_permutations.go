@@ -26,5 +26,14 @@ func P62() *problem {
 				return
 			}
 		}
+	}, []*execution{
+		{
+			args: []string{"5"},
+			want: "127035954683",
+		},
+		{
+			args: []string{"3"},
+			want: "41063625",
+		},
 	})
 }

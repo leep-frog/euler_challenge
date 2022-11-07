@@ -32,5 +32,8 @@ func P92() *problem {
 			cache[cur] = cur == 89
 		}
 		o.Stdoutln(count)
+	}, &execution{
+		want:     "8581146",
+		estimate: 12,
 	})
 }

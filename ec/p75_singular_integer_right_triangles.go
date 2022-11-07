@@ -22,5 +22,15 @@ func P75() *problem {
 			}
 		}
 		o.Stdoutln(count)
+	}, []*execution{
+		{
+			args:     []string{"1500000"},
+			want:     "161667",
+			estimate: 0.5,
+		},
+		{
+			args: []string{"48"},
+			want: "6",
+		},
 	})
 }

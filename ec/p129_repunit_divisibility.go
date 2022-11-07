@@ -25,6 +25,15 @@ func P129() *problem {
 				return
 			}
 		}
+	}, []*execution{
+		{
+			args: []string{"6"},
+			want: "1000023",
+		},
+		{
+			args: []string{"1"},
+			want: "17",
+		},
 	})
 }
 

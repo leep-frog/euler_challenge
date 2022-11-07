@@ -11,7 +11,7 @@ func P122() *problem {
 	return noInputNode(122, func(o command.Output) {
 		var sum int
 		for k := 1; k <= 200; k++ {
-			for i := 1;; i++ {
+			for i := 1; ; i++ {
 				path := bfs.ContextualDFS([]*node122{{1}}, &context122{k, i}, bfs.AllowDFSCycles(), bfs.AllowDFSDuplicates())
 				if len(path) != 0 {
 					sum += len(path) - 1
@@ -20,15 +20,18 @@ func P122() *problem {
 			}
 		}
 		o.Stdoutln(sum)
+	}, &execution{
+		want:     "1582",
+		estimate: 5,
 	})
 }
 
 type node122 struct {
-	pow       int
+	pow int
 }
 
 type context122 struct {
-	pow int
+	pow      int
 	maxDepth int
 }
 
@@ -53,10 +56,10 @@ func (n *node122) AdjacentStates(ctx *context122, path bfs.DFSPath[*node122]) []
 		if path.Contains(strconv.Itoa(n.pow + p.pow)) {
 			continue
 		}
-		if n.pow + p.pow > ctx.pow {
+		if n.pow+p.pow > ctx.pow {
 			continue
 		}
-		r = append(r, &node122{p.pow+n.pow})
+		r = append(r, &node122{p.pow + n.pow})
 	}
 	return r
 }

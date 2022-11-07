@@ -59,5 +59,19 @@ func P51() *problem {
 				}
 			}
 		}
+	}, []*execution{
+		{
+			args:     []string{"8"},
+			want:     "_2_3_3 121313",
+			estimate: 1,
+		},
+		{
+			args: []string{"7"},
+			want: "56__3 56003",
+		},
+		{
+			args: []string{"6"},
+			want: "_3 13",
+		},
 	})
 }

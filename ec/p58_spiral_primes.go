@@ -25,5 +25,7 @@ func P58() *problem {
 			}
 			jump += 2
 		}
+	}, &execution{
+		want: "26241",
 	})
 }

@@ -18,6 +18,11 @@ func P82() *problem {
 		}
 		_, dist := bfs.ContextualShortestOffsetPath[bfs.Int](initStates, grid)
 		o.Stdoutln(dist)
+	}, []*execution{
+		{
+			args: []string{"p82.txt"},
+			want: "260324",
+		},
 	})
 }
 

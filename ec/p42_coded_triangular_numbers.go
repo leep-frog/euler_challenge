@@ -17,5 +17,10 @@ func P42() *problem {
 			}
 		}
 		o.Stdoutln(count)
+	}, []*execution{
+		{
+			args: []string{"words.txt"},
+			want: "162",
+		},
 	})
 }

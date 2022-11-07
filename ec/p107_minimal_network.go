@@ -34,6 +34,15 @@ func P107() *problem {
 			}
 		}
 		o.Stdoutln(totalWeight - mstWeight)
+	}, []*execution{
+		{
+			args: []string{"p107_network.txt"},
+			want: "259679",
+		},
+		{
+			args: []string{"p107_example.txt"},
+			want: "150",
+		},
 	})
 }
 

@@ -28,5 +28,14 @@ func P52() *problem {
 				}
 			}
 		}
+	}, []*execution{
+		{
+			args: []string{"6"},
+			want: "142857",
+		},
+		{
+			args: []string{"2"},
+			want: "125874",
+		},
 	})
 }

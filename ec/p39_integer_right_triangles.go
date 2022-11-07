@@ -18,5 +18,8 @@ func P39() *problem {
 			}
 		}
 		o.Stdoutln(best.BestIndex())
+	}, &execution{
+		want:     "840",
+		estimate: 0.25,
 	})
 }

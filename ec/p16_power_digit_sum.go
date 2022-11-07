@@ -17,5 +17,14 @@ func P16() *problem {
 		}
 
 		o.Stdoutln(pow.DigitSum())
+	}, []*execution{
+		{
+			args: []string{"10"},
+			want: "7",
+		},
+		{
+			args: []string{"1000"},
+			want: "1366",
+		},
 	})
 }

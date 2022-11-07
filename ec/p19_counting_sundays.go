@@ -38,5 +38,7 @@ func P19() *problem {
 			}
 		}
 		o.Stdoutln(count)
+	}, &execution{
+		want: "171",
 	})
 }

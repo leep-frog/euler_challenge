@@ -45,6 +45,16 @@ func P96() *problem {
 			sum += *(finalBoard[0][2].value)
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args:     []string{"p96.txt"},
+			want:     "24702",
+			estimate: 0.5,
+		},
+		{
+			args: []string{"p96_example.txt"},
+			want: "483",
+		},
 	})
 }
 

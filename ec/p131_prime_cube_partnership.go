@@ -25,5 +25,14 @@ func P131() *problem {
 		}
 		o.Stdoutln(count)
 		return
+	}, []*execution{
+		{
+			args: []string{"1000000"},
+			want: "173",
+		},
+		{
+			args: []string{"100"},
+			want: "4",
+		},
 	})
 }

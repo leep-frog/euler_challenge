@@ -21,5 +21,7 @@ func P97() *problem {
 			v = v % mod
 		}
 		o.Stdoutln(strconv.Itoa((v + 1) % mod))
+	}, &execution{
+		want: "8739992577",
 	})
 }

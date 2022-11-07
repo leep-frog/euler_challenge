@@ -21,5 +21,7 @@ func P41() *problem {
 				return
 			}
 		}
+	}, &execution{
+		want: "7652413",
 	})
 }

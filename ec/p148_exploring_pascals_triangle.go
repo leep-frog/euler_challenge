@@ -10,6 +10,16 @@ func P148() *problem {
 		f, start := pascalDivBySeven(n)
 		f += brutePascalDivBySeven(start, n)
 		o.Stdoutln(n*(n+1)/2 - f)
+	}, []*execution{
+		{
+			args:     []string{"1000000000"},
+			want:     "2129970655314432",
+			estimate: 7,
+		},
+		{
+			args: []string{"100"},
+			want: "2361",
+		},
 	})
 }
 

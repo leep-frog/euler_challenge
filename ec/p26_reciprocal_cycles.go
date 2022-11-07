@@ -30,5 +30,14 @@ func P26() *problem {
 			}
 		}
 		o.Stdoutln(maxI)
+	}, []*execution{
+		{
+			args: []string{"1000"},
+			want: "983",
+		},
+		{
+			args: []string{"10"},
+			want: "7",
+		},
 	})
 }

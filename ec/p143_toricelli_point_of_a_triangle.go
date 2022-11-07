@@ -45,6 +45,11 @@ func P143() *problem {
 			sum += t
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args: []string{"120000"},
+			want: "30758397",
+		},
 	})
 }
 

@@ -17,5 +17,8 @@ func P53() *problem {
 			}
 		}
 		o.Stdoutln(count)
+	}, &execution{
+		want:     "4075",
+		estimate: 3,
 	})
 }

@@ -40,5 +40,15 @@ func P35() *problem {
 			}
 		}
 		o.Stdoutln(len(unique))
+	}, []*execution{
+		{
+			args:     []string{"1000000"},
+			want:     "55",
+			estimate: 0.25,
+		},
+		{
+			args: []string{"100"},
+			want: "13",
+		},
 	})
 }

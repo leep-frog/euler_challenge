@@ -109,5 +109,14 @@ func P93() *problem {
 			}
 		}
 		o.Stdoutln(maths.Join(best.BestIndex(), ""), best.Best())
+	}, []*execution{
+		{
+			args: []string{"9"},
+			want: "1258 51",
+		},
+		{
+			args: []string{"4"},
+			want: "1234 28",
+		},
 	})
 }

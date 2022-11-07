@@ -24,6 +24,8 @@ func P235() *problem {
 
 		// Printf rounds for us
 		o.Stdoutf("%.12f\n", middle)
+	}, &execution{
+		want: "1.002322108633",
 	})
 }
 

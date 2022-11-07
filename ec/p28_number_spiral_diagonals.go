@@ -14,5 +14,14 @@ func P28() *problem {
 			start += offset*4 + 2
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args: []string{"1001"},
+			want: "669171001",
+		},
+		{
+			args: []string{"5"},
+			want: "101",
+		},
 	})
 }

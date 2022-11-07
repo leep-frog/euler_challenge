@@ -34,6 +34,19 @@ func P234() *problem {
 			prev = p
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args: []string{"999966663332"},
+			want: "1259187438574927161",
+		},
+		{
+			args: []string{"1000"},
+			want: "34825",
+		},
+		{
+			args: []string{"15"},
+			want: "30",
+		},
 	})
 }
 

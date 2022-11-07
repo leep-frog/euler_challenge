@@ -40,5 +40,14 @@ func P66() *problem {
 			best.IndexCheck(D, x)
 		}
 		o.Stdoutln(best.BestIndex())
+	}, []*execution{
+		{
+			args: []string{"1000"},
+			want: "661",
+		},
+		{
+			args: []string{"7"},
+			want: "5",
+		},
 	})
 }

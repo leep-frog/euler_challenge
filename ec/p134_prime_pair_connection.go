@@ -22,5 +22,8 @@ func P134() *problem {
 			sum += v
 		}
 		o.Stdoutln(sum)
+	}, &execution{
+		want:     "18613426663617118",
+		estimate: 40,
 	})
 }

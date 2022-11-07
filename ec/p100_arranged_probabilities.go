@@ -60,5 +60,7 @@ func P100() *problem {
 				return
 			}
 		}
+	}, &execution{
+		want: "756872327473",
 	})
 }

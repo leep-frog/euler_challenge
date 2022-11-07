@@ -50,5 +50,11 @@ func P59() *problem {
 			}
 		}
 		o.Stderrln("nope", len(chars))
+	}, []*execution{
+		{
+			args:     []string{"p59.txt"},
+			want:     "129448",
+			estimate: 1,
+		},
 	})
 }

@@ -54,5 +54,8 @@ func P95() *problem {
 			}
 		}
 		o.Stdoutln(bestChain, smallestPart)
+	}, &execution{
+		want:     "28 14316",
+		estimate: 7,
 	})
 }

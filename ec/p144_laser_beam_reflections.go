@@ -171,6 +171,8 @@ func P144() *problem {
 				return
 			}
 		}
+	}, &execution{
+		want: "354",
 	})
 }
 

@@ -44,5 +44,15 @@ func P65() *problem {
 				return nil
 			}},
 		),
+		executions: []*execution{
+			{
+				args: []string{"100"},
+				want: "272",
+			},
+			{
+				args: []string{"10"},
+				want: "17",
+			},
+		},
 	}
 }

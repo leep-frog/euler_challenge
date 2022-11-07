@@ -51,5 +51,14 @@ func P138() *problem {
 			sum = big.NewInt(0).Add(sum, s[1])
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args: []string{"12"},
+			want: "1118049290473932",
+		},
+		{
+			args: []string{"2"},
+			want: "322",
+		},
 	})
 }

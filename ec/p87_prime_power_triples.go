@@ -29,5 +29,15 @@ func P87() *problem {
 			}
 		}
 		o.Stdoutln(len(unique))
+	}, []*execution{
+		{
+			args:     []string{"50000000"},
+			want:     "1097343",
+			estimate: 0.3,
+		},
+		{
+			args: []string{"50"},
+			want: "4",
+		},
 	})
 }

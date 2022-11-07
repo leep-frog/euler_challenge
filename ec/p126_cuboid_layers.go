@@ -119,6 +119,15 @@ func P126() *problem {
 			}
 		}
 		o.Stderr("didn't find solution")*/
+	}, []*execution{
+		{
+			args: []string{"1000"},
+			want: "18522",
+		},
+		{
+			args: []string{"10"},
+			want: "154",
+		},
 	})
 }
 

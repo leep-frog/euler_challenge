@@ -22,5 +22,14 @@ func P137() *problem {
 		// Series: 2, 15, 104, 714
 		f := generator.Fibonaccis()
 		o.Stdoutln(f.Nth(2*n-1) * f.Nth(2*n))
+	}, []*execution{
+		{
+			args: []string{"15"},
+			want: "1120149658760",
+		},
+		{
+			args: []string{"10"},
+			want: "74049690",
+		},
 	})
 }

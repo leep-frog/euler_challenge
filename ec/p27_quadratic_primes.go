@@ -33,5 +33,10 @@ func P27() *problem {
 			}
 		}
 		o.Stdoutln(maxI)
+	}, []*execution{
+		{
+			args: []string{"1000"},
+			want: "-59231",
+		},
 	})
 }

@@ -65,5 +65,14 @@ func P17() *problem {
 		}
 
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args: []string{"5"},
+			want: "19",
+		},
+		{
+			args: []string{"1000"},
+			want: "21124",
+		},
 	})
 }

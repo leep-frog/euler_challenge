@@ -8,5 +8,14 @@ import (
 func P20() *problem {
 	return intInputNode(20, func(o command.Output, n int) {
 		o.Stdoutln(maths.Factorial(n).DigitSum())
+	}, []*execution{
+		{
+			args: []string{"100"},
+			want: "648",
+		},
+		{
+			args: []string{"10"},
+			want: "27",
+		},
 	})
 }

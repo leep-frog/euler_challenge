@@ -26,5 +26,15 @@ func P12() *problem {
 				}
 			}
 		}
+	}, []*execution{
+		{
+			args: []string{"5"},
+			want: "28",
+		},
+		{
+			args:     []string{"500"},
+			want:     "76576500",
+			estimate: 0.2,
+		},
 	})
 }

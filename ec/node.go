@@ -3,13 +3,16 @@ package eulerchallenge
 import (
 	"fmt"
 	"log"
+	"os"
 	"path/filepath"
+	"runtime"
+	"strings"
 
 	"github.com/leep-frog/command"
 )
 
-func Branches() map[string]*command.Node {
-	problems := []*problem{
+func getProblems() []*problem {
+	return []*problem{
 		P1(),
 		P2(),
 		P3(),
@@ -77,7 +80,7 @@ func Branches() map[string]*command.Node {
 		P65(),
 		P66(),
 		// 67 is a bigger version of problem 18
-		// 68 was solved in python
+		// 68 was solved in python (TODO: in go?)
 		P69(),
 		P70(),
 		P71(),
@@ -166,13 +169,17 @@ func Branches() map[string]*command.Node {
 		P155(),
 		P234(),
 		P235(),
+		P236(),
+		P222(),
 		// END_LIST (needed for file_generator.go)
 	}
+}
 
+func Branches() map[string]*command.Node {
 	m := map[string]*command.Node{
 		"fg": FileGenerator(),
 	}
-	for i, p := range problems {
+	for i, p := range getProblems() {
 		pStr := fmt.Sprintf("%d", p.num)
 		if _, ok := m[pStr]; ok {
 			log.Fatalf("Duplicate problem entry: %d, %d", i, p.num)
@@ -186,7 +193,7 @@ func descNode(problem int) command.Processor {
 	return command.Descriptionf("https://projecteuler.net/problem=%d", problem)
 }
 
-func intInputNode(num int, f func(command.Output, int)) *problem {
+func intInputNode(num int, f func(command.Output, int), executions []*execution) *problem {
 	return &problem{
 		num: num,
 		n: command.SerialNodes(
@@ -197,31 +204,52 @@ func intInputNode(num int, f func(command.Output, int)) *problem {
 				return nil
 			}},
 		),
+		executions: executions,
 	}
 }
 
 type problem struct {
-	num int
-	n   *command.Node
+	num        int
+	n          *command.Node
+	executions []*execution
 }
 
-func fileInputNode(num int, f func([]string, command.Output)) *problem {
+type execution struct {
+	args     []string
+	want     string
+	estimate float64
+	skip     string
+}
+
+func fileInputNode(num int, f func([]string, command.Output), executions []*execution) *problem {
+	_, dir, _, ok := runtime.Caller(3)
+	if !ok {
+		panic("failed to fetch file caller")
+	}
+	dir = filepath.Dir(dir)
+
 	return &problem{
 		num: num,
 		n: command.SerialNodes(
 			descNode(num),
-			command.FileContents("FILE", "", &command.Transformer[string]{F: func(s string, d *command.Data) (string, error) {
-				return filepath.Join("input", s), nil
-			}}),
+			// TODO: RelativeFileNode
+			command.Arg[string]("FILE", "", &command.FileCompleter[string]{
+				Directory: filepath.Join(dir, "input"),
+			}),
 			&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
-				f(d.StringList("FILE"), o)
+				b, err := os.ReadFile(filepath.Join(dir, "input", d.String("FILE")))
+				if err != nil {
+					return o.Annotatef(err, "failed to read fileee")
+				}
+				f(strings.Split(strings.TrimSpace(string(b)), "\n"), o)
 				return nil
 			}},
 		),
+		executions: executions,
 	}
 }
 
-func noInputNode(num int, f func(command.Output)) *problem {
+func noInputNode(num int, f func(command.Output), ex *execution) *problem {
 	return &problem{
 		num: num,
 		n: command.SerialNodes(
@@ -231,5 +259,6 @@ func noInputNode(num int, f func(command.Output)) *problem {
 				return nil
 			}},
 		),
+		executions: []*execution{ex},
 	}
 }

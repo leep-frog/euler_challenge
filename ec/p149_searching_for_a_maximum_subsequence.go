@@ -70,6 +70,16 @@ func P149() *problem {
 			best.Check(linearLargestSequence(seq4))
 		}
 		o.Stdoutln(best.Best())
+	}, []*execution{
+		{
+			args:     []string{"2"},
+			want:     "52852124",
+			estimate: 1,
+		},
+		{
+			args: []string{"1"},
+			want: "16",
+		},
 	})
 }
 

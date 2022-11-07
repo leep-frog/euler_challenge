@@ -25,5 +25,8 @@ func P32() *problem {
 			r += c
 		}
 		o.Stdoutln(r)
+	}, &execution{
+		want:     "45228",
+		estimate: 0.75,
 	})
 }

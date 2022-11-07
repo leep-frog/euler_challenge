@@ -46,5 +46,18 @@ func P24() *problem {
 		ps := maths.Permutations(vs)
 		sort.Strings(ps)
 		o.Stdoutln(ps[n-1])*/
+	}, []*execution{
+		{
+			args: []string{"1000000"},
+			want: "2783915460",
+		},
+		{
+			args: []string{maths.Factorial(9).Plus(maths.One()).String()},
+			want: "1023456789",
+		},
+		{
+			args: []string{maths.Factorial(9).String()},
+			want: "0987654321",
+		},
 	})
 }

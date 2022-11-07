@@ -15,5 +15,14 @@ func P64() *problem {
 			}
 		}
 		o.Stdoutln(count)
+	}, []*execution{
+		{
+			args: []string{"10000"},
+			want: "1322",
+		},
+		{
+			args: []string{"13"},
+			want: "4",
+		},
 	})
 }

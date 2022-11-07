@@ -11,5 +11,18 @@ func P115() *problem {
 		for ; blockCombos(false, n, m, cache) < 1_000_000; n++ {
 		}
 		o.Stdoutln(n)
+	}, []*execution{
+		{
+			args: []string{"50"},
+			want: "168",
+		},
+		{
+			args: []string{"10"},
+			want: "57",
+		},
+		{
+			args: []string{"3"},
+			want: "30",
+		},
 	})
 }

@@ -28,10 +28,13 @@ func P49() *problem {
 					continue
 				}
 				if generator.IsPrime(pk, primes) {
-					o.Stdoutf("%d%d%d", pi, pj, pk)
+					o.Stdoutf("%d%d%d ", pi, pj, pk)
 				}
 			}
 		}
+		o.Stdoutln()
+	}, &execution{
+		want: "148748178147 296962999629 ",
 	})
 }
 

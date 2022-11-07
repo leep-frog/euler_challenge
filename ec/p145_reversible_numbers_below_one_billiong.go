@@ -98,5 +98,14 @@ func P145() *problem {
 			sum += count
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args: []string{"9"},
+			want: "608720",
+		},
+		{
+			args: []string{"3"},
+			want: "120",
+		},
 	})
 }

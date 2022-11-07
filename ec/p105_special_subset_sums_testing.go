@@ -19,6 +19,11 @@ func P105() *problem {
 			//set := maths.Set(nums...)
 		}
 		o.Stdoutln(total)
+	}, []*execution{
+		{
+			args: []string{"p105_sets.txt"},
+			want: "73702",
+		},
 	})
 }
 

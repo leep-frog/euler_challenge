@@ -28,5 +28,14 @@ func P30() *problem {
 			}
 		}
 		o.Stdoutln(superSum)
+	}, []*execution{
+		{
+			args: []string{"5"},
+			want: "443839",
+		},
+		{
+			args: []string{"4"},
+			want: "19316",
+		},
 	})
 }

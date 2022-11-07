@@ -28,5 +28,10 @@ func P21() *problem {
 
 		// Divide by 2 since each pair is counted twice ((k, v) and (v, k)).
 		o.Stdoutln(sum / 2)
+	}, []*execution{
+		{
+			args: []string{"10000"},
+			want: "31626",
+		},
 	})
 }

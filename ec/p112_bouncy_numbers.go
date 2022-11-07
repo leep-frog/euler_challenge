@@ -19,6 +19,20 @@ func P112() *problem {
 				return
 			}
 		}
+	}, []*execution{
+		{
+			args:     []string{"99"},
+			want:     "1587000",
+			estimate: 0.25,
+		},
+		{
+			args: []string{"90"},
+			want: "21780",
+		},
+		{
+			args: []string{"50"},
+			want: "538",
+		},
 	})
 }
 

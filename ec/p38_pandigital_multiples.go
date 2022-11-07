@@ -30,5 +30,10 @@ func P38() *problem {
 		NEXT:
 		}
 		o.Stdoutln(best.Best(), best.BestIndex())
-	})
+	},
+		&execution{
+			want:     "932718654 9327",
+			estimate: 1,
+		},
+	)
 }

@@ -14,11 +14,16 @@ func P9() *problem {
 				c2 := (a*a + b*b)
 				c := int(math.Sqrt(float64(c2)))
 				if a+b+c == 1000 && maths.IsSquare(c2) {
-					o.Stdoutf("%d", a*b*c)
+					o.Stdoutln(a * b * c)
 					return
 				}
 			}
 		}
 		o.Terminatef("failed to find triplet")
+	}, []*execution{
+		{
+			args: []string{"1000"},
+			want: "31875000",
+		},
 	})
 }

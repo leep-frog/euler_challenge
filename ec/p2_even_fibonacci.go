@@ -14,5 +14,10 @@ func P2() *problem {
 			}
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args: []string{"4000000"},
+			want: "4613732",
+		},
 	})
 }

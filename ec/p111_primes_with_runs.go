@@ -73,6 +73,16 @@ func P111() *problem {
 			}
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args: []string{"10"},
+			want: "612407567715",
+		},
+		{
+			args:     []string{"4"},
+			want:     "273700",
+			estimate: 0.25,
+		},
 	})
 }
 
@@ -83,7 +93,7 @@ func p110Generator(d, remainingLen, remainingDs int, cur []int, opts *[]int, g *
 			*opts = append(*opts, v)
 		}
 		return
-	} 
+	}
 
 	if remainingDs > remainingLen {
 		return
@@ -91,9 +101,9 @@ func p110Generator(d, remainingLen, remainingDs int, cur []int, opts *[]int, g *
 
 	if remainingDs > 0 {
 		if d > 0 || len(cur) != 0 {
-		cur = append(cur, d)
-		p110Generator(d, remainingLen-1, remainingDs-1, cur, opts, g)
-		cur = cur[:len(cur)-1]
+			cur = append(cur, d)
+			p110Generator(d, remainingLen-1, remainingDs-1, cur, opts, g)
+			cur = cur[:len(cur)-1]
 		}
 	}
 
@@ -106,7 +116,7 @@ func p110Generator(d, remainingLen, remainingDs int, cur []int, opts *[]int, g *
 			continue
 		}
 		cur = append(cur, i)
-		p110Generator(d, remainingLen-1, remainingDs, cur, opts,g)
+		p110Generator(d, remainingLen-1, remainingDs, cur, opts, g)
 		cur = cur[:len(cur)-1]
 	}
 }

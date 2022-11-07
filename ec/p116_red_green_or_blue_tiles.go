@@ -11,6 +11,15 @@ func P116() *problem {
 			sum += fixedLenBlockCombos(false, n, []int{i}, map[bool]map[int]int{})
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args: []string{"50"},
+			want: "20492570929",
+		},
+		{
+			args: []string{"5"},
+			want: "12",
+		},
 	})
 }
 

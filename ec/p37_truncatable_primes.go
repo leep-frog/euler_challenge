@@ -34,5 +34,7 @@ func P37() *problem {
 			}
 		}
 		o.Stdoutln(sum)
+	}, &execution{
+		want: "748317",
 	})
 }

@@ -20,6 +20,19 @@ func P108() *problem {
 		}}
 		bfs.ContextualShortestPath[bfs.Int](initStates, best)
 		o.Stdoutln(best.Best())
+	}, []*execution{
+		{
+			args: []string{"4000000"},
+			want: "9350130049860600",
+		},
+		{
+			args: []string{"100"},
+			want: "1260",
+		},
+		{
+			args: []string{"1000"},
+			want: "180180",
+		},
 	})
 }
 

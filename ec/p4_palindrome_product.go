@@ -34,5 +34,14 @@ func P4() *problem {
 			}
 		}
 		o.Stdoutln(biggestPalindrome)
+	}, []*execution{
+		{
+			args: []string{"2"},
+			want: "9009",
+		},
+		{
+			args: []string{"3"},
+			want: "906609",
+		},
 	})
 }

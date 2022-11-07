@@ -31,5 +31,8 @@ func P94() *problem {
 				}
 			}
 		}
+	}, &execution{
+		want:     "518408346",
+		estimate: 2.5,
 	})
 }

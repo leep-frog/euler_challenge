@@ -10,6 +10,17 @@ func P121() *problem {
 	return intInputNode(121, func(o command.Output, n int) {
 		r := blueDiscs(int64(n), int64((n/2)+1), 1)
 		o.Stdoutln(r.Denom().Int64() / r.Num().Int64())
+	}, []*execution{
+		{
+			args:     []string{"15"},
+			want:     "2269",
+			estimate: 0.2,
+		},
+		{
+			args:     []string{"4"},
+			want:     "10",
+			estimate: 0.2,
+		},
 	})
 }
 

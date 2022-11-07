@@ -26,7 +26,17 @@ func P151() *problem {
 			}
 		}
 		f, _ := sm.Float64()
-		o.Stdoutf("%.6f", f)
+		o.Stdoutf("%.6f\n", f)
+	}, []*execution{
+		{
+			args:     []string{"5"},
+			want:     "0.464399",
+			estimate: 0.5,
+		},
+		{
+			args: []string{"3"},
+			want: "0.500000",
+		},
 	})
 }
 

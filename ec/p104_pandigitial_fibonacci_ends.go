@@ -34,5 +34,8 @@ func P104() *problem {
 			}
 			backA, backB = backB%100_000_000_000, (backA+backB)%100_000_000_000
 		}
+	}, &execution{
+		want:     "329468",
+		estimate: 0.5,
 	})
 }

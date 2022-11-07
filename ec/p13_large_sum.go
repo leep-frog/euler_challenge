@@ -24,6 +24,11 @@ func P13() *problem {
 		for i := len(sum) - 1; i >= 0; i-- {
 			sumStr = append(sumStr, parse.Itos(sum[i]))
 		}
-		o.Stdout(strings.Join(sumStr, "")[:10])
+		o.Stdoutln(strings.Join(sumStr, "")[:10])
+	}, []*execution{
+		{
+			args: []string{"p13.txt"},
+			want: "5537376230",
+		},
 	})
 }

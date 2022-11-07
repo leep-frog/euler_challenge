@@ -65,5 +65,15 @@ func P150() *problem {
 			}
 		}
 		o.Stdoutln(best.Best())
+	}, []*execution{
+		{
+			args: []string{"1"},
+			want: "-42",
+		},
+		{
+			args:     []string{"2"},
+			want:     "-271248680",
+			estimate: 4,
+		},
 	})
 }

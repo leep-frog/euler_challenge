@@ -30,5 +30,8 @@ func P43() *problem {
 			}
 		}
 		o.Stdoutln(sum)
+	}, &execution{
+		want:     "16695334890",
+		estimate: 6,
 	})
 }

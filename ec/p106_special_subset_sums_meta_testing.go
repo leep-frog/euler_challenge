@@ -34,5 +34,21 @@ func P106() *problem {
 		}
 		// Divide by 2 due to symmetry
 		o.Stdoutln(count / 2)
+	}, []*execution{
+		{
+			args:     []string{"12"},
+			want:     "21384",
+			estimate: 0.5,
+		},
+		{
+			args:     []string{"7"},
+			want:     "70",
+			estimate: 0.5,
+		},
+		{
+			args:     []string{"4"},
+			want:     "1",
+			estimate: 0.25,
+		},
 	})
 }

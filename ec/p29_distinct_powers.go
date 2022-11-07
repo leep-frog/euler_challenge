@@ -25,6 +25,15 @@ func P29() *problem {
 		}
 
 		o.Stdoutln(len(unique))
+	}, []*execution{
+		{
+			args: []string{"100"},
+			want: "9183",
+		},
+		{
+			args: []string{"5"},
+			want: "15",
+		},
 	})
 }
 

@@ -7,6 +7,12 @@ import (
 func P155() *problem {
 	return intInputNode(155, func(o command.Output, n int) {
 		o.Stdoutln(n)
+	}, []*execution{
+		{
+			args: []string{"3"},
+			want: "7",
+			skip: "TODO",
+		},
 	})
 }
 

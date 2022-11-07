@@ -26,5 +26,10 @@ func P102() *problem {
 			}
 		}
 		o.Stdoutln(count)
+	}, []*execution{
+		{
+			args: []string{"p102_triangles.txt"},
+			want: "228",
+		},
 	})
 }

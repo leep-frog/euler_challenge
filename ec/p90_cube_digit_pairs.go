@@ -40,5 +40,7 @@ func P90() *problem {
 			}
 		}
 		o.Stdoutln(len(unique))
+	}, &execution{
+		want: "1217",
 	})
 }

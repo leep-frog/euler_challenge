@@ -9,7 +9,7 @@ func P57() *problem {
 	return noInputNode(57, func(o command.Output) {
 		num, den := maths.NewInt(3), maths.NewInt(2)
 		var count int
-		for _ = range maths.Range(1000) {
+		for range maths.Range(1000) {
 			tmp := den
 			den = den.Plus(num)
 			num = tmp.Times(maths.NewInt(2)).Plus(num)
@@ -18,5 +18,7 @@ func P57() *problem {
 			}
 		}
 		o.Stdoutln(count)
+	}, &execution{
+		want: "153",
 	})
 }

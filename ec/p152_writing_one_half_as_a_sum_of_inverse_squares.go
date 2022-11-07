@@ -53,6 +53,12 @@ func P152() *problem {
 		ctx2 := &ctx152{0, edges}
 		bfs.DFS(init, ctx2)
 		o.Stdoutln(ctx2.count)
+	}, []*execution{
+		{
+			args:     []string{"80"},
+			want:     "301",
+			estimate: 5,
+		},
 	})
 }
 

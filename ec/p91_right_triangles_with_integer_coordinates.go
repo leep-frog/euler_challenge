@@ -43,5 +43,15 @@ func P91() *problem {
 			}
 		}
 		o.Stdoutln(len(unique))
+	}, []*execution{
+		{
+			args:     []string{"50"},
+			want:     "14234",
+			estimate: 0.5,
+		},
+		{
+			args: []string{"2"},
+			want: "14",
+		},
 	})
 }

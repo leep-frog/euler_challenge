@@ -25,11 +25,21 @@ func P18() *problem {
 			tower = append(tower, row)
 		}
 
-		path, dist := bfs.ContextualShortestOffsetPath[bfs.Int]([]*place{&place{0, 0}}, tower)
-		for _, p := range path {
-			o.Stdoutln(p)
-		}
+		_, dist := bfs.ContextualShortestOffsetPath[bfs.Int]([]*place{{0, 0}}, tower)
 		o.Stdoutln((maxValue * len(tower)) - int(dist))
+	}, []*execution{
+		{
+			args: []string{"p18_example.txt"},
+			want: "23",
+		},
+		{
+			args: []string{"p18.txt"},
+			want: "1074",
+		},
+		{
+			args: []string{"p67.txt"},
+			want: "7273",
+		},
 	})
 }
 

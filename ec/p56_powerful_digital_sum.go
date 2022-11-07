@@ -14,5 +14,7 @@ func P56() *problem {
 			}
 		}
 		o.Stdoutln(best.Best())
+	}, &execution{
+		want: "972",
 	})
 }

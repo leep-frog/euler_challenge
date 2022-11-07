@@ -30,6 +30,12 @@ func P74() *problem {
 			}
 		}
 		o.Stdoutln(count)
+	}, []*execution{
+		{
+			args:     []string{"1000000"},
+			want:     "402",
+			estimate: 1,
+		},
 	})
 }
 

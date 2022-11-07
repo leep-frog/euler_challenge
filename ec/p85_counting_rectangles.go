@@ -12,7 +12,7 @@ func P85() *problem {
 
 		// denominator of equation times what we want
 		want := 2_000_000 * 4
-		best := maths.Closest[int, int](want)
+		best := maths.Closest[int](want)
 
 		var iOverTarget bool
 		for i := 1; !iOverTarget; i++ {
@@ -26,5 +26,7 @@ func P85() *problem {
 			}
 		}
 		o.Stdoutln(best.BestIndex(), best.Best())
+	}, &execution{
+		want: "2772 7999992",
 	})
 }

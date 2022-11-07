@@ -43,5 +43,10 @@ func P22() *problem {
 			score += wordScore(name) * (i + 1)
 		}
 		o.Stdoutln(score)
+	}, []*execution{
+		{
+			args: []string{"p22.txt"},
+			want: "871198282",
+		},
 	})
 }

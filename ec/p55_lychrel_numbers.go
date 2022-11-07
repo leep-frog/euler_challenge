@@ -14,7 +14,6 @@ func P55() *problem {
 			for j := 0; j < 49; j++ {
 				if big.Palindrome() {
 					goto NOPE
-					break
 				}
 				big = big.Plus(big.Reverse())
 			}
@@ -22,5 +21,7 @@ func P55() *problem {
 		NOPE:
 		}
 		o.Stdoutln(count)
+	}, &execution{
+		want: "249",
 	})
 }

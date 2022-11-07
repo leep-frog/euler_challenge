@@ -14,5 +14,14 @@ func P10() *problem {
 			sum += pn
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args: []string{"10"},
+			want: "17",
+		},
+		{
+			args: []string{"2000000"},
+			want: "142913828922",
+		},
 	})
 }

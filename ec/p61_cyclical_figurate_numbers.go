@@ -36,6 +36,15 @@ func P61() *problem {
 		}
 		path, _ := bfs.ContextualShortestPathWithPath[bfs.Int](initStates, startMap, bfs.CheckDuplicates())
 		o.Stdoutln(maths.SumType(path))
+	}, []*execution{
+		{
+			args: []string{"6"},
+			want: "28684",
+		},
+		{
+			args: []string{"3"},
+			want: "19291",
+		},
 	})
 }
 

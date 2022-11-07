@@ -30,20 +30,34 @@ func P88() *problem {
 			sum += v
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args:     []string{"12000"},
+			want:     "7587457",
+			estimate: 1,
+		},
+		{
+			args: []string{"12"},
+			want: "61",
+		},
+		{
+			args: []string{"6"},
+			want: "30",
+		},
 	})
 }
 
 type n88 struct {
 	remaining int
-	sum int
-	f int
+	sum       int
+	f         int
 }
 
 type ctx88 struct {
 	factors []int
-	n int
-	kMap map[int]int
-	g *generator.Generator[int]
+	n       int
+	kMap    map[int]int
+	g       *generator.Generator[int]
 }
 
 func (n *n88) Code(ctx *ctx88, dp bfs.DFSPath[*n88]) string {
@@ -51,13 +65,13 @@ func (n *n88) Code(ctx *ctx88, dp bfs.DFSPath[*n88]) string {
 }
 
 func (n *n88) Done(ctx *ctx88, dp bfs.DFSPath[*n88]) bool {
- if n.remaining != 1 {
+	if n.remaining != 1 {
 		return false
 	}
 	if n.sum > ctx.n {
 		return false
 	}
-	
+
 	numberOfOnes := ctx.n - n.sum
 	numberOfTerms := numberOfOnes + len(ctx.factors) - 1
 	m := ctx.kMap
@@ -71,11 +85,11 @@ func (n *n88) Done(ctx *ctx88, dp bfs.DFSPath[*n88]) bool {
 	return false
 }
 
-func (n *n88) OnPush(ctx *ctx88, dp bfs.DFSPath[*n88])  {
+func (n *n88) OnPush(ctx *ctx88, dp bfs.DFSPath[*n88]) {
 	ctx.factors = append(ctx.factors, n.f)
 }
 
-func (n *n88) OnPop(ctx *ctx88, dp bfs.DFSPath[*n88])  {
+func (n *n88) OnPop(ctx *ctx88, dp bfs.DFSPath[*n88]) {
 	ctx.factors = ctx.factors[:len(ctx.factors)-1]
 }
 
@@ -96,7 +110,7 @@ func (n *n88) AdjacentStates(ctx *ctx88, dp bfs.DFSPath[*n88]) []*n88 {
 		if i == 1 || i < minFactor {
 			continue
 		}
-		r = append(r, &n88{n.remaining/i, n.sum + i, i})	
+		r = append(r, &n88{n.remaining / i, n.sum + i, i})
 	}
 	return r
 }

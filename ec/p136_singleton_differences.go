@@ -15,5 +15,15 @@ func P136() *problem {
 			}
 		}
 		o.Stdoutln(count)
+	}, []*execution{
+		{
+			args: []string{"50000000"},
+			want: "0",
+			skip: "takes way too long",
+		},
+		{
+			args: []string{"100"},
+			want: "25",
+		},
 	})
 }

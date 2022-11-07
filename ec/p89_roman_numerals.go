@@ -12,5 +12,10 @@ func P89() *problem {
 			saved += len(str) - len(maths.NumeralFromString(str).String())
 		}
 		o.Stdoutln(saved)
+	}, []*execution{
+		{
+			args: []string{"p89.txt"},
+			want: "743",
+		},
 	})
 }

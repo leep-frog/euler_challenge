@@ -74,5 +74,10 @@ func P11() *problem {
 		}
 
 		o.Stdoutln(max)
+	}, []*execution{
+		{
+			args: []string{"4"},
+			want: "70600674",
+		},
 	})
 }

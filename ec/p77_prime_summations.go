@@ -16,6 +16,8 @@ func P77() *problem {
 			best.IndexCheck(k, v)
 		}
 		o.Stdoutln(best.BestIndex(), best.Best())
+	}, &execution{
+		want: "71 5006",
 	})
 }
 

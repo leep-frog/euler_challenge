@@ -26,5 +26,14 @@ func P15() *problem {
 			bottom = bottom.Times(i)
 		}
 		o.Stdoutln(top.Div(bottom))
+	}, []*execution{
+		{
+			args: []string{"2"},
+			want: "6",
+		},
+		{
+			args: []string{"20"},
+			want: "137846528820",
+		},
 	})
 }

@@ -36,5 +36,11 @@ func P23() *problem {
 			}
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args:     []string{"28123"},
+			want:     "4179871",
+			estimate: 0.6,
+		},
 	})
 }

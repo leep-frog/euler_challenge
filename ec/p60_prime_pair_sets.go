@@ -43,6 +43,17 @@ func P60() *problem {
 		ctx := &pairCtx{pairs, edges}
 		_, dist := bfs.ContextualShortestOffsetPathWithPath[bfs.Int](primes, ctx, bfs.CheckDuplicates())
 		o.Stdoutln(dist)
+	}, []*execution{
+		{
+			args:     []string{"4"},
+			want:     "792",
+			estimate: 0.5,
+		},
+		{
+			args:     []string{"5"},
+			want:     "26033",
+			estimate: 1,
+		},
 	})
 }
 

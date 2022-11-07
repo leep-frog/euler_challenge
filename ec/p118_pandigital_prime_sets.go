@@ -18,17 +18,23 @@ func P118() *problem {
 			bfs.DFS([]*pandigitalOrdering{{p, nil}}, ctx)
 		}
 		o.Stdoutln(len(ctx.validSets))
+	}, []*execution{
+		{
+			args:     []string{"1"},
+			want:     "44680",
+			estimate: 5,
+		},
 	})
 }
 
 type pandigitalOrdering struct {
-	perm []int
+	perm   []int
 	breaks []int
 }
 
 type context118 struct {
 	validSets map[string]bool
-	primes *generator.Generator[int]
+	primes    *generator.Generator[int]
 }
 
 func (po *pandigitalOrdering) copy() *pandigitalOrdering {
@@ -70,7 +76,7 @@ func (po *pandigitalOrdering) AdjacentStates(ctx *context118) []*pandigitalOrder
 	if len(po.breaks) > 0 {
 		start = po.breaks[len(po.breaks)-1]
 	}
-	for i := start+1; i <= len(po.perm)-1; i++ {
+	for i := start + 1; i <= len(po.perm)-1; i++ {
 		cp := po.copy()
 		cp.breaks = append(cp.breaks, i)
 		if generator.IsPrime(maths.FromDigits(cp.perm[start:i]), ctx.primes) {

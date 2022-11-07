@@ -25,5 +25,11 @@ func P70() *problem {
 		}
 		o.Stdoutln(best.BestIndex())
 		return
+	}, []*execution{
+		{
+			args:     []string{"10000000"},
+			want:     "8319823",
+			estimate: 2,
+		},
 	})
 }

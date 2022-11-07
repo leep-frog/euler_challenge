@@ -52,6 +52,15 @@ func P147() *problem {
 			}
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args: []string{"1"},
+			want: "846910284",
+		},
+		{
+			args: []string{"2"},
+			want: "72",
+		},
 	})
 }
 

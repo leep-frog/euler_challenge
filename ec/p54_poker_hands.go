@@ -20,6 +20,15 @@ func P54() *problem {
 			}
 		}
 		o.Stdoutln(count)
+	}, []*execution{
+		{
+			args: []string{"p54.txt"},
+			want: "376",
+		},
+		{
+			args: []string{"p54_example.txt"},
+			want: "3",
+		},
 	})
 }
 

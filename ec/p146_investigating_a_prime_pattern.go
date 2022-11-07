@@ -58,5 +58,15 @@ func P146() *problem {
 			}
 		}
 		o.Stdoutln(sum)
+	}, []*execution{
+		{
+			args:     []string{"150000000"},
+			want:     "676333270",
+			estimate: 100,
+		},
+		{
+			args: []string{"1000000"},
+			want: "1242490",
+		},
 	})
 }

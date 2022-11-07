@@ -42,5 +42,15 @@ func P86() *problem {
 				}
 			}
 		}
+	}, []*execution{
+		{
+			args:     []string{"1000000"},
+			want:     "1818",
+			estimate: 2.5,
+		},
+		{
+			args: []string{"2000"},
+			want: "100",
+		},
 	})
 }

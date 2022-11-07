@@ -26,5 +26,14 @@ func P130() *problem {
 				}
 			}
 		}
+	}, []*execution{
+		{
+			args: []string{"25"},
+			want: "149253",
+		},
+		{
+			args: []string{"5"},
+			want: "1985",
+		},
 	})
 }

@@ -8,6 +8,15 @@ func P114() *problem {
 	return intInputNode(114, func(o command.Output, n int) {
 		m := map[bool]map[int]int{}
 		o.Stdoutln(blockCombos(false, n, 3, m))
+	}, []*execution{
+		{
+			args: []string{"50"},
+			want: "16475640049",
+		},
+		{
+			args: []string{"7"},
+			want: "17",
+		},
 	})
 }
 

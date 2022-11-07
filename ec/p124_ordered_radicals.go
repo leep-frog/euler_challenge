@@ -17,11 +17,14 @@ func P124() *problem {
 		}
 		sort.SliceStable(rs, func(i, j int) bool {
 			if rs[i].rad_n != rs[j].rad_n {
-				return rs[i].rad_n < rs[j].rad_n 
+				return rs[i].rad_n < rs[j].rad_n
 			}
 			return rs[i].n < rs[j].n
 		})
 		o.Stdoutln(rs[9999].n)
+	}, &execution{
+		want:     "21417",
+		estimate: 0.5,
 	})
 }
 
@@ -36,13 +39,13 @@ func (r *radical) String() string {
 
 var (
 	radicalCache = []int{}
-	pnc = false
+	pnc          = false
 )
 
 func calcRadical(n int, g *generator.Generator[int]) int {
 	for len(radicalCache) < n {
 		prod := 1
-		for f, _ := range generator.PrimeFactors(len(radicalCache) + 1, g) {
+		for f := range generator.PrimeFactors(len(radicalCache)+1, g) {
 			prod *= f
 		}
 		radicalCache = append(radicalCache, prod)
@@ -50,6 +53,6 @@ func calcRadical(n int, g *generator.Generator[int]) int {
 	return radicalCache[n-1]
 }
 
-func newRadical(n int, g *generator.Generator[int]) *radical {	
+func newRadical(n int, g *generator.Generator[int]) *radical {
 	return &radical{n, calcRadical(n, g)}
 }

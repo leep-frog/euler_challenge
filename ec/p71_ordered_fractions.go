@@ -19,5 +19,14 @@ func P71() *problem {
 			}
 		}
 		o.Stdoutln(best)
+	}, []*execution{
+		{
+			args: []string{"1000000"},
+			want: "428570/999997",
+		},
+		{
+			args: []string{"8"},
+			want: "2/5",
+		},
 	})
 }

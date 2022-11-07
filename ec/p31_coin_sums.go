@@ -10,6 +10,8 @@ func P31() *problem {
 			1, 2, 5, 10, 20, 50, 100, 200,
 		}
 		o.Stdoutln(try(coins, 0, 0))
+	}, &execution{
+		want: "73682",
 	})
 }
 

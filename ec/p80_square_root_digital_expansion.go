@@ -33,5 +33,8 @@ func P80() *problem {
 			sum += digits.DigitSum()
 		}
 		o.Stdoutln(sum)
+	}, &execution{
+		want:     "40886",
+		estimate: 0.6,
 	})
 }

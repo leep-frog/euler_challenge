@@ -23,5 +23,14 @@ func P125() *problem {
 			total += k
 		}
 		o.Stdoutln(total)
+	}, []*execution{
+		{
+			args: []string{"100000000"},
+			want: "2906969179",
+		},
+		{
+			args: []string{"1000"},
+			want: "4164",
+		},
 	})
 }

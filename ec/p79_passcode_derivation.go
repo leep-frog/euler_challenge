@@ -30,6 +30,11 @@ func P79() *problem {
 		}
 		r, ok := p79(codes, topology)
 		o.Stdoutln(strings.Join(r, ""), ok)
+	}, []*execution{
+		{
+			args: []string{"p79.txt"},
+			want: "73162890 true",
+		},
 	})
 }
 
