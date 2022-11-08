@@ -38,11 +38,11 @@ func newMo[T Mathable](t T) *mathableOperator[T] {
 }
 
 func (mo *mathableOperator[T]) Plus(that *mathableOperator[T]) *mathableOperator[T] {
-	return newMo[T](mo.m + that.m)
+	return newMo(mo.m + that.m)
 }
 
 func (mo *mathableOperator[T]) Times(that *mathableOperator[T]) *mathableOperator[T] {
-	return newMo[T](mo.m * that.m)
+	return newMo(mo.m * that.m)
 }
 
 /*func (mo *mathableOperator[T]) Div(that *mathableOperator[T]) (*mathableOperator[T], *mathableOperator[T]) {
@@ -745,19 +745,19 @@ func (i *Int) EQ(that *Int) bool {
 }
 
 func (i *Int) NEQ(that *Int) bool {
-	return NEQ[*Int](i, that)
+	return NEQ(i, that)
 }
 
 func (i *Int) GT(that *Int) bool {
-	return GT[*Int](i, that)
+	return GT(i, that)
 }
 
 func (i *Int) GTE(that *Int) bool {
-	return GTE[*Int](i, that)
+	return GTE(i, that)
 }
 
 func (i *Int) LTE(that *Int) bool {
-	return LTE[*Int](i, that)
+	return LTE(i, that)
 }
 
 // Magnitude less than.
