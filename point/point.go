@@ -11,6 +11,14 @@ type Point struct {
 	X, Y, Z int
 }
 
+func Origin() *Point {
+	return New(0, 0, 0)
+}
+
+func New(x, y, z int) *Point {
+	return &Point{x, y, z}
+}
+
 func rotateFunc(x, y, z int, rs ...Rotation) func(*Point) *Point {
 	return func(p *Point) *Point {
 		return p.Rotate(x, y, z, rs...)
@@ -19,6 +27,10 @@ func rotateFunc(x, y, z int, rs ...Rotation) func(*Point) *Point {
 
 func (p *Point) Code() string {
 	return p.String()
+}
+
+func (p *Point) Minus(s *Point) *Point {
+	return New(p.X-s.X, p.Y-s.Y, p.Z-s.Z)
 }
 
 func (p *Point) Cross(s *Point) *Point {

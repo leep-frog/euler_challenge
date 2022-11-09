@@ -18,7 +18,7 @@ var (
 	// filter out tests
 	timeLimit  = 3.0
 	testFilter = func(cct *codingChallengeTest) bool {
-		return cct.num == 222
+		return cct.num == 456
 		//return true
 	}
 )
@@ -71,6 +71,10 @@ func TestAll(t *testing.T) {
 }
 
 func (ct *codingChallengeTest) test(t *testing.T) {
+	if !testFilter(ct) {
+		// Don't do t.Skip here because it just crowds the verbose test output.
+		return
+	}
 	t.Run(ct.name, func(t *testing.T) {
 		if ct.estimate >= 5 {
 			t.Logf("ESTIMATED TIME: %.2fs", ct.estimate)
@@ -81,9 +85,7 @@ func (ct *codingChallengeTest) test(t *testing.T) {
 		if timeLimit != 0 && ct.estimate >= timeLimit {
 			t.Skipf("Skipping due to test length (limit=%.2f, estimate=%.2f)", timeLimit, ct.estimate)
 		}
-		if !testFilter(ct) {
-			t.Skip("Test did not satisfy filter function")
-		}
+
 		start := time.Now()
 		etc := &command.ExecuteTestCase{
 			Node: command.AsNode(&command.BranchNode{
