@@ -1,5 +1,7 @@
 package bfs
 
+import "fmt"
+
 type DFSPath[T any] interface {
 	Path() []T
 	Len() int
@@ -32,4 +34,8 @@ func (dp *dfsPath[T]) Len() int {
 
 func (dp *dfsPath[T]) Contains(s string) bool {
 	return dp.set[s]
+}
+
+func (dp *dfsPath[T]) String() string {
+	return fmt.Sprintf("%v", dp.path)
 }

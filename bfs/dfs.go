@@ -97,7 +97,7 @@ func identityConverter[T any]() converter[T, T] {
 
 type dfsAction[T any] struct {
 	popPath *string
-	state T
+	state   T
 }
 
 func dfsFinal[M, T2 any, T completeDepthSearcher[M, T, T2]](initStates []T, m M, convert converter[T, T2], opts ...DFSOption) []T2 {
@@ -123,7 +123,7 @@ func dfsFinal[M, T2 any, T completeDepthSearcher[M, T, T2]](initStates []T, m M,
 		actions = actions[:len(actions)-1]
 
 		// Remove from path if relevant.
-		if a.popPath != nil{
+		if a.popPath != nil {
 			// TODO: move OnPop into dfsPath implementation
 			dp.pop(*a.popPath)
 			a.state.OnPop(m, dp)

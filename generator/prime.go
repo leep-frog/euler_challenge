@@ -87,11 +87,7 @@ func Coprimes(a, b int, p *Generator[int]) bool {
 }
 
 func MutablePrimeFactors(n int, p *Generator[int]) map[int]int {
-	return copy(primeFactors(n, p))
-}
-
-func PrimeFactors(n int, p *Generator[int]) map[int]int {
-	return primeFactors(n, p)
+	return copy(PrimeFactors(n, p))
 }
 
 func Factors(n int, p *Generator[int]) []int {
@@ -123,6 +119,7 @@ func Factors(n int, p *Generator[int]) []int {
 			mAdditional = append(mAdditional, a*pi)
 		}
 		// merge sort the two
+		// TODO: merge sort package
 		merged := []int{1}
 		for ai, mi := 0, 0; ai < len(additional) || mi < len(mAdditional); {
 			var contender int
@@ -148,7 +145,7 @@ func Factors(n int, p *Generator[int]) []int {
 	}
 }
 
-func primeFactors(n int, p *Generator[int]) map[int]int {
+func PrimeFactors(n int, p *Generator[int]) map[int]int {
 	if n <= 1 {
 		return nil
 	}

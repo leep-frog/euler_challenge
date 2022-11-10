@@ -3,7 +3,6 @@ package eulerchallenge
 import (
 	"fmt"
 
-	"github.com/google/go-cmp/cmp"
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/point"
@@ -11,9 +10,8 @@ import (
 )
 
 type square456 struct {
-	points  []*point.Point2D[int]
-	ch      *point.ConvexHull2D[int]
-	pointCH *point.ConvexHull2D[int]
+	points []*point.Point2D[int]
+	ch     *point.ConvexHull2D[int]
 
 	id int
 
@@ -31,12 +29,6 @@ type square456 struct {
 
 func (s *square456) addPoint(x, y int) {
 	s.points = append(s.points, point.New2D(x, y))
-}
-
-func (s *square456) getPointCH() {
-	if s.pointCH == nil {
-		s.pointCH = point.ConvexHull2DFromPoints(s.points...)
-	}
 }
 
 func (s *square456) contains(p *point.Point2D[int]) bool {
@@ -297,7 +289,6 @@ func elegant456(points [][]int) (int, []*point.Triangle2D[int]) {
 		var added bool
 		for _, sq := range squares {
 			sq.contains(point.New2D(p[0], p[1]))
-			fmt.Println("PS", sq.ch.Points)
 			if sq.contains(point.New2D(p[0], p[1])) {
 				added = true
 				sq.addPoint(p[0], p[1])
@@ -326,7 +317,7 @@ func elegant456(points [][]int) (int, []*point.Triangle2D[int]) {
 	for i, sq1 := range squares {
 		fmt.Println("SQ1", i)
 		for j := i; j < len(squares); j++ {
-			fmt.Println("SQ2", j)
+			//fmt.Println("SQ2", j)
 			sq2 := squares[j]
 			for k := j; k < len(squares); k++ {
 				if i == j && j == k {
@@ -335,8 +326,11 @@ func elegant456(points [][]int) (int, []*point.Triangle2D[int]) {
 				sq3 := squares[k]
 
 				originCount := 0
-				fmt.Println("UN")
 				cornerTris := sq1.cornerTriangles(sq2, sq3)
+				if len(cornerTris) == 0 {
+					// Two of the squares are the same and the square has only one point.
+					continue
+				}
 				for _, t := range cornerTris {
 					if t.Contains(point.Origin2D[int]()) {
 						originCount++
@@ -347,13 +341,24 @@ func elegant456(points [][]int) (int, []*point.Triangle2D[int]) {
 
 				// All triangles contain the origin
 				if originCount == len(cornerTris) {
+					if i == j || j == k || i == k {
+						fmt.Println("bleh", i, j, k)
+					}
 					originTriangleCount += len(sq1.points) * len(sq2.points) * len(sq3.points)
+					//fmt.Println("OTC", sq1.id, sq2.id, sq3.id, "|", len(cornerTris), len(sq1.points)*len(sq2.points)*len(sq3.points), len(sq1.triangles(sq2, sq3)))
+					g := map[string]bool{}
+					for _, t := range sq1.triangles(sq2, sq3) {
+						if g[t.String()] {
+							continue
+						}
+						g[t.String()] = true
+						r = append(r, t)
+					}
 					continue
 				}
 
 				mightContain := originCount != 0
 				if !mightContain {
-					fmt.Println("DEUX")
 					ch := point.ConvexHull2DFromPoints(append(append(sq1.points, sq2.points...), sq3.points...)...)
 					mightContain = ch.Contains(point.Origin2D[int]())
 				}
@@ -362,17 +367,27 @@ func elegant456(points [][]int) (int, []*point.Triangle2D[int]) {
 					continue
 				}
 
-				fmt.Println("TROIS")
+				tc := 0
+				g := map[string]bool{}
 				for _, t := range sq1.triangles(sq2, sq3) {
+					if g[t.String()] {
+						continue
+					}
+					g[t.String()] = true
 					got := map[string]bool{}
 					if got[t.String()] {
 						continue
 					}
 					got[t.String()] = true
 					if t.Contains(point.Origin2D[int]()) {
-						originTriangleCount++
+						tc++
+						r = append(r, t)
 					}
 				}
+				if i == j || j == k || i == k {
+					//tc /= 2
+				}
+				originTriangleCount += tc
 			}
 		}
 	}
@@ -399,7 +414,8 @@ func P456() *problem {
 
 		points := generatePoints(n)
 
-		//points = points[150:250]
+		points = points[:140]
+		//fmt.Println("LAST POINT", points[len(points)-1])
 
 		/*points = [][]int{
 			{-1691, 12703},
@@ -424,19 +440,22 @@ func P456() *problem {
 		eCnt, ets := elegant456(points)
 		fmt.Println("BC")
 		bCnt, bts := brute456(points)
+		_ = bts
+		_ = ets
 
-		if diff := cmp.Diff(uniqTris(ets), uniqTris(bts)); diff != "" {
-			fmt.Printf("Yes diff:")
-		}
+		/*if diff := cmp.Diff(uniqTris(ets), uniqTris(bts)); diff != "" {
+			fmt.Printf("Yes diff:\n%s", diff)
+		}*/
 
-		fmt.Println("Counts:", eCnt, bCnt)
+		fmt.Println("ECounts:", eCnt, len(ets), len(uniqTris(ets)))
+		fmt.Println("BCounts:", bCnt, len(bts), len(uniqTris(bts)))
 		//o.Stdoutln(eCnt, bCnt)
 	}, []*execution{
-		{
+		/*{
 			args: []string{"8"},
 			want: "20",
 		}, /**/
-		/*{
+		{
 			args: []string{"600"},
 			want: "8950634",
 		},

@@ -3,7 +3,6 @@ package bfs
 import (
 	"container/heap"
 	"fmt"
-	"reflect"
 	"strings"
 )
 
@@ -44,6 +43,10 @@ type pathWrapper[T, T2 any] struct {
 	converter converter[T, T2]
 }
 
+func (p *pathWrapper[T, T2]) String() string {
+	return fmt.Sprintf("%v", p.path)
+}
+
 func (p *pathWrapper[T, T2]) Len() int {
 	return p.path.Len()
 }
@@ -54,6 +57,10 @@ func (p *pathWrapper[T, T2]) Fetch() []T2 {
 
 type path[C Comparable[C], T any] struct {
 	tail *StateValue[C, T]
+}
+
+func (p *path[C, T]) String() string {
+	return p.tail.PathString()
 }
 
 func (p *path[C, T]) Len() int {
@@ -212,6 +219,7 @@ type option struct {
 	checkDuplicates bool
 }
 
+// Change to DontCheckDuplicates?
 func CheckDuplicates() Option {
 	return func(o *option) {
 		o.checkDuplicates = true
@@ -304,7 +312,7 @@ type StateValue[C Comparable[C], T any] struct {
 }
 
 func (sv *StateValue[C, T]) PathString() string {
-	return strings.Join(append(sv.path(), reflect.TypeOf(sv.state).String()), ", ")
+	return strings.Join(append(sv.path()), ", ")
 }
 
 func (sv *StateValue[C, T]) path() []string {
