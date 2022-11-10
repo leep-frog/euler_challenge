@@ -1,351 +1,226 @@
 package point
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestCrossProduct(t *testing.T) {
+func TestConvexHull(t *testing.T) {
+	permutatedCH := &ConvexHull2D[int]{
+		[]*Point2D[int]{
+			New2D(-2, 4),
+			New2D(5, -7),
+			New2D(1, 2),
+		},
+	}
+
+	squareCH := &ConvexHull2D[int]{
+		[]*Point2D[int]{
+			New2D(-2, 2),
+			New2D(-2, -2),
+			New2D(2, -2),
+			New2D(2, 2),
+		},
+	}
+
 	for _, test := range []struct {
-		name string
-		p    *Point
-		by   *Point
-		want *Point
+		name   string
+		points []*Point2D[int]
+		want   *ConvexHull2D[int]
 	}{
 		{
-			name: "simple cross product",
-			p:    NewPoint(3, -1, 0),
-			by:   NewPoint(-2, 3, 4),
-			want: NewPoint(-4, -12, 7),
+			name: "Permutation 1",
+			points: []*Point2D[int]{
+				New2D(1, 2),
+				New2D(5, -7),
+				New2D(-2, 4),
+			},
+			want: permutatedCH,
+		},
+		{
+			name: "Permutation 2",
+			points: []*Point2D[int]{
+				New2D(1, 2),
+				New2D(-2, 4),
+				New2D(5, -7),
+			},
+			want: permutatedCH,
+		},
+		{
+			name: "Permutation 3",
+			points: []*Point2D[int]{
+				New2D(5, -7),
+				New2D(1, 2),
+				New2D(-2, 4),
+			},
+			want: permutatedCH,
+		},
+		{
+			name: "Permutation 4",
+			points: []*Point2D[int]{
+				New2D(5, -7),
+				New2D(-2, 4),
+				New2D(1, 2),
+			},
+			want: permutatedCH,
+		},
+		{
+			name: "Permutation 5",
+			points: []*Point2D[int]{
+				New2D(-2, 4),
+				New2D(1, 2),
+				New2D(5, -7),
+			},
+			want: permutatedCH,
+		},
+		{
+			name: "Permutation 1",
+			points: []*Point2D[int]{
+				New2D(-2, 4),
+				New2D(5, -7),
+				New2D(1, 2),
+			},
+			want: permutatedCH,
+		},
+		{
+			name: "Duplicate points",
+			points: []*Point2D[int]{
+				New2D(-2, 4),
+				New2D(-2, 4),
+				New2D(-2, 4),
+				New2D(5, -7),
+				New2D(1, 2),
+				New2D(1, 2),
+			},
+			want: permutatedCH,
+		},
+		{
+			name: "Square",
+			points: []*Point2D[int]{
+				New2D(-2, 2),
+				New2D(-2, -2),
+				New2D(2, 2),
+				New2D(2, -2),
+			},
+			want: squareCH,
+		},
+		{
+			name: "Square with points on lines",
+			points: []*Point2D[int]{
+				New2D(-2, 2),
+				New2D(-2, -2),
+				New2D(2, 2),
+				New2D(2, -2),
+				// Points on lines
+				New2D(2, 0),
+				New2D(-2, 0),
+				New2D(0, 2),
+				New2D(0, -2),
+			},
+			want: squareCH,
+		},
+		{
+			name: "Square with points in the middle",
+			points: []*Point2D[int]{
+				New2D(-2, 2),
+				New2D(-2, -2),
+				New2D(2, 2),
+				New2D(2, -2),
+				// Points on lines
+				New2D(2, -1),
+				New2D(2, 0),
+				New2D(2, 1),
+				New2D(-2, 0),
+				New2D(0, 2),
+				New2D(0, -2),
+				// Points in the middle
+				New2D(0, 0),
+				New2D(1, 1),
+				New2D(1, -1),
+				New2D(-1, 1),
+				New2D(-1, -1),
+			},
+			want: squareCH,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			if diff := cmp.Diff(test.want, test.p.Cross(test.by)); diff != "" {
-				t.Errorf("(%v).Cross(%v) returned diff (-want, +got):\n%s", test.p, test.by, diff)
+			ch := ConvexHull2DFromPoints(test.points...)
+			fmt.Println(test.name, ch.Points)
+			if diff := cmp.Diff(test.want, ch); diff != "" {
+				t.Errorf("ConvexHull2DFromPoints(%v) produced incorrect convex hull (-want, +got):\n%s", test.points, diff)
 			}
 		})
 	}
 }
 
-func TestPoint(t *testing.T) {
+func TestBetween(t *testing.T) {
 	for _, test := range []struct {
 		name string
-		p    *Point
-		by   *Point
-		rots []Rotation
-		want *Point
+		p    *Point2D[int]
+		p2   *Point2D[int]
+		q    *Point2D[int]
+		want bool
 	}{
 		{
-			name: "one x rotation",
-			p:    NewPoint(1, 2, 3),
-			rots: []Rotation{
-				XRot,
-			},
-			want: NewPoint(1, 3, -2),
+			name: "all the same point",
+			p:    New2D(1, 2),
+			q:    New2D(1, 2),
+			p2:   New2D(1, 2),
+			want: true,
 		},
 		{
-			name: "two x rotations",
-			p:    NewPoint(1, 2, 3),
-			rots: []Rotation{
-				XRot,
-				XRot,
-			},
-			want: NewPoint(1, -2, -3),
+			name: "p and p2 the same point",
+			p:    New2D(1, 2),
+			q:    New2D(3, 4),
+			p2:   New2D(1, 2),
 		},
 		{
-			name: "three x rotations",
-			p:    NewPoint(1, 2, 3),
-			rots: []Rotation{
-				XRot,
-				XRot,
-				XRot,
-			},
-			want: NewPoint(1, -3, 2),
+			name: "p and q the same point",
+			p:    New2D(1, 2),
+			q:    New2D(1, 2),
+			p2:   New2D(3, 4),
+			want: true,
 		},
 		{
-			name: "four x rotations",
-			p:    NewPoint(1, 2, 3),
-			rots: []Rotation{
-				XRot,
-				XRot,
-				XRot,
-				XRot,
-			},
-			want: NewPoint(1, 2, 3),
+			name: "p2 and q the same point",
+			p:    New2D(1, 2),
+			q:    New2D(3, 4),
+			p2:   New2D(3, 4),
+			want: true,
 		},
 		{
-			name: "one y rotation",
-			p:    NewPoint(1, 2, 3),
-			rots: []Rotation{
-				YRot,
-			},
-			want: NewPoint(-3, 2, 1),
+			name: "q is betwen p and p2",
+			p:    New2D(1, 2),
+			q:    New2D(2, 3),
+			p2:   New2D(3, 4),
+			want: true,
 		},
 		{
-			name: "two y rotations",
-			p:    NewPoint(1, 2, 3),
-			rots: []Rotation{
-				YRot,
-				YRot,
-			},
-			want: NewPoint(-1, 2, -3),
+			name: "q is not betwen p and p2",
+			p:    New2D(1, 2),
+			q:    New2D(3, 4),
+			p2:   New2D(3, 3),
 		},
 		{
-			name: "three y rotations",
-			p:    NewPoint(1, 2, 3),
-			rots: []Rotation{
-				YRot,
-				YRot,
-				YRot,
-			},
-			want: NewPoint(3, 2, -1),
+			name: "q is the origin and is betwen p and p2",
+			p:    New2D(-7, 5),
+			q:    New2D(0, 0),
+			p2:   New2D(7, -5),
+			want: true,
 		},
 		{
-			name: "four y rotations",
-			p:    NewPoint(1, 2, 3),
-			rots: []Rotation{
-				YRot,
-				YRot,
-				YRot,
-				YRot,
-			},
-			want: NewPoint(1, 2, 3),
+			name: "q is the origin and is betwen p and p2",
+			p:    New2D(-7, 5),
+			q:    New2D(0, 0),
+			p2:   New2D(7, -6),
 		},
-		{
-			name: "one z rotation",
-			p:    NewPoint(1, 2, 3),
-			rots: []Rotation{
-				ZRot,
-			},
-			want: NewPoint(2, -1, 3),
-		},
-		{
-			name: "two z rotations",
-			p:    NewPoint(1, 2, 3),
-			rots: []Rotation{
-				ZRot,
-				ZRot,
-			},
-			want: NewPoint(-1, -2, 3),
-		},
-		{
-			name: "three z rotations",
-			p:    NewPoint(1, 2, 3),
-			rots: []Rotation{
-				ZRot,
-				ZRot,
-				ZRot,
-			},
-			want: NewPoint(-2, 1, 3),
-		},
-		{
-			name: "four z rotations",
-			p:    NewPoint(1, 2, 3),
-			rots: []Rotation{
-				ZRot,
-				ZRot,
-				ZRot,
-			},
-			want: NewPoint(-2, 1, 3),
-		},
-		// Rotate by a point
-		{
-			name: "one x rotation by",
-			p:    NewPoint(3, 12, 20),
-			by:   NewPoint(29, 11, 17),
-			rots: []Rotation{
-				XRot,
-			},
-			want: NewPoint(3, 14, 16),
-		},
-		{
-			name: "two x rotations by",
-			p:    NewPoint(3, 12, 20),
-			by:   NewPoint(29, 11, 17),
-			rots: []Rotation{
-				XRot,
-				XRot,
-			},
-			want: NewPoint(3, 10, 14),
-		},
-		{
-			name: "three x rotations by",
-			p:    NewPoint(3, 12, 20),
-			by:   NewPoint(29, 11, 17),
-			rots: []Rotation{
-				XRot,
-				XRot,
-				XRot,
-			},
-			want: NewPoint(3, 8, 18),
-		},
-		{
-			name: "four x rotations by",
-			p:    NewPoint(3, 12, 20),
-			by:   NewPoint(29, 11, 17),
-			rots: []Rotation{
-				XRot,
-				XRot,
-				XRot,
-				XRot,
-			},
-			want: NewPoint(3, 12, 20),
-		},
-		{
-			name: "one y rotation by",
-			p:    NewPoint(3, 12, 20),
-			by:   NewPoint(29, 11, 17),
-			rots: []Rotation{
-				YRot,
-			},
-			want: NewPoint(26, 12, -9),
-		},
-		{
-			name: "two y rotations by",
-			p:    NewPoint(3, 12, 20),
-			by:   NewPoint(29, 11, 17),
-			rots: []Rotation{
-				YRot,
-				YRot,
-			},
-			want: NewPoint(55, 12, 14),
-		},
-		{
-			name: "three y rotations by",
-			p:    NewPoint(3, 12, 20),
-			by:   NewPoint(29, 11, 17),
-			rots: []Rotation{
-				YRot,
-				YRot,
-				YRot,
-			},
-			want: NewPoint(32, 12, 43),
-		},
-		{
-			name: "four y rotations by",
-			p:    NewPoint(3, 12, 20),
-			by:   NewPoint(29, 11, 17),
-			rots: []Rotation{
-				YRot,
-				YRot,
-				YRot,
-				YRot,
-			},
-			want: NewPoint(3, 12, 20),
-		},
-		{
-			name: "one z rotation by",
-			p:    NewPoint(3, 12, 20),
-			by:   NewPoint(29, 11, 17),
-			rots: []Rotation{
-				ZRot,
-			},
-			want: NewPoint(30, 37, 20),
-		},
-		{
-			name: "two z rotations by",
-			p:    NewPoint(3, 12, 20),
-			by:   NewPoint(29, 11, 17),
-			rots: []Rotation{
-				ZRot,
-				ZRot,
-			},
-			want: NewPoint(55, 10, 20),
-		},
-		{
-			name: "three z rotations by",
-			p:    NewPoint(3, 12, 20),
-			by:   NewPoint(29, 11, 17),
-			rots: []Rotation{
-				ZRot,
-				ZRot,
-				ZRot,
-			},
-			want: NewPoint(28, -15, 20),
-		},
-		{
-			name: "four z rotations by",
-			p:    NewPoint(3, 12, 20),
-			by:   NewPoint(29, 11, 17),
-			rots: []Rotation{
-				ZRot,
-				ZRot,
-				ZRot,
-				ZRot,
-			},
-			want: NewPoint(3, 12, 20),
-		},
-		/* Useful for commenting out tests */
+		/* Useful for commenting out tests. */
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			if test.by == nil {
-				test.by = NewPoint(0, 0, 0)
-			}
-			if diff := cmp.Diff(test.want, test.p.Rotate(test.by.X, test.by.Y, test.by.Z, test.rots...)); diff != "" {
-				t.Errorf("Point operation returned incorrect point (-want, +got):\n%s", diff)
-			}
-		})
-	}
-}
-
-func TestRotFuncs(t *testing.T) {
-	for _, test := range []struct {
-		name string
-		p    *Point
-		by   *Point
-		want []*Point
-	}{
-		{
-			name: "Rotates in all directions",
-			p:    NewPoint(1, 2, 3),
-			by:   NewPoint(0, 0, 0),
-			want: []*Point{
-				// Rotate around X axis
-				NewPoint(1, 2, 3),
-				NewPoint(1, 3, -2),
-				NewPoint(1, -2, -3),
-				NewPoint(1, -3, 2),
-
-				// Rotate around negative X axis
-				NewPoint(-1, 2, -3),
-				NewPoint(-1, -3, -2),
-				NewPoint(-1, -2, 3),
-				NewPoint(-1, 3, 2),
-
-				// Rotate around Y axis
-				NewPoint(2, -1, 3),
-				NewPoint(-3, -1, 2),
-				NewPoint(-2, -1, -3),
-				NewPoint(3, -1, -2),
-
-				// Rotate around negative Y axis
-				NewPoint(-2, 1, 3),
-				NewPoint(-3, 1, -2),
-				NewPoint(2, 1, -3),
-				NewPoint(3, 1, 2),
-
-				// Rotate around Z axis
-				NewPoint(-3, 2, 1),
-				NewPoint(2, 3, 1),
-				NewPoint(3, -2, 1),
-				NewPoint(-2, -3, 1),
-
-				// Rotate around negative Z axis
-				NewPoint(3, 2, -1),
-				NewPoint(2, -3, -1),
-				NewPoint(-3, -2, -1),
-				NewPoint(-2, 3, -1),
-			},
-		},
-	} {
-		t.Run(test.name, func(t *testing.T) {
-			var got []*Point
-			for _, f := range RotFuncsByPoint(test.by) {
-				got = append(got, f(test.p.Copy()))
-			}
-			if diff := cmp.Diff(test.want, got); diff != "" {
-				t.Errorf("RotFuncsByPoint() returned incorrect points (-want, +got):\n%s", diff)
+			if got := test.p.Between(test.q, test.p2); got != test.want {
+				t.Errorf("%v.Between(%v, %v) returned %v; want %v", test.p, test.q, test.p2, got, test.want)
 			}
 		})
 	}

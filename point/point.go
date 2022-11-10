@@ -4,154 +4,132 @@ import (
 	"fmt"
 
 	"github.com/leep-frog/euler_challenge/maths"
+	"golang.org/x/exp/slices"
 )
 
-// TODO: let this be generic type
-type Point struct {
-	X, Y, Z int
+type Triangle[T maths.Mathable] struct {
+	a, b, c *Point[T]
 }
 
-func Origin() *Point {
-	return New(0, 0, 0)
+func Origin[T maths.Mathable]() *Point[T] {
+	return New[T](0, 0)
 }
 
-func New(x, y, z int) *Point {
-	return &Point{x, y, z}
+func NewTriangle[T maths.Mathable](a, b, c *Point[T]) *Triangle[T] {
+	ps := []*Point[T]{a, b, c}
+	slices.SortFunc(ps, func(this, that *Point[T]) bool {
+		if this.X != that.X {
+			return this.X < that.X
+		}
+		return this.Y < that.Y
+	})
+	return &Triangle[T]{ps[0], ps[1], ps[2]}
 }
 
-func rotateFunc(x, y, z int, rs ...Rotation) func(*Point) *Point {
-	return func(p *Point) *Point {
-		return p.Rotate(x, y, z, rs...)
-	}
+func (t *Triangle[T]) Contains(p *Point[T]) bool {
+	ch := &ConvexHull[T]{[]*Point[T]{t.a, t.b, t.c}}
+	return ch.Contains(p)
 }
 
-func (p *Point) Code() string {
-	return p.String()
+func (t *Triangle[T]) String() string {
+	return fmt.Sprintf("[%v, %v, %v]", t.a, t.b, t.c)
 }
 
-func (p *Point) Minus(s *Point) *Point {
-	return New(p.X-s.X, p.Y-s.Y, p.Z-s.Z)
+type Point[T maths.Mathable] struct {
+	X T
+	Y T
 }
 
-func (p *Point) Cross(s *Point) *Point {
-	iMatrix := [][]int{
-		{p.Y, p.Z},
-		{s.Y, s.Z},
-	}
-	jMatrix := [][]int{
-		{p.X, p.Z},
-		{s.X, s.Z},
-	}
-	kMatrix := [][]int{
-		{p.X, p.Y},
-		{s.X, s.Y},
-	}
-
-	return &Point{
-		int(maths.Determinant(maths.BiggifyIntMatrix(iMatrix)).Num().Int64()),
-		-int(maths.Determinant(maths.BiggifyIntMatrix(jMatrix)).Num().Int64()),
-		int(maths.Determinant(maths.BiggifyIntMatrix(kMatrix)).Num().Int64()),
-	}
+func (p *Point[T]) String() string {
+	return fmt.Sprintf("(%v, %v)", p.X, p.Y)
 }
 
-func RotFuncsByPoint(p *Point) []func(*Point) *Point {
-	return RotFuncs(p.X, p.Y, p.Z)
+func New[T maths.Mathable](x, y T) *Point[T] {
+	return &Point[T]{x, y}
 }
 
-func RotFuncs(x, y, z int) []func(*Point) *Point {
-	return []func(*Point) *Point{
-		// Rotate around X axis
-		rotateFunc(x, y, z),
-		rotateFunc(x, y, z, XRot),
-		rotateFunc(x, y, z, XRot, XRot),
-		rotateFunc(x, y, z, XRot, XRot, XRot),
-
-		// Rotate around negative X axis
-		rotateFunc(x, y, z, YRot, YRot),
-		rotateFunc(x, y, z, YRot, YRot, XRot),
-		rotateFunc(x, y, z, YRot, YRot, XRot, XRot),
-		rotateFunc(x, y, z, YRot, YRot, XRot, XRot, XRot),
-
-		// Face Y axis and rotate around
-		rotateFunc(x, y, z, ZRot),
-		rotateFunc(x, y, z, ZRot, YRot),
-		rotateFunc(x, y, z, ZRot, YRot, YRot),
-		rotateFunc(x, y, z, ZRot, YRot, YRot, YRot),
-
-		// Face negative Y axis and rotate around
-		rotateFunc(x, y, z, ZRot, ZRot, ZRot),
-		rotateFunc(x, y, z, ZRot, ZRot, ZRot, YRot),
-		rotateFunc(x, y, z, ZRot, ZRot, ZRot, YRot, YRot),
-		rotateFunc(x, y, z, ZRot, ZRot, ZRot, YRot, YRot, YRot),
-
-		// Face Z axis and rotate around
-		rotateFunc(x, y, z, YRot),
-		rotateFunc(x, y, z, YRot, ZRot),
-		rotateFunc(x, y, z, YRot, ZRot, ZRot),
-		rotateFunc(x, y, z, YRot, ZRot, ZRot, ZRot),
-
-		// Face negative Y axis and rotate around
-		rotateFunc(x, y, z, YRot, YRot, YRot),
-		rotateFunc(x, y, z, YRot, YRot, YRot, ZRot),
-		rotateFunc(x, y, z, YRot, YRot, YRot, ZRot, ZRot),
-		rotateFunc(x, y, z, YRot, YRot, YRot, ZRot, ZRot, ZRot),
-	}
+func (p *Point[T]) Eq(that *Point[T]) bool {
+	return p.X == that.X && p.Y == that.Y
 }
 
-func (p *Point) Offset(x, y, z int) *Point {
-	p.X += x
-	p.Y += y
-	p.Z += z
-	return p
-}
-
-func (p *Point) String() string {
-	return fmt.Sprintf("%d,%d,%d", p.X, p.Y, p.Z)
-}
-
-func NewPoint(x, y, z int) *Point {
-	return &Point{x, y, z}
-}
-
-func (p *Point) RotateX(x, y, z int) *Point {
-	return NewPoint(p.X, y+(p.Z-z), z+(y-p.Y))
-}
-
-func (p *Point) RotateY(x, y, z int) *Point {
-	return NewPoint(x+(z-p.Z), p.Y, z+(p.X-x))
-}
-
-func (p *Point) RotateZ(x, y, z int) *Point {
-	return NewPoint(x+(p.Y-y), y+(x-p.X), p.Z)
-}
-
-func (p *Point) Copy() *Point {
-	return &Point{p.X, p.Y, p.Z}
-}
-
-func (p *Point) Rotate(x, y, z int, rs ...Rotation) *Point {
-	if len(rs) == 0 {
-		return p.Copy()
+// Returns true if q is between p and p2
+func (p *Point[T]) Between(q, p2 *Point[T]) bool {
+	if p.Eq(q) || p2.Eq(q) {
+		return true
 	}
 
-	ret := p
-	for _, r := range rs {
-		switch r {
-		case XRot:
-			ret = ret.RotateX(x, y, z)
-		case YRot:
-			ret = ret.RotateY(x, y, z)
-		case ZRot:
-			ret = ret.RotateZ(x, y, z)
+	if p.HalfPlane(p2, q) != 0 {
+		return false
+	}
+
+	// Now verify it's between them by verifying it's inside the box of
+	// (minX, minY), (maxX, maxY)
+	minX := maths.Min(p.X, p2.X)
+	maxX := maths.Max(p.X, p2.X)
+	minY := maths.Min(p.Y, p2.Y)
+	maxY := maths.Max(p.Y, p2.Y)
+	return q.X >= minX && q.X <= maxX && q.Y >= minY && q.Y <= maxY
+}
+
+type ConvexHull[T maths.Mathable] struct {
+	Points []*Point[T]
+}
+
+func (ch *ConvexHull[T]) Contains(p *Point[T]) bool {
+	sign := ch.Points[0].HalfPlane(ch.Points[1], p) > 0
+	for i := 1; i < len(ch.Points); i++ {
+		s := ch.Points[i].HalfPlane(ch.Points[(i+1)%len(ch.Points)], p)
+		// s is zero if it's on the line.
+		if (s > 0) != sign && s != 0 {
+			return false
 		}
 	}
-	return ret
+	return true
 }
 
-type Rotation int
+func (p *Point[T]) Minus(that *Point[T]) *Point[T] {
+	return New(p.X-that.X, p.Y-that.Y)
+}
 
-const (
-	XRot Rotation = iota
-	YRot
-	ZRot
-)
+func (p *Point[T]) Cross(that *Point[T]) T {
+	return p.X*that.Y - p.Y*that.X
+}
+
+func (p *Point[T]) HalfPlane(p2, p3 *Point[T]) T {
+	return p2.Minus(p).Cross(p2.Minus(p3))
+}
+
+// Returns a sorted thing of points
+func ConvexHullFromPoints[T maths.Mathable](points ...*Point[T]) *ConvexHull[T] {
+	if len(points) < 3 {
+		panic("Need at least 3 points to compute the convex hull")
+	}
+
+	// Sort by *ascending* Y coordinate for the bottom hull.
+	slices.SortFunc(points, func(this, that *Point[T]) bool {
+		if this.X != that.X {
+			return this.X < that.X
+		}
+		return this.Y > that.Y
+	})
+
+	var top []*Point[T]
+	for _, p := range points {
+		// Sort upper hull
+		for (len(top) > 0 && top[len(top)-1].Eq(p)) || (len(top) >= 2 && p.HalfPlane(top[len(top)-1], top[len(top)-2]) <= 0) {
+			top = top[:len(top)-1]
+		}
+		top = append(top, p)
+	}
+
+	var bottom []*Point[T]
+	for _, p := range points {
+		// Sort upper hull
+		for (len(bottom) > 0 && bottom[len(bottom)-1].Eq(p)) || (len(bottom) >= 2 && p.HalfPlane(bottom[len(bottom)-1], bottom[len(bottom)-2]) >= 0) {
+			bottom = bottom[:len(bottom)-1]
+		}
+		bottom = append(bottom, p)
+	}
+
+	return &ConvexHull[T]{append(top, maths.Reverse(bottom)[1:len(bottom)-1]...)}
+}
