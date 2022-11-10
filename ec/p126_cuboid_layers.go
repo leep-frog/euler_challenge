@@ -57,7 +57,7 @@ func P126() *problem {
 
 					var counts []int
 					//count := 2 * (a*b + a*c + b*c)
-					set := maths.NewSet[*point.Point]()
+					set := maths.NewSet[*point.Point3D]()
 
 					for x := 1; x <= a; x++ {
 						for y := 1; y <= b; y++ {
@@ -67,8 +67,8 @@ func P126() *problem {
 						}
 					}
 
-					exposedSet := maths.NewSet[*point.Point]()
-					set.For(func(p *point.Point) bool {
+					exposedSet := maths.NewSet[*point.Point3D]()
+					set.For(func(p *point.Point3D) bool {
 						exposedSet.Add(p)
 						return false
 					})
@@ -76,9 +76,9 @@ func P126() *problem {
 					//C[set.Len()]++
 					//counts = append(counts, set.Len())
 					for exposedSet.Len() < maxValue {
-						newExposed := maths.NewSet[*point.Point]()
-						exposedSet.For(func(p *point.Point) bool {
-							neighbors := []*point.Point{
+						newExposed := maths.NewSet[*point.Point3D]()
+						exposedSet.For(func(p *point.Point3D) bool {
+							neighbors := []*point.Point3D{
 								point.NewPoint(p.X+1, p.Y, p.Z),
 								point.NewPoint(p.X-1, p.Y, p.Z),
 								point.NewPoint(p.X, p.Y-1, p.Z),
@@ -94,7 +94,7 @@ func P126() *problem {
 							return false
 						})
 
-						newExposed.For(func(p *point.Point) bool {
+						newExposed.For(func(p *point.Point3D) bool {
 							set.Add(p)
 							return false
 						})

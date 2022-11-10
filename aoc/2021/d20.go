@@ -175,16 +175,16 @@ func printScanners(scanners []*Scanner) {
 }
 
 type Scanner struct {
-	loc    *point.Point
-	points []*point.Point
+	loc    *point.Point3D
+	points []*point.Point3D
 	hasMap map[int]map[int]map[int]bool
 }
 
-func (s *Scanner) Has(p *point.Point) bool {
+func (s *Scanner) Has(p *point.Point3D) bool {
 	return s.hasMap[p.X][p.Y][p.Z]
 }
 
-func (s *Scanner) Shift(offsetX, offsetY, offsetZ int, rotFunc func(*point.Point) *point.Point) {
+func (s *Scanner) Shift(offsetX, offsetY, offsetZ int, rotFunc func(*point.Point3D) *point.Point3D) {
 	newS := &Scanner{}
 	for _, p := range s.points {
 		newS.AppendPoint(rotFunc(p.Copy().Offset(offsetX, offsetY, offsetZ)))
@@ -198,7 +198,7 @@ func (s *Scanner) Append(r []int) {
 	s.AppendPoint(point.NewPoint(r[0], r[1], r[2]))
 }
 
-func (s *Scanner) AppendPoint(p *point.Point) {
+func (s *Scanner) AppendPoint(p *point.Point3D) {
 	if s.hasMap[p.X][p.Y][p.Z] {
 		return
 	}

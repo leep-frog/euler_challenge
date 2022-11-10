@@ -8,148 +8,148 @@ import (
 )
 
 func TestConvexHull(t *testing.T) {
-	permutatedCH := &ConvexHull2D[int]{
-		[]*Point2D[int]{
-			New2D(-2, 4),
-			New2D(5, -7),
-			New2D(1, 2),
+	permutatedCH := &ConvexHull[int]{
+		[]*Point[int]{
+			New(-2, 4),
+			New(5, -7),
+			New(1, 2),
 		},
 	}
 
-	squareCH := &ConvexHull2D[int]{
-		[]*Point2D[int]{
-			New2D(-2, 2),
-			New2D(-2, -2),
-			New2D(2, -2),
-			New2D(2, 2),
+	squareCH := &ConvexHull[int]{
+		[]*Point[int]{
+			New(-2, 2),
+			New(-2, -2),
+			New(2, -2),
+			New(2, 2),
 		},
 	}
 
 	for _, test := range []struct {
 		name   string
-		points []*Point2D[int]
-		want   *ConvexHull2D[int]
+		points []*Point[int]
+		want   *ConvexHull[int]
 	}{
 		{
 			name: "Permutation 1",
-			points: []*Point2D[int]{
-				New2D(1, 2),
-				New2D(5, -7),
-				New2D(-2, 4),
+			points: []*Point[int]{
+				New(1, 2),
+				New(5, -7),
+				New(-2, 4),
 			},
 			want: permutatedCH,
 		},
 		{
 			name: "Permutation 2",
-			points: []*Point2D[int]{
-				New2D(1, 2),
-				New2D(-2, 4),
-				New2D(5, -7),
+			points: []*Point[int]{
+				New(1, 2),
+				New(-2, 4),
+				New(5, -7),
 			},
 			want: permutatedCH,
 		},
 		{
 			name: "Permutation 3",
-			points: []*Point2D[int]{
-				New2D(5, -7),
-				New2D(1, 2),
-				New2D(-2, 4),
+			points: []*Point[int]{
+				New(5, -7),
+				New(1, 2),
+				New(-2, 4),
 			},
 			want: permutatedCH,
 		},
 		{
 			name: "Permutation 4",
-			points: []*Point2D[int]{
-				New2D(5, -7),
-				New2D(-2, 4),
-				New2D(1, 2),
+			points: []*Point[int]{
+				New(5, -7),
+				New(-2, 4),
+				New(1, 2),
 			},
 			want: permutatedCH,
 		},
 		{
 			name: "Permutation 5",
-			points: []*Point2D[int]{
-				New2D(-2, 4),
-				New2D(1, 2),
-				New2D(5, -7),
+			points: []*Point[int]{
+				New(-2, 4),
+				New(1, 2),
+				New(5, -7),
 			},
 			want: permutatedCH,
 		},
 		{
 			name: "Permutation 1",
-			points: []*Point2D[int]{
-				New2D(-2, 4),
-				New2D(5, -7),
-				New2D(1, 2),
+			points: []*Point[int]{
+				New(-2, 4),
+				New(5, -7),
+				New(1, 2),
 			},
 			want: permutatedCH,
 		},
 		{
 			name: "Duplicate points",
-			points: []*Point2D[int]{
-				New2D(-2, 4),
-				New2D(-2, 4),
-				New2D(-2, 4),
-				New2D(5, -7),
-				New2D(1, 2),
-				New2D(1, 2),
+			points: []*Point[int]{
+				New(-2, 4),
+				New(-2, 4),
+				New(-2, 4),
+				New(5, -7),
+				New(1, 2),
+				New(1, 2),
 			},
 			want: permutatedCH,
 		},
 		{
 			name: "Square",
-			points: []*Point2D[int]{
-				New2D(-2, 2),
-				New2D(-2, -2),
-				New2D(2, 2),
-				New2D(2, -2),
+			points: []*Point[int]{
+				New(-2, 2),
+				New(-2, -2),
+				New(2, 2),
+				New(2, -2),
 			},
 			want: squareCH,
 		},
 		{
 			name: "Square with points on lines",
-			points: []*Point2D[int]{
-				New2D(-2, 2),
-				New2D(-2, -2),
-				New2D(2, 2),
-				New2D(2, -2),
+			points: []*Point[int]{
+				New(-2, 2),
+				New(-2, -2),
+				New(2, 2),
+				New(2, -2),
 				// Points on lines
-				New2D(2, 0),
-				New2D(-2, 0),
-				New2D(0, 2),
-				New2D(0, -2),
+				New(2, 0),
+				New(-2, 0),
+				New(0, 2),
+				New(0, -2),
 			},
 			want: squareCH,
 		},
 		{
 			name: "Square with points in the middle",
-			points: []*Point2D[int]{
-				New2D(-2, 2),
-				New2D(-2, -2),
-				New2D(2, 2),
-				New2D(2, -2),
+			points: []*Point[int]{
+				New(-2, 2),
+				New(-2, -2),
+				New(2, 2),
+				New(2, -2),
 				// Points on lines
-				New2D(2, -1),
-				New2D(2, 0),
-				New2D(2, 1),
-				New2D(-2, 0),
-				New2D(0, 2),
-				New2D(0, -2),
+				New(2, -1),
+				New(2, 0),
+				New(2, 1),
+				New(-2, 0),
+				New(0, 2),
+				New(0, -2),
 				// Points in the middle
-				New2D(0, 0),
-				New2D(1, 1),
-				New2D(1, -1),
-				New2D(-1, 1),
-				New2D(-1, -1),
+				New(0, 0),
+				New(1, 1),
+				New(1, -1),
+				New(-1, 1),
+				New(-1, -1),
 			},
 			want: squareCH,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			ch := ConvexHull2DFromPoints(test.points...)
+			ch := ConvexHullFromPoints(test.points...)
 			fmt.Println(test.name, ch.Points)
 			if diff := cmp.Diff(test.want, ch); diff != "" {
-				t.Errorf("ConvexHull2DFromPoints(%v) produced incorrect convex hull (-want, +got):\n%s", test.points, diff)
+				t.Errorf("ConvexHullFromPoints(%v) produced incorrect convex hull (-want, +got):\n%s", test.points, diff)
 			}
 		})
 	}
@@ -158,63 +158,63 @@ func TestConvexHull(t *testing.T) {
 func TestBetween(t *testing.T) {
 	for _, test := range []struct {
 		name string
-		p    *Point2D[int]
-		p2   *Point2D[int]
-		q    *Point2D[int]
+		p    *Point[int]
+		p2   *Point[int]
+		q    *Point[int]
 		want bool
 	}{
 		{
 			name: "all the same point",
-			p:    New2D(1, 2),
-			q:    New2D(1, 2),
-			p2:   New2D(1, 2),
+			p:    New(1, 2),
+			q:    New(1, 2),
+			p2:   New(1, 2),
 			want: true,
 		},
 		{
 			name: "p and p2 the same point",
-			p:    New2D(1, 2),
-			q:    New2D(3, 4),
-			p2:   New2D(1, 2),
+			p:    New(1, 2),
+			q:    New(3, 4),
+			p2:   New(1, 2),
 		},
 		{
 			name: "p and q the same point",
-			p:    New2D(1, 2),
-			q:    New2D(1, 2),
-			p2:   New2D(3, 4),
+			p:    New(1, 2),
+			q:    New(1, 2),
+			p2:   New(3, 4),
 			want: true,
 		},
 		{
 			name: "p2 and q the same point",
-			p:    New2D(1, 2),
-			q:    New2D(3, 4),
-			p2:   New2D(3, 4),
+			p:    New(1, 2),
+			q:    New(3, 4),
+			p2:   New(3, 4),
 			want: true,
 		},
 		{
 			name: "q is betwen p and p2",
-			p:    New2D(1, 2),
-			q:    New2D(2, 3),
-			p2:   New2D(3, 4),
+			p:    New(1, 2),
+			q:    New(2, 3),
+			p2:   New(3, 4),
 			want: true,
 		},
 		{
 			name: "q is not betwen p and p2",
-			p:    New2D(1, 2),
-			q:    New2D(3, 4),
-			p2:   New2D(3, 3),
+			p:    New(1, 2),
+			q:    New(3, 4),
+			p2:   New(3, 3),
 		},
 		{
 			name: "q is the origin and is betwen p and p2",
-			p:    New2D(-7, 5),
-			q:    New2D(0, 0),
-			p2:   New2D(7, -5),
+			p:    New(-7, 5),
+			q:    New(0, 0),
+			p2:   New(7, -5),
 			want: true,
 		},
 		{
 			name: "q is the origin and is betwen p and p2",
-			p:    New2D(-7, 5),
-			q:    New2D(0, 0),
-			p2:   New2D(7, -6),
+			p:    New(-7, 5),
+			q:    New(0, 0),
+			p2:   New(7, -6),
 		},
 		/* Useful for commenting out tests. */
 	} {

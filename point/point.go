@@ -5,10 +5,55 @@ import (
 
 	"github.com/leep-frog/euler_challenge/maths"
 	"golang.org/x/exp/slices"
+	"gonum.org/v1/plot/plotter"
 )
+
+type Points[T maths.Mathable] []*Point[T]
+
+func (pts Points[T]) Plot(p *Plot) ([]Plottable, error) {
+	var plt []Plottable
+	for _, p := range pts {
+		plt = append(plt, p)
+	}
+	return plt, nil
+}
+
+func eh() {
+	k := []*Point[int]{}
+	CreatePlot("", 1, 2, Points[int](k))
+}
 
 type Triangle[T maths.Mathable] struct {
 	a, b, c *Point[T]
+}
+
+type LineSegment[T maths.Mathable] struct {
+	a, b *Point[T]
+}
+
+func NewLineSegment[T maths.Mathable](a, b *Point[T]) *LineSegment[T] {
+	return &LineSegment[T]{a, b}
+}
+
+func (t *LineSegment[T]) Plot(p *Plot) ([]Plottable, error) {
+	ab, err := plotter.NewLine(plotter.XYs{
+		{X: float64(t.a.X), Y: float64(t.a.Y)},
+		{X: float64(t.b.X), Y: float64(t.b.Y)},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to plot line segment: %v", err)
+	}
+	p.P.Add(ab)
+	return nil, nil
+}
+
+func (t *Triangle[T]) Plot(p *Plot) ([]Plottable, error) {
+	return []Plottable{
+		t.a, t.b, t.c,
+		NewLineSegment(t.a, t.b),
+		NewLineSegment(t.b, t.c),
+		NewLineSegment(t.c, t.a),
+	}, nil
 }
 
 func Origin[T maths.Mathable]() *Point[T] {
@@ -46,6 +91,17 @@ func (p *Point[T]) String() string {
 
 func New[T maths.Mathable](x, y T) *Point[T] {
 	return &Point[T]{x, y}
+}
+
+func (p *Point[T]) Plot(plt *Plot) ([]Plottable, error) {
+	sc, err := plotter.NewScatter(plotter.XYs{
+		plotter.XY{X: float64(p.X), Y: float64(p.Y)},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to plot point: %v", err)
+	}
+	plt.P.Add(sc)
+	return nil, nil
 }
 
 func (p *Point[T]) Eq(that *Point[T]) bool {
