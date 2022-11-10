@@ -10,7 +10,7 @@ import (
 func P252() *problem {
 	return intInputNode(252, func(o command.Output, n int) {
 		pts := generatePoints252(n)
-		point.CreatePlot(fmt.Sprintf("two52-%d.png", n), 800, 800, pts)
+		point.CreatePlot(fmt.Sprintf("252-%d.png", n), 800, 800, pts)
 		o.Stdoutln(n)
 	}, []*execution{
 		{
