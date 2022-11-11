@@ -3,12 +3,44 @@ package point
 import (
 	"fmt"
 
+	"github.com/leep-frog/euler_challenge/maths"
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/font"
 )
 
 type Plot struct {
 	P *plot.Plot
+}
+
+type MultiPlottable struct {
+	Plottables []Plottable
+}
+
+func (mp *MultiPlottable) Plot(p *Plot) ([]Plottable, error) {
+	var r []Plottable
+	for _, mpp := range mp.Plottables {
+		ps, err := mpp.Plot(p)
+		if err != nil {
+			return nil, err
+		}
+		r = append(r, ps...)
+	}
+	return r, nil
+}
+
+func Axes[T maths.Mathable](min, max T) Plottable {
+	return &MultiPlottable{[]Plottable{
+		XAxis(min, max),
+		YAxis(min, max),
+	}}
+}
+
+func XAxis[T maths.Mathable](minX, maxX T) Plottable {
+	return NewLineSegment(New(minX, 0), New(maxX, 0))
+}
+
+func YAxis[T maths.Mathable](minY, maxY T) Plottable {
+	return NewLineSegment(New(0, minY), New(0, maxY))
 }
 
 func CreatePlot(name string, width, height font.Length, plottables ...Plottable) error {

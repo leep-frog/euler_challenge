@@ -1,5 +1,7 @@
 package maths
 
+import "fmt"
+
 func Smallest[I any, T Mathable]() *Bester[I, T] {
 	return &Bester[I, T]{
 		better: func(i, j T) bool {
@@ -19,7 +21,7 @@ func Largest[I any, T Mathable]() *Bester[I, T] {
 func Closest[I any, T Mathable](center T) *Bester[I, T] {
 	return &Bester[I, T]{
 		better: func(i, j T) bool {
-			return Abs(center - i) < Abs(center - j)
+			return Abs(center-i) < Abs(center-j)
 		},
 	}
 }
@@ -43,6 +45,13 @@ type Bester[I, T any] struct {
 	bestI  I
 
 	set bool
+}
+
+func (b *Bester[I, T]) String() string {
+	if !b.set {
+		return "{}"
+	}
+	return fmt.Sprintf("{Best: %v, Index: %v}", b.best, b.bestI)
 }
 
 func (b *Bester[I, T]) Best() T {

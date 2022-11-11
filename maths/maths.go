@@ -480,9 +480,9 @@ func (i *Int) Palindrome() bool {
 	return true
 }
 
-// TODO: separate package for this
+// TODO: separate package for this and other common types/helpers
 type Mappable interface {
-	Code() string
+	Code() string // TODO Change to Hash
 }
 
 type Map[K Mappable, V any] struct {
@@ -587,6 +587,12 @@ func (s *Set[K]) For(f func(K) bool) {
 }
 
 func (s *Set[K]) Add(k K) {
+	if s == nil {
+		fmt.Println("NOOO1")
+	}
+	if s.m == nil {
+		fmt.Println("NOOO2")
+	}
 	s.m.Set(k, true)
 }
 
@@ -1180,6 +1186,13 @@ func Insert[K1, K2 comparable, V any](m map[K1]map[K2]V, k1 K1, k2 K2, v V) {
 		m[k1] = map[K2]V{}
 	}
 	m[k1][k2] = v
+}
+
+func InsertAppend[K1, K2 comparable, V any](m map[K1]map[K2][]V, k1 K1, k2 K2, v V) {
+	if m[k1] == nil {
+		m[k1] = map[K2][]V{}
+	}
+	m[k1][k2] = append(m[k1][k2], v)
 }
 
 func DeepInsert[K1, K2, K3 comparable, V any](m map[K1]map[K2]map[K3]V, k1 K1, k2 K2, k3 K3, v V) {

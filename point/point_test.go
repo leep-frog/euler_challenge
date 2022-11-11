@@ -2,10 +2,82 @@ package point
 
 import (
 	"fmt"
+	"math"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 )
+
+func TestDist(t *testing.T) {
+	for _, test := range []struct {
+		name string
+		a    *Point[int]
+		b    *Point[int]
+		want float64
+	}{
+		{
+			name: "same point",
+			a:    New(4, 5),
+			b:    New(4, 5),
+			want: 0,
+		},
+		{
+			name: "point and the origin",
+			a:    New(3, 4),
+			b:    Origin[int](),
+			want: 5.0,
+		},
+		{
+			name: "offset points (linear offset of previous test)",
+			a:    New(3, 4),
+			b:    New(6, 8),
+			want: 5.0,
+		},
+		{
+			name: "same",
+			a:    New(11, 11),
+			b:    Origin[int](),
+			// If 11 is on the outside, then precision is slightly off
+			want: math.Sqrt(11 * 11 * 2.0),
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			if got := test.a.Dist(test.b); got != test.want {
+				t.Errorf("%v.Dist(%v) returned %.2f; want %.2f", test.a, test.b, got, test.want)
+			}
+
+			ab, ba := test.a.Dist(test.b), test.b.Dist(test.a)
+			if ab != ba {
+				t.Errorf("%v.Dist(%v) returned %.2f, but %v.Dist(%v) returned %.2f", test.a, test.b, ab, test.b, test.a, ba)
+			}
+		})
+	}
+}
+
+func TestArea(t *testing.T) {
+	for _, test := range []struct {
+		name string
+		t    *Triangle[int]
+		want float64
+	}{
+		{
+			name: "same point",
+			t:    NewTriangle(New(0, 0), New(3, 0), New(0, 4)),
+			want: 6,
+		},
+		{
+			name: "offset from previous example",
+			t:    NewTriangle(New(6, 7), New(9, 7), New(6, 11)),
+			want: 6,
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			if got := test.t.Area(); got != test.want {
+				t.Errorf("%v.Area() returned %.2f; want %.2f", test.t, got, test.want)
+			}
+		})
+	}
+}
 
 func TestConvexHull(t *testing.T) {
 	permutatedCH := &ConvexHull[int]{

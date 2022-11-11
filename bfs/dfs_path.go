@@ -1,6 +1,8 @@
 package bfs
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type DFSPath[T any] interface {
 	Path() []T
