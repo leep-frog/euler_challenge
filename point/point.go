@@ -11,6 +11,37 @@ import (
 
 type Points[T maths.Mathable] []*Point[T]
 
+func (p *Point[T]) LineWith(q *Point[T]) *Line {
+	// y1 = m*x1 + b
+	// y2 = m*x2 + b
+	// b = y1 - m*x1 = y2 - m*x2
+	// y1 - m*x1 = y2 - m*x2
+	// y1 - y2 = m*(x1 - x2)
+	// m = (y1 - y2) / (x1 - x2)
+	x1, y1 := float64(p.X), float64(p.Y)
+	x2, y2 := float64(q.X), float64(q.Y)
+	m := (y1 - y2) / (x1 - x2)
+	b := y1 - m*x1
+	return &Line{m, b}
+}
+
+type Line struct {
+	M float64
+	B float64
+}
+
+func (l *Line) XtoY(x float64) float64 {
+	return l.M*x + l.B
+}
+
+func (l *Line) Intersection(k *Line) *Point[float64] {
+	// m_1 * x + b_1 = m_2 * x + b_2
+	// x * (m_1 - m_2) = (b_2 - b_1)
+	// x = (b_2 - b_1) / (m_1 - m_2)
+	x := (k.B - l.B) / (l.M - k.M)
+	return New(x, l.XtoY(x))
+}
+
 func (pts Points[T]) Plot(p *Plot) ([]Plottable, error) {
 	var plt []Plottable
 	for _, p := range pts {
