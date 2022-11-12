@@ -11,6 +11,26 @@ import (
 
 type Points[T maths.Mathable] []*Point[T]
 
+func (p *Point[T]) Quadrant() int {
+	if p.X < 0 && p.Y >= 0 {
+		return 0
+	}
+
+	if p.X >= 0 && p.Y > 0 {
+		return 1
+	}
+
+	if p.X > 0 && p.Y <= 0 {
+		return 2
+	}
+
+	if p.X <= 0 && p.Y < 0 {
+		return 3
+	}
+
+	panic("ARGHY")
+}
+
 func (p *Point[T]) LineWith(q *Point[T]) *Line {
 	// y1 = m*x1 + b
 	// y2 = m*x2 + b
@@ -214,6 +234,45 @@ func (p *Point[T]) Plot(plt *Plot) ([]Plottable, error) {
 
 func (p *Point[T]) Eq(that *Point[T]) bool {
 	return p.X == that.X && p.Y == that.Y
+}
+
+type Rectangle[T maths.Mathable] struct {
+	MinX, MinY, MaxX, MaxY T
+}
+
+func NewRectangle[T maths.Mathable](MinX, MinY, MaxX, MaxY T) *Rectangle[T] {
+	return &Rectangle[T]{MinX, MinY, MaxX, MaxY}
+}
+
+func (r *Rectangle[T]) Eq(q *Rectangle[T]) bool {
+	return r.MinX == q.MinX && r.MinY == q.MinY && r.MaxX == q.MaxX && r.MaxY == q.MaxY
+}
+
+func (r *Rectangle[T]) String() string {
+	return fmt.Sprintf("[(%v, %v), (%v, %v)]", r.MinX, r.MinY, r.MaxX, r.MaxY)
+}
+
+func (r *Rectangle[T]) Corners() []*Point[T] {
+	m := map[string]*Point[T]{}
+	ps := []*Point[T]{
+		New(r.MinX, r.MinY),
+		New(r.MinX, r.MaxY),
+		New(r.MaxX, r.MinY),
+		New(r.MaxX, r.MaxY),
+	}
+	for _, p := range ps {
+		m[p.String()] = p
+	}
+
+	var ret []*Point[T]
+	for _, p := range m {
+		ret = append(ret, p)
+	}
+	return ret
+}
+
+func (r *Rectangle[T]) Contains(p *Point[T]) bool {
+	return r.MinX <= p.X && p.X <= r.MaxX && r.MinY <= p.Y && p.Y <= r.MaxY
 }
 
 // Returns true if q is between p and p2

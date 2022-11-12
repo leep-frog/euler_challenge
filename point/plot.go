@@ -59,6 +59,7 @@ func (p *Plot) Save(width, height font.Length, name string) error {
 	return p.P.Save(width, height, name)
 }
 
+// TODO: don't return error, just store funcs and run on save
 func (p *Plot) Add(plottables ...Plottable) error {
 	// Don't use 'range' function since we append to plottable in this loop.
 	for i := 0; i < len(plottables); i++ {

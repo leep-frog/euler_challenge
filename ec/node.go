@@ -174,6 +174,7 @@ func getProblems() []*problem {
 		P456(),
 		P252(),
 		P333(),
+		P4560(),
 		// END_LIST (needed for file_generator.go)
 	}
 }

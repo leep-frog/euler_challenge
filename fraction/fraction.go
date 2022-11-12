@@ -15,13 +15,13 @@ type Fraction[T any] struct {
 	lt    func(T, T) bool
 }
 
-func New(n, d int) *Fraction[int] {
-	return &Fraction[int]{
+func New[T maths.Mathable](n, d T) *Fraction[T] {
+	return &Fraction[T]{
 		n,
 		d,
-		func(a, b int) int { return a + b },
-		func(a, b int) int { return a * b },
-		func(a, b int) bool { return a < b },
+		func(a, b T) T { return a + b },
+		func(a, b T) T { return a * b },
+		func(a, b T) bool { return a < b },
 	}
 }
 
@@ -61,6 +61,27 @@ func (f *Fraction[T]) LT(that *Fraction[T]) bool {
 
 // Return a fraction to allow for chaining.
 func Simplify(n, d int, p *generator.Generator[int]) *Fraction[int] {
+	if d == 0 {
+		if n == 0 {
+			return New(0, 0)
+		}
+		return New(1, 0)
+	}
+	if n == 0 {
+		// we know d isn't 0
+		return New(0, 1)
+	}
+
+	sign := 1
+	if d < 0 {
+		d *= -1
+		sign *= -1
+	}
+	if n < 0 {
+		n *= -1
+		sign *= -1
+	}
+
 	nfs := generator.MutablePrimeFactors(n, p)
 	dfs := generator.MutablePrimeFactors(d, p)
 
@@ -83,5 +104,5 @@ func Simplify(n, d int, p *generator.Generator[int]) *Fraction[int] {
 			newD *= k
 		}
 	}
-	return New(newN, newD)
+	return New(sign*newN, newD)
 }

@@ -16,31 +16,23 @@ type square456 struct {
 	id int
 
 	cornersCalculated bool
-	minX              int
-	minY              int
-	maxX              int
-	maxY              int
+	boxMinX           int
+	boxMinY           int
+	boxMaxX           int
+	boxMaxY           int
 
-	actualMinX int
-	actualMinY int
-	actualMaxX int
-	actualMaxY int
+	minX int
+	minY int
+	maxX int
+	maxY int
 }
 
-func (s *square456) addPoint(x, y int) {
-	s.points = append(s.points, point.New(x, y))
+func (s *square456) addPoint(p *point.Point[int]) {
+	s.points = append(s.points, p)
 }
 
-func (s *square456) contains(p *point.Point[int]) bool {
-	if s.ch == nil {
-		s.ch = point.ConvexHullFromPoints(
-			point.New(s.actualMinX, s.actualMinY),
-			point.New(s.actualMinX, s.actualMaxY),
-			point.New(s.actualMaxX, s.actualMinY),
-			point.New(s.actualMaxX, s.actualMaxY),
-		)
-	}
-	return s.ch.Contains(p)
+func (s *square456) boxContains(p *point.Point[int]) bool {
+	return s.boxMinX <= p.X && p.X <= s.boxMaxX && s.boxMinY <= p.Y && p.Y <= s.boxMaxY
 }
 
 func (s *square456) corners() []*point.Point[int] {
@@ -77,11 +69,43 @@ func (s *square456) cornerTriangles(sq2, sq3 *square456) []*point.Triangle[int] 
 	return r
 }
 
-func (s *square456) triangles(sq2, sq3 *square456) []*point.Triangle[int] {
+func (s *square456) twoCornerTriangles(sq2 *square456) []*point.Triangle[int] {
+	var r []*point.Triangle[int]
+	s1Corners := s.corners()
+	for i, c1 := range s1Corners {
+		for j := i + 1; j < len(s1Corners); j++ {
+			c2 := s1Corners[j]
+			for _, c3 := range sq2.corners() {
+				if !c1.Eq(c2) && !c1.Eq(c3) && !c2.Eq(c3) {
+					r = append(r, point.NewTriangle(c1, c2, c3))
+				}
+			}
+		}
+	}
+	return r
+}
+
+func (s *square456) pointTriangles(sq2, sq3 *square456) []*point.Triangle[int] {
 	var r []*point.Triangle[int]
 	for _, c1 := range s.points {
 		for _, c2 := range sq2.points {
 			for _, c3 := range sq3.points {
+				if !c1.Eq(c2) && !c1.Eq(c3) && !c2.Eq(c3) {
+					r = append(r, point.NewTriangle(c1, c2, c3))
+				}
+			}
+		}
+	}
+	return r
+}
+
+func (s *square456) twoPointTriangles(sq2 *square456) []*point.Triangle[int] {
+	//fmt.Println("TPT", len(s.points), len(sq2.points))
+	var r []*point.Triangle[int]
+	for i, c1 := range s.points {
+		for j := i + 1; j < len(s.points); j++ {
+			c2 := s.points[j]
+			for _, c3 := range sq2.points {
 				if !c1.Eq(c2) && !c1.Eq(c3) && !c2.Eq(c3) {
 					r = append(r, point.NewTriangle(c1, c2, c3))
 				}
@@ -169,37 +193,12 @@ func (s *square456) corners() [][]int {
 }*/
 
 func (s *square456) String() string {
-	return fmt.Sprintf("id=%d: (%d,%d) to (%d,%d)", s.id, s.actualMinX, s.actualMinY, s.actualMaxX, s.actualMaxY)
+	return fmt.Sprintf("id=%d: (%d,%d) to (%d,%d)", s.id, s.boxMinX, s.boxMinY, s.boxMaxX, s.boxMaxY)
 }
 
 /*func (s *square456) EffectiveString() string {
 	return fmt.Sprintf("id=%d: (%d,%d) to (%d,%d)", s.id, s.minX, s.minY, s.maxX, s.maxY)
 }*/
-
-func (s *square456) pointTriangles(sq2, sq3 *square456) []*point.Triangle[int] {
-	var r []*point.Triangle[int]
-	for _, c1 := range s.points {
-		for _, c2 := range sq2.points {
-			for _, c3 := range sq3.points {
-				r = append(r, point.NewTriangle(c1, c2, c3))
-			}
-		}
-	}
-	return r
-}
-
-func (s *square456) twoPointTriangles(sq2 *square456) []*point.Triangle[int] {
-	var r []*point.Triangle[int]
-	for i, c1 := range s.points {
-		for j := i + 1; j < len(s.points); j++ {
-			c2 := s.points[j]
-			for _, c3 := range sq2.points {
-				r = append(r, point.NewTriangle(c1, c2, c3))
-			}
-		}
-	}
-	return r
-}
 
 /*func originBetween(x1, y1, x2, y2 int) bool {
 	// true if origin is a linear combination of the provided points
@@ -249,24 +248,26 @@ func (s *square456) twoPointTriangles(sq2 *square456) []*point.Triangle[int] {
 	return ab == bc && ab == ca
 }*/
 
-func generatePoints(n int) [][]int {
-	var points [][]int
+func generatePoints456(n int) []*point.Point[int] {
+	var points []*point.Point[int]
 	xp, yp := 1, 1
 	for i := 0; i < n; i++ {
 		xp = (xp * 1248) % 32323
 		yp = (yp * 8421) % 30103
-		points = append(points, []int{xp - 16161, yp - 15051})
+		points = append(points, point.New(xp-16161, yp-15051))
 	}
-	return points
+	return points //[16:]
 }
 
-func elegant456(points [][]int) (int, []*point.Triangle[int]) {
+func elegant456(points []*point.Point[int]) (int, []*point.Triangle[int]) {
 	var xBuckets, yBuckets []int
-	splits := 8
+	splits := 32
 	for i := 0; i <= splits; i++ {
 		xBuckets = append(xBuckets, (i*32323/splits)-16161)
 		yBuckets = append(yBuckets, (i*30103/splits)-15051)
 	}
+	fmt.Println("X-BUCKETS", xBuckets)
+	fmt.Println("Y-BUCKETS", yBuckets)
 
 	var squares []*square456
 	for xi, xBucket := range xBuckets[:splits] {
@@ -275,11 +276,11 @@ func elegant456(points [][]int) (int, []*point.Triangle[int]) {
 		for yi, yBucket := range yBuckets[:len(yBuckets)-1] {
 			yOffset := yi / (splits - 1)
 			squares = append(squares, &square456{
-				id:         xi*splits + yi,
-				actualMinX: xBucket,
-				actualMaxX: xBuckets[xi+1] + xOffset,
-				actualMinY: yBucket,
-				actualMaxY: yBuckets[yi+1] + yOffset,
+				id:      xi*splits + yi,
+				boxMinX: xBucket,
+				boxMaxX: xBuckets[xi+1] + xOffset,
+				boxMinY: yBucket,
+				boxMaxY: yBuckets[yi+1] + yOffset,
 			})
 		}
 	}
@@ -288,18 +289,17 @@ func elegant456(points [][]int) (int, []*point.Triangle[int]) {
 	for _, p := range points {
 		var added bool
 		for _, sq := range squares {
-			sq.contains(point.New(p[0], p[1]))
-			if sq.contains(point.New(p[0], p[1])) {
+			if sq.boxContains(p) {
 				added = true
-				sq.addPoint(p[0], p[1])
+				sq.addPoint(p)
 				break
 			}
 		}
-		if p[0] == 0 && p[1] == 0 {
+		if p.Eq(point.Origin[int]()) {
 			return -1, nil
 		}
 		if !added {
-			fmt.Println(p)
+			fmt.Println("Not added", p)
 			return -2, nil
 		}
 	}
@@ -313,24 +313,92 @@ func elegant456(points [][]int) (int, []*point.Triangle[int]) {
 	squares = filteredSquares
 
 	originTriangleCount := 0
-	r := []*point.Triangle[int]{}
+	//r := []*point.Triangle[int]{}
+
+	// Two squares
 	for i, sq1 := range squares {
-		fmt.Println("SQ1", i)
-		for j := i; j < len(squares); j++ {
-			//fmt.Println("SQ2", j)
-			sq2 := squares[j]
-			for k := j; k < len(squares); k++ {
-				if i == j && j == k {
+		_ = i
+		fmt.Println("2 SQ1", i, len(sq1.points), len(squares))
+		for j, sq2 := range squares {
+			_ = j
+			//fmt.Println("2 SQ2", j, len(sq2.points))
+			if sq1.id == sq2.id {
+				continue
+			}
+
+			originCount := 0
+			cornerTris := sq1.twoCornerTriangles(sq2)
+			//fmt.Println("CLN", len(cornerTris))
+			for _, t := range cornerTris {
+				if t.Contains(point.Origin[int]()) {
+					originCount++
+				} else if originCount > 0 {
+					break
+				}
+			}
+
+			// All triangles contain the origin
+			if originCount == len(cornerTris) {
+				originTriangleCount += len(sq1.points) * (len(sq1.points) - 1) * len(sq2.points)
+				//fmt.Println("OTC", sq1.id, sq2.id, sq3.id, "|", len(cornerTris), len(sq1.points)*len(sq2.points)*len(sq3.points), len(sq1.triangles(sq2, sq3)))
+				/*g := map[string]bool{}
+				for _, t := range sq1.twoPointTriangles(sq2) {
+					if g[t.String()] {
+						continue
+					}
+					g[t.String()] = true
+					r = append(r, t)
+				}*/
+				continue
+			}
+
+			mightContain := originCount != 0
+			if !mightContain {
+				ch := point.ConvexHullFromPoints(append(sq1.points, sq2.points...)...)
+				// TODO: use this
+				//ch := point.ConvexHullFromPoints(append(append(sq1.corners(), sq2.corners()...), sq3.corners()...)...)
+				mightContain = ch.Contains(point.Origin[int]())
+			}
+
+			if !mightContain {
+				continue
+			}
+
+			tc := 0
+			g := map[string]bool{}
+			//fmt.Println("CALC", j)
+			pointTris := sq1.twoPointTriangles(sq2)
+			//fmt.Println("MIGHT", len(pointTris))
+			for _, t := range pointTris {
+				if g[t.String()] {
 					continue
 				}
+				g[t.String()] = true
+				if t.Contains(point.Origin[int]()) {
+					tc++
+					//r = append(r, t)
+				}
+			}
+			originTriangleCount += tc
+
+			// Two sq1 and one sq2
+
+			//fmt.Println("SQ2", j)
+		}
+	}
+
+	// Three squares
+	for i, sq1 := range squares {
+		fmt.Println("SQ1", i)
+		for j := i + 1; j < len(squares); j++ {
+			//fmt.Println("SQ2", j)
+			sq2 := squares[j]
+
+			for k := j + 1; k < len(squares); k++ {
 				sq3 := squares[k]
 
 				originCount := 0
 				cornerTris := sq1.cornerTriangles(sq2, sq3)
-				if len(cornerTris) == 0 {
-					// Two of the squares are the same and the square has only one point.
-					continue
-				}
 				for _, t := range cornerTris {
 					if t.Contains(point.Origin[int]()) {
 						originCount++
@@ -341,25 +409,24 @@ func elegant456(points [][]int) (int, []*point.Triangle[int]) {
 
 				// All triangles contain the origin
 				if originCount == len(cornerTris) {
-					if i == j || j == k || i == k {
-						fmt.Println("bleh", i, j, k)
-					}
 					originTriangleCount += len(sq1.points) * len(sq2.points) * len(sq3.points)
 					//fmt.Println("OTC", sq1.id, sq2.id, sq3.id, "|", len(cornerTris), len(sq1.points)*len(sq2.points)*len(sq3.points), len(sq1.triangles(sq2, sq3)))
-					g := map[string]bool{}
-					for _, t := range sq1.triangles(sq2, sq3) {
+					/*g := map[string]bool{}
+					for _, t := range sq1.pointTriangles(sq2, sq3) {
 						if g[t.String()] {
 							continue
 						}
 						g[t.String()] = true
 						r = append(r, t)
-					}
+					}*/
 					continue
 				}
 
 				mightContain := originCount != 0
 				if !mightContain {
 					ch := point.ConvexHullFromPoints(append(append(sq1.points, sq2.points...), sq3.points...)...)
+					// TODO: use this
+					//ch := point.ConvexHullFromPoints(append(append(sq1.corners(), sq2.corners()...), sq3.corners()...)...)
 					mightContain = ch.Contains(point.Origin[int]())
 				}
 
@@ -369,23 +436,15 @@ func elegant456(points [][]int) (int, []*point.Triangle[int]) {
 
 				tc := 0
 				g := map[string]bool{}
-				for _, t := range sq1.triangles(sq2, sq3) {
+				for _, t := range sq1.pointTriangles(sq2, sq3) {
 					if g[t.String()] {
 						continue
 					}
 					g[t.String()] = true
-					got := map[string]bool{}
-					if got[t.String()] {
-						continue
-					}
-					got[t.String()] = true
 					if t.Contains(point.Origin[int]()) {
 						tc++
-						r = append(r, t)
+						//r = append(r, t)
 					}
-				}
-				if i == j || j == k || i == k {
-					//tc /= 2
 				}
 				originTriangleCount += tc
 			}
@@ -393,7 +452,7 @@ func elegant456(points [][]int) (int, []*point.Triangle[int]) {
 	}
 
 	// Now check cases where there are two points in the same square
-	return originTriangleCount, r
+	return originTriangleCount, nil // r
 }
 
 func uniqTris(ts []*point.Triangle[int]) []string {
@@ -412,9 +471,9 @@ func uniqTris(ts []*point.Triangle[int]) []string {
 func P456() *problem {
 	return intInputNode(456, func(o command.Output, n int) {
 
-		points := generatePoints(n)
+		points := generatePoints456(n)
 
-		points = points[:140]
+		//points = points[:140]
 		//fmt.Println("LAST POINT", points[len(points)-1])
 
 		/*points = [][]int{
@@ -438,9 +497,8 @@ func P456() *problem {
 
 		fmt.Println("EC")
 		eCnt, ets := elegant456(points)
-		fmt.Println("BC")
-		bCnt, bts := brute456(points)
-		_ = bts
+		//fmt.Println("BC")
+		//bCnt, bts := brute456(points)
 		_ = ets
 
 		/*if diff := cmp.Diff(uniqTris(ets), uniqTris(bts)); diff != "" {
@@ -448,17 +506,20 @@ func P456() *problem {
 		}*/
 
 		fmt.Println("ECounts:", eCnt, len(ets), len(uniqTris(ets)))
-		fmt.Println("BCounts:", bCnt, len(bts), len(uniqTris(bts)))
+		//fmt.Println("BCounts:", bCnt, len(bts), len(uniqTris(bts)))
 		//o.Stdoutln(eCnt, bCnt)
 	}, []*execution{
 		/*{
 			args: []string{"8"},
 			want: "20",
-		}, /**/
+		},
+		/**/
+
 		{
-			args: []string{"600"},
+			args: []string{"40000"},
 			want: "8950634",
 		},
+		/**/
 		/*{
 			args: []string{"40000"},
 			want: "2666610948988",
@@ -470,7 +531,7 @@ func P456() *problem {
 	})
 }
 
-func brute456(points [][]int) (int, []*point.Triangle[int]) {
+func brute456(points []*point.Point[int]) (int, []*point.Triangle[int]) {
 	cnt := 0
 	r := []*point.Triangle[int]{}
 	for i, p1 := range points {
@@ -479,11 +540,7 @@ func brute456(points [][]int) (int, []*point.Triangle[int]) {
 			p2 := points[j]
 			for k := j + 1; k < len(points); k++ {
 				p3 := points[k]
-				t := point.NewTriangle(
-					point.New(p1[0], p1[1]),
-					point.New(p2[0], p2[1]),
-					point.New(p3[0], p3[1]),
-				)
+				t := point.NewTriangle(p1, p2, p3)
 				if t.Contains(point.Origin[int]()) {
 					cnt++
 					r = append(r, t)
