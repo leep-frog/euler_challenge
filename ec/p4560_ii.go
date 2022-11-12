@@ -184,7 +184,6 @@ type dn struct {
 	quad     int
 	id       int
 	opposite *dn
-	pts      []*point.Point[int]
 }
 
 func (d *dn) String() string {
@@ -239,9 +238,9 @@ func dnzo(pts []*point.Point[int]) int {
 		q := p.Quadrant()
 		oq := (q + 2) % 4
 		if m[q][f.String()] == nil {
-			reg := &dn{f, 0, 0, q, dnID, nil, nil}
+			reg := &dn{f, 0, 0, q, dnID, nil}
 			dnID++
-			op := &dn{f, 0, 0, oq, dnID, reg, nil}
+			op := &dn{f, 0, 0, oq, dnID, reg}
 			dnID++
 			reg.opposite = op
 			m[q][f.String()] = reg
@@ -249,7 +248,6 @@ func dnzo(pts []*point.Point[int]) int {
 		}
 		curD := m[q][f.String()]
 		curD.cnt++
-		curD.pts = append(curD.pts, p)
 	}
 
 	// Now sort
