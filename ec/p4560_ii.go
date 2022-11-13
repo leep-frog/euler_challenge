@@ -2,7 +2,6 @@ package eulerchallenge
 
 import (
 	"fmt"
-	"math"
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/fraction"
@@ -184,6 +183,8 @@ type dn struct {
 	quad     int
 	id       int
 	opposite *dn
+
+	good1, good2 int
 }
 
 func (d *dn) String() string {
@@ -238,9 +239,9 @@ func dnzo(pts []*point.Point[int]) int {
 		q := p.Quadrant()
 		oq := (q + 2) % 4
 		if m[q][f.String()] == nil {
-			reg := &dn{f, 0, 0, q, dnID, nil}
+			reg := &dn{f, 0, 0, q, dnID, nil, 0, 0}
 			dnID++
-			op := &dn{f, 0, 0, oq, dnID, reg}
+			op := &dn{f, 0, 0, oq, dnID, reg, 0, 0}
 			dnID++
 			reg.opposite = op
 			m[q][f.String()] = reg
@@ -266,8 +267,11 @@ func dnzo(pts []*point.Point[int]) int {
 		dn.cum = sum
 	}
 
+	qk(dns)
+	plot456(pts, nil)
+	return 1
+
 	max := dns[len(dns)-1].cum
-	fmt.Println("LDN", len(dns))
 
 	// Now do every pair
 	triCnt := 0
@@ -277,7 +281,6 @@ func dnzo(pts []*point.Point[int]) int {
 		}
 		if dn1.f.N == 0 && dn1.quad > 0 {
 			// TODO: Remove this check (taken care of by quad)
-			fmt.Println("OOPS", i)
 			break
 		}
 		if dn1.cnt == 0 {
@@ -304,40 +307,235 @@ func dnzo(pts []*point.Point[int]) int {
 			}
 			//second += op1.cnt
 
-			//fmt.Println("TCP", dn1, dn2, o1, o2, second, first)
-
-			/*if second-first <= 0 {
-				fmt.Println("NOOp", second, first, max)
-			}*/
 			v := dn1.cnt * dn2.cnt * d3cnt
 
 			triCnt += v
+			qk(dns)
+			plot456(pts, dns)
+			return 1
+			goto AHA
 		}
 	}
+AHA:
 
+	//
+	return triCnt
+}
+
+func plot456(pts []*point.Point[int], dns []*dn) {
 	p := point.NewPlot()
 	if err := p.Add(point.Points[int](pts)); err != nil {
 		panic(fmt.Sprintf("NO: %V", err))
 	}
 
-	for _, dn := range dns {
+	for _, pt := range pts {
+		p.Add(point.NewLineSegment(point.Origin[int](), pt))
+		p.Add(point.NewLineSegment(point.Origin[int](), point.New(-pt.X, -pt.Y)))
+	}
+
+	p.Add(point.Axes(-16000, 16000))
+
+	/*for _, dn := range dns {
 		/*x, y := 1, 1
 		if dn.quad == 0 || dn.quad == 3 {
 			x = -1
 		}
 		if dn.quad == 2 || dn.quad == 3 {
 			y = -1
-		}*/
+		}* /
 		p.Add(point.NewLineSegment(point.Origin[int](), point.New(dn.f.D, dn.f.N)))
 		p.Add(point.NewLineSegment(point.Origin[int](), point.New(-dn.f.D, -dn.f.N)))
-	}
+	}*/
 
 	//p.Add(point.Axes(15000, 15000))
-	p.Save(800, 800, "456.png")
+	if len(pts) < 40 {
+		fmt.Println("PLOTTING")
+		p.Save(800, 800, "456.png")
+	}
+}
 
-	fmt.Println("DNZO", triCnt, math.MaxInt)
-	//
-	return triCnt
+func qk(dns []*dn) {
+	k, bs, cs := 0, 0, 0
+	var firstQ2 *dn
+	for _, d := range dns {
+		if d.quad < 2 {
+			bs += d.cnt
+		} else {
+			if firstQ2 == nil {
+				firstQ2 = d
+			}
+			cs += d.cnt
+		}
+	}
+
+	for _, b := range dns {
+		if b.quad == 2 {
+			break
+		}
+		k += b.cnt * ((b.opposite.cum - b.opposite.cnt) - firstQ2.cum + firstQ2.cnt)
+	}
+
+	fmt.Println("START", k, bs, cs)
+	triCnt := 0
+	for i, d := range dns {
+		if i%10000 == 0 {
+			fmt.Println("I", i)
+		}
+		if d.quad > 1 {
+			break
+		}
+		if d.cnt > 0 && d.opposite.cnt == 0 {
+			bs -= d.cnt
+			triCnt += d.cnt * k
+		} else if d.cnt == 0 && d.opposite.cnt > 0 {
+			//fmt.Println("OP", d)
+			// No longer a 'C'
+			k -= d.opposite.cnt * bs // remove triangles
+			cs -= d.opposite.cnt
+
+			// Now a b
+			k += d.opposite.cnt * cs
+			bs += d.opposite.cnt
+			//fmt.Println("M", k, cs, bs)
+			//return
+		} else {
+			bs -= d.cnt
+			k -= d.opposite.cnt * bs // remove triangles
+			cs -= d.opposite.cnt
+
+			triCnt += d.cnt * k
+
+			k += d.opposite.cnt * cs
+			bs += d.opposite.cnt
+		}
+	}
+	fmt.Println("TRICNT", triCnt)
+}
+
+func qk2(dns []*dn) {
+
+	k, bs, cs := 0, 0, 0
+
+	first := dns[0]
+	op1 := first.opposite
+	var inCs bool
+	for _, dn2 := range dns[1:] {
+		if dn2.id == op1.id {
+			inCs = true
+			bs += dn2.cnt
+			continue
+		}
+
+		// Increment b and c counts
+		if !inCs {
+			bs += dn2.cnt
+		} else {
+			cs += dn2.cnt
+		}
+	}
+
+	var stopIt bool
+	max := dns[len(dns)-1].cum
+	for j := 1; !stopIt && j < len(dns); j++ {
+		dn2 := dns[j]
+		stopIt = dn2.id == op1.id
+		if dn2.cnt == 0 {
+			continue
+		}
+		if stopIt { //&& dn2.quad >= 2 {
+			break
+		}
+
+		op2 := dn2.opposite
+
+		d3cnt := op2.cum - op1.cum - op2.cnt
+		if dn2.quad >= 2 {
+			d3cnt = max - op1.cum
+		}
+		//second += op1.cnt
+
+		//fmt.Println("TCP", dn1, dn2, o1, o2, second, first)
+
+		/*if second-first <= 0 {
+			fmt.Println("NOOp", second, first, max)
+		}*/
+		fmt.Println("HAHA", dn2.cnt*d3cnt)
+		k += dn2.cnt * d3cnt
+	}
+	triCnt := first.cnt * k
+
+	/*collinear := 0
+
+	cur := dns[0]*/
+	/*for _, dn2 := range dns[1:] {
+		if dn2.id == cur.opposite.id {
+			collinear += dn2.cnt
+			break
+		}
+
+		if dn2.quad >= 2 {
+			break
+		}
+
+		if dn2.quad < 2 {
+			bs += dn2.cnt
+		} else {
+			cs += dn2.cnt
+		}
+	}*/
+
+	fmt.Println("init", triCnt, first, k, bs, cs)
+	//return
+
+	poppedCs := 0
+
+	bs += first.opposite.cnt
+	cs -= first.opposite.cnt
+
+	for _, dn1 := range dns[1:] {
+		if dn1.quad >= 2 {
+			break
+		}
+
+		if dn1.cnt > 0 && dn1.opposite.cnt == 0 {
+			triCnt += dn1.cnt * k
+			bs -= dn1.cnt
+			fmt.Println("HELLO")
+			/*k -= dn1.cnt * poppedCs
+			triCnt += dn1.cnt * k
+			bs -= dn1.cnt*/
+		} else if dn1.cnt == 0 && dn1.opposite.cnt > 0 {
+			//poppedCs += dn1.opposite.cnt
+			cs -= dn1.opposite.cnt
+			k -= dn1.opposite.cnt * bs
+
+			bs += dn1.opposite.cnt
+			k += dn1.opposite.cnt * cs
+
+		} else if dn1.cnt > 0 && dn1.opposite.cnt > 0 {
+			panic("not Yet")
+			cs -= dn1.opposite.cnt
+			k -= dn1.opposite.cnt * bs
+
+			k -= dn1.cnt * poppedCs
+			triCnt += dn1.cnt * k
+			bs -= dn1.cnt
+
+			bs += dn1.opposite.cnt
+			k += dn1.opposite.cnt * cs
+		} else {
+			panic("AAAHAHAH")
+		}
+		fmt.Println(triCnt, dn1, k, bs, cs)
+	}
+
+	fmt.Println("QK", triCnt)
+
+	/*for i := 0
+
+	for _, dn2 := range dns {
+
+	}*/
 }
 
 func P4560() *problem {
@@ -351,12 +549,13 @@ func P4560() *problem {
 		}
 		/**/
 
+		//ps = append(generatePoints456(n), point.New(3370, -2510))
 		ps = generatePoints456(n)
 
 		dnzo(ps)
-		b := 0
+		//b := 0
 		//b, _ = brute456(ps)
-		fmt.Println("B", b)
+		//fmt.Println("B", b)
 
 		return
 		for i := 0; ; i++ {
