@@ -129,28 +129,22 @@ func originTriangles456(pts []*point.Point[int]) int {
 		if d.quadrant > 1 {
 			break
 		}
-		if d.cnt > 0 && d.opposite.cnt == 0 {
-			// No longer a 'B' point
-			bs -= d.cnt
-			triCnt += d.cnt * k
-		} else if d.cnt == 0 && d.opposite.cnt > 0 {
-			// No longer a 'C' point
-			k -= d.opposite.cnt * bs
-			cs -= d.opposite.cnt
 
-			// Now a 'B' point
-			k += d.opposite.cnt * cs
-			bs += d.opposite.cnt
-		} else {
-			bs -= d.cnt
-			k -= d.opposite.cnt * bs
-			cs -= d.opposite.cnt
+		// The point on the slope group is no longer in the set of bs
+		bs -= d.cnt
 
-			triCnt += d.cnt * k
+		// The opposite slope group is no longer in cs. Remove the cnt and the
+		// number of triangles it makes as a C point.
+		k -= d.opposite.cnt * bs
+		cs -= d.opposite.cnt
 
-			k += d.opposite.cnt * cs
-			bs += d.opposite.cnt
-		}
+		// Incrememnt the number of triangles that can be made with the slopeGroup as A
+		triCnt += d.cnt * k
+
+		// Move the opposite slope group into the B group, and add the triangles
+		// that can be made with it as a B point.
+		k += d.opposite.cnt * cs
+		bs += d.opposite.cnt
 	}
 	return triCnt
 }
