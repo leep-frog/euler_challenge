@@ -1,8 +1,6 @@
 package eulerchallenge
 
 import (
-	"fmt"
-
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/fraction"
 	"github.com/leep-frog/euler_challenge/generator"
@@ -10,11 +8,21 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func generateDns(n int) []*dn {
+func generatePoints456(n int) []*point.Point[int] {
+	var r []*point.Point[int]
 	xp, yp := 1, 1
+	for i := 0; i < n; i++ {
+		// Create point
+		xp = (xp * 1248) % 32323
+		yp = (yp * 8421) % 30103
+		r = append(r, point.New(xp-16161, yp-15051))
+	}
+	return r
+}
 
-	dnID := 0
-	m := []map[string]*dn{
+func generateSlopeGroups(pts []*point.Point[int]) []*slopeGroup {
+	// Map (actually list) from quadrant to slope to slope group the point belongs.
+	m := []map[string]*slopeGroup{
 		{},
 		{},
 		{},
@@ -22,11 +30,8 @@ func generateDns(n int) []*dn {
 	}
 
 	primes := generator.Primes()
-	for i := 0; i < n; i++ {
-		// Create point
-		xp = (xp * 1248) % 32323
-		yp = (yp * 8421) % 30103
-		p := point.New(xp-16161, yp-15051)
+	sgID := 0
+	for _, p := range pts {
 
 		// Simplify slope
 		f := fraction.Simplify(p.Y, p.X, primes)
@@ -38,79 +43,67 @@ func generateDns(n int) []*dn {
 		q := p.Quadrant()
 		oq := (q + 2) % 4
 		if m[q][f.String()] == nil {
-			reg := &dn{f, 0, 0, q, dnID, nil, 0, 0}
-			dnID++
-			op := &dn{f, 0, 0, oq, dnID, reg, 0, 0}
-			dnID++
+			reg := &slopeGroup{f, 0, 0, q, sgID, nil}
+			sgID++
+			op := &slopeGroup{f, 0, 0, oq, sgID, reg}
+			sgID++
 			reg.opposite = op
 			m[q][f.String()] = reg
 			m[oq][f.String()] = op
 		}
-		curD := m[q][f.String()]
-		curD.cnt++
+		m[q][f.String()].cnt++
 	}
 
-	// Now sort
-	var dns []*dn
+	// Now sort slopeGroups by radians
+	var sgs []*slopeGroup
 	for _, sd := range m {
 		for _, d := range sd {
-			dns = append(dns, d)
+			sgs = append(sgs, d)
 		}
 	}
-	slices.SortFunc(dns, func(this, that *dn) bool { return this.LT(that) })
+	slices.SortFunc(sgs, func(this, that *slopeGroup) bool { return this.LT(that) })
 
-	// Cumulate
+	// Set cumulative number of points between (-1, 0) and each slope group.
 	sum := 0
-	for _, dn := range dns {
-		sum += dn.cnt
-		dn.cum = sum
+	for _, slopeGroup := range sgs {
+		sum += slopeGroup.cnt
+		slopeGroup.cum = sum
 	}
 
-	return dns
+	return sgs
 }
 
-type dn struct {
-	f        *fraction.Fraction[int]
-	cnt      int
-	cum      int
-	quad     int
-	id       int
-	opposite *dn
-
-	good1, good2 int
+type slopeGroup struct {
+	slopeFrac *fraction.Fraction[int]
+	cnt       int
+	cum       int
+	quadrant  int
+	id        int
+	opposite  *slopeGroup
 }
 
-func (d *dn) String() string {
-	return fmt.Sprintf("{(%d): %d, %d, %d, %v}", d.id, d.quad, d.cnt, d.cum, d.f)
-}
-
-func (this *dn) LT(that *dn) bool {
-	if this.quad != that.quad {
-		return this.quad < that.quad
+// Comparing radians of slopeGroups.
+func (this *slopeGroup) LT(that *slopeGroup) bool {
+	if this.quadrant != that.quadrant {
+		return this.quadrant < that.quadrant
 	}
 
-	if this.f.D == 0 || that.f.D == 0 {
-		panic("NOOOO")
+	if this.slopeFrac.D == 0 || that.slopeFrac.D == 0 {
+		panic("Unexpected denominator")
 	}
 
-	switch this.quad {
-	case 0, 2:
-		return !this.f.LT(that.f)
-	case 1, 3:
-		return !this.f.LT(that.f)
-	}
-
-	panic("NOPE")
+	return !this.slopeFrac.LT(that.slopeFrac)
 }
 
-func qk(n int) int {
-	dns := generateDns(n)
+func originTriangles456(pts []*point.Point[int]) int {
+	// Generate point slopes
+	sgs := generateSlopeGroups(pts)
 
-	// BREAKER
-	k, bs, cs := 0, 0, 0
-	var firstQ2 *dn
-	for _, d := range dns {
-		if d.quad < 2 {
+	// Compute the number of bs and cs (where every triangle made is a-b-c ordered by radians)
+	bs, cs := 0, 0
+	var firstQ2 *slopeGroup
+	for _, d := range sgs {
+		if d.quadrant < 2 {
 			bs += d.cnt
 		} else {
 			if firstQ2 == nil {
@@ -120,16 +113,20 @@ func qk(n int) int {
 		}
 	}
 
-	for _, b := range dns {
-		if b.quad == 2 {
+	// k is the number of triangles that can be made when the first point is on the vector (-1, 0)
+	k := 0
+	for _, b := range sgs {
+		if b.quadrant == 2 {
 			break
 		}
 		k += b.cnt * ((b.opposite.cum - b.opposite.cnt) - firstQ2.cum + firstQ2.cnt)
 	}
 
+	// Iterate through slopeGroups, incrementing the number of triangles that can be made (k)
+	// when the first point of the triangle, A, is on the slope group.
 	triCnt := 0
-	for _, d := range dns {
-		if d.quad > 1 {
+	for _, d := range sgs {
+		if d.quadrant > 1 {
 			break
 		}
 		if d.cnt > 0 && d.opposite.cnt == 0 {
@@ -160,7 +157,7 @@ func qk(n int) int {
 
 func P456() *problem {
 	return intInputNode(456, func(o command.Output, n int) {
-		o.Stdoutln(qk(n))
+		o.Stdoutln(originTriangles456(generatePoints456(n)))
 	}, []*execution{
 		{
 			args: []string{"8"},
