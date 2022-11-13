@@ -11,13 +11,7 @@ import (
 )
 
 func generateDns(n int) []*dn {
-	var points []*point.Point[int]
 	xp, yp := 1, 1
-	for i := 0; i < n; i++ {
-		xp = (xp * 1248) % 32323
-		yp = (yp * 8421) % 30103
-		points = append(points, point.New(xp-16161, yp-15051))
-	}
 
 	dnID := 0
 	m := []map[string]*dn{
@@ -28,8 +22,13 @@ func generateDns(n int) []*dn {
 	}
 
 	primes := generator.Primes()
-	for _, p := range points {
-		//uf := fraction.New(p.Y, p.X)
+	for i := 0; i < n; i++ {
+		// Create point
+		xp = (xp * 1248) % 32323
+		yp = (yp * 8421) % 30103
+		p := point.New(xp-16161, yp-15051)
+
+		// Simplify slope
 		f := fraction.Simplify(p.Y, p.X, primes)
 		if p.X == 0 {
 			// Set the fraction to the guaranteed highest slope (simulate infinite slope)
