@@ -1,12 +1,52 @@
 package eulerchallenge
 
 import (
-	"fmt"
-
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/generator"
-	"golang.org/x/exp/maps"
 )
+
+/*
+Our solution involves splitting the triangle into 6ths by drawing
+the bisecting angle from all vertices. Any point in the open space,
+by symmetry, exists 6 times in the triangle. Any point on the edge of
+the 1/6th triangle exists 3 times, and any number in the middle exists
+just once.
+
+Example triangles
+
+P_0:
+1
+
+P_1:
+ 1
+1 1
+
+P_2:
+  1
+ 2 2
+1 2 1
+
+P_3:
+   1
+	3 3
+ 3 6 3
+1 3 3 1
+
+P_4:
+      1
+    4   4
+   6  12  6
+ 4  12  12  4
+1  4   6   4  1
+
+P_5:
+       1
+      5 5
+    10 20 10
+  10 30 30 10
+ 5  20 30 20 5
+1 5  10  10 5 1
+*/
 
 func P154() *problem {
 	return intsInputNode(154, 2, func(o command.Output, ns []int) {
@@ -15,45 +55,76 @@ func P154() *problem {
 		// Divisble by
 		div := ns[1]
 
-		// Create the
+		// Create the factors slice (each element is [factor, number of factors needed]).
 		divFactors := generator.PrimeFactors(div, generator.Primes())
-		factors := maps.Keys(divFactors)
-		var minNeeded []int
-		for _, f := range factors {
-			minNeeded = append(minNeeded, divFactors[f])
+		var minNeeded, factors []int
+		for f, m := range divFactors {
+			factors = append(factors, f)
+			minNeeded = append(minNeeded, m)
 		}
-		fmt.Println("FACTORS", factors)
-		fmt.Println("MINNEED", minNeeded)
 
 		fc := NewFC(n, factors)
 
 		cnt := 0
-		for i := 0; i <= n; i++ {
-			if i%1_000 == 0 {
-				fmt.Println(i)
-			}
+		for i, offset := n, 0; offset <= n/2; i, offset = i-1, offset+1 {
 			coef := fc.Choose(n, i)
-			for j := 0; j <= i; j++ {
+			for j := offset; j <= i/2; j++ {
+				// See if it is divisble
+				divisble := true
 				v := fc.Choose(i, j)
-				good := true
 				for i, mn := range minNeeded {
 					if coef[i]+v[i] < mn {
-						good = false
-						break
+						divisble = false
 					}
 				}
-				if good {
+				if !divisble {
+					continue
+				}
+
+				// If on the left line and the downward line, we are in the middle (only 1).
+				if j == offset && i%2 == 0 && j == i/2 {
 					cnt++
+				} else if j == offset || (i%2 == 0 && j == i/2) {
+					// If we are on the left line OR the downward line, then symmetry produces only 3.
+					cnt += 3
+				} else {
+					// Otherwise, symmetry produces 6 (6 identical triangles created when
+					// bisect the triangle from all three vertices).
+					cnt += 6
 				}
 			}
 		}
-		fmt.Println(cnt)
 
 		o.Stdoutln(cnt)
 	}, []*execution{
 		{
-			args: []string{"200000", "1000000000000"},
-			want: "479742450 YOU",
+			args: []string{"4", "4"},
+			want: "9",
+		},
+		{
+			args: []string{"4", "2"},
+			want: "12",
+		},
+		{
+			args: []string{"5", "5"},
+			want: "18",
+		},
+		{
+			args: []string{"5", "2"},
+			want: "12",
+		},
+		{
+			args: []string{"5", "4"},
+			want: "3",
+		},
+		{
+			args: []string{"5", "10"},
+			want: "12",
+		},
+		{
+			args:     []string{"200000", "1000000000000"},
+			want:     "479742450",
+			estimate: 300,
 		},
 	})
 }
@@ -105,86 +176,4 @@ func NewFC(k int, factors []int) *FactorialChecker {
 		divs = append(divs, newRow)
 	}
 	return &FactorialChecker{factors, divs}
-}
-
-type GreedyPascalTriangleRow struct {
-	rows [][]int
-}
-
-func PascalIdx(row, col int) int {
-	return ShapeNumber(col+1, row+1)
-}
-
-func ShapeNumber(s, n int) int {
-	// https://en.wikipedia.org/wiki/Polygonal_number#Formula
-	return ((s-2)*n*n - (s-4)*n) / 2
-}
-
-// 0 indexed
-func (gpt *GreedyPascalTriangleRow) HalfRow(r int) []int {
-
-	for ln := len(gpt.rows); ln <= r; ln++ {
-		if ln <= 1 {
-			gpt.rows = append(gpt.rows, []int{})
-			continue
-		}
-		if ln == 2 {
-			gpt.rows = append(gpt.rows, []int{2})
-			continue
-		}
-
-		if ln%2000 == 0 {
-			fmt.Println(ln)
-		}
-
-		row := gpt.rows[ln-1]
-		newRow := []int{ln}
-		if ln%2 == 0 {
-			for j := 1; j < (ln-1)/2; j++ {
-				newRow = append(newRow, row[j-1]+row[j])
-			}
-			newRow = append(newRow, 2*row[len(row)-1])
-		} else {
-			for j := 1; j < ln/2; j++ {
-				newRow = append(newRow, row[j-1]+row[j])
-			}
-		}
-
-		gpt.rows = append(gpt.rows, newRow)
-	}
-	return gpt.rows[r]
-}
-
-type PascalTriangle struct {
-	Rows [][]int
-}
-
-func (pt *PascalTriangle) Row(i int) []int {
-	for len(pt.Rows) <= i {
-		if len(pt.Rows)%2000 == 0 {
-			fmt.Println(len(pt.Rows))
-		}
-		if len(pt.Rows) == 0 {
-			pt.Rows = append(pt.Rows, []int{1})
-			continue
-		}
-
-		prevRow := pt.Rows[len(pt.Rows)-1]
-		newRow := []int{1}
-		for i, v := range prevRow {
-			if i == len(prevRow)-1 {
-				newRow = append(newRow, 1)
-			} else {
-				newRow = append(newRow, v+prevRow[i+1])
-			}
-		}
-		pt.Rows = append(pt.Rows, newRow)
-	}
-	return pt.Rows[i]
-}
-
-type PascalPyramid struct{}
-
-func (py *PascalPyramid) Layer(i int) [][]int {
-	return nil
 }
