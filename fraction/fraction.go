@@ -7,6 +7,7 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
+// Have this implement mathable
 type Fraction[T any] struct {
 	N     T
 	D     T
