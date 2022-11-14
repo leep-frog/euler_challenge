@@ -5,7 +5,7 @@ import (
 	"github.com/leep-frog/euler_challenge/point"
 )
 
-func P181() *problem {
+func P184() *problem {
 	return intInputNode(181, func(o command.Output, r int) {
 		var pts []*point.Point[int]
 		for x := 1; x < r; x++ {

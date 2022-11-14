@@ -8,6 +8,18 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+/* Solution: If we have two points, draw a line that intersects those points
+and the origin. The area on the other side of the unit circle contains all
+slopes that make a triangle that contains the origin.
+
+This runs in O(n) time by starting with a line from radian=0 to radian=360
+and keeping track of the number of triangles that can be made with the set of
+'B' points and 'C' points (where all triangles made are A-B-C and sorted by radians
+such that radians(A) < radians(B) < radians(C))
+
+Note: interior of triangle does not include boundaries (as problem 184 demonstrates)
+*/
+
 func generatePoints456(n int) []*point.Point[int] {
 	var r []*point.Point[int]
 	xp, yp := 1, 1

@@ -167,14 +167,15 @@ func getProblems() []*problem {
 		P152(),
 		P153(),
 		P155(),
+		P184(),
+		P222(),
 		P234(),
 		P235(),
 		P236(),
-		P222(),
 		P252(),
 		P333(),
 		P456(),
-		P181(),
+		P154(),
 		// END_LIST (needed for file_generator.go)
 	}
 }
@@ -205,6 +206,21 @@ func intInputNode(num int, f func(command.Output, int), executions []*execution)
 			command.Arg[int](N, "", command.Positive[int]()),
 			&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
 				f(o, d.Int(N))
+				return nil
+			}},
+		),
+		executions: executions,
+	}
+}
+
+func intsInputNode(num, size int, f func(command.Output, []int), executions []*execution) *problem {
+	return &problem{
+		num: num,
+		n: command.SerialNodes(
+			descNode(num),
+			command.ListArg[int](N, "", size, 0),
+			&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
+				f(o, d.IntList(N))
 				return nil
 			}},
 		),
