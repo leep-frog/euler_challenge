@@ -9,6 +9,7 @@ import (
 var (
 	cachedPrimeFactors = map[int]map[int]int{}
 	cachedFactors      = map[int][]int{}
+	cachedFactorCounts = map[int]int{}
 	coprimeCache       = map[int]map[int]bool{}
 )
 
@@ -88,6 +89,44 @@ func Coprimes(a, b int, p *Generator[int]) bool {
 
 func MutablePrimeFactors(n int, p *Generator[int]) map[int]int {
 	return copy(PrimeFactors(n, p))
+}
+
+func FactorCount(n int, p *Generator[int]) int {
+	if n < 1 {
+		return 0
+	}
+	if n == 1 {
+		return 1
+	}
+	if r, ok := cachedFactorCounts[n]; ok {
+		return r
+	}
+
+	if IsPrime(n, p) {
+		cachedFactorCounts[n] = 2
+		return 2
+	}
+
+	for i := 0; ; i++ {
+		pi := int(p.Nth(i))
+		if n%pi != 0 {
+			continue
+		}
+
+		piCnt := 1
+		rem := n / pi
+		for ; rem%pi == 0; rem, piCnt = rem/pi, piCnt+1 {
+		}
+
+		// pi^piCnt * rem = n
+		fc := FactorCount(rem, p)
+
+		// Now every factor of rem can be used to create piCnt new factors.
+		// If we have one factor, f, then that factor can create:
+		// [f, f*pi, f*pi^2, f*pi^3, ..., f*pi^piCnt] (len = piCnt + 1)
+		cachedFactorCounts[n] = fc * (piCnt + 1)
+		return fc * (piCnt + 1)
+	}
 }
 
 func Factors(n int, p *Generator[int]) []int {
