@@ -7,6 +7,8 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
+// TODO: Fraction (maths.Mathable) and FractionI (from interface)
+
 // Have this implement mathable
 type Fraction[T any] struct {
 	N     T
@@ -43,9 +45,18 @@ func (f *Fraction[T]) Invert() *Fraction[T] {
 	return f
 }
 
-func (f *Fraction[T]) Plus(t T) *Fraction[T] {
-	f.N = f.plus(f.N, f.times(f.D, t))
-	return f
+func (f *Fraction[T]) Reciprocal() *Fraction[T] {
+	return &Fraction[T]{f.D, f.N, f.plus, f.times, f.lt}
+}
+
+func (f *Fraction[T]) Plus(that *Fraction[T]) *Fraction[T] {
+	n := f.plus(f.times(f.N, that.D), f.times(that.N, f.D))
+	d := f.times(f.D, that.D)
+	return &Fraction[T]{n, d, f.plus, f.times, f.lt}
+}
+
+func (f *Fraction[T]) Code() string {
+	return f.String()
 }
 
 func (f *Fraction[T]) String() string {

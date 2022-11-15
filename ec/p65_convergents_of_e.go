@@ -37,7 +37,7 @@ func P65() *problem {
 					if f == nil {
 						f = fraction.NewBig(maths.NewInt(int64(k)), maths.One())
 					} else {
-						f = f.Invert().Plus(maths.NewInt(int64(k)))
+						f = f.Invert().Plus(fraction.NewBig(maths.NewInt(int64(k)), maths.One()))
 					}
 				}
 				o.Stdoutln(f.N.DigitSum())

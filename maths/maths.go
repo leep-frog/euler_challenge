@@ -586,14 +586,16 @@ func (s *Set[K]) For(f func(K) bool) {
 	s.m.ForKs(f)
 }
 
-func (s *Set[K]) Add(k K) {
-	if s == nil {
-		fmt.Println("NOOO1")
+func (s *Set[K]) Add(ks ...K) {
+	for _, k := range ks {
+		if s == nil {
+			fmt.Println("NOOO1")
+		}
+		if s.m == nil {
+			fmt.Println("NOOO2")
+		}
+		s.m.Set(k, true)
 	}
-	if s.m == nil {
-		fmt.Println("NOOO2")
-	}
-	s.m.Set(k, true)
 }
 
 func (s *Set[K]) Delete(k K) {
