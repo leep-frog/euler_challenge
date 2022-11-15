@@ -18,8 +18,7 @@ var (
 	// filter out tests
 	timeLimit  = 3.0
 	testFilter = func(cct *codingChallengeTest) bool {
-		return cct.num == 65
-		//return true
+		return true && cct.num == 156
 	}
 )
 
@@ -34,13 +33,23 @@ type codingChallengeTest struct {
 	elapsed float64
 }
 
+func (cct *codingChallengeTest) shouldSkip() (string, bool) {
+	if cct.skip != "" {
+		return cct.skip, true
+	}
+	if timeLimit != 0 && cct.estimate >= timeLimit {
+		return fmt.Sprintf("Skipping due to test length (limit=%.2f, estimate=%.2f)", timeLimit, cct.estimate), true
+	}
+	return "", false
+}
+
 func TestAll(t *testing.T) {
 	var tests []*codingChallengeTest
 	for _, p := range getProblems() {
-		for exNum, ex := range p.executions {
+		for _, ex := range p.executions {
 			tests = append(tests, &codingChallengeTest{
 				p.num,
-				fmt.Sprintf("Problem %d, execution %d", p.num, exNum+1),
+				fmt.Sprintf("Problem %d, args %v", p.num, ex.args),
 				append([]string{fmt.Sprintf("%d", p.num)}, ex.args...),
 				[]string{ex.want},
 				ex.estimate,
@@ -52,9 +61,12 @@ func TestAll(t *testing.T) {
 
 	var totalEst float64
 	for _, test := range tests {
-		totalEst += test.estimate
+		if _, skip := test.shouldSkip(); !skip {
+			totalEst += test.estimate
+		}
 	}
-	t.Logf("Test estimate: %.2f", totalEst)
+	minEst, secEst := int(totalEst)/60, int(totalEst)%60
+	t.Logf("Test estimate: %dm:%ds", minEst, secEst)
 
 	for _, test := range tests {
 		test.test(t)
@@ -79,11 +91,8 @@ func (ct *codingChallengeTest) test(t *testing.T) {
 		if ct.estimate >= 5 {
 			t.Logf("ESTIMATED TIME: %.2fs", ct.estimate)
 		}
-		if ct.skip != "" {
-			t.Skip(ct.skip)
-		}
-		if timeLimit != 0 && ct.estimate >= timeLimit {
-			t.Skipf("Skipping due to test length (limit=%.2f, estimate=%.2f)", timeLimit, ct.estimate)
+		if msg, skip := ct.shouldSkip(); skip {
+			t.Skip(msg)
 		}
 
 		start := time.Now()

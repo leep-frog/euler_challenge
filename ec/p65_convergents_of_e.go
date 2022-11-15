@@ -18,7 +18,7 @@ func P65() *problem {
 			&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
 				n := d.Int(N)
 
-				var f *fraction.Fraction[*maths.Int]
+				var f *fraction.FractionI[*maths.Int]
 				for idx := n - 1; idx >= 0; idx-- {
 					k := 1
 					if idx%3 == 2 {
@@ -35,9 +35,9 @@ func P65() *problem {
 					}
 
 					if f == nil {
-						f = fraction.NewBig(maths.NewInt(int64(k)), maths.One())
+						f = fraction.NewI(maths.NewInt(int64(k)), maths.One())
 					} else {
-						f = f.Invert().Plus(fraction.NewBig(maths.NewInt(int64(k)), maths.One()))
+						f = f.Reciprocal().Plus(fraction.NewI(maths.NewInt(int64(k)), maths.One()))
 					}
 				}
 				o.Stdoutln(f.N.DigitSum())

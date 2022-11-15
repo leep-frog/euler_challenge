@@ -7,55 +7,45 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
-// TODO: Fraction (maths.Mathable) and FractionI (from interface)
+type Fraction[T maths.Mathable] struct {
+	N T
+	D T
+}
 
-// Have this implement mathable
-type Fraction[T any] struct {
-	N     T
-	D     T
-	plus  func(T, T) T
-	times func(T, T) T
-	lt    func(T, T) bool
+type FractionI[T maths.Operable[T]] struct {
+	N T
+	D T
 }
 
 func New[T maths.Mathable](n, d T) *Fraction[T] {
-	return &Fraction[T]{
-		n,
-		d,
-		func(a, b T) T { return a + b },
-		func(a, b T) T { return a * b },
-		func(a, b T) bool { return a < b },
-	}
+	return &Fraction[T]{n, d}
 }
 
-func NewBig(n, d *maths.Int) *Fraction[*maths.Int] {
-	return &Fraction[*maths.Int]{
-		n,
-		d,
-		func(a, b *maths.Int) *maths.Int { return a.Plus(b) },
-		func(a, b *maths.Int) *maths.Int { return a.Times(b) },
-		func(a, b *maths.Int) bool { return a.LT(b) },
-	}
-}
-
-func (f *Fraction[T]) Invert() *Fraction[T] {
-	tmp := f.N
-	f.N = f.D
-	f.D = tmp
-	return f
+func NewI[T maths.Operable[T]](n, d T) *FractionI[T] {
+	return &FractionI[T]{n, d}
 }
 
 func (f *Fraction[T]) Reciprocal() *Fraction[T] {
-	return &Fraction[T]{f.D, f.N, f.plus, f.times, f.lt}
+	return New(f.D, f.N)
+}
+
+func (f *FractionI[T]) Reciprocal() *FractionI[T] {
+	return NewI(f.D, f.N)
 }
 
 func (f *Fraction[T]) Plus(that *Fraction[T]) *Fraction[T] {
-	n := f.plus(f.times(f.N, that.D), f.times(that.N, f.D))
-	d := f.times(f.D, that.D)
-	return &Fraction[T]{n, d, f.plus, f.times, f.lt}
+	return &Fraction[T]{f.N*that.D + f.D*that.N, f.D * that.D}
+}
+
+func (f *FractionI[T]) Plus(that *FractionI[T]) *FractionI[T] {
+	return &FractionI[T]{f.N.Times(that.D).Plus(f.D.Times(that.N)), f.D.Times(that.D)}
 }
 
 func (f *Fraction[T]) Code() string {
+	return f.String()
+}
+
+func (f *FractionI[T]) Code() string {
 	return f.String()
 }
 
@@ -63,12 +53,24 @@ func (f *Fraction[T]) String() string {
 	return fmt.Sprintf("%v/%v", f.N, f.D)
 }
 
+func (f *FractionI[T]) String() string {
+	return fmt.Sprintf("%v/%v", f.N, f.D)
+}
+
 func (f *Fraction[T]) Copy() *Fraction[T] {
-	return &Fraction[T]{f.N, f.D, f.plus, f.times, f.lt}
+	return New(f.N, f.D)
+}
+
+func (f *FractionI[T]) Copy() *FractionI[T] {
+	return NewI(f.N, f.D)
 }
 
 func (f *Fraction[T]) LT(that *Fraction[T]) bool {
-	return f.lt(f.times(f.N, that.D), f.times(f.D, that.N))
+	return f.N*that.D < f.D*that.N
+}
+
+func (f *FractionI[T]) LT(that *FractionI[T]) bool {
+	return f.N.Times(that.D).LT(f.D.Times(that.N))
 }
 
 // Return a fraction to allow for chaining.
