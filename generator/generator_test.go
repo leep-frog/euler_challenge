@@ -162,8 +162,9 @@ func TestContains(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
+			iter := test.g.Iterator()
 			for i := 0; i < test.nexts; i++ {
-				test.g.Next()
+				iter.Next()
 			}
 			if got := test.g.Contains(test.v); got != test.want {
 				t.Errorf("InCycle(%d) returned %v; want %v", test.v, got, test.want)
@@ -216,17 +217,18 @@ func TestGenerators(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			if test.g.len() != 0 {
-				t.Errorf("Generator.len() returned %d; want 0", test.g.len())
+			iter := test.g.Iterator()
+			if iter.Idx != 0 || len(test.g.values) != 0 {
+				t.Errorf("Generator.len() returned %d; want 0", iter.Idx)
 			}
 
 			var nexts, lasts, nths []int
 			for i := range test.want {
-				nexts = append(nexts, test.g.Next())
-				lasts = append(lasts, test.g.Last())
+				nexts = append(nexts, iter.Next())
+				lasts = append(lasts, iter.Last())
 				nths = append(nths, test.g.Nth(i))
-				if test.g.len() != i+1 {
-					t.Errorf("Generator.len() returned %d; want %d", test.g.len(), i+1)
+				if iter.Idx != i+1 || len(test.g.values) != i+1 {
+					t.Errorf("Generator.len() returned %d; want %d", len(test.g.values), i+1)
 				}
 			}
 
@@ -248,9 +250,9 @@ func TestGenerators(t *testing.T) {
 func TestBigGenerators(t *testing.T) {
 	fakeCache(t)
 	for _, test := range []struct {
-		name string
-		g    *Generator[*maths.Int]
-		want []int
+		name     string
+		g        *Generator[*maths.Int]
+		want     []int
 		wantInts []*maths.Int
 	}{
 		{
@@ -264,36 +266,37 @@ func TestBigGenerators(t *testing.T) {
 			name: "Generates cubes",
 			g:    PowerGenerator(3),
 			want: []int{
-				1, 8, 27, 64,125, 216, 343,512,
+				0, 1, 8, 27, 64, 125, 216, 343, 512,
 			},
 		},
 		{
 			name: "Generates powers of 4",
 			g:    PowerGenerator(4),
 			want: []int{
-				1, 16, 81, 256,
+				0, 1, 16, 81, 256,
 			},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 
-			if test.g.len() != 0 {
-				t.Errorf("Generator.len() returned %d; want 0", test.g.len())
+			if len(test.g.values) != 0 {
+				t.Errorf("Generator.len() returned %d; want 0", len(test.g.values))
 			}
 
-			want := test.wantInts 
+			want := test.wantInts
 			if len(want) == 0 {
 				for _, w := range test.want {
 					want = append(want, maths.NewInt(int64(w)))
 				}
 			}
 			var nexts, lasts, nths []*maths.Int
+			iter := test.g.Iterator()
 			for i := range want {
-				nexts = append(nexts, test.g.Next())
-				lasts = append(lasts, test.g.Last())
+				nexts = append(nexts, iter.Next())
+				lasts = append(lasts, iter.Last())
 				nths = append(nths, test.g.Nth(i))
-				if test.g.len() != i+1 {
-					t.Errorf("Generator.len() returned %d; want %d", test.g.len(), i+1)
+				if len(test.g.values) != i+1 || iter.Idx != i+1 {
+					t.Errorf("Generator.len() returned %d; want %d", len(test.g.values), i+1)
 				}
 			}
 

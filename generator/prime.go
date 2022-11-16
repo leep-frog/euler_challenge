@@ -13,6 +13,13 @@ var (
 	coprimeCache       = map[int]map[int]bool{}
 )
 
+func clearCaches() {
+	cachedPrimeFactors = map[int]map[int]int{}
+	cachedFactors = map[int][]int{}
+	cachedFactorCounts = map[int]int{}
+	coprimeCache = map[int]map[int]bool{}
+}
+
 func Primes() *Generator[int] {
 	return newIntGen(&primer{})
 }
@@ -92,19 +99,51 @@ func MutablePrimeFactors(n int, p *Generator[int]) map[int]int {
 }
 
 func FactorCount(n int, p *Generator[int]) int {
+	return CompositeCacher(n, p, cachedFactorCounts, func(i int) int {
+		if i == 0 {
+			return 0
+		}
+		if i == 1 {
+			return 1
+		}
+		// Factors are 1 and the prime number itself
+		return 2
+	}, func(primeFactor, otherFactor int) int {
+		primeCnt := 1
+		rem := otherFactor
+		for ; rem%primeFactor == 0; rem, primeCnt = rem/primeFactor, primeCnt+1 {
+		}
+
+		// prime^primeCnt * rem = n
+		fc := FactorCount(rem, p)
+
+		// Now every factor of rem can be used to create primeCnt new factors.
+		// If we have one factor, f, then that factor can create:
+		// [f, f*pi, f*pi^2, f*pi^3, ..., f*pi^piCnt] (len = piCnt + 1)
+		cachedFactorCounts[n] = fc * (primeCnt + 1)
+		return fc * (primeCnt + 1)
+	})
+}
+
+// CompositeCacher evaluates data for a number, n, by combining info already known
+// for two of it's factors (primeFactor being the smallest factor which is inherently prime,
+// and otherFactor which is the largest factor of n != n). If n is zero, one, or prime,
+// then the value generated is created from the provided forZeroOnePrime function.
+func CompositeCacher[T any](n int, p *Generator[int], cache map[int]T, forZeroOnePrime func(int) T, forNonPrime func(primeFactor, otherFactor int) T) T {
 	if n < 1 {
-		return 0
+		return forZeroOnePrime(0)
 	}
 	if n == 1 {
-		return 1
+		return forZeroOnePrime(1)
 	}
-	if r, ok := cachedFactorCounts[n]; ok {
+	if r, ok := cache[n]; ok {
 		return r
 	}
 
 	if IsPrime(n, p) {
-		cachedFactorCounts[n] = 2
-		return 2
+		r := forZeroOnePrime(n)
+		cache[n] = r
+		return r
 	}
 
 	for i := 0; ; i++ {
@@ -113,49 +152,27 @@ func FactorCount(n int, p *Generator[int]) int {
 			continue
 		}
 
-		piCnt := 1
-		rem := n / pi
-		for ; rem%pi == 0; rem, piCnt = rem/pi, piCnt+1 {
-		}
-
-		// pi^piCnt * rem = n
-		fc := FactorCount(rem, p)
-
-		// Now every factor of rem can be used to create piCnt new factors.
-		// If we have one factor, f, then that factor can create:
-		// [f, f*pi, f*pi^2, f*pi^3, ..., f*pi^piCnt] (len = piCnt + 1)
-		cachedFactorCounts[n] = fc * (piCnt + 1)
-		return fc * (piCnt + 1)
+		r := forNonPrime(pi, n/pi)
+		cache[n] = r
+		return r
 	}
 }
 
 func Factors(n int, p *Generator[int]) []int {
-	if n < 1 {
-		return nil
-	}
-	if n == 1 {
-		return []int{1}
-	}
-	if r, ok := cachedFactors[n]; ok {
-		return r
-	}
-
-	if IsPrime(n, p) {
-		r := []int{1, n}
-		cachedFactors[n] = r
-		return r
-	}
-
-	for i := 0; ; i++ {
-		pi := int(p.Nth(i))
-		if n%pi != 0 {
-			continue
+	return CompositeCacher(n, p, cachedFactors, func(i int) []int {
+		if n < 1 {
+			return nil
 		}
-		// pi is guaranteed to be the smallest factor and n/pi the largest
-		additional := Factors(n/pi, p)
+		if n == 1 {
+			return []int{1}
+		}
+		return []int{1, n}
+	}, func(primeFactor, otherFactor int) []int {
+		// primeFactor is guaranteed to be the smallest factor and (otherFactor = n/primeFactor) the largest.
+		additional := Factors(otherFactor, p)
 		var mAdditional []int
 		for _, a := range additional {
-			mAdditional = append(mAdditional, a*pi)
+			mAdditional = append(mAdditional, a*primeFactor)
 		}
 		// merge sort the two
 		// TODO: merge sort package
@@ -179,9 +196,8 @@ func Factors(n int, p *Generator[int]) []int {
 				merged = append(merged, contender)
 			}
 		}
-		cachedFactors[n] = merged
 		return merged
-	}
+	})
 }
 
 func PrimeFactors(n int, p *Generator[int]) map[int]int {
