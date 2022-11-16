@@ -30,7 +30,7 @@ func TestFactoring(t *testing.T) {
 		},
 		{
 			4,
-			[]int{1, 4},
+			[]int{1, 2, 4},
 		},
 		{
 			5,
@@ -46,8 +46,13 @@ func TestFactoring(t *testing.T) {
 		},
 		{
 			// Ensure functions are efficient for large primes.
-			Primes().Nth(1_000_000),
+			15485867, // = Primes().Nth(1_000_000),
 			[]int{1, 15485867},
+		},
+		{
+			// Ensure functions are efficient for large primes.
+			15485866, // = Primes().Nth(1_000_000) - 1,
+			[]int{1, 2, 11, 22, 703903, 1407806, 7742933, 15485866},
 		},
 	} {
 		t.Run(fmt.Sprintf("Factors fo %d", test.n), func(t *testing.T) {
