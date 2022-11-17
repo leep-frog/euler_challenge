@@ -201,6 +201,7 @@ func Factors(n int, p *Generator[int]) []int {
 }
 
 func PrimeFactors(n int, p *Generator[int]) map[int]int {
+	// TODO: update this to use composite cache
 	if n <= 1 {
 		return nil
 	}

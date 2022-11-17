@@ -1081,6 +1081,14 @@ func QuadraticRoots(a, b, c float64) []float64 {
 	}
 }
 
+func IntFromDigits(digits []int) *Int {
+	var r []string
+	for _, d := range digits {
+		r = append(r, fmt.Sprintf("%d", d))
+	}
+	return MustIntFromString(strings.Join(r, ""))
+}
+
 func FromDigits(digits []int) int {
 	n := 0
 	coef := 1
