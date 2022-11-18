@@ -136,7 +136,7 @@ func (tb *TromBoard) Hash() string {
 	return fmt.Sprintf("%v", tb.heights)
 }
 
-func (tb *TromBoard) cont2(depth int, curX, curY, tromCnt int, m map[string]int) int {
+func (tb *TromBoard) NumberOfArrangements(depth int, curX, curY, tromCnt int, m map[string]int) int {
 	// See if we already know how many ways we can complete the current shape.
 	if v, ok := m[tb.Hash()]; ok {
 		return v
@@ -165,7 +165,7 @@ func (tb *TromBoard) cont2(depth int, curX, curY, tromCnt int, m map[string]int)
 		if tb.Add(tromCnt, t, curX, curY) {
 			//board
 			tromCnt++
-			cnt += tb.cont2(depth+1, curX, curY, tromCnt, m)
+			cnt += tb.NumberOfArrangements(depth+1, curX, curY, tromCnt, m)
 			tromCnt--
 			tb.Remove(t, curX, curY)
 		}
@@ -176,7 +176,7 @@ func (tb *TromBoard) cont2(depth int, curX, curY, tromCnt int, m map[string]int)
 
 func P161() *problem {
 	return intsInputNode(161, 2, func(o command.Output, dim []int) {
-		o.Stdoutln(NewTB(dim[0], dim[1]).cont2(0, 0, 0, 1, map[string]int{}))
+		o.Stdoutln(NewTB(dim[0], dim[1]).NumberOfArrangements(0, 0, 0, 1, map[string]int{}))
 	}, []*execution{
 		{
 			args: []string{"2", "9"},
