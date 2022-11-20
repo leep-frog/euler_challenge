@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/leep-frog/euler_challenge/generator"
+	"github.com/leep-frog/euler_challenge/maths"
 )
 
 func TestNew(t *testing.T) {
@@ -29,10 +30,157 @@ func TestNew(t *testing.T) {
 		{1, -1, -1, 1},
 	} {
 		t.Run(fmt.Sprintf("New(%d, %d)", test.n, test.d), func(t *testing.T) {
-
-			if diff := cmp.Diff(New(test.n, test.d), &Fraction{test.wantN, test.wantD}); diff != "" {
+			// Test New
+			if diff := cmp.Diff(&Fraction{test.wantN, test.wantD}, New(test.n, test.d)); diff != "" {
 				t.Errorf("New(%d, %d) returned incorrect fraction (-want, +got):\n%s", test.n, test.d, diff)
 			}
+
+			// Test NewI
+			fI := NewI(maths.NewInt(int64(test.n)), maths.NewInt(int64(test.d)))
+			wantI := &FractionI[*maths.Int]{maths.NewInt(int64(test.wantN)), maths.NewInt(int64(test.wantD))}
+			fmt.Println("FI", fI, wantI)
+			if diff := cmp.Diff(wantI, fI, maths.CmpOpts()...); diff != "" {
+				t.Errorf("NewI(%d, %d) returned incorrect fraction (-want, +got):\n%s", test.n, test.d, diff)
+			}
+		})
+	}
+}
+
+// Also tests Times and Reciprocal
+func TestDiv(t *testing.T) {
+	for _, test := range []struct {
+		name string
+		f    *Fraction
+		g    *Fraction
+		want *Fraction
+	}{
+		{
+			"Divide by 1",
+			New(1, 1),
+			New(1, 1),
+			New(1, 1),
+		},
+		{
+			"Divide by integers",
+			New(9, 1),
+			New(71, 1),
+			New(9, 71),
+		},
+		{
+			"Divide by integer reciprocal",
+			New(9, 1),
+			New(1, 71),
+			New(9*71, 1),
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			if diff := cmp.Diff(test.want, test.f.Div(test.g)); diff != "" {
+				t.Errorf("%v.Div(%v) returned incorrect fraction (-want, +got):\n%s", test.f, test.g, diff)
+			}
+
+			fi := fToI(test.f)
+			gi := fToI(test.g)
+			wantI := fToI(test.want)
+			if diff := cmp.Diff(wantI, fi.Div(gi), maths.CmpOpts()...); diff != "" {
+				t.Errorf("%v.Div(%v) returned incorrect fraction (-want, +got):\n%s", test.f, test.g, diff)
+			}
+		})
+	}
+}
+
+func fToI(f *Fraction) *FractionI[*maths.Int] {
+	return NewI(maths.NewInt(int64(f.N)), maths.NewInt(int64(f.D)))
+}
+
+func toI(n, d int) *FractionI[*maths.Int] {
+	return NewI(maths.NewInt(int64(n)), maths.NewInt(int64(d)))
+}
+
+// Also tests plus
+func TestMinus(t *testing.T) {
+	for _, test := range []struct {
+		name string
+		f    *Fraction
+		g    *Fraction
+		want *Fraction
+	}{
+		{
+			"1 - 1",
+			New(1, 1),
+			New(1, 1),
+			New(0, 1),
+		},
+		{
+			"Same fraction",
+			New(9, 1),
+			New(9, 1),
+			New(0, 1),
+		},
+		{
+			"Same number",
+			New(9, 3),
+			New(18, 6),
+			New(0, 18),
+		},
+		{
+			"Different denominators",
+			New(1, 3),
+			New(1, 24),
+			New(7*3, 24*3),
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			if diff := cmp.Diff(test.want, test.f.Minus(test.g)); diff != "" {
+				t.Errorf("%v.Minus(%v) returned incorrect fraction (-want, +got):\n%s", test.f, test.g, diff)
+			}
+
+			fi := fToI(test.f)
+			gi := fToI(test.g)
+			wantI := fToI(test.want)
+			if diff := cmp.Diff(wantI, fi.Minus(gi), maths.CmpOpts()...); diff != "" {
+				t.Errorf("%v.Minus(%v) returned incorrect fraction (-want, +got):\n%s", test.f, test.g, diff)
+			}
+		})
+	}
+}
+
+func TestLT(t *testing.T) {
+	for _, test := range []struct {
+		name        string
+		f           *Fraction
+		g           *Fraction
+		want        bool
+		wantReverse bool
+	}{
+		{
+			name: "same number",
+			f:    New(1, 1),
+			g:    New(1, 1),
+		},
+		{
+			name:        "different numbers",
+			f:           New(2, 1),
+			g:           New(1, 1),
+			wantReverse: true,
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			if diff := cmp.Diff(test.want, test.f.LT(test.g)); diff != "" {
+				t.Errorf("(%v).LT(%v) returned wrong value (-want, +got):\n%s", test.f, test.g, diff)
+			}
+			if diff := cmp.Diff(test.wantReverse, test.g.LT(test.f)); diff != "" {
+				t.Errorf("(%v).LT(%v) returned wrong value (-want, +got):\n%s", test.g, test.f, diff)
+			}
+
+			fi := fToI(test.f)
+			gi := fToI(test.g)
+			if diff := cmp.Diff(test.want, fi.LT(gi)); diff != "" {
+				t.Errorf("(%v).LT(%v) returned wrong value (-want, +got):\n%s", test.f, test.g, diff)
+			}
+			if diff := cmp.Diff(test.wantReverse, gi.LT(fi)); diff != "" {
+				t.Errorf("(%v).LT(%v) returned wrong value (-want, +got):\n%s", gi, fi, diff)
+			}
+
 		})
 	}
 }
@@ -43,6 +191,23 @@ func TestSimplify(t *testing.T) {
 		f    *Fraction
 		want *Fraction
 	}{
+		// Negative numbers
+		{
+			&Fraction{-1, -1},
+			&Fraction{1, 1},
+		},
+		{
+			&Fraction{-1, 1},
+			&Fraction{-1, 1},
+		},
+		{
+			&Fraction{1, -1},
+			&Fraction{-1, 1},
+		},
+		{
+			&Fraction{1, 1},
+			&Fraction{1, 1},
+		},
 		// Zero over zero
 		{
 			New(0, 0),
@@ -87,9 +252,19 @@ func TestSimplify(t *testing.T) {
 			New(2*2*2*2*2*3*7, 2*2*2*7*13),
 			New(2*2*3, 13),
 		},
+		/* Useful for commenting out tests. */
 	} {
 		t.Run(fmt.Sprintf("(%v).Simplify()", test.f), func(t *testing.T) {
+			if diff := cmp.Diff(test.want, Simplify(test.f.N, test.f.D, p)); diff != "" {
+				t.Errorf("Simplify(%v) returned incorrect fraction (-want, +got):\n%s", test.f, diff)
+			}
+
 			if diff := cmp.Diff(test.want, test.f.Copy().Simplify(p)); diff != "" {
+				t.Errorf("(%v).Simplify() returned incorrect fraction (-want, +got):\n%s", test.f, diff)
+			}
+
+			// Don't use Copy() which fixed signs
+			if diff := cmp.Diff(test.want, (&Fraction{test.f.N, test.f.D}).Simplify(p)); diff != "" {
 				t.Errorf("(%v).Simplify() returned incorrect fraction (-want, +got):\n%s", test.f, diff)
 			}
 		})

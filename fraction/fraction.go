@@ -12,7 +12,15 @@ type Fraction struct {
 	D int
 }
 
-type FractionI[T maths.Operable[T]] struct {
+// TODO: Have cleared definition on mutability (does negate just return or also modify existing)?
+type Fractionable[T any] interface {
+	maths.Operable[T]
+	Abs() T
+	IsNegative() bool
+	Negate() T
+}
+
+type FractionI[T Fractionable[T]] struct {
 	N T
 	D T
 }
@@ -25,16 +33,30 @@ func New(n, d int) *Fraction {
 	return &Fraction{absN, absD}
 }
 
-func NewI[T maths.Operable[T]](n, d T) *FractionI[T] {
-	return &FractionI[T]{n, d}
+func NewI[T Fractionable[T]](n, d T) *FractionI[T] {
+	absN, absD := n.Abs(), d.Abs()
+	fmt.Println("ABS", absN, absD, n, d)
+	if n.Times(d).IsNegative() {
+		fmt.Println("NEG", n.Times(d))
+		absN = absN.Negate()
+	}
+	return &FractionI[T]{absN, absD}
 }
 
 func (f *Fraction) Div(that *Fraction) *Fraction {
 	return f.Times(that.Reciprocal())
 }
 
+func (f *FractionI[T]) Div(that *FractionI[T]) *FractionI[T] {
+	return f.Times(that.Reciprocal())
+}
+
 func (f *Fraction) Times(that *Fraction) *Fraction {
 	return New(f.N*that.N, f.D*that.D)
+}
+
+func (f *FractionI[T]) Times(that *FractionI[T]) *FractionI[T] {
+	return NewI(f.N.Times(that.N), f.D.Times(that.D))
 }
 
 func (f *Fraction) Reciprocal() *Fraction {
@@ -57,6 +79,10 @@ func (f *FractionI[T]) Plus(that *FractionI[T]) *FractionI[T] {
 	return &FractionI[T]{f.N.Times(that.D).Plus(f.D.Times(that.N)), f.D.Times(that.D)}
 }
 
+func (f *FractionI[T]) Minus(that *FractionI[T]) *FractionI[T] {
+	return f.Plus(that.Negate())
+}
+
 func (f *Fraction) Code() string {
 	return f.String()
 }
@@ -77,6 +103,10 @@ func (f *Fraction) Negate() *Fraction {
 	return New(-f.N, f.D)
 }
 
+func (f *FractionI[T]) Negate() *FractionI[T] {
+	return NewI(f.N.Negate(), f.D)
+}
+
 func (f *Fraction) Copy() *Fraction {
 	return New(f.N, f.D)
 }
@@ -91,6 +121,10 @@ func (f *Fraction) LT(that *Fraction) bool {
 
 func (f *FractionI[T]) LT(that *FractionI[T]) bool {
 	return f.N.Times(that.D).LT(f.D.Times(that.N))
+}
+
+func Simplify(n, d int, primes *generator.Generator[int]) *Fraction {
+	return New(n, d).Simplify(primes)
 }
 
 // Return a simplified fraction.
