@@ -18,11 +18,19 @@ type FractionI[T maths.Operable[T]] struct {
 }
 
 func New[T maths.Mathable](n, d T) *Fraction[T] {
-	return &Fraction[T]{n, d}
+	absN, absD := maths.Abs(n), maths.Abs(d)
+	if n*d < 0 {
+		absN = -absN
+	}
+	return &Fraction[T]{absN, absD}
 }
 
 func NewI[T maths.Operable[T]](n, d T) *FractionI[T] {
 	return &FractionI[T]{n, d}
+}
+
+func (f *Fraction[T]) Times(that *Fraction[T]) *Fraction[T] {
+	return New(f.N*that.N, f.D*that.D)
 }
 
 func (f *Fraction[T]) Reciprocal() *Fraction[T] {
