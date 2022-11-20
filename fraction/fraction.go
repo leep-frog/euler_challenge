@@ -7,9 +7,9 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
-type Fraction[T maths.Mathable] struct {
-	N T
-	D T
+type Fraction struct {
+	N int
+	D int
 }
 
 type FractionI[T maths.Operable[T]] struct {
@@ -17,23 +17,27 @@ type FractionI[T maths.Operable[T]] struct {
 	D T
 }
 
-func New[T maths.Mathable](n, d T) *Fraction[T] {
+func New(n, d int) *Fraction {
 	absN, absD := maths.Abs(n), maths.Abs(d)
 	if n*d < 0 {
 		absN = -absN
 	}
-	return &Fraction[T]{absN, absD}
+	return &Fraction{absN, absD}
 }
 
 func NewI[T maths.Operable[T]](n, d T) *FractionI[T] {
 	return &FractionI[T]{n, d}
 }
 
-func (f *Fraction[T]) Times(that *Fraction[T]) *Fraction[T] {
+func (f *Fraction) Div(that *Fraction) *Fraction {
+	return f.Times(that.Reciprocal())
+}
+
+func (f *Fraction) Times(that *Fraction) *Fraction {
 	return New(f.N*that.N, f.D*that.D)
 }
 
-func (f *Fraction[T]) Reciprocal() *Fraction[T] {
+func (f *Fraction) Reciprocal() *Fraction {
 	return New(f.D, f.N)
 }
 
@@ -41,15 +45,19 @@ func (f *FractionI[T]) Reciprocal() *FractionI[T] {
 	return NewI(f.D, f.N)
 }
 
-func (f *Fraction[T]) Plus(that *Fraction[T]) *Fraction[T] {
-	return &Fraction[T]{f.N*that.D + f.D*that.N, f.D * that.D}
+func (f *Fraction) Plus(that *Fraction) *Fraction {
+	return &Fraction{f.N*that.D + f.D*that.N, f.D * that.D}
+}
+
+func (f *Fraction) Minus(that *Fraction) *Fraction {
+	return f.Plus(that.Negate())
 }
 
 func (f *FractionI[T]) Plus(that *FractionI[T]) *FractionI[T] {
 	return &FractionI[T]{f.N.Times(that.D).Plus(f.D.Times(that.N)), f.D.Times(that.D)}
 }
 
-func (f *Fraction[T]) Code() string {
+func (f *Fraction) Code() string {
 	return f.String()
 }
 
@@ -57,7 +65,7 @@ func (f *FractionI[T]) Code() string {
 	return f.String()
 }
 
-func (f *Fraction[T]) String() string {
+func (f *Fraction) String() string {
 	return fmt.Sprintf("%v/%v", f.N, f.D)
 }
 
@@ -65,7 +73,11 @@ func (f *FractionI[T]) String() string {
 	return fmt.Sprintf("%v/%v", f.N, f.D)
 }
 
-func (f *Fraction[T]) Copy() *Fraction[T] {
+func (f *Fraction) Negate() *Fraction {
+	return New(-f.N, f.D)
+}
+
+func (f *Fraction) Copy() *Fraction {
 	return New(f.N, f.D)
 }
 
@@ -73,7 +85,7 @@ func (f *FractionI[T]) Copy() *FractionI[T] {
 	return NewI(f.N, f.D)
 }
 
-func (f *Fraction[T]) LT(that *Fraction[T]) bool {
+func (f *Fraction) LT(that *Fraction) bool {
 	return f.N*that.D < f.D*that.N
 }
 
@@ -81,31 +93,31 @@ func (f *FractionI[T]) LT(that *FractionI[T]) bool {
 	return f.N.Times(that.D).LT(f.D.Times(that.N))
 }
 
-// Return a fraction to allow for chaining.
-func Simplify(n, d int, p *generator.Generator[int]) *Fraction[int] {
-	if d == 0 {
-		if n == 0 {
+// Return a simplified fraction.
+func (f *Fraction) Simplify(primes *generator.Generator[int]) *Fraction {
+	if f.D == 0 {
+		if f.N == 0 {
 			return New(0, 0)
 		}
 		return New(1, 0)
 	}
-	if n == 0 {
+	if f.N == 0 {
 		// we know d isn't 0
 		return New(0, 1)
 	}
 
 	sign := 1
-	if d < 0 {
-		d *= -1
+	if f.D < 0 {
+		f.D *= -1
 		sign *= -1
 	}
-	if n < 0 {
-		n *= -1
+	if f.N < 0 {
+		f.N *= -1
 		sign *= -1
 	}
 
-	nfs := generator.MutablePrimeFactors(n, p)
-	dfs := generator.MutablePrimeFactors(d, p)
+	nfs := generator.MutablePrimeFactors(f.N, primes)
+	dfs := generator.MutablePrimeFactors(f.D, primes)
 
 	for k, v := range nfs {
 		if dv, ok := dfs[k]; ok {
