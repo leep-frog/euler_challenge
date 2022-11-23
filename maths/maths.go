@@ -332,7 +332,7 @@ func Join[T any](ts []T, s string) string {
 	return strings.Join(r, s)
 }
 
-func (i *Bint) Palindrome() bool {
+func (i *Int) Palindrome() bool {
 	s := i.String()
 	for idx := range s {
 		if s[idx:idx+1] != s[len(s)-idx-1:len(s)-idx] {
@@ -482,7 +482,7 @@ func Palindrome(n int) bool {
 	return true
 }
 
-func (i *Bint) Reverse() *Bint {
+func (i *Int) Reverse() *Int {
 	r := IntFromDigits(Reverse(i.Digits()))
 	if i.Negative() {
 		return r.Negation()
@@ -490,7 +490,7 @@ func (i *Bint) Reverse() *Bint {
 	return r
 }
 
-func Sum(is ...*Bint) *Bint {
+func Sum(is ...*Int) *Int {
 	if len(is) == 0 {
 		return Zero()
 	}
@@ -525,15 +525,15 @@ func SortedKeys[K comparable, V any](m map[K]V) []K {
 	return ks
 }*/
 
-func (i *Bint) PP() {
+func (i *Int) PP() {
 	*i = *(i.Minus(One()))
 }
 
-func (i *Bint) MM() {
+func (i *Int) MM() {
 	*i = *(i.Minus(One()))
 }
 
-func BigMin(is []*Bint) *Bint {
+func BigMin(is []*Int) *Int {
 	if len(is) == 0 {
 		return Zero()
 	}
@@ -547,22 +547,22 @@ func BigMin(is []*Bint) *Bint {
 }
 
 var (
-	powCache   = map[int][]*Bint{}
+	powCache   = map[int][]*Int{}
 	hexLetters = []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"}
 )
 
 func ToHex(i int) string {
-	return NewBint(i).Hex()
+	return NewInt(i).Hex()
 }
 
-func BigPow(a, b int) *Bint {
+func BigPow(a, b int) *Int {
 	if b == 0 {
 		return One()
 	}
 
 	// check cache
 	//fmt.Println(powCache[a])
-	var start *Bint
+	var start *Int
 	if r, ok := powCache[a]; ok {
 		if b < len(r) {
 			//if !r[b].EQ(OldBigPow(a, b)) {
@@ -575,10 +575,10 @@ func BigPow(a, b int) *Bint {
 		b = b + 1 - len(r)
 	} else {
 		start = One()
-		powCache[a] = []*Bint{start}
+		powCache[a] = []*Int{start}
 	}
 
-	ai := NewBint(a)
+	ai := NewInt(a)
 	for i := 1; i <= b; i++ {
 		start = start.Times(ai)
 		powCache[a] = append(powCache[a], start.Copy())
@@ -871,7 +871,7 @@ func (b *Binary) String() string {
 
 func CmpOpts() []cmp.Option {
 	return []cmp.Option{
-		cmp.Comparer(func(this, that *Bint) bool {
+		cmp.Comparer(func(this, that *Int) bool {
 			if this == nil {
 				return that == nil || that.EQ(zero)
 			}

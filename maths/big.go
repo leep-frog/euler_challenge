@@ -11,57 +11,57 @@ import (
 )
 
 // TODO: Rename to Int after old one is removed
-type Bint struct {
+type Int struct {
 	i *big.Int
 }
 
-func NewBint(n int) *Bint {
+func NewInt(n int) *Int {
 	return nb(big.NewInt(int64(n)))
 }
 
-func NewBBint(n *big.Int) *Bint {
+func FromBigInt(n *big.Int) *Int {
 	return nb(n)
 }
 
-func nb(i *big.Int) *Bint {
-	return &Bint{i}
+func nb(i *big.Int) *Int {
+	return &Int{i}
 }
 
-func (i *Bint) Int() *big.Int {
+func (i *Int) Int() *big.Int {
 	return i.i
 }
 
-func (i *Bint) Copy() *Bint {
+func (i *Int) Copy() *Int {
 	return Zero().Plus(i)
 }
 
-func (i *Bint) IsZero() bool {
+func (i *Int) IsZero() bool {
 	return i.EQ(zero)
 }
 
-func Zero() *Bint {
-	return NewBint(0)
+func Zero() *Int {
+	return NewInt(0)
 }
 
-func One() *Bint {
-	return NewBint(1)
+func One() *Int {
+	return NewInt(1)
 }
 
-//func (i *Bint) ToInt() int
+//func (i *Int) ToInt() int
 
-func (i *Bint) Negative() bool {
+func (i *Int) Negative() bool {
 	return i.LT(zero)
 }
 
-func (i *Bint) Negation() *Bint {
+func (i *Int) Negation() *Int {
 	return nb(big.NewInt(0).Neg(i.i))
 }
 
-func (i *Bint) String() string {
+func (i *Int) String() string {
 	return i.i.String()
 }
 
-func (i *Bint) Digits() []int {
+func (i *Int) Digits() []int {
 	var r []int
 	for ns, idx := i.String(), 0; idx < len(ns); idx++ {
 		c := ns[idx : idx+1]
@@ -72,123 +72,123 @@ func (i *Bint) Digits() []int {
 	return r
 }
 
-func (i *Bint) DigitSum() int {
+func (i *Int) DigitSum() int {
 	return SumSys(i.Digits()...)
 }
 
-func (i *Bint) Plus(j *Bint) *Bint {
+func (i *Int) Plus(j *Int) *Int {
 	return nb(big.NewInt(1).Add(i.i, j.i))
 }
 
-func (i *Bint) Minus(j *Bint) *Bint {
+func (i *Int) Minus(j *Int) *Int {
 	return nb(big.NewInt(1).Sub(i.i, j.i))
 }
 
-func (i *Bint) Times(j *Bint) *Bint {
+func (i *Int) Times(j *Int) *Int {
 	return nb(big.NewInt(1).Mul(i.i, j.i))
 }
 
-func (i *Bint) DivInt(j int) *Bint {
-	return i.Div(NewBint(j))
+func (i *Int) DivInt(j int) *Int {
+	return i.Div(NewInt(j))
 }
 
-func (i *Bint) ModInt(j int) int {
-	return i.Mod(NewBint(j)).ToInt()
+func (i *Int) ModInt(j int) int {
+	return i.Mod(NewInt(j)).ToInt()
 }
 
-func (i *Bint) Div(j *Bint) *Bint {
+func (i *Int) Div(j *Int) *Int {
 	return nb(big.NewInt(1).Div(i.i, j.i))
 }
 
-func (i *Bint) Mod(j *Bint) *Bint {
+func (i *Int) Mod(j *Int) *Int {
 	_, m := big.NewInt(1).DivMod(i.i, j.i, big.NewInt(1))
 	return nb(m)
 }
 
-func (i *Bint) Divide(j *Bint) (*Bint, *Bint) {
+func (i *Int) Divide(j *Int) (*Int, *Int) {
 	q, m := big.NewInt(1).DivMod(i.i, j.i, big.NewInt(1))
 	return nb(q), nb(m)
 }
 
-func (i *Bint) Cmp(j *Bint) int {
+func (i *Int) Cmp(j *Int) int {
 	return i.i.Cmp(j.i)
 }
 
-func (i *Bint) LT(j *Bint) bool {
+func (i *Int) LT(j *Int) bool {
 	return i.Cmp(j) < 0
 }
 
-func (i *Bint) LTE(j *Bint) bool {
+func (i *Int) LTE(j *Int) bool {
 	return i.Cmp(j) <= 0
 }
 
-func (i *Bint) GT(j *Bint) bool {
+func (i *Int) GT(j *Int) bool {
 	return i.Cmp(j) > 0
 }
 
-func (i *Bint) GTE(j *Bint) bool {
+func (i *Int) GTE(j *Int) bool {
 	return i.Cmp(j) >= 0
 }
 
-func (i *Bint) EQ(j *Bint) bool {
+func (i *Int) EQ(j *Int) bool {
 	return i.Cmp(j) == 0
 }
 
-func (i *Bint) NEQ(j *Bint) bool {
+func (i *Int) NEQ(j *Int) bool {
 	return i.Cmp(j) != 0
 }
 
-func (i *Bint) Abs() *Bint {
+func (i *Int) Abs() *Int {
 	if i.Negative() {
 		return i.Negation()
 	}
 	return i.Copy()
 }
 
-func (i *Bint) MagLT(j *Bint) bool {
+func (i *Int) MagLT(j *Int) bool {
 	return i.Abs().Cmp(j.Abs()) < 0
 }
 
-func (i *Bint) MagLTE(j *Bint) bool {
+func (i *Int) MagLTE(j *Int) bool {
 	return i.Abs().Cmp(j.Abs()) <= 0
 }
 
-func (i *Bint) MagGT(j *Bint) bool {
+func (i *Int) MagGT(j *Int) bool {
 	return i.Abs().Cmp(j.Abs()) > 0
 }
 
-func (i *Bint) MagGTE(j *Bint) bool {
+func (i *Int) MagGTE(j *Int) bool {
 	return i.Abs().Cmp(j.Abs()) >= 0
 }
 
-func (i *Bint) MagEQ(j *Bint) bool {
+func (i *Int) MagEQ(j *Int) bool {
 	return i.Abs().Cmp(j.Abs()) == 0
 }
 
-func (i *Bint) MagNEQ(j *Bint) bool {
+func (i *Int) MagNEQ(j *Int) bool {
 	return i.Abs().Cmp(j.Abs()) != 0
 }
 
-func (i *Bint) Hex() string {
+func (i *Int) Hex() string {
 	var hex []string
 	for !i.IsZero() {
-		q, r := i.Divide(NewBint(16))
+		q, r := i.Divide(NewInt(16))
 		hex = append(hex, hexLetters[r.ToInt()])
 		i = q
 	}
 	return strings.Join(Reverse(hex), "")
 }
 
-func (i *Bint) ToInt() int {
+func (i *Int) ToInt() int {
 	return int(i.i.Int64())
 }
 
-func Sort(is []*Bint) {
-	slices.SortFunc(is, func(this, that *Bint) bool { return this.LT(that) })
+func Sort(is []*Int) {
+	slices.SortFunc(is, func(this, that *Int) bool { return this.LT(that) })
 }
 
 // TODO
-func IntFromDigits(digits []int) *Bint {
+func IntFromDigits(digits []int) *Int {
 	var r []string
 	for _, d := range digits {
 		r = append(r, fmt.Sprintf("%d", d))
@@ -196,23 +196,23 @@ func IntFromDigits(digits []int) *Bint {
 	return MustIntFromString(strings.Join(r, ""))
 }
 
-func Biggify(is []int) []*Bint {
-	var r []*Bint
+func Biggify(is []int) []*Int {
+	var r []*Int
 	for _, i := range is {
-		r = append(r, NewBint(i))
+		r = append(r, NewInt(i))
 	}
 	return r
 }
 
 // TODO: make separate files for things (like combinatorics, sets, etc.)
-func Choose(n, r int) *Bint {
+func Choose(n, r int) *Int {
 	return Factorial(n).Div(Factorial(r).Times(Factorial(n - r)))
 }
 
-func Factorial(n int) *Bint {
+func Factorial(n int) *Int {
 	r := One()
 	for i := 1; i <= n; i++ {
-		r = r.Times(NewBint(i))
+		r = r.Times(NewInt(i))
 	}
 	return r
 }
@@ -225,7 +225,7 @@ func FactorialI(n int) int {
 	return r
 }
 
-func MustIntFromString(s string) *Bint {
+func MustIntFromString(s string) *Int {
 	i, ok := IntFromString(s)
 	if !ok {
 		log.Fatalf("Failed to convert string %q to Int", s)
@@ -233,7 +233,7 @@ func MustIntFromString(s string) *Bint {
 	return i
 }
 
-func IntFromString(s string) (*Bint, bool) {
+func IntFromString(s string) (*Int, bool) {
 	i, ok := Zero().i.SetString(s, 10)
 	if !ok {
 		return nil, false
@@ -241,7 +241,7 @@ func IntFromString(s string) (*Bint, bool) {
 	return nb(i), true
 }
 
-func (i *Bint) TrimDigits(n int) *Bint {
+func (i *Int) TrimDigits(n int) *Int {
 	iStr := i.String()
 	n = Min(n, len(iStr))
 	return MustIntFromString(iStr[len(iStr)-n:])
