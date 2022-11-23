@@ -3,7 +3,6 @@ package eulerchallenge
 import (
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/fraction"
-	"github.com/leep-frog/euler_challenge/maths"
 )
 
 func P65() *problem {
@@ -18,7 +17,7 @@ func P65() *problem {
 			&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
 				n := d.Int(N)
 
-				var f *fraction.FractionI[*maths.Int]
+				var f *fraction.Rational
 				for idx := n - 1; idx >= 0; idx-- {
 					k := 1
 					if idx%3 == 2 {
@@ -35,12 +34,12 @@ func P65() *problem {
 					}
 
 					if f == nil {
-						f = fraction.NewI(maths.NewInt(int64(k)), maths.One())
+						f = fraction.NewRational(k, 1)
 					} else {
-						f = f.Reciprocal().Plus(fraction.NewI(maths.NewInt(int64(k)), maths.One()))
+						f = f.Reciprocal().Plus(fraction.NewRational(k, 1))
 					}
 				}
-				o.Stdoutln(f.N.DigitSum())
+				o.Stdoutln(f.Numer().DigitSum())
 				return nil
 			}},
 		),

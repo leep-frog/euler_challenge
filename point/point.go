@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/leep-frog/euler_challenge/fraction"
 	"github.com/leep-frog/euler_challenge/maths"
 	"golang.org/x/exp/slices"
 	"gonum.org/v1/plot/plotter"
@@ -28,38 +29,7 @@ func (p *Point[T]) Quadrant() int {
 		return 3
 	}
 
-	panic("ARGHY")
-}
-
-func (p *Point[T]) LineWith(q *Point[T]) *Line {
-	// y1 = m*x1 + b
-	// y2 = m*x2 + b
-	// b = y1 - m*x1 = y2 - m*x2
-	// y1 - m*x1 = y2 - m*x2
-	// y1 - y2 = m*(x1 - x2)
-	// m = (y1 - y2) / (x1 - x2)
-	x1, y1 := float64(p.X), float64(p.Y)
-	x2, y2 := float64(q.X), float64(q.Y)
-	m := (y1 - y2) / (x1 - x2)
-	b := y1 - m*x1
-	return &Line{m, b}
-}
-
-type Line struct {
-	M float64
-	B float64
-}
-
-func (l *Line) XtoY(x float64) float64 {
-	return l.M*x + l.B
-}
-
-func (l *Line) Intersection(k *Line) *Point[float64] {
-	// m_1 * x + b_1 = m_2 * x + b_2
-	// x * (m_1 - m_2) = (b_2 - b_1)
-	// x = (b_2 - b_1) / (m_1 - m_2)
-	x := (k.B - l.B) / (l.M - k.M)
-	return New(x, l.XtoY(x))
+	return -1
 }
 
 func (pts Points[T]) Plot(p *Plot) ([]Plottable, error) {
@@ -85,6 +55,205 @@ func NewLineSegment[T maths.Mathable](a, b *Point[T]) *LineSegment[T] {
 	return &LineSegment[T]{a, b}
 }
 
+func NewLineSegmentInt(a, b *Point[int]) *LineSegmentInt {
+	return &LineSegmentInt{NewLineSegment(a, b)}
+}
+
+func (rls *RationalLineSegment) Copy() *RationalLineSegment {
+	return &RationalLineSegment{rls.A.Copy(), rls.B.Copy()}
+}
+
+type LineSegmentInt struct {
+	*LineSegment[int]
+}
+
+type BigLineSegment struct {
+	*LineSegment[int]
+}
+
+func NewRationalPointI(x, y int) *RationalPoint {
+	return NewRationalPoint(fraction.NewRational(x, 1), fraction.NewRational(y, 1))
+}
+
+func NewRationalPoint(x, y *fraction.Rational) *RationalPoint {
+	return &RationalPoint{x, y}
+}
+
+func NewRationalLineSegment(a, b *RationalPoint) *RationalLineSegment {
+	return &RationalLineSegment{a, b}
+}
+
+type RationalPoint struct {
+	X, Y *fraction.Rational
+}
+
+func (r *RationalPoint) String() string {
+	return fmt.Sprintf("(%v, %v)", r.X, r.Y)
+}
+
+func (r *RationalPoint) Copy() *RationalPoint {
+	return &RationalPoint{r.X.Copy(), r.Y.Copy()}
+}
+
+func (r *RationalPoint) EQ(q *RationalPoint) bool {
+	return r.X.EQ(q.X) && r.Y.EQ(q.Y)
+}
+
+type RationalLineSegment struct {
+	A, B *RationalPoint
+}
+
+// returns m, b
+func (rls *RationalLineSegment) EquationMB() (*fraction.Rational, *fraction.Rational) {
+	// y1 = m*x1 + b
+	// y2 = m*x2 + b
+	// b = y1 - m*x1 = y2 - m*x2
+	// y1 - m*x1 = y2 - m*x2
+	// y1 - y2 = m*(x1 - x2)
+	// m = (y1 - y2) / (x1 - x2)
+	x1, y1 := rls.A.X, rls.A.Y
+	x2, y2 := rls.B.X, rls.B.Y
+	m := y1.Minus(y2).Div(x1.Minus(x2))
+	// b = y1 - m*x1
+	b := y1.Minus(m.Times(x1))
+	return m, b
+}
+
+// Note doesn't include edge points
+
+func (rls *RationalLineSegment) Intersect(that *RationalLineSegment) *RationalPoint {
+	ls1, ls2 := rls, that
+	m1, b1 := ls1.EquationMB()
+	m2, b2 := ls2.EquationMB()
+	// m_1 * x + b_1 = m_2 * x + b_2
+	// x * (m_1 - m_2) = (b_2 - b_1)
+	// x = (b_2 - b_1) / (m_1 - m_2)
+
+	// If slopes are equal, then return
+	//fmt.Println("IF")
+	if m1.EQ(m2) {
+		return nil
+	}
+	// Either slopes are (veritcal, horizontal), (horizontal, K) (vertical, K), or (K, K)
+
+	zero := fraction.NewRational(0, 1)
+	var x, y *fraction.Rational
+	switch true {
+	case m2.Undefined() && maths.EQ(m1, zero):
+		m1, m2 = m2, m1
+		b1, b2 = b2, b1
+		ls1, ls2 = ls2, ls1
+		fallthrough
+	case m1.Undefined() && maths.EQ(m2, zero):
+		x = ls1.A.X
+		y = ls2.A.Y
+		break
+	case m2.Undefined():
+		m1, m2 = m2, m1
+		b1, b2 = b2, b1
+		ls1, ls2 = ls2, ls1
+		fallthrough
+	case m1.Undefined():
+		x = ls1.A.X
+		y = m2.Times(x).Plus(b2)
+		break
+	case maths.EQ(m2, zero):
+		m1, m2 = m2, m1
+		b1, b2 = b2, b1
+		ls1, ls2 = ls2, ls1
+		fallthrough
+	case maths.EQ(m1, zero):
+		y = ls1.A.Y
+		x = y.Copy().Minus(b2).Div(m2)
+		break
+	default:
+		x = (b2.Minus(b1)).Div(m1.Minus(m2))
+		y = x.Times(m1).Plus(b1)
+	}
+
+	// Now verify it's between them by verifying it's inside the box of
+	// (minX, minY), (maxX, maxY)
+	p := &RationalPoint{x, y}
+	if ls1.InBoxInclusive(p) && ls2.InBoxInclusive(p) {
+		return p
+	}
+	return nil
+}
+
+// Excludes border of box
+func (rls *RationalLineSegment) InBoxExclusive(p *RationalPoint) bool {
+	minX := maths.MinT(rls.A.X, rls.B.X)
+	maxX := maths.MaxT(rls.A.X, rls.B.X)
+	minY := maths.MinT(rls.A.Y, rls.B.Y)
+	maxY := maths.MaxT(rls.A.Y, rls.B.Y)
+
+	inX := minX.LT(p.X) && p.X.LT(maxX)
+	inY := minY.LT(p.Y) && p.Y.LT(maxY)
+	return inX && inY
+}
+
+// Includes border of box
+func (rls *RationalLineSegment) InBoxInclusive(p *RationalPoint) bool {
+	minX := maths.MinT(rls.A.X, rls.B.X)
+	maxX := maths.MaxT(rls.A.X, rls.B.X)
+	minY := maths.MinT(rls.A.Y, rls.B.Y)
+	maxY := maths.MaxT(rls.A.Y, rls.B.Y)
+
+	inX := maths.LTE(minX, p.X) && maths.LTE(p.X, maxX)
+	inY := maths.LTE(minY, p.Y) && maths.LTE(p.Y, maxY)
+	return inX && inY
+}
+
+func (rls *RationalLineSegment) HasVertex(p *RationalPoint) bool {
+	return p.EQ(rls.A) || p.EQ(rls.B)
+}
+
+func (p *RationalPoint) Cross(that *RationalPoint) *fraction.Rational {
+	return p.X.Times(that.Y).Minus(p.Y.Times(that.X))
+}
+
+func (p *RationalPoint) Minus(that *RationalPoint) *RationalPoint {
+	return NewRationalPoint(p.X.Minus(that.X), p.Y.Minus(that.Y))
+}
+
+func (p *RationalPoint) HalfPlane(p2, p3 *RationalPoint) *fraction.Rational {
+	return p2.Minus(p).Cross(p2.Minus(p3))
+}
+
+func (rls *RationalLineSegment) OnSegmentExclusive(p *RationalPoint) bool {
+	return rls.A.BetweenExclusive(p, rls.B)
+}
+
+func (rls *RationalLineSegment) OnSegmentInclusive(p *RationalPoint) bool {
+	return rls.A.BetweenInclusive(p, rls.B)
+}
+
+func (p *RationalPoint) BetweenInclusive(q, p2 *RationalPoint) bool {
+	return p.EQ(q) || p2.EQ(q) || p.BetweenExclusive(q, p2)
+}
+
+func (p *RationalPoint) BetweenExclusive(q, p2 *RationalPoint) bool {
+	if p.EQ(q) || p2.EQ(q) {
+		return false
+	}
+
+	if p.HalfPlane(p2, q).NEQ(fraction.NewRational(0, 1)) {
+		return false
+	}
+
+	// Now verify it's between them by verifying it's inside the box of
+	// (minX, minY), (maxX, maxY)
+	minX := maths.MinT(p.X, p2.X)
+	maxX := maths.MaxT(p.X, p2.X)
+	minY := maths.MinT(p.Y, p2.Y)
+	maxY := maths.MaxT(p.Y, p2.Y)
+	return q.X.GTE(minX) && q.X.LTE(maxX) && q.Y.GTE(minY) && q.Y.LTE(maxY)
+}
+
+func (ls *RationalLineSegment) HalfPlane(p *RationalPoint) bool {
+	return ls.A.HalfPlane(ls.B, p).GT(fraction.NewRational(0, 1))
+}
+
 func (ls *LineSegment[T]) Plot(p *Plot) ([]Plottable, error) {
 	ab, err := plotter.NewLine(plotter.XYs{
 		{X: float64(ls.A.X), Y: float64(ls.A.Y)},
@@ -101,8 +270,16 @@ func (ls *LineSegment[T]) Code() string {
 	return ls.String()
 }
 
-func (ls *LineSegment[T]) OnSegment(p *Point[T]) bool {
-	return ls.A.Between(p, ls.B)
+func (ls *LineSegment[T]) OnSegmentExclusive(p *Point[T]) bool {
+	return ls.A.BetweenExclusive(p, ls.B)
+}
+
+func (ls *LineSegment[T]) HasVertex(p *Point[T]) bool {
+	return p.Eq(ls.A) || p.Eq(ls.B)
+}
+
+func (ls *LineSegment[T]) OnSegmentInclusive(p *Point[T]) bool {
+	return ls.A.BetweenInclusive(p, ls.B)
 }
 
 func (ls *LineSegment[T]) HalfPlane(p *Point[T]) bool {
@@ -170,7 +347,7 @@ func (t *Triangle[T]) Contains(p *Point[T]) bool {
 // Contains, but not on edge
 func (t *Triangle[T]) ContainsExclusive(p *Point[T]) bool {
 	for _, ls := range t.LineSegments() {
-		if ls.OnSegment(p) {
+		if ls.OnSegmentExclusive(p) {
 			return false
 		}
 	}
@@ -275,10 +452,14 @@ func (r *Rectangle[T]) Contains(p *Point[T]) bool {
 	return r.MinX <= p.X && p.X <= r.MaxX && r.MinY <= p.Y && p.Y <= r.MaxY
 }
 
+func (p *Point[T]) BetweenInclusive(q, p2 *Point[T]) bool {
+	return p.Eq(q) || p2.Eq(q) || p.BetweenExclusive(q, p2)
+}
+
 // Returns true if q is between p and p2
-func (p *Point[T]) Between(q, p2 *Point[T]) bool {
+func (p *Point[T]) BetweenExclusive(q, p2 *Point[T]) bool {
 	if p.Eq(q) || p2.Eq(q) {
-		return true
+		return false
 	}
 
 	if p.HalfPlane(p2, q) != 0 {

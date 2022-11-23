@@ -86,7 +86,7 @@ func generateSlopeGroups(pts []*point.Point[int]) []*slopeGroup {
 }
 
 type slopeGroup struct {
-	slopeFrac *fraction.Fraction[int]
+	slopeFrac *fraction.Fraction
 	cnt       int
 	cum       int
 	quadrant  int

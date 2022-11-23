@@ -43,22 +43,35 @@ func FileGenerator() *command.Node {
 				template = append(template,
 					fmt.Sprintf("  return fileInputNode(%d, func(lines []string, o command.Output) {", num),
 					"    o.Stdoutln(lines)",
+					"  }, []*execution{",
+					"    {",
+					fmt.Sprintf(`      args: []string{"%d"},`, num),
+					`      want: "",`,
+					"    },",
+					"  })",
+					"}",
 				)
 			} else if noInput {
 				template = append(template,
 					fmt.Sprintf("  return noInputNode(%d, func(o command.Output) {", num),
+					"  })",
+					"}",
 				)
 			} else {
 				template = append(template,
 					fmt.Sprintf("  return intInputNode(%d, func(o command.Output, n int) {", num),
 					"    o.Stdoutln(n)",
+					"  }, []*execution{",
+					"    {",
+					`      args: []string{"1"},`,
+					`      want: "",`,
+					"    },",
+					"  })",
+					"}",
 				)
 			}
 
-			template = append(template,
-				"  })",
-				"}",
-			)
+			template = append(template)
 
 			// Create go file
 			suffix := strings.ToLower(strings.Join(d.StringList(fs), "_"))
@@ -74,30 +87,9 @@ func FileGenerator() *command.Node {
 				}
 			}
 
-			testFmt := "\t\t{\n\t\t\tname: \"p%d%s\",\n\t\t\targs: []string{\"%d\"%s},\n\t\t\twant: []string{\"0\"},\n\t\t},/*"
-			testArg := ", \"1\""
-			exTestArg := ", \"1\""
-			if fileInput {
-				testArg = fmt.Sprintf(", \"p%d.txt\"", num)
-				exTestArg = fmt.Sprintf(", \"p%d_example.txt\"", num)
-			} else if noInput {
-				testArg = ""
-				exTestArg = ""
-			}
-
-			exTest := fmt.Sprintf(testFmt, num, " example", num, exTestArg)
-			test := fmt.Sprintf(testFmt, num, "", num, testArg)
-			testStr := fmt.Sprintf("r \"(^.*TEST_START.*)$\" '$1\n%s' ec_test.go", test)
-			if includeExample {
-				testStr = fmt.Sprintf("r \"(^.*TEST_START.*$)\" '$1\n%s\n%s' ec_test.go", exTest, test)
-			}
 			return []string{
-				`r "\/\*\{" "{" ec_test.go`,
 				// Add line to node.go
 				fmt.Sprintf("r \"(^.*END_LIST.*$)\" '\t\tP%d(),\n$1' node.go", num),
-				// Add tests to ec_test.go
-				testStr,
-				// TODO: remove comment start"r "/*"
 			}, nil
 		}),
 	)

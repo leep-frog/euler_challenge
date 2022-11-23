@@ -10,7 +10,7 @@ import (
 )
 
 type ctx236 struct {
-	m      *fraction.Fraction[int]
+	m      *fraction.Fraction
 	totalA int
 	totalB int
 	primes *generator.Generator[int]
