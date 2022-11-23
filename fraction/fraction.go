@@ -2,7 +2,6 @@ package fraction
 
 import (
 	"fmt"
-	"math/big"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/leep-frog/euler_challenge/generator"
@@ -20,6 +19,10 @@ func New(n, d int) *Fraction {
 		absN = -absN
 	}
 	return &Fraction{absN, absD}
+}
+
+func (f *Fraction) ToRational() *Rational {
+	return NewRational(f.N, f.D)
 }
 
 func (f *Fraction) Div(that *Fraction) *Fraction {
@@ -114,14 +117,13 @@ func (f *Fraction) Simplify(primes *generator.Generator[int]) *Fraction {
 	return New(sign*newN, newD)
 }
 
-func CmpOpts() cmp.Option {
-	return cmp.Options([]cmp.Option{
-		cmp.Comparer(func(a, b *big.Rat) bool {
-			if (a == nil) != (b == nil) {
-				return false
-			}
-			return a == nil || a.Cmp(b) == 0
+func CmpOpts() []cmp.Option {
+	return []cmp.Option{
+		cmp.Comparer(func(a, b *Rational) bool {
+			return a.EQ(b)
 		}),
-		cmp.AllowUnexported(Rational{}),
-	})
+		cmp.Comparer(func(a, b *Fraction) bool {
+			return !a.LT(b) && !b.LT(a)
+		}),
+	}
 }

@@ -17,6 +17,9 @@ func UndefinedRational() *Rational {
 }
 
 func NewRational(n, d int) *Rational {
+	if d == 0 {
+		return &Rational{}
+	}
 	return nr(n, d)
 }
 
@@ -63,18 +66,18 @@ func (r *Rational) Times(j *Rational) *Rational {
 	return nrb(big.NewRat(1, 1).Mul(r.r, j.r))
 }
 
-func (r *Rational) Numer() *maths.Bint {
+func (r *Rational) Numer() *maths.Int {
 	if r.Undefined() {
-		return maths.NewBint(1)
+		return maths.NewInt(1)
 	}
-	return maths.NewBBint(r.r.Num())
+	return maths.FromBigInt(r.r.Num())
 }
 
-func (r *Rational) Denom() *maths.Bint {
+func (r *Rational) Denom() *maths.Int {
 	if r.Undefined() {
-		return maths.NewBint(0)
+		return maths.NewInt(0)
 	}
-	return maths.NewBBint(r.r.Denom())
+	return maths.FromBigInt(r.r.Denom())
 }
 
 func (r *Rational) Div(j *Rational) *Rational {

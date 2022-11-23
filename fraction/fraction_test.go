@@ -2,11 +2,11 @@ package fraction
 
 import (
 	"fmt"
+	"math/big"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/leep-frog/euler_challenge/generator"
-	"github.com/leep-frog/euler_challenge/maths"
 )
 
 func TestNew(t *testing.T) {
@@ -36,10 +36,13 @@ func TestNew(t *testing.T) {
 			}
 
 			// Test NewI
-			fI := NewI(maths.NewInt(int64(test.n)), maths.NewInt(int64(test.d)))
-			wantI := &FractionI[*maths.Int]{maths.NewInt(int64(test.wantN)), maths.NewInt(int64(test.wantD))}
+			fI := NewRational(test.n, test.d)
+			wantI := &Rational{}
+			if test.wantD != 0 {
+				wantI = &Rational{big.NewRat(int64(test.wantN), int64(test.wantD))}
+			}
 			fmt.Println("FI", fI, wantI)
-			if diff := cmp.Diff(wantI, fI, maths.CmpOpts()...); diff != "" {
+			if diff := cmp.Diff(wantI, fI, CmpOpts()...); diff != "" {
 				t.Errorf("NewI(%d, %d) returned incorrect fraction (-want, +got):\n%s", test.n, test.d, diff)
 			}
 		})
@@ -78,22 +81,14 @@ func TestDiv(t *testing.T) {
 				t.Errorf("%v.Div(%v) returned incorrect fraction (-want, +got):\n%s", test.f, test.g, diff)
 			}
 
-			fi := fToI(test.f)
-			gi := fToI(test.g)
-			wantI := fToI(test.want)
-			if diff := cmp.Diff(wantI, fi.Div(gi), maths.CmpOpts()...); diff != "" {
+			fi := test.f.ToRational()
+			gi := test.g.ToRational()
+			wantI := test.want.ToRational()
+			if diff := cmp.Diff(wantI, fi.Div(gi), CmpOpts()...); diff != "" {
 				t.Errorf("%v.Div(%v) returned incorrect fraction (-want, +got):\n%s", test.f, test.g, diff)
 			}
 		})
 	}
-}
-
-func fToI(f *Fraction) *FractionI[*maths.Int] {
-	return NewI(maths.NewInt(int64(f.N)), maths.NewInt(int64(f.D)))
-}
-
-func toI(n, d int) *FractionI[*maths.Int] {
-	return NewI(maths.NewInt(int64(n)), maths.NewInt(int64(d)))
 }
 
 // Also tests plus
@@ -134,10 +129,10 @@ func TestMinus(t *testing.T) {
 				t.Errorf("%v.Minus(%v) returned incorrect fraction (-want, +got):\n%s", test.f, test.g, diff)
 			}
 
-			fi := fToI(test.f)
-			gi := fToI(test.g)
-			wantI := fToI(test.want)
-			if diff := cmp.Diff(wantI, fi.Minus(gi), maths.CmpOpts()...); diff != "" {
+			fi := test.f.ToRational()
+			gi := test.g.ToRational()
+			wantI := test.want.ToRational()
+			if diff := cmp.Diff(wantI, fi.Minus(gi), CmpOpts()...); diff != "" {
 				t.Errorf("%v.Minus(%v) returned incorrect fraction (-want, +got):\n%s", test.f, test.g, diff)
 			}
 		})
@@ -172,8 +167,8 @@ func TestLT(t *testing.T) {
 				t.Errorf("(%v).LT(%v) returned wrong value (-want, +got):\n%s", test.g, test.f, diff)
 			}
 
-			fi := fToI(test.f)
-			gi := fToI(test.g)
+			fi := test.f.ToRational()
+			gi := test.g.ToRational()
 			if diff := cmp.Diff(test.want, fi.LT(gi)); diff != "" {
 				t.Errorf("(%v).LT(%v) returned wrong value (-want, +got):\n%s", test.f, test.g, diff)
 			}
