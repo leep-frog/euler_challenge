@@ -414,6 +414,12 @@ func TestIntersect(t *testing.T) {
 			NewRationalLineSegment(NewRationalPointI(34, 332), NewRationalPointI(287, 117)),
 			NewRationalPoint(fraction.NewRational(10290629, 118742), fraction.NewRational(34108189, 118742)),
 		},
+		{
+			"Intersect at endpoint",
+			NewRationalLineSegment(NewRationalPointI(3, -2), NewRationalPointI(3, 5)),
+			NewRationalLineSegment(NewRationalPointI(1, 3), NewRationalPointI(5, 7)),
+			nil,
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			fmt.Println(test.name, "===============")

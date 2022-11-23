@@ -1,8 +1,6 @@
 package eulerchallenge
 
 import (
-	"fmt"
-
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/point"
@@ -13,19 +11,16 @@ func P165() *problem {
 	return intInputNode(165, func(o command.Output, n int) {
 		ls := generatePoints165(n)
 		var intersections []*point.RationalPoint
-		fmt.Println(ls[1], ls[81])
 		for i, l := range ls {
-			fmt.Println("I", i)
 			for j := i + 1; j < len(ls); j++ {
 				o := ls[j]
-
 				if intersect := l.Copy().Intersect(o.Copy()); intersect != nil {
 					intersections = append(intersections, intersect)
 				}
 			}
 		}
 
-		fmt.Println("Sorting", len(intersections))
+		// Sort the points
 		slices.SortFunc(intersections, func(p, q *point.RationalPoint) bool {
 			if maths.NEQ(p.X, q.X) {
 				return p.X.LT(q.X)
@@ -33,23 +28,24 @@ func P165() *problem {
 			return p.Y.LT(q.Y)
 		})
 
+		// Compare adjacent points and remove duplicates
 		var uniq []*point.RationalPoint
 		var prev *point.RationalPoint
-		fmt.Println("Filtering", len(intersections))
 		for _, i := range intersections {
 			if prev == nil || !prev.EQ(i) {
 				uniq = append(uniq, i)
 			}
 			prev = i
 		}
-		// 1332340
-		// 2869756
-		fmt.Println(uniq)
-		fmt.Println(len(uniq))
+		o.Stdoutln(len(uniq))
 	}, []*execution{
 		{
 			args: []string{"1"},
-			want: "",
+			want: "1",
+		},
+		{
+			args: []string{"5000"},
+			want: "2868868",
 		},
 	})
 }

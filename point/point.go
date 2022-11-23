@@ -174,7 +174,8 @@ func (rls *RationalLineSegment) Intersect(that *RationalLineSegment) *RationalPo
 	// Now verify it's between them by verifying it's inside the box of
 	// (minX, minY), (maxX, maxY)
 	p := &RationalPoint{x, y}
-	if ls1.InBoxInclusive(p) && ls2.InBoxInclusive(p) {
+	// TODO: Use OnSegmentExclusive??
+	if ls1.InBoxInclusive(p) && ls2.InBoxInclusive(p) && !ls1.HasVertex(p) && !ls2.HasVertex(p) {
 		return p
 	}
 	return nil
