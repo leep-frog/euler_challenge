@@ -342,7 +342,7 @@ func (t *Triangle[T]) Area() float64 {
 
 func (t *Triangle[T]) Contains(p *Point[T]) bool {
 	ch := &ConvexHull[T]{[]*Point[T]{t.A, t.B, t.C}}
-	return ch.Contains(p)
+	return ch.ContainsExclusive(p)
 }
 
 // Contains, but not on edge
@@ -353,7 +353,7 @@ func (t *Triangle[T]) ContainsExclusive(p *Point[T]) bool {
 		}
 	}
 	ch := &ConvexHull[T]{[]*Point[T]{t.A, t.B, t.C}}
-	return ch.Contains(p)
+	return ch.ContainsExclusive(p)
 }
 
 func (t *Triangle[T]) String() string {
@@ -501,12 +501,20 @@ func (ch *ConvexHull[T]) Plot(p *Plot) ([]Plottable, error) {
 	return r, nil
 }
 
-func (ch *ConvexHull[T]) Contains(p *Point[T]) bool {
-	sign := ch.Points[0].HalfPlane(ch.Points[1], p) > 0
+// Returns whether or not the point is in the convex hull, but false if it is on the boundary
+func (ch *ConvexHull[T]) ContainsExclusive(p *Point[T]) bool {
+	hp := ch.Points[0].HalfPlane(ch.Points[1], p)
+	if hp == 0 {
+		return false
+	}
+	sign := hp > 0
 	for i := 1; i < len(ch.Points); i++ {
 		s := ch.Points[i].HalfPlane(ch.Points[(i+1)%len(ch.Points)], p)
+		if s == 0 {
+			return false
+		}
 		// s is zero if it's on the line.
-		if (s > 0) != sign && s != 0 {
+		if (s > 0) != sign {
 			return false
 		}
 	}

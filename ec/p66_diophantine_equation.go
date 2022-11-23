@@ -33,7 +33,7 @@ func P66() *problem {
 				x, y = p[2*r+1], q[2*r+1]
 			}
 
-			if x.Times(x).Minus(y.Times(y).Times(maths.NewInt(int64(D)))).NEQ(maths.One()) {
+			if x.Times(x).Minus(y.Times(y).Times(maths.NewInt(D))).NEQ(maths.One()) {
 				o.Terminatef("does not satisfy equation")
 			}
 

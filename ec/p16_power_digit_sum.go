@@ -7,7 +7,7 @@ import (
 
 func P16() *problem {
 	return intInputNode(16, func(o command.Output, ni int) {
-		n := maths.NewInt(int64(ni))
+		n := maths.NewInt(ni)
 
 		two := maths.NewInt(2)
 		pow := maths.NewInt(1)

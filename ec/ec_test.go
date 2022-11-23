@@ -16,9 +16,9 @@ var (
 	// to keep import
 	one = maths.One()
 	// filter out tests
-	timeLimit  = 3.0
+	timeLimit  = 301.0
 	testFilter = func(cct *codingChallengeTest) bool {
-		return true && cct.num == 164
+		return true // && cct.num == 252
 	}
 )
 
@@ -49,7 +49,7 @@ func TestAll(t *testing.T) {
 		for _, ex := range p.executions {
 			tests = append(tests, &codingChallengeTest{
 				p.num,
-				fmt.Sprintf("Problem %d, args %v", p.num, ex.args),
+				fmt.Sprintf("Problem %d, args %v, estimate %.1f", p.num, ex.args, ex.estimate),
 				append([]string{fmt.Sprintf("%d", p.num)}, ex.args...),
 				[]string{ex.want},
 				ex.estimate,
@@ -61,7 +61,7 @@ func TestAll(t *testing.T) {
 
 	var totalEst float64
 	for _, test := range tests {
-		if _, skip := test.shouldSkip(); !skip {
+		if _, skip := test.shouldSkip(); !skip && testFilter(test) {
 			totalEst += test.estimate
 		}
 	}
@@ -88,11 +88,8 @@ func (ct *codingChallengeTest) test(t *testing.T) {
 		return
 	}
 	t.Run(ct.name, func(t *testing.T) {
-		if ct.estimate >= 5 {
-			t.Logf("ESTIMATED TIME: %.2fs", ct.estimate)
-		}
 		if msg, skip := ct.shouldSkip(); skip {
-			t.Skip(msg)
+			t.Skipf("Skipping test: %s", msg)
 		}
 
 		start := time.Now()

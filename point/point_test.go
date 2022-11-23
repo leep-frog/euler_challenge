@@ -424,13 +424,13 @@ func TestIntersect(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			fmt.Println(test.name, "===============")
 			p := test.ls1.Intersect(test.ls2)
-			if diff := cmp.Diff(test.want, p, fraction.CmpOpts()); diff != "" {
+			if diff := cmp.Diff(test.want, p, fraction.CmpOpts()...); diff != "" {
 				t.Errorf("(%v).Intersect(%v) returned incorrect result (-want, +got):\n%s", test.ls1, test.ls2, diff)
 			}
 
 			// Reverse order
 			q := test.ls2.Intersect(test.ls1)
-			if diff := cmp.Diff(test.want, q, fraction.CmpOpts()); diff != "" {
+			if diff := cmp.Diff(test.want, q, fraction.CmpOpts()...); diff != "" {
 				t.Errorf("(%v).Intersect(%v) returned incorrect result (-want, +got):\n%s", test.ls2, test.ls1, diff)
 			}
 		})
@@ -540,10 +540,10 @@ func TestLineSegment(t *testing.T) {
 
 			ls := NewRationalLineSegment(NewRationalPointI(test.a.X, test.a.Y), NewRationalPointI(test.b.X, test.b.Y))
 			m, b := ls.EquationMB()
-			if diff := cmp.Diff(test.wantM, m, fraction.CmpOpts()); diff != "" {
+			if diff := cmp.Diff(test.wantM, m, fraction.CmpOpts()...); diff != "" {
 				t.Errorf("(%v).Slope() returned incorrect M value: %v", ls, diff)
 			}
-			if diff := cmp.Diff(test.wantB, b, fraction.CmpOpts()); diff != "" {
+			if diff := cmp.Diff(test.wantB, b, fraction.CmpOpts()...); diff != "" {
 				t.Errorf("(%v).Slope() returned incorrect B value: %v", ls, diff)
 			}
 		})

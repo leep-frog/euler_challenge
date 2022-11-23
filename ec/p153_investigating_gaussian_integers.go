@@ -53,51 +53,6 @@ func P153() *problem {
 		o.Stdoutln(iSums + actualTotal)
 
 		return
-		/*var sum int
-		for i := 1; i <= n/2; i++ {
-			// Number of integers with i as a factor = n/i
-			sum += (n / i) * i
-		}
-		// Numbers greater than n/2 only occur once
-		start = (n / 2) + 1
-		end = n
-		// start + (start+1) + (start+2) + ... + (end-2) + (end-1) + end
-		// = start*(end-start+1) + 1 + 2 + 3 + ... + (end - start)
-		// = start*(end-start+1) + (end - start)*(end-start+1)/2
-		sum += start*(end-start+1) + (end-start)*(end-start+1)/2
-		_ = start
-
-		var iSum int
-
-		/*for i := 1; i*i <= n; i++ {
-			for j := i + 1; j*j+i*i <= n; j++ {
-				if generator.Coprimes(i, j, p) {
-					continue
-				}
-				hit := j*j + i*i
-				val := j + i
-				//count :=
-			}
-		}
-		/*squares := generator.SmallPowerGenerator(2)
-
-		for iter, i := squares.Start(1); i <= n; i = iter.Next() {
-			irt := maths.Sqrt(i)
-			fmt.Println("irt", irt)
-			for jter, j := squares.Start(i); j+i <= n; j = jter.Next() {
-				jrt := maths.Sqrt(j)
-				fmt.Println("jrt", jrt)
-				number := i + j
-				count := n / number
-				if i == j {
-					iSum += count * (irt + jrt)
-					fmt.Println("One", irt, jrt, count, irt+jrt, count*(irt+jrt))
-				} else {
-					iSum += count * 2 * (irt + jrt)
-					fmt.Println("Two", irt, jrt, count, 2*(irt+jrt), count*(2*irt+jrt))
-				}
-			}
-		}*/
 	}, []*execution{
 		{
 			args: []string{"5"},
@@ -111,7 +66,6 @@ func P153() *problem {
 			args:     []string{"100000000"},
 			want:     "17971254122360635",
 			estimate: 300,
-			skip:     "takes too long and tested well enough by examples",
 		},
 	})
 }

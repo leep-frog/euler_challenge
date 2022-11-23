@@ -18,13 +18,13 @@ func P234() *problem {
 			// is divisble by both prev and p, and is between prev^2 and p^2.
 
 			// All of the numbers divisble by prev between prev^2 and p^2 (including prev*p)
-			a1 := maths.NewInt(int64(semidivSums(n, prev*prev, p*p, prev)))
+			a1 := maths.NewInt(semidivSums(n, prev*prev, p*p, prev))
 			// All of the numbers divisble by p    between prev^2 and p^2 (including prev*p)
-			a2 := maths.NewInt(int64(semidivSums(n, prev*prev, p*p, p)))
+			a2 := maths.NewInt(semidivSums(n, prev*prev, p*p, p))
 			// Subtract prev*p twice ONLY if it is less than n (if it is greater than
 			// n, then semidivSums will not have considered it in its return value).
-			a3 := maths.NewInt(int64(2 * prev * p))
-			if a3.GT(maths.NewInt(int64(2 * n))) {
+			a3 := maths.NewInt(2 * prev * p)
+			if a3.GT(maths.NewInt(2 * n)) {
 				a3 = maths.NewInt(0)
 			}
 

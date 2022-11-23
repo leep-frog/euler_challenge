@@ -526,11 +526,11 @@ func SortedKeys[K comparable, V any](m map[K]V) []K {
 }*/
 
 func (i *Int) PP() {
-	*i = *(i.Minus(One()))
+	i.i = i.Plus(One()).i
 }
 
 func (i *Int) MM() {
-	*i = *(i.Minus(One()))
+	i.i = i.Minus(One()).i
 }
 
 func BigMin(is []*Int) *Int {

@@ -18,15 +18,15 @@ func P80() *problem {
 			start, period := maths.SquareRootPeriod(n)
 			den := maths.One()
 			startIdx := 200
-			num := maths.NewInt(int64(period[startIdx%len(period)]))
+			num := maths.NewInt(period[startIdx%len(period)])
 			for idx := startIdx - 1; idx >= 0; idx-- {
 				tmp := den
 				den = num
-				num = tmp.Plus(den.Times(maths.NewInt(int64(period[idx%len(period)]))))
+				num = tmp.Plus(den.Times(maths.NewInt(period[idx%len(period)])))
 			}
 			tmp := den
 			den = num
-			num = tmp.Plus(den.Times(maths.NewInt(int64(start))))
+			num = tmp.Plus(den.Times(maths.NewInt(start)))
 			//remainder := num.Minus(den.Times(maths.NewInt(int64(start))))
 			remainder := num
 			digits := maths.MustIntFromString(remainder.Times(bigNum).Div(den).String()[:100])

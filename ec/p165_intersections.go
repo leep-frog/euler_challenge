@@ -44,8 +44,9 @@ func P165() *problem {
 			want: "1",
 		},
 		{
-			args: []string{"5000"},
-			want: "2868868",
+			args:     []string{"5000"},
+			want:     "2868868",
+			estimate: 200,
 		},
 	})
 }

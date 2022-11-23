@@ -155,7 +155,7 @@ func P252() *problem {
 		{
 			args:     []string{"500"},
 			want:     "104924.0",
-			estimate: 300,
+			estimate: 700,
 		},
 	})
 }

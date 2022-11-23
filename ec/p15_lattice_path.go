@@ -18,7 +18,7 @@ Which is
 
 func P15() *problem {
 	return intInputNode(15, func(o command.Output, ni int) {
-		n := maths.NewInt(int64(ni))
+		n := maths.NewInt(ni)
 
 		var top, bottom, i = maths.NewInt(1), maths.NewInt(1), maths.NewInt(1)
 		for ; i.LTE(n); i.PP() {

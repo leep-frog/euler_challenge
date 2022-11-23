@@ -17,7 +17,7 @@ func P131() *problem {
 		// B: (p + n) = (c+1)^3
 		// Basically if (c + 1)^3 - c^3 is prime, then it works
 		var count int
-		bigMax := maths.NewInt(int64(max))
+		bigMax := maths.NewInt(max)
 		for i := 0; t.Nth(i + 1).Minus(t.Nth(i)).LT(bigMax); i++ {
 			if generator.IsPrime(t.Nth(i+1).Minus(t.Nth(i)).ToInt(), g) {
 				count++

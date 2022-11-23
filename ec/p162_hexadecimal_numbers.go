@@ -33,8 +33,8 @@ func crt(n int) *maths.Int {
 	F := A
 	O := H.Minus(NO)
 
-	AF := H.Minus(NAF).Minus(A).Minus(A).Negate()
-	OA := H.Minus(NOA).Minus(O).Minus(A).Negate()
+	AF := H.Minus(NAF).Minus(A).Minus(A).Negation()
+	OA := H.Minus(NOA).Minus(O).Minus(A).Negation()
 	OF := OA
 
 	return H.Minus(NOAF).Minus(A).Minus(F).Minus(O).Plus(AF).Plus(OA).Plus(OF)
