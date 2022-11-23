@@ -2,7 +2,6 @@ package eulerchallenge
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/maths"
@@ -43,7 +42,6 @@ func newVertex163(id int) *vertex163 {
 }
 
 func connectVertices(vs []*vertex163, line string) {
-	// fmt.Println("connecting", line, vs)
 	for i, v := range vs {
 		for j := i + 1; j < len(vs); j++ {
 			v.connect(vs[j], line)
@@ -56,12 +54,6 @@ func (v *vertex163) String() string {
 }
 
 func (v *vertex163) connect(that *vertex163, line string) {
-	if _, ok := v.m[that.id]; ok {
-		log.Fatalln("nope", that, v)
-	}
-	if _, ok := that.m[v.id]; ok {
-		log.Fatalln("nope", that, v)
-	}
 	v.m[that.id] = line
 	that.m[v.id] = line
 }
@@ -69,14 +61,14 @@ func (v *vertex163) connect(that *vertex163, line string) {
 func P163() *problem {
 	return intInputNode(163, func(o command.Output, n int) {
 
-		id := 1
-		vertices := []*vertex163{nil}
+		var vid int
+		var vertices []*vertex163
 		var horzRows, zigRows [][]*vertex163
 		for i := 0; i <= n; i++ {
 			var hRow, zRow []*vertex163
 			for j := 0; j < 2*i+1; j++ {
-				hRow = append(hRow, newVertex163(id))
-				id++
+				hRow = append(hRow, newVertex163(vid))
+				vid++
 			}
 			horzRows = append(horzRows, hRow)
 			vertices = append(vertices, hRow...)
@@ -85,8 +77,8 @@ func P163() *problem {
 				continue
 			}
 			for j := 0; j < 4*i+3; j++ {
-				zRow = append(zRow, newVertex163(id))
-				id++
+				zRow = append(zRow, newVertex163(vid))
+				vid++
 			}
 			zigRows = append(zigRows, zRow)
 			vertices = append(vertices, zRow...)
@@ -95,7 +87,7 @@ func P163() *problem {
 		// Now go through types of lines
 
 		// horizontal lines
-		for _, hRow := range horzRows {
+		for _, hRow := range horzRows[1:] {
 			connectVertices(hRow, "horizontal")
 		}
 
@@ -117,8 +109,7 @@ func P163() *problem {
 		}
 
 		// vertical lines
-		// TODO: i == n is one point, so remove that?
-		for i := 0; i <= n; i++ {
+		for i := 0; i < n; i++ {
 			var vertRowLeft, vertRowRight []*vertex163
 			for j := i; j <= n; j++ {
 				row := horzRows[j]
@@ -198,8 +189,8 @@ func P163() *problem {
 		}
 
 		var sum int
-		for i := 1; i < len(vertices); i++ {
-			sum += search(vertices[i], vertices, []*vertex163{vertices[i]})
+		for _, v := range vertices {
+			sum += search(v, vertices, []*vertex163{v})
 		}
 		o.Stdoutln(sum)
 	}, []*execution{
@@ -212,8 +203,9 @@ func P163() *problem {
 			want: "104",
 		},
 		{
-			args: []string{"36"},
-			want: "343047",
+			args:     []string{"36"},
+			want:     "343047",
+			estimate: 1.5,
 		},
 	})
 }
