@@ -98,31 +98,9 @@ func Abs[T Mathable](a T) T {
 	return a
 }
 
-type Int struct {
-	parts    []uint64
-	negative bool
-}
-
 var (
-	biggestInt = NewInt(math.MaxInt).Plus(One())
-	zero       = Zero()
+	zero = Zero()
 )
-
-func (i *Int) IsZero() bool {
-	return i.EQ(zero)
-}
-
-func (i *Int) Negative() bool {
-	return i.negative
-}
-
-func (i *Int) ToInt() int {
-	d, m := i.Divide(biggestInt)
-	if d.NEQ(zero) {
-		log.Fatalf("Int is too big to convert to int")
-	}
-	return parse.Atoi(m.String())
-}
 
 var (
 	// maxInt ~2^30
@@ -145,52 +123,11 @@ var (
 	intReg = regexp.MustCompile("^(-?)([0-9]*)$")
 )
 
-func IntFromString(s string) (*Int, error) {
-	m := intReg.FindStringSubmatch(s)
-	if len(m) == 0 {
-		return nil, fmt.Errorf("Invalid string: %s", s)
-	}
-
-	r := &Int{
-		negative: m[1] == "-",
-		parts:    make([]uint64, (len(s) / maxDigits)),
-	}
-
-	numString := m[2]
-	if len(numString)%maxDigits != 0 {
-		r.parts = append(r.parts, 0)
-	}
-
-	for idx := range r.parts {
-		end := len(numString) - maxDigits*idx
-		start := Max(end-maxDigits, 0)
-		// Shouldn't be an error because of earlier regex check
-		n, _ := strconv.Atoi(numString[start:end])
-		r.parts[idx] = uint64(n)
-	}
-	r.trim()
-	return r, nil
-}
-
-func (i *Int) TrimDigits(n int) *Int {
-	iStr := i.String()
-	n = Min(n, len(iStr))
-	return MustIntFromString(iStr[len(iStr)-n:])
-}
-
 func Chop(n, from, to int) int {
 	s := fmt.Sprintf("%d", n)
 	from = Max(0, from)
 	to = Min(len(s), to)
 	return parse.Atoi(s[from:to])
-}
-
-func MustIntFromString(s string) *Int {
-	r, err := IntFromString(s)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return r
 }
 
 func Pandigital(v int) bool {
@@ -209,81 +146,6 @@ func Pandigital(v int) bool {
 	}
 
 	return true
-}
-
-func NewInt(i int64) *Int {
-	r := &Int{}
-	if i == 0 {
-		return r
-	}
-
-	if i < 0 {
-		r.negative = true
-		i *= -1
-	}
-
-	ui := uint64(i)
-
-	for ui >= maxInt() {
-		r.append(ui % maxInt())
-		ui /= maxInt()
-	}
-	r.append(ui)
-	return r
-}
-
-func (i *Int) Copy() *Int {
-	r := &Int{
-		negative: i.negative,
-	}
-	for _, p := range i.parts {
-		r.parts = append(r.parts, p)
-	}
-	return r
-}
-
-func (i *Int) String() string {
-	if i.size() == 0 {
-		return "0"
-	}
-	var s []string
-	if i.negative {
-		s = append(s, "-")
-	}
-	miLen := maxDigits + 1
-	for idx := i.size() - 1; idx >= 0; idx-- {
-		a := fmt.Sprintf("%d", i.get(idx))
-		// Add leading zeros if not the last one
-		if idx != i.size()-1 {
-			a = fmt.Sprintf("%s%s", strings.Repeat("0", miLen-len(a)-1), a)
-		}
-		s = append(s, a)
-	}
-	return strings.Join(s, "")
-}
-
-func (i *Int) trim() {
-	end := i.size()
-	for idx := i.size() - 1; idx >= 0; idx-- {
-		if i.get(idx) == 0 {
-			end--
-		} else {
-			break
-		}
-	}
-	i.parts = i.parts[:end]
-}
-
-func (i *Int) size() int {
-	return len(i.parts)
-}
-
-func (i *Int) append(v uint64) {
-	i.parts = append(i.parts, v)
-}
-
-func (i *Int) get(spot int) uint64 {
-	return i.parts[spot]
 }
 
 func SumSys[T Mathable](ts ...T) T {
@@ -470,7 +332,7 @@ func Join[T any](ts []T, s string) string {
 	return strings.Join(r, s)
 }
 
-func (i *Int) Palindrome() bool {
+func (i *Bint) Palindrome() bool {
 	s := i.String()
 	for idx := range s {
 		if s[idx:idx+1] != s[len(s)-idx-1:len(s)-idx] {
@@ -620,20 +482,17 @@ func Palindrome(n int) bool {
 	return true
 }
 
-func (i *Int) Reverse() *Int {
-	var r []string
-	magOnlyFunc(i, func(pos *Int) {
-		s := pos.String()
-		for i := range s {
-			r = append(r, s[len(s)-1-i:len(s)-i])
-		}
-	})
-	return MustIntFromString(strings.Join(r, ""))
+func (i *Bint) Reverse() *Bint {
+	r := IntFromDigits(Reverse(i.Digits()))
+	if i.Negative() {
+		return r.Negation()
+	}
+	return r
 }
 
-func Sum(is ...*Int) *Int {
+func Sum(is ...*Bint) *Bint {
 	if len(is) == 0 {
-		return &Int{}
+		return Zero()
 	}
 
 	r := is[0].Copy()
@@ -666,171 +525,15 @@ func SortedKeys[K comparable, V any](m map[K]V) []K {
 	return ks
 }*/
 
-func (i *Int) Plus(that *Int) *Int {
-	if i.negative == that.negative {
-		r := &Int{
-			negative: i.negative,
-		}
-		var remainder uint64
-		for idx := 0; idx < Max(i.size(), that.size()); idx++ {
-			sum := remainder
-			if idx < i.size() {
-				sum += i.get(idx)
-			}
-			if idx < that.size() {
-				sum += that.get(idx)
-			}
-			r.append(sum % maxInt())
-			remainder = sum / maxInt()
-		}
-		if remainder != 0 {
-			r.append(remainder)
-		}
-		r.trim()
-		return r
-	}
-
-	// Otherwise we are subtracting
-
-	// guarantee magnitude of "i" is always GTE "that".
-	if i.LT(that.Times(NewInt(-1))) == !i.negative {
-		return that.Plus(i)
-	}
-
-	r := &Int{
-		negative: i.negative,
-	}
-	var borrowed bool
-	for idx := 0; idx < i.size(); idx++ {
-		// Remove one digit if the previous subtraction needed to split
-		curRes := i.get(idx)
-		if borrowed {
-			// If zero, then we need to borrow again.
-			if curRes == 0 {
-				curRes = maxInt() - 1
-			} else {
-				curRes--
-				borrowed = false
-			}
-		}
-		if idx < that.size() {
-			t := that.get(idx)
-			if t > curRes {
-				curRes += maxInt()
-				borrowed = true
-			}
-			curRes -= t
-		}
-
-		r.append(curRes)
-	}
-	r.trim()
-	return r
+func (i *Bint) PP() {
+	*i = *(i.Minus(One()))
 }
 
-// Rule: Int.parts[i] is always the largest it can be
-// TODO: trim
-
-func (i *Int) LT(that *Int) bool {
-	if i.negative != that.negative {
-		return i.negative
-	}
-
-	if i.size() != that.size() {
-		return i.size() < that.size() != i.negative
-	}
-
-	for idx := i.size() - 1; idx >= 0; idx-- {
-		if i.get(idx) != that.get(idx) {
-			return (i.get(idx) < that.get(idx)) != i.negative
-		}
-	}
-	return false
+func (i *Bint) MM() {
+	*i = *(i.Minus(One()))
 }
 
-func (i *Int) EQ(that *Int) bool {
-	return !i.LT(that) && !that.LT(i)
-}
-
-func (i *Int) NEQ(that *Int) bool {
-	return NEQ(i, that)
-}
-
-func (i *Int) GT(that *Int) bool {
-	return GT(i, that)
-}
-
-func (i *Int) GTE(that *Int) bool {
-	return GTE(i, that)
-}
-
-func (i *Int) LTE(that *Int) bool {
-	return LTE(i, that)
-}
-
-// Magnitude less than.
-func (i *Int) MagLT(that *Int) bool {
-	var b bool
-	magsOnlyFunc(i, that, func(i1, i2 *Int) {
-		b = i1.LT(i2)
-	})
-	return b
-}
-
-func (i *Int) MagEQ(that *Int) bool {
-	return !i.MagLT(that) && !that.MagLT(i)
-}
-
-func (i *Int) MagNEQ(that *Int) bool {
-	return !i.MagEQ(that)
-}
-
-func (i *Int) MagGT(that *Int) bool {
-	return that.MagLT(i)
-}
-
-func (i *Int) MagGTE(that *Int) bool {
-	return !i.MagLT(that)
-}
-
-func (i *Int) MagLTE(that *Int) bool {
-	return !i.MagGT(that)
-}
-
-func (i *Int) PP() {
-	*i = *(i.Plus(NewInt(1)))
-}
-
-func (i *Int) MM() {
-	*i = *(i.Plus(NewInt(-1)))
-}
-
-func (i *Int) Times(that *Int) *Int {
-	var rs []*Int
-	for idx := 0; idx < i.size(); idx++ {
-		r := &Int{}
-		for offset := 0; offset < idx; offset++ {
-			r.append(0)
-		}
-		var remainder uint64
-		for jdx := 0; jdx < that.size(); jdx++ {
-			product := i.get(idx)*that.get(jdx) + remainder
-			r.append(product % maxInt())
-			remainder = product / maxInt()
-		}
-		if remainder != 0 {
-			r.append(remainder)
-		}
-		rs = append(rs, r)
-	}
-
-	v := Sum(rs...)
-	v.negative = i.negative != that.negative
-	v.trim()
-	return v
-}
-
-func BigMin(is []*Int) *Int {
+func BigMin(is []*Bint) *Bint {
 	if len(is) == 0 {
 		return Zero()
 	}
@@ -843,107 +546,23 @@ func BigMin(is []*Int) *Int {
 	return min
 }
 
-func (i *Int) MagMinus(that *Int) *Int {
-	var r *Int
-	magsOnlyFunc(i, that, func(i1, i2 *Int) {
-		r = i1.Minus(i2)
-	})
-	return r
-}
-
-func magsOnlyFunc(this, that *Int, f func(*Int, *Int)) {
-	thisNeg := this.negative
-	thatNeg := that.negative
-	this.negative = false
-	that.negative = false
-	f(this, that)
-	this.negative = thisNeg
-	that.negative = thatNeg
-}
-
-func magOnlyFunc(this *Int, f func(*Int)) {
-	thisNeg := this.negative
-	this.negative = false
-	f(this)
-	this.negative = thisNeg
-}
-
-func (i *Int) Minus(that *Int) *Int {
-	that.Negate()
-	r := i.Plus(that)
-	that.Negate()
-	return r
-}
-
-func (i *Int) Negate() *Int {
-	i.negative = !i.negative
-	return i
-}
-
-func One() *Int {
-	return NewInt(1)
-}
-
-func Zero() *Int {
-	return NewInt(0)
-}
-
-func (i *Int) DivInt(by uint16) *Int {
-	a, _ := i.divInt(by)
-	return a
-}
-
-func (i *Int) ModInt(by uint16) uint16 {
-	_, b := i.divInt(by)
-	return b
-}
-
-func (i *Int) divInt(by16 uint16) (*Int, uint16) {
-	if by16 == 0 {
-		log.Fatal("Divide by zero exception")
-	}
-	by := uint64(by16)
-	var rem uint16
-	ret := &Int{
-		negative: i.negative,
-		parts:    make([]uint64, i.size()),
-	}
-	for idx := i.size() - 1; idx >= 0; idx-- {
-		num := i.get(idx) + uint64(rem)*maxInt()
-		ret.parts[idx] = num / by
-		rem = uint16(num % by)
-	}
-	ret.trim()
-	return ret, rem
-}
-
 var (
-	powCache   = map[int][]*Int{}
+	powCache   = map[int][]*Bint{}
 	hexLetters = []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"}
 )
 
-func (i *Int) Hex() string {
-	var hex []string
-	for !i.IsZero() {
-		q, r := i.Divide(NewInt(16))
-		hex = append(hex, hexLetters[r.ToInt()])
-		i = q
-	}
-	return strings.Join(Reverse(hex), "")
-}
-
 func ToHex(i int) string {
-	return NewInt(int64(i)).Hex()
+	return NewBint(i).Hex()
 }
 
-func BigPow(a, b int) *Int {
+func BigPow(a, b int) *Bint {
 	if b == 0 {
 		return One()
 	}
 
 	// check cache
 	//fmt.Println(powCache[a])
-	var start *Int
+	var start *Bint
 	if r, ok := powCache[a]; ok {
 		if b < len(r) {
 			//if !r[b].EQ(OldBigPow(a, b)) {
@@ -956,35 +575,15 @@ func BigPow(a, b int) *Int {
 		b = b + 1 - len(r)
 	} else {
 		start = One()
-		powCache[a] = []*Int{start}
+		powCache[a] = []*Bint{start}
 	}
 
-	ai := NewInt(int64(a))
+	ai := NewBint(a)
 	for i := 1; i <= b; i++ {
 		start = start.Times(ai)
 		powCache[a] = append(powCache[a], start.Copy())
 	}
 	//fmt.Println(powCache[a], start)
-	return start.Copy()
-}
-
-func Sort(is []*Int) {
-	sort.SliceStable(is, func(i, j int) bool {
-		return is[i].LTE(is[j])
-	})
-}
-
-func OldBigPow(a, b int) *Int {
-	if b == 0 {
-		return One()
-	}
-
-	start := One()
-	ai := NewInt(int64(a))
-	for i := 1; i <= b; i++ {
-		start = start.Times(ai)
-		//powCache[a] = append(powCache[a], start)
-	}
 	return start.Copy()
 }
 
@@ -1095,14 +694,6 @@ func QuadraticRoots(a, b, c float64) []float64 {
 		(-b - math.Sqrt(root)) / (2 * a),
 		(-b + math.Sqrt(root)) / (2 * a),
 	}
-}
-
-func IntFromDigits(digits []int) *Int {
-	var r []string
-	for _, d := range digits {
-		r = append(r, fmt.Sprintf("%d", d))
-	}
-	return MustIntFromString(strings.Join(r, ""))
 }
 
 func FromDigits(digits []int) int {
@@ -1278,55 +869,9 @@ func (b *Binary) String() string {
 	return strings.Join(s, "")
 }
 
-func (i *Int) Div(that *Int) *Int {
-	q, _ := i.Divide(that)
-	return q
-}
-
-func (i *Int) Mod(that *Int) *Int {
-	_, m := i.Divide(that)
-	return m
-}
-
-func (i *Int) Divide(that *Int) (*Int, *Int) {
-	var q, r *Int
-	magsOnlyFunc(i, that, func(i, that *Int) {
-		if that.EQ(zero) {
-			log.Fatal("Divide by zero exception")
-		}
-
-		// Make "start" the biggest power of 2 such that (that * start) <= i
-		start := One()
-		for two := NewInt(2); start.Times(that).LTE(i); start = start.Times(two) {
-		}
-		start = start.DivInt(2)
-
-		// Start subtracting
-		ret := i.Copy()
-		ret.negative = false
-		quotient := NewInt(0)
-		for ret.GTE(that) {
-			if prod := start.Times(that); prod.LTE(ret) {
-				quotient = quotient.Plus(start)
-				ret = ret.Minus(prod)
-			}
-			start = start.DivInt(2)
-			if start.EQ(zero) {
-				quotient.trim()
-				q, r = quotient, ret
-			}
-		}
-
-		quotient.trim()
-		q, r = quotient, ret
-	})
-	q.negative = i.negative != that.negative
-	return q, r
-}
-
 func CmpOpts() []cmp.Option {
 	return []cmp.Option{
-		cmp.Comparer(func(this, that *Int) bool {
+		cmp.Comparer(func(this, that *Bint) bool {
 			if this == nil {
 				return that == nil || that.EQ(zero)
 			}
@@ -1339,49 +884,6 @@ func CmpOpts() []cmp.Option {
 			return this.Equals(that)
 		}),
 	}
-}
-
-func (i *Int) Part(idx int) int {
-	return int(i.parts[idx])
-}
-
-func (i *Int) Digits() []int {
-	var r []int
-	magOnlyFunc(i, func(i1 *Int) {
-		for v, idx := i1.String(), 0; idx < len(v); idx++ {
-			r = append(r, parse.Atoi(v[idx:idx+1]))
-		}
-	})
-	return r
-}
-
-func (i *Int) DigitSum() int {
-	var sum int
-	for _, d := range i.Digits() {
-		sum += d
-	}
-	return sum
-}
-
-// TODO: change Div function
-func Choose(n, r int) *Int {
-	return Factorial(n).Div(Factorial(r).Times(Factorial(n - r)))
-}
-
-func Factorial(n int) *Int {
-	r := One()
-	for i := 1; i <= n; i++ {
-		r = r.Times(NewInt(int64(i)))
-	}
-	return r
-}
-
-func FactorialI(n int) int {
-	r := 1
-	for i := 2; i <= n; i++ {
-		r *= i
-	}
-	return r
 }
 
 // DividingPeriod returns the integer and decimal part of num/den.
@@ -1437,14 +939,6 @@ func SquareRootPeriod(n int) (int, []int) {
 		num, den = tmpDen, -newNum
 	}
 	return start, as
-}
-
-func Biggify(is []int) []*Int {
-	var r []*Int
-	for _, i := range is {
-		r = append(r, NewInt(int64(i)))
-	}
-	return r
 }
 
 func Cumulative(is []int) []int {

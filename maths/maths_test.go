@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/parse"
 )
 
@@ -192,8 +191,8 @@ func TestComps(t *testing.T) {
 		setMax(md)
 		for _, test := range []struct {
 			name       string
-			a          *Int
-			b          *Int
+			a          *Bint
+			b          *Bint
 			wantLT     bool
 			wantLTE    bool
 			wantEQ     bool
@@ -207,8 +206,8 @@ func TestComps(t *testing.T) {
 		}{
 			{
 				name:       "pos equal",
-				a:          NewInt(123),
-				b:          NewInt(123),
+				a:          NewBint(123),
+				b:          NewBint(123),
 				wantLTE:    true,
 				wantEQ:     true,
 				wantGTE:    true,
@@ -218,8 +217,8 @@ func TestComps(t *testing.T) {
 			},
 			{
 				name:       "neg equal",
-				a:          NewInt(-321),
-				b:          NewInt(-321),
+				a:          NewBint(-321),
+				b:          NewBint(-321),
 				wantLTE:    true,
 				wantEQ:     true,
 				wantGTE:    true,
@@ -229,8 +228,8 @@ func TestComps(t *testing.T) {
 			},
 			{
 				name:       "small pos, big pos",
-				a:          NewInt(123),
-				b:          NewInt(234),
+				a:          NewBint(123),
+				b:          NewBint(234),
 				wantLT:     true,
 				wantLTE:    true,
 				wantMagLT:  true,
@@ -238,8 +237,8 @@ func TestComps(t *testing.T) {
 			},
 			{
 				name:       "big pos, small pos",
-				a:          NewInt(62),
-				b:          NewInt(2),
+				a:          NewBint(62),
+				b:          NewBint(2),
 				wantGT:     true,
 				wantGTE:    true,
 				wantMagGT:  true,
@@ -247,8 +246,8 @@ func TestComps(t *testing.T) {
 			},
 			{
 				name:       "small neg, big neg",
-				a:          NewInt(-123),
-				b:          NewInt(-234),
+				a:          NewBint(-123),
+				b:          NewBint(-234),
 				wantGT:     true,
 				wantGTE:    true,
 				wantMagLT:  true,
@@ -256,8 +255,8 @@ func TestComps(t *testing.T) {
 			},
 			{
 				name:       "big neg, small neg",
-				a:          NewInt(-6234),
-				b:          NewInt(-2),
+				a:          NewBint(-6234),
+				b:          NewBint(-2),
 				wantLT:     true,
 				wantLTE:    true,
 				wantMagGT:  true,
@@ -265,8 +264,8 @@ func TestComps(t *testing.T) {
 			},
 			{
 				name:       "small pos, big neg",
-				a:          NewInt(4),
-				b:          NewInt(-999),
+				a:          NewBint(4),
+				b:          NewBint(-999),
 				wantGT:     true,
 				wantGTE:    true,
 				wantMagLT:  true,
@@ -274,8 +273,8 @@ func TestComps(t *testing.T) {
 			},
 			{
 				name:       "big pos, small neg",
-				a:          NewInt(4444),
-				b:          NewInt(-9),
+				a:          NewBint(4444),
+				b:          NewBint(-9),
 				wantGT:     true,
 				wantGTE:    true,
 				wantMagGT:  true,
@@ -283,8 +282,8 @@ func TestComps(t *testing.T) {
 			},
 			{
 				name:       "small neg, big pos",
-				a:          NewInt(-239),
-				b:          NewInt(8746321111),
+				a:          NewBint(-239),
+				b:          NewBint(8746321111),
 				wantLT:     true,
 				wantLTE:    true,
 				wantMagLT:  true,
@@ -292,8 +291,8 @@ func TestComps(t *testing.T) {
 			},
 			{
 				name:       "big neg, small pos",
-				a:          NewInt(-239792037),
-				b:          NewInt(10101),
+				a:          NewBint(-239792037),
+				b:          NewBint(10101),
 				wantLT:     true,
 				wantLTE:    true,
 				wantMagGT:  true,
@@ -301,8 +300,8 @@ func TestComps(t *testing.T) {
 			},
 			{
 				name:       "equal neg and pos",
-				a:          NewInt(-724913),
-				b:          NewInt(724913),
+				a:          NewBint(-724913),
+				b:          NewBint(724913),
 				wantLT:     true,
 				wantLTE:    true,
 				wantMagLTE: true,
@@ -311,8 +310,8 @@ func TestComps(t *testing.T) {
 			},
 			{
 				name:       "equal pos and neg",
-				a:          NewInt(724913),
-				b:          NewInt(-724913),
+				a:          NewBint(724913),
+				b:          NewBint(-724913),
 				wantGT:     true,
 				wantGTE:    true,
 				wantMagLTE: true,
@@ -393,55 +392,55 @@ func TestIntPlus(t *testing.T) {
 	for _, md := range maxIs(t) {
 		setMax(md)
 		for idx, test := range []struct {
-			input      []int64
-			want       *Int
+			input      []int
+			want       *Bint
 			wantString string
 		}{
 			{
-				input:      []int64{0, 4, 0, 8, 0},
-				want:       NewInt(12),
+				input:      []int{0, 4, 0, 8, 0},
+				want:       NewBint(12),
 				wantString: "12",
 			},
 			{
-				input:      []int64{0, 4, -3, 8, 0},
-				want:       NewInt(9),
+				input:      []int{0, 4, -3, 8, 0},
+				want:       NewBint(9),
 				wantString: "9",
 			},
 			{
-				input:      []int64{0, -3, 4, 0, 8},
-				want:       NewInt(9),
+				input:      []int{0, -3, 4, 0, 8},
+				want:       NewBint(9),
 				wantString: "9",
 			},
 			{
-				input:      []int64{100, -87},
-				want:       NewInt(13),
+				input:      []int{100, -87},
+				want:       NewBint(13),
 				wantString: "13",
 			},
 			{
-				input:      []int64{-3010, 220},
-				want:       NewInt(-2790),
+				input:      []int{-3010, 220},
+				want:       NewBint(-2790),
 				wantString: "-2790",
 			},
 			{
-				input:      []int64{220, -3010},
-				want:       NewInt(-2790),
+				input:      []int{220, -3010},
+				want:       NewBint(-2790),
 				wantString: "-2790",
 			},
 			{
-				input:      []int64{12345678, -12345600},
-				want:       NewInt(78),
+				input:      []int{12345678, -12345600},
+				want:       NewBint(78),
 				wantString: "78",
 			},
 			{
-				input:      []int64{10000, 0},
-				want:       NewInt(10000),
+				input:      []int{10000, 0},
+				want:       NewBint(10000),
 				wantString: "10000",
 			},
 		} {
 			t.Run(tn(fmt.Sprintf("Add Test %d", idx)), func(t *testing.T) {
-				var inputs []*Int
+				var inputs []*Bint
 				for _, in := range test.input {
-					inputs = append(inputs, NewInt(in))
+					inputs = append(inputs, NewBint(in))
 				}
 				got := Sum(inputs...)
 				if diff := cmp.Diff(test.want, got, CmpOpts()...); diff != "" {
@@ -544,38 +543,46 @@ func TestIntFromString(t *testing.T) {
 	for _, md := range maxIs(t) {
 		setMax(md)
 		for _, test := range []struct {
-			s       string
-			want    *Int
-			wantErr error
+			s      string
+			want   *Bint
+			wantOK bool
 		}{
 			{
-				s:    "0",
-				want: Zero(),
+				s:      "0",
+				want:   Zero(),
+				wantOK: true,
 			},
 			{
-				s:    "1",
-				want: One(),
+				s:      "1",
+				want:   One(),
+				wantOK: true,
 			},
 			{
-				s:    "01",
-				want: One(),
+				s:      "01",
+				want:   One(),
+				wantOK: true,
 			},
 			{
-				s:    "000001",
-				want: One(),
+				s:      "000001",
+				want:   One(),
+				wantOK: true,
 			},
 			{
-				s:    "001001",
-				want: NewInt(1001),
+				s:      "001001",
+				want:   NewBint(1001),
+				wantOK: true,
 			},
 			{
-				s:    "67734834945737458",
-				want: NewInt(67734834945737458),
+				s:      "67734834945737458",
+				want:   NewBint(67734834945737458),
+				wantOK: true,
 			},
 		} {
 			t.Run(tn(fmt.Sprintf("IntFromString(%s)", test.s)), func(t *testing.T) {
-				got, err := IntFromString(test.s)
-				command.CmpError(t, fmt.Sprintf("IntFromString(%s) ", test.s), test.wantErr, err)
+				got, ok := IntFromString(test.s)
+				if diff := cmp.Diff(test.wantOK, ok, CmpOpts()...); diff != "" {
+					t.Errorf("IntFromString(%s) returned incorrect OK value (-want, +got):\n%s", test.s, diff)
+				}
 				if diff := cmp.Diff(test.want, got, CmpOpts()...); diff != "" {
 					t.Errorf("IntFromString(%s) returned incorrect value (-want, +got):\n%s", test.s, diff)
 				}
@@ -591,64 +598,64 @@ func TestDiv(t *testing.T) {
 			name string
 			// Test the following:
 			// a / b = c + wantRem
-			a       *Int
-			b       *Int
-			c       *Int
-			wantRem *Int
+			a       *Bint
+			b       *Bint
+			c       *Bint
+			wantRem *Bint
 			// If false, test the following as well
 			// a / c = b + wantRem
 			noReverseTest bool
 		}{
 			{
 				name: "small by small",
-				a:    NewInt(189),
-				b:    NewInt(9),
-				c:    NewInt(21),
+				a:    NewBint(189),
+				b:    NewBint(9),
+				c:    NewBint(21),
 			},
 			{
 				name: "small neg by small",
-				a:    NewInt(-189),
-				b:    NewInt(9),
-				c:    NewInt(-21),
+				a:    NewBint(-189),
+				b:    NewBint(9),
+				c:    NewBint(-21),
 			},
 			{
 				name:    "small by small with remainder",
-				a:       NewInt(194),
-				b:       NewInt(9),
-				c:       NewInt(21),
-				wantRem: NewInt(5),
+				a:       NewBint(194),
+				b:       NewBint(9),
+				c:       NewBint(21),
+				wantRem: NewBint(5),
 			},
 			{
 				name: "small by 2",
 				a:    MustIntFromString("24"),
-				b:    NewInt(2),
+				b:    NewBint(2),
 				c:    MustIntFromString("12"),
 			},
 			{
 				name: "big by small",
 				a:    MustIntFromString("335367096786357081410764800000"),
-				b:    NewInt(2),
+				b:    NewBint(2),
 				c:    MustIntFromString("167683548393178540705382400000"),
 			},
 			{
 				name: "bigger by small with remainder",
 				a:    MustIntFromString("335367096786357081410764800000"),
-				b:    NewInt(222),
+				b:    NewBint(222),
 				c:    MustIntFromString("1510662598136743609958400000"),
 			},
 			{
 				name:    "biggerer by small-ish",
 				a:       MustIntFromString("335367096786357081410764800000"),
-				b:       NewInt(22222),
+				b:       NewBint(22222),
 				c:       MustIntFromString("15091670272088789551379929"),
-				wantRem: NewInt(17762),
+				wantRem: NewBint(17762),
 			},
 			{
 				name:    "biggest by small-ish",
 				a:       MustIntFromString("335367096786357081410764800000"),
-				b:       NewInt(23456),
+				b:       NewBint(23456),
 				c:       MustIntFromString("14297710470086846922355252"),
-				wantRem: NewInt(9088),
+				wantRem: NewBint(9088),
 			},
 			{
 				name:          "big by big",
@@ -690,22 +697,22 @@ func TestDivInt(t *testing.T) {
 		setMax(md)
 		for _, test := range []struct {
 			name    string
-			a       *Int
-			b       uint16
-			want    *Int
-			wantRem uint16
+			a       *Bint
+			b       int
+			want    *Bint
+			wantRem int
 		}{
 			{
 				name: "simple",
-				a:    NewInt(189),
+				a:    NewBint(189),
 				b:    9,
-				want: NewInt(21),
+				want: NewBint(21),
 			},
 			{
 				name:    "simple with remainder",
-				a:       NewInt(194),
+				a:       NewBint(194),
 				b:       9,
-				want:    NewInt(21),
+				want:    NewBint(21),
 				wantRem: 5,
 			},
 			{
@@ -745,8 +752,8 @@ func TestDivInt(t *testing.T) {
 					t.Errorf("ModInt(%v, %d) returned incorrect value (-want, +got):\n%s", test.a, test.b, diff)
 				}
 
-				bInt := NewInt(int64(test.b))
-				remInt := NewInt(int64(test.wantRem))
+				bInt := NewBint(test.b)
+				remInt := NewBint(test.wantRem)
 				quo, rem := test.a.Divide(bInt)
 				if diff := cmp.Diff(test.want, quo, CmpOpts()...); diff != "" {
 					t.Errorf("Div(%v, %v) returned incorrect quotient (-want, +got):\n%s", test.a, bInt, diff)
