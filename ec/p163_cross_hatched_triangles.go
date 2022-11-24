@@ -7,7 +7,7 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
-func search(v *vertex163, vertices, path []*vertex163) int {
+func search163(v *vertex163, vertices, path []*vertex163) int {
 	if len(path) == 3 {
 		// Make sure they are not collinear points (aka on the same type of line)
 		if _, ok := path[0].m[v.id]; !ok {
@@ -26,7 +26,7 @@ func search(v *vertex163, vertices, path []*vertex163) int {
 			continue
 		}
 		path = append(path, vertices[vid])
-		cnt += search(vertices[vid], vertices, path)
+		cnt += search163(vertices[vid], vertices, path)
 		path = path[:len(path)-1]
 	}
 	return cnt
@@ -190,7 +190,7 @@ func P163() *problem {
 
 		var sum int
 		for _, v := range vertices {
-			sum += search(v, vertices, []*vertex163{v})
+			sum += search163(v, vertices, []*vertex163{v})
 		}
 		o.Stdoutln(sum)
 	}, []*execution{
