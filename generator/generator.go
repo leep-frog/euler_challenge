@@ -90,13 +90,13 @@ func (g *Generator[T]) Values() []T {
 
 type CustomGeneratable[T any] interface {
 	fmt.Stringer
-	Less(T) bool
+	maths.Comparable[T]
 }
 
 func newCustomGen[T CustomGeneratable[T]](gi GeneratorInterface[T]) *Generator[T] {
 	return &Generator[T]{
 		gi:       gi,
-		less:     func(i, j T) bool { return i.Less(j) },
+		less:     func(i, j T) bool { return i.LT(j) },
 		toString: func(i T) string { return i.String() },
 		set:      map[string]bool{},
 	}

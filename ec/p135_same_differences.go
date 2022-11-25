@@ -38,7 +38,6 @@ func diophantineDifferenceExactCount(n, count int, primes *generator.Generator[i
 		if f == 1 {
 			continue
 		}
-		//fmt.Println(n, f)
 		// (f+k)^2 - f^2 - (f-k)^2 = n
 		// f^2 + 2fk + k^2 - f^2 - f^2 + 2fk - k^2 = n
 		// 4fk - f^2 = n

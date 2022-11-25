@@ -21,7 +21,7 @@ func (rt *RightTriangle) String() string {
 	return fmt.Sprintf("(A=%d, B=%d, C=%d)", rt.A, rt.B, rt.C)
 }
 
-func (rt *RightTriangle) Less(that *RightTriangle) bool {
+func (rt *RightTriangle) LT(that *RightTriangle) bool {
 	if rt.M != that.M {
 		return rt.M < that.M
 	}

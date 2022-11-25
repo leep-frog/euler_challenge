@@ -98,7 +98,7 @@ func P243() *problem {
 			want: "12",
 		},
 		{
-			args: []string{"1"},
+			args: []string{"2"},
 			want: "892371480",
 		},
 	})

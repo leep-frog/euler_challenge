@@ -44,7 +44,7 @@ func P159() *problem {
 		{
 			args:     []string{"1000000"},
 			want:     "14489159",
-			estimate: 14,
+			estimate: 2.5,
 		},
 	})
 }

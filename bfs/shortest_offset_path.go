@@ -2,6 +2,8 @@ package bfs
 
 import (
 	"fmt"
+
+	"github.com/leep-frog/euler_challenge/maths"
 )
 
 func ShortestOffsetPath[C OffsetComparable[C], T Searchable[C, T]](initStates []T, opts ...Option) ([]T, C) {
@@ -78,6 +80,6 @@ func (ow *offsetWrapper[C, M, T]) AdjacentStates(m M, p Path[*offsetWrapper[C, M
 }
 
 type OffsetComparable[C any] interface {
-	Comparable[C]
+	maths.Comparable[C]
 	Plus(C) C
 }

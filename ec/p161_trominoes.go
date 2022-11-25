@@ -193,7 +193,7 @@ func P161() *problem {
 		{
 			args:     []string{"9", "12"},
 			want:     "20574308184277971",
-			estimate: 2.5,
+			estimate: 0.5,
 		},
 	})
 }

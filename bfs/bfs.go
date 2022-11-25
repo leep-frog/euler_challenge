@@ -4,6 +4,8 @@ import (
 	"container/heap"
 	"fmt"
 	"strings"
+
+	"github.com/leep-frog/euler_challenge/maths"
 )
 
 type Path[T any] interface {
@@ -55,7 +57,7 @@ func (p *pathWrapper[T, T2]) Fetch() []T2 {
 	return p.converter.convertSlice(p.path.Fetch())
 }
 
-type path[C Comparable[C], T any] struct {
+type path[C maths.Comparable[C], T any] struct {
 	tail *StateValue[C, T]
 }
 
@@ -81,11 +83,7 @@ func (p *path[C, T]) Fetch() []T {
 	return r
 }
 
-type Comparable[C any] interface {
-	Less(C) bool
-}
-
-type Searchable[C Comparable[C], T any] interface {
+type Searchable[C maths.Comparable[C], T any] interface {
 	// A unique code for the current state. This may be called multiple times
 	// so this should be cached in the implementing code if computation is expensive.
 	Code() string
@@ -101,7 +99,7 @@ type Searchable[C Comparable[C], T any] interface {
 	Distance() C
 }
 
-type SearchableWithContext[C Comparable[C], M, T any] interface {
+type SearchableWithContext[C maths.Comparable[C], M, T any] interface {
 	// A unique code for the current state. This may be called multiple times
 	// so this should be cached in the implementing code if computation is expensive.
 	Code(M) string
@@ -117,19 +115,19 @@ type SearchableWithContext[C Comparable[C], M, T any] interface {
 	Distance(M) C
 }
 
-func toAPWConverter[C Comparable[C], M any, T SearchableWithContext[C, M, T]]() converter[T, *addPathWrapper[C, M, T]] {
+func toAPWConverter[C maths.Comparable[C], M any, T SearchableWithContext[C, M, T]]() converter[T, *addPathWrapper[C, M, T]] {
 	return func(t T) *addPathWrapper[C, M, T] {
 		return &addPathWrapper[C, M, T]{t}
 	}
 }
 
-func fromAPWConverter[C Comparable[C], M any, T SearchableWithContext[C, M, T]]() converter[*addPathWrapper[C, M, T], T] {
+func fromAPWConverter[C maths.Comparable[C], M any, T SearchableWithContext[C, M, T]]() converter[*addPathWrapper[C, M, T], T] {
 	return func(apw *addPathWrapper[C, M, T]) T {
 		return apw.state
 	}
 }
 
-type addPathWrapper[C Comparable[C], M any, T SearchableWithContext[C, M, T]] struct {
+type addPathWrapper[C maths.Comparable[C], M any, T SearchableWithContext[C, M, T]] struct {
 	state T
 }
 
@@ -157,19 +155,19 @@ func (apw *addPathWrapper[C, M, T]) AdjacentStates(m M, _ Path[*addPathWrapper[C
 	return r
 }
 
-func toACPConverter[C Comparable[C], T Searchable[C, T]]() converter[T, *addContextAndPathWrapper[C, T]] {
+func toACPConverter[C maths.Comparable[C], T Searchable[C, T]]() converter[T, *addContextAndPathWrapper[C, T]] {
 	return func(t T) *addContextAndPathWrapper[C, T] {
 		return &addContextAndPathWrapper[C, T]{t}
 	}
 }
 
-func fromACPConverter[C Comparable[C], T Searchable[C, T]]() converter[*addContextAndPathWrapper[C, T], T] {
+func fromACPConverter[C maths.Comparable[C], T Searchable[C, T]]() converter[*addContextAndPathWrapper[C, T], T] {
 	return func(apw *addContextAndPathWrapper[C, T]) T {
 		return apw.state
 	}
 }
 
-type addContextAndPathWrapper[C Comparable[C], T Searchable[C, T]] struct {
+type addContextAndPathWrapper[C maths.Comparable[C], T Searchable[C, T]] struct {
 	state T
 }
 
@@ -197,7 +195,7 @@ func (acp *addContextAndPathWrapper[C, T]) AdjacentStates(_ int, _ Path[*addCont
 	return r
 }
 
-type SearchableWithContextAndPath[C Comparable[C], M, T any] interface {
+type SearchableWithContextAndPath[C maths.Comparable[C], M, T any] interface {
 	// A unique code for the current state. This may be called multiple times
 	// so this should be cached in the implementing code if computation is expensive.
 	Code(M, Path[T]) string
@@ -226,7 +224,7 @@ func CheckDuplicates() Option {
 	}
 }
 
-func newSearch[C Comparable[C], M any, T SearchableWithContextAndPath[C, M, T]](initStates []T, m M, opts ...Option) (Path[T], C) {
+func newSearch[C maths.Comparable[C], M any, T SearchableWithContextAndPath[C, M, T]](initStates []T, m M, opts ...Option) (Path[T], C) {
 	o := &option{}
 	for _, opt := range opts {
 		opt(o)
@@ -262,7 +260,7 @@ func newSearch[C Comparable[C], M any, T SearchableWithContextAndPath[C, M, T]](
 	return nil, nill
 }
 
-type bfsHeap[C Comparable[C], T any] struct {
+type bfsHeap[C maths.Comparable[C], T any] struct {
 	values []*StateValue[C, T]
 }
 
@@ -284,7 +282,7 @@ func (bh *bfsHeap[C, T]) Len() int {
 }
 
 func (bh *bfsHeap[C, T]) Less(i, j int) bool {
-	return bh.values[i].dist.Less(bh.values[j].dist)
+	return bh.values[i].dist.LT(bh.values[j].dist)
 }
 
 func (bh *bfsHeap[C, T]) Push(x interface{}) {
@@ -301,7 +299,7 @@ func (bh *bfsHeap[C, T]) Swap(i, j int) {
 	bh.values[i], bh.values[j] = bh.values[j], bh.values[i]
 }
 
-type StateValue[C Comparable[C], T any] struct {
+type StateValue[C maths.Comparable[C], T any] struct {
 	state T
 	// This can be replaced by wrapping type for specific search type wrapper
 	dist C
