@@ -7,10 +7,11 @@ import (
 )
 
 var (
-	cachedPrimeFactors = map[int]map[int]int{}
-	cachedFactors      = map[int][]int{}
-	cachedFactorCounts = map[int]int{}
-	coprimeCache       = map[int]map[int]bool{}
+	cachedPrimeFactors    = map[int]map[int]int{}
+	cachedFactors         = map[int][]int{}
+	cachedFactorCounts    = map[int]int{}
+	coprimeCache          = map[int]map[int]bool{}
+	cachedResilienceCount = map[int]int{}
 )
 
 func clearCaches() {
@@ -18,6 +19,7 @@ func clearCaches() {
 	cachedFactors = map[int][]int{}
 	cachedFactorCounts = map[int]int{}
 	coprimeCache = map[int]map[int]bool{}
+	cachedResilienceCount = map[int]int{}
 }
 
 func Primes() *Generator[int] {
@@ -122,6 +124,24 @@ func FactorCount(n int, p *Generator[int]) int {
 		// [f, f*pi, f*pi^2, f*pi^3, ..., f*pi^piCnt] (len = piCnt + 1)
 		cachedFactorCounts[n] = fc * (primeCnt + 1)
 		return fc * (primeCnt + 1)
+	})
+}
+
+// AKA Relative Prime Count? (I think)?
+func ResilienceCount(n int, p *Generator[int]) int {
+	return CompositeCacher(n, p, cachedResilienceCount, func(i int) int {
+		if i <= 1 {
+			panic("IDK")
+		}
+		// Factors are 1 and the prime number itself
+		return i - 1
+	}, func(primeFactor, otherFactor int) int {
+		r := ResilienceCount(otherFactor, p)
+		// If already has one of the prime, then just multiply
+		if otherFactor%primeFactor == 0 {
+			return r * primeFactor
+		}
+		return r * (primeFactor - 1)
 	})
 }
 

@@ -65,6 +65,10 @@ func (f *Fraction) LT(that *Fraction) bool {
 	return f.N*that.D < f.D*that.N
 }
 
+func (f *Fraction) Less(that *Fraction) bool {
+	return f.LT(that)
+}
+
 func Simplify(n, d int, primes *generator.Generator[int]) *Fraction {
 	return New(n, d).Simplify(primes)
 }

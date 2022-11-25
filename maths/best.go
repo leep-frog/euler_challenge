@@ -26,13 +26,13 @@ func Closest[I any, T Mathable](center T) *Bester[I, T] {
 	}
 }
 
-func SmallestT[I any, T Operable[T]]() *Bester[I, T] {
+func SmallestT[I any, T Comparable[T]]() *Bester[I, T] {
 	return &Bester[I, T]{
 		better: LT[T],
 	}
 }
 
-func LargestT[I any, T Operable[T]]() *Bester[I, T] {
+func LargestT[I any, T Comparable[T]]() *Bester[I, T] {
 	return &Bester[I, T]{
 		better: GT[T],
 	}
@@ -73,12 +73,14 @@ func (b *Bester[I, T]) Check(v T) {
 	}
 }
 
-func (b *Bester[I, T]) IndexCheck(idx I, v T) {
+func (b *Bester[I, T]) IndexCheck(idx I, v T) bool {
 	if !b.set || b.better(v, b.best) {
 		b.best = v
 		b.bestI = idx
 		b.set = true
+		return true
 	}
+	return false
 }
 
 type IncrementalBester struct {
