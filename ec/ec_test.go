@@ -16,9 +16,9 @@ var (
 	// to keep import
 	one = maths.One()
 	// filter out tests
-	timeLimit  = 299.0
+	timeLimit  = 10.0
 	testFilter = func(cct *codingChallengeTest) bool {
-		return true // && cct.num == 136
+		return true //&& cct.num == 88
 	}
 )
 

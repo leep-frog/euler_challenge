@@ -5,8 +5,6 @@ import (
 	"github.com/leep-frog/euler_challenge/generator"
 )
 
-// TODO: move all of these to helper directory
-
 func P3() *problem {
 	return intInputNode(3, func(o command.Output, n int) {
 		factors := generator.PrimeFactors(n, generator.Primes())

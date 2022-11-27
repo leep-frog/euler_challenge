@@ -32,7 +32,7 @@ func P88() *problem {
 		o.Stdoutln(sum)
 	}, []*execution{
 		{
-			args:     []string{"12000"},
+			args:     []string{"12_000"},
 			want:     "7587457",
 			estimate: 1,
 		},

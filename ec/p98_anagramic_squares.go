@@ -137,7 +137,6 @@ func createAnagramMap(length int) (map[string][]int, map[string]map[int]bool) {
 
 	// Map from sorted digits to squares containing those digits
 	anagramMap := map[string]map[int]bool{}
-	// TODO: range function for generator
 	for i := start; i <= end; i++ {
 		square := i * i
 		sorted := anagramStringSet(square)

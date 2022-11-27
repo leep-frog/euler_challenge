@@ -45,7 +45,6 @@ func P160() *problem {
 		o.Stdoutln(fast160(n))
 	}, []*execution{
 		{
-			// TODO: let int ignore _
 			args: []string{"9"},
 			want: "38144",
 		},
