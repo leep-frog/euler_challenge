@@ -110,10 +110,6 @@ func dfsFinal[M, T2 any, T completeDepthSearcher[M, T, T2]](initStates []T, m M,
 		actions = append(actions, &dfsAction[T]{nil, is})
 	}
 
-	// TODO(option): Check each node at most once vs check unique path at most once
-	// For example if A and B both have edge to C, do we want to check
-	// C once, or check once for A->C and once for A->C
-
 	checkedNodes := map[string]bool{}
 
 	dp := &dfsPath[T2]{nil, map[string]bool{}}

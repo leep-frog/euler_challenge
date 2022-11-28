@@ -80,6 +80,18 @@ func (i *Int) Plus(j *Int) *Int {
 	return nb(big.NewInt(1).Add(i.i, j.i))
 }
 
+func (i *Int) PlusInt(j int) *Int {
+	return i.Plus(NewInt(j))
+}
+
+func (i *Int) MinusInt(j int) *Int {
+	return i.Minus(NewInt(j))
+}
+
+func (i *Int) TimesInt(j int) *Int {
+	return i.Times(NewInt(j))
+}
+
 func (i *Int) Minus(j *Int) *Int {
 	return nb(big.NewInt(1).Sub(i.i, j.i))
 }

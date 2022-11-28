@@ -18,7 +18,7 @@ var (
 	// filter out tests
 	timeLimit  = 10.0
 	testFilter = func(cct *codingChallengeTest) bool {
-		return true //&& cct.num == 88
+		return true && cct.num == 233
 	}
 )
 

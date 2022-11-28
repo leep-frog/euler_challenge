@@ -190,33 +190,11 @@ func Factors(n int, p *Generator[int]) []int {
 	}, func(primeFactor, otherFactor int) []int {
 		// primeFactor is guaranteed to be the smallest factor and (otherFactor = n/primeFactor) the largest.
 		additional := Factors(otherFactor, p)
-		var mAdditional []int
+		mAdditional := []int{1}
 		for _, a := range additional {
 			mAdditional = append(mAdditional, a*primeFactor)
 		}
-		// merge sort the two
-		// TODO: merge sort package
-		merged := []int{1}
-		for ai, mi := 0, 0; ai < len(additional) || mi < len(mAdditional); {
-			var contender int
-			if ai == len(additional) {
-				contender = mAdditional[mi]
-				mi++
-			} else if mi == len(mAdditional) {
-				contender = additional[ai]
-				ai++
-			} else if additional[ai] <= mAdditional[mi] {
-				contender = additional[ai]
-				ai++
-			} else {
-				contender = mAdditional[mi]
-				mi++
-			}
-			if contender != merged[len(merged)-1] {
-				merged = append(merged, contender)
-			}
-		}
-		return merged
+		return maths.MergeSort(additional, mAdditional, true)
 	})
 }
 

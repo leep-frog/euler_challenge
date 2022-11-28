@@ -95,7 +95,6 @@ type Searchable[C maths.Comparable[C], T any] interface {
 	// T should always be State[M], but we cannot do that here without having a recursive type
 	AdjacentStates() []T
 	// Distance is the total distance
-	// TODO: make this return an heap-able interface
 	Distance() C
 }
 
@@ -111,7 +110,6 @@ type SearchableWithContext[C maths.Comparable[C], M, T any] interface {
 	// T should always be State[M], but we cannot do that here without having a recursive type
 	AdjacentStates(M) []T
 	// Distance is the total distance
-	// TODO: make this return a mathable
 	Distance(M) C
 }
 
@@ -207,7 +205,6 @@ type SearchableWithContextAndPath[C maths.Comparable[C], M, T any] interface {
 	// T should always be State[M], but we cannot do that here without having a recursive type
 	AdjacentStates(M, Path[T]) []T
 	// Distance is the total distance
-	// TODO: make this return a mathable
 	Distance(M, Path[T]) C
 }
 

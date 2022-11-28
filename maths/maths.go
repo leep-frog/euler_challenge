@@ -951,3 +951,29 @@ func Cumulative(is []int) []int {
 	}
 	return rs
 }
+
+// MergeSort merge sorts the provided arrays. It assumes the
+// arrays are sorted.
+func MergeSort[T constraints.Ordered](a, b []T, removeDuplicates bool) []T {
+	var merged []T
+	for ai, bi := 0, 0; ai < len(a) || bi < len(b); {
+		var contender T
+		if ai == len(a) {
+			contender = b[bi]
+			bi++
+		} else if bi == len(b) {
+			contender = a[ai]
+			ai++
+		} else if a[ai] <= b[bi] {
+			contender = a[ai]
+			ai++
+		} else {
+			contender = b[bi]
+			bi++
+		}
+		if !removeDuplicates || len(merged) == 0 || contender != merged[len(merged)-1] {
+			merged = append(merged, contender)
+		}
+	}
+	return merged
+}

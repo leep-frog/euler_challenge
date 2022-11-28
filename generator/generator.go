@@ -24,7 +24,6 @@ func Iterator[T any](g *Generator[T]) *Geniterator[T] {
 	return &Geniterator[T]{g, 0}
 }
 
-// TODO: do these instead of Nth
 func (gi *Geniterator[T]) Start(startIdx int) T {
 	gi.Idx = startIdx + 1
 	return gi.g.Nth(gi.Idx - 1)
