@@ -4,22 +4,14 @@ import (
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
+	"golang.org/x/exp/maps"
 )
 
 func getSums(v, n int, p *generator.Generator[int]) *maths.Int {
 	sm := maths.Zero()
 	for i := 1; i*v <= n; i++ {
-		good := true
-		for f := range generator.PrimeFactors(i, p) {
-			if f%4 == 1 {
-				if !p.Contains(f) {
-					panic("UGH")
-				}
-				good = false
-				break
-			}
-		}
-		if good {
+		mod4To1Factor := func(factor int) bool { return factor%4 == 1 }
+		if maths.None(maps.Keys(generator.PrimeFactors(i, p)), mod4To1Factor) {
 			sm = sm.PlusInt(i * v)
 		}
 	}

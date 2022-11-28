@@ -57,6 +57,36 @@ var (
 	cachedDivisors = map[int][]int{}
 )
 
+// Returns true if f(t) == true for any t in ts.
+func Any[T any](ts []T, f func(t T) bool) bool {
+	for _, t := range ts {
+		if f(t) {
+			return true
+		}
+	}
+	return false
+}
+
+// Returns true if f(t) == true for all t in ts.
+func All[T any](ts []T, f func(t T) bool) bool {
+	for _, t := range ts {
+		if !f(t) {
+			return false
+		}
+	}
+	return true
+}
+
+// None returns true if f(t) == false for all t in ts.
+func None[T any](ts []T, f func(t T) bool) bool {
+	for _, t := range ts {
+		if f(t) {
+			return false
+		}
+	}
+	return true
+}
+
 func Divisors(i int) []int {
 	v, ok := cachedDivisors[i]
 	if !ok {
