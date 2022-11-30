@@ -2,6 +2,7 @@ package commandths
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/leep-frog/command"
@@ -15,6 +16,7 @@ func TestExecute(t *testing.T) {
 		name string
 		etc  *command.ExecuteTestCase
 	}{
+		// Math tests
 		{
 			name: "Handles single number",
 			etc: &command.ExecuteTestCase{
@@ -215,11 +217,45 @@ func TestExecute(t *testing.T) {
 		{
 			name: "exp before divide",
 			etc: &command.ExecuteTestCase{
-				Args:       []string{"354 / 2 ^ 5"},
+				Args:       []string{"352 / 2 ^ 5"},
 				WantStdout: "11",
 			},
 		},
-		// TODO: change mode (int, float, fraction)
+		// TODO: Separate arg tests.
+		// Prime factor tests
+		{
+			name: "Factors a number",
+			etc: &command.ExecuteTestCase{
+				Args:       []string{"prime", "factor", "352"},
+				WantStdout: "352: 2^5 * 11^1",
+			},
+		},
+		{
+			name: "Factors multiple numbers",
+			etc: &command.ExecuteTestCase{
+				Args: []string{"prime", "factor", "2048", "3125", "17"},
+				WantStdout: strings.Join([]string{
+					"2048: 2^11",
+					"3125: 5^5",
+					"17: 17^1",
+				}, "\n"),
+			},
+		},
+		// Nth prime tests
+		{
+			name: "Gets the 1st prime",
+			etc: &command.ExecuteTestCase{
+				Args:       []string{"prime", "nth", "1"},
+				WantStdout: "2",
+			},
+		},
+		{
+			name: "Gets the 1001th prime",
+			etc: &command.ExecuteTestCase{
+				Args:       []string{"prime", "nth", "1001"},
+				WantStdout: "7927",
+			},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			test.etc.Node = CLI().Node()
