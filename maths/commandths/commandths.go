@@ -1,7 +1,6 @@
 package commandths
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 
@@ -39,7 +38,6 @@ func (m *Maths) Node() *command.Node {
 				expressionStr = minusRegex.ReplaceAllString(expressionStr, " $1 $2 ")
 
 				expression := whitespace.Split(strings.TrimSpace(expressionStr), -1)
-				fmt.Println(strings.Join(expression, "___"))
 				v, err := parse(newSequence(expression), false)
 				if err != nil {
 					return o.Err(err)
