@@ -622,12 +622,12 @@ func Range(n int) []int {
 	return make([]int, n)
 }
 
-func Pow(a, b int) int {
+func Pow[T Mathable](a, b T) T {
 	if b == 0 {
 		return 1
 	}
 	ogA := a
-	for i := 1; i < b; i++ {
+	for i := T(1); i < b; i++ {
 		ogA *= a
 	}
 	return ogA
