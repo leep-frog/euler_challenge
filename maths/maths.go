@@ -370,6 +370,10 @@ func Join[T any](ts []T, s string) string {
 	return strings.Join(r, s)
 }
 
+func JoinInt[T any](ts ...T) int {
+	return MustIntFromString(Join(ts, "")).ToInt()
+}
+
 func (i *Int) Palindrome() bool {
 	s := i.String()
 	for idx := range s {
