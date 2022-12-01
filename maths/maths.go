@@ -225,6 +225,14 @@ func sets(remaining []int, m map[string]bool, cur []int, r *[][]int) {
 	cur = cur[:len(cur)-1]
 }
 
+func ChooseAllSets[T constraints.Ordered](parts []T) [][]T {
+	var r [][]T
+	for i := 1; i <= len(parts); i++ {
+		r = append(r, ChooseSets(parts, i)...)
+	}
+	return r
+}
+
 func ChooseSets[T constraints.Ordered](parts []T, n int) [][]T {
 	cur := []T{}
 	var r [][]T
@@ -518,6 +526,18 @@ func (i *Int) Reverse() *Int {
 		return r.Negation()
 	}
 	return r
+}
+
+func Zip[T any](slc ...[]T) [][]T {
+	var zipped [][]T
+	for i := 0; i < len(slc[0]); i++ {
+		var r []T
+		for _, s := range slc {
+			r = append(r, s[i])
+		}
+		zipped = append(zipped, r)
+	}
+	return zipped
 }
 
 func Sum(is ...*Int) *Int {
