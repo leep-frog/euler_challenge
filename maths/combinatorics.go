@@ -36,6 +36,32 @@ func ChooseSetsOfLength[T any](parts []T, length int) [][]T {
 	return ChooseSets(parts, length, length)
 }
 
+// Anagrams returns all anagram integers of n, not including numbers with leading zeroes.
+func Anagrams(n int) map[int]bool {
+	r := map[int]bool{}
+	digits := Digits(n)
+	for _, p := range Permutations(digits) {
+		if p[0] != 0 {
+			r[FromDigits(p)] = true
+		}
+	}
+	return r
+}
+
+func Anagram(j, k int) bool {
+	jm := DigitMap(j)
+	km := DigitMap(k)
+	if len(jm) != len(km) {
+		return false
+	}
+	for k, v := range jm {
+		if v != km[k] {
+			return false
+		}
+	}
+	return true
+}
+
 type Combinatorics[T any] struct {
 	Parts            []T
 	MinLength        int

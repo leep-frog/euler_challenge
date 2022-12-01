@@ -644,32 +644,6 @@ func FromDigits(digits []int) int {
 	return n
 }
 
-// Anagrams returns all anagram integers of n, not including numbers with leading zeroes.
-func Anagrams(n int) map[int]bool {
-	r := map[int]bool{}
-	digits := Digits(n)
-	for _, p := range Permutations(digits) {
-		if p[0] != 0 {
-			r[FromDigits(p)] = true
-		}
-	}
-	return r
-}
-
-func Anagram(j, k int) bool {
-	jm := DigitMap(j)
-	km := DigitMap(k)
-	if len(jm) != len(km) {
-		return false
-	}
-	for k, v := range jm {
-		if v != km[k] {
-			return false
-		}
-	}
-	return true
-}
-
 func (b *Binary) Palindrome() bool {
 	for i := 0; i <= len(b.digits)/2; i++ {
 		j := len(b.digits) - 1 - i
