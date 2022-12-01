@@ -133,13 +133,13 @@ func TestPermutations(t *testing.T) {
 			want:    []string{"012", "021", "102", "120", "201", "210"},
 			wantRot: []string{"012", "120", "201"},
 			wantSet: [][]int{
-				{2},
-				{1},
-				{1, 2},
 				{0},
-				{0, 2},
 				{0, 1},
 				{0, 1, 2},
+				{0, 2},
+				{1},
+				{1, 2},
+				{2},
 			},
 		},
 		{
@@ -149,16 +149,15 @@ func TestPermutations(t *testing.T) {
 			wantRot: []string{"101", "011", "110"},
 			wantSet: [][]int{
 				{1},
-				{0},
-				{0, 1},
 				{1, 1},
+				{1, 1, 0},
 				{1, 0},
-				{1, 0, 1},
+				{0},
 			},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			gots := Permutations(test.parts, len(test.parts), false)
+			gots := Permutations(test.parts)
 			var got []string
 			for _, g := range gots {
 				got = append(got, strings.Join(g, ""))
@@ -178,7 +177,7 @@ func TestPermutations(t *testing.T) {
 				iParts = append(iParts, parse.Atoi(p))
 			}
 
-			gotSet := Sets(iParts)
+			gotSet := ChooseAllSets(iParts)
 			if diff := cmp.Diff(test.wantSet, gotSet); diff != "" {
 				t.Errorf("Sets(%v) returned incorrect values (-want, +got):\n%s", test.parts, diff)
 			}
@@ -908,8 +907,8 @@ func TestChooseSets(t *testing.T) {
 			},
 		},
 	} {
-		t.Run(fmt.Sprintf("ChooseSets(%v, %d)", test.parts, test.n), func(t *testing.T) {
-			got := ChooseSets(test.parts, test.n)
+		t.Run(fmt.Sprintf("ChooseSetsOfLength(%v, %d)", test.parts, test.n), func(t *testing.T) {
+			got := ChooseSetsOfLength(test.parts, test.n)
 			sort.SliceStable(got, func(i, j int) bool { return strings.Join(got[i], "") < strings.Join(got[j], "") })
 			if diff := cmp.Diff(test.want, got); diff != "" {
 				t.Errorf("ChooseSets(%v, %d) produced diff (-want, +got):\n%s", test.parts, test.n, diff)

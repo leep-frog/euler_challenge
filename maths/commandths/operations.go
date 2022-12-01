@@ -2,6 +2,10 @@ package commandths
 
 import "github.com/leep-frog/euler_challenge/maths"
 
+type Operable interface {
+	~int
+}
+
 var (
 	Operations = []Operation[int]{
 		&Plus[int]{},
@@ -9,6 +13,7 @@ var (
 		&Times[int]{},
 		&Divide[int]{},
 		&Exponent[int]{},
+		&Modulo[int]{},
 	}
 
 	OperationMap = func() map[string]Operation[int] {
@@ -32,6 +37,7 @@ type pemdasPriority int
 const (
 	parenthesesPriority pemdasPriority = iota
 	exponentPriority
+	moduloPriority
 	mulDivPriority
 	plusMinPriority
 )
@@ -65,3 +71,11 @@ type Exponent[T maths.Mathable] struct{}
 func (*Exponent[T]) Symbol() string                 { return "^" }
 func (*Exponent[T]) Evaluate(a, b T) T              { return maths.Pow(a, b) }
 func (*Exponent[T]) PemdasPriority() pemdasPriority { return exponentPriority }
+
+type Modulo[T Operable] struct{}
+
+func (*Modulo[T]) Symbol() string                 { return "%" }
+func (*Modulo[T]) Evaluate(a, b T) T              { return a % b }
+func (*Modulo[T]) PemdasPriority() pemdasPriority { return moduloPriority }
+
+// TODO: Choose function (Choose(a, b))

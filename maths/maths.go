@@ -194,77 +194,6 @@ func Rotations(parts []string) []string {
 	return r
 }
 
-func Sets(parts []int) [][]int {
-	m := map[string]bool{}
-	r := [][]int{}
-	sets(parts, m, []int{}, &r)
-	return r
-}
-
-func sets(remaining []int, m map[string]bool, cur []int, r *[][]int) {
-	if len(remaining) == 0 {
-		if len(cur) == 0 {
-			return
-		}
-
-		if s := fmt.Sprintf("%v", cur); m[s] {
-			return
-		} else {
-			m[s] = true
-		}
-
-		k := make([]int, len(cur))
-		copy(k, cur)
-		*r = append(*r, k)
-		return
-	}
-
-	sets(remaining[1:], m, cur, r)
-	cur = append(cur, remaining[0])
-	sets(remaining[1:], m, cur, r)
-	cur = cur[:len(cur)-1]
-}
-
-func ChooseAllSets[T constraints.Ordered](parts []T) [][]T {
-	var r [][]T
-	for i := 1; i <= len(parts); i++ {
-		r = append(r, ChooseSets(parts, i)...)
-	}
-	return r
-}
-
-func ChooseSets[T constraints.Ordered](parts []T, n int) [][]T {
-	cur := []T{}
-	var r [][]T
-	chooseSets(parts, map[T]bool{}, n, &cur, &r)
-	return r
-}
-
-func chooseSets[T constraints.Ordered](parts []T, ignore map[T]bool, n int, cur *[]T, all *[][]T) {
-	if n == 0 && len(*cur) > 0 {
-		new := make([]T, len(*cur))
-		copy(new, *cur)
-		*all = append(*all, new)
-		return
-	}
-
-	if len(parts) == 0 {
-		return
-	}
-
-	for idx, p := range parts {
-		/*if ignore[p] {
-			continue
-		}
-		ignore[p] = true*/
-		*cur = append(*cur, p)
-		chooseSets(parts[idx+1:], ignore, n-1, cur, all)
-		*cur = (*cur)[:len(*cur)-1]
-		//chooseSets(parts[1:], ignore, n, cur, all)
-		//delete(ignore, p)
-	}
-}
-
 type Trie[T comparable] struct {
 	subTries      map[T]*Trie[T]
 	endOfSequence bool
@@ -300,51 +229,6 @@ func (t *Trie[T]) values(cur *[]T, cum *[][]T) {
 
 func NewTrie[T comparable]() *Trie[T] {
 	return &Trie[T]{map[T]*Trie[T]{}, false}
-}
-
-func StringPermutations(parts []string) []string {
-	var r []string
-	for _, perm := range Permutations(parts, len(parts), false) {
-		r = append(r, strings.Join(perm, ""))
-	}
-	return r
-}
-
-func Permutations[T comparable](parts []T, length int, allowReplacements bool) [][]T {
-	root := NewTrie[T]()
-
-	remaining := map[T]int{}
-	for _, part := range parts {
-		remaining[part]++
-	}
-	permutations(parts, remaining, []T{}, root, length, allowReplacements)
-
-	var cur []T
-	var r [][]T
-	root.values(&cur, &r)
-	return r
-}
-
-func permutations[T comparable](m []T, remaining map[T]int, cur []T, root *Trie[T], length int, allowReplacements bool) {
-	if len(cur) == length {
-		root.Insert(cur)
-		return
-	}
-
-	for _, p := range m {
-		if remaining[p] == 0 {
-			continue
-		}
-		cur = append(cur, p)
-		if !allowReplacements {
-			remaining[p]--
-		}
-		permutations(m, remaining, cur, root, length, allowReplacements)
-		if !allowReplacements {
-			remaining[p]++
-		}
-		cur = (cur)[:len(cur)-1]
-	}
 }
 
 func (b *Binary) Len() int {
@@ -764,7 +648,7 @@ func FromDigits(digits []int) int {
 func Anagrams(n int) map[int]bool {
 	r := map[int]bool{}
 	digits := Digits(n)
-	for _, p := range Permutations(digits, len(digits), false) {
+	for _, p := range Permutations(digits) {
 		if p[0] != 0 {
 			r[FromDigits(p)] = true
 		}
