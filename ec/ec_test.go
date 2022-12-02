@@ -20,7 +20,7 @@ var (
 	testFilter = func(cct *codingChallengeTest) bool {
 		toCheck := []int{
 			// Test numbers to check
-			170,
+			171,
 		}
 		set := maths.NewSimpleSet(toCheck...)
 		return true && set[cct.num]
