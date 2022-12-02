@@ -52,14 +52,20 @@ var (
 
 func P93() *problem {
 	return intInputNode(93, func(o command.Output, n int) {
-		opSets := maths.Permutations(p93ops, 3, true)
+		opSets := maths.GenerateCombos(&maths.Combinatorics[p93op]{
+			Parts:            p93ops,
+			MinLength:        3,
+			MaxLength:        3,
+			AllowReplacement: true,
+			OrderMatters:     true,
+		})
 		best := maths.Largest[[]float64, int]()
 		for d := 0.0; d <= float64(n); d++ {
 			for c := d - 1; c >= 0; c-- {
 				for b := c - 1; b >= 0; b-- {
 					for a := b - 1; a >= 0; a-- {
 						values := map[int]bool{}
-						for _, order := range maths.Permutations([]float64{a, b, c, d}, 4, false) {
+						for _, order := range maths.Permutations([]float64{a, b, c, d}) {
 							m := maths.NewSimpleSet(order...)
 							bad := false
 							for k := range m {

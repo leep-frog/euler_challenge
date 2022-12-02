@@ -13,7 +13,13 @@ func P106() *problem {
 			"N", // neither
 		}
 		var count int
-		for _, perm := range maths.Permutations(options, n, true) {
+		for _, perm := range maths.GenerateCombos(&maths.Combinatorics[string]{
+			Parts:            options,
+			MinLength:        n,
+			MaxLength:        n,
+			AllowReplacement: true,
+			OrderMatters:     true,
+		}) {
 			var moreAs, moreBs bool
 			var aCount, bCount int
 
@@ -41,14 +47,12 @@ func P106() *problem {
 			estimate: 0.5,
 		},
 		{
-			args:     []string{"7"},
-			want:     "70",
-			estimate: 0.5,
+			args: []string{"7"},
+			want: "70",
 		},
 		{
-			args:     []string{"4"},
-			want:     "1",
-			estimate: 0.25,
+			args: []string{"4"},
+			want: "1",
 		},
 	})
 }

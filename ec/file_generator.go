@@ -10,24 +10,24 @@ import (
 )
 
 func FileGenerator() *command.Node {
-	pn := "PROBLEM_NUMBER"
-	fi := "file-input"
-	fs := "FILE_SUFFIX"
-	x := "example"
-	ni := "no-input"
+	problemNumberArg := command.Arg[int]("PROBLEM_NUMBER", "Problem number", command.Positive[int]())
+	fileSuffixArg := command.ListArg[string]("FILE_SUFFIX", "suffix for file name", 1, command.UnboundedList)
+
+	fileInputFlag := command.BoolFlag("file-input", 'f', "If set, new file will accept a file input; otherwise it accepts an integer, N")
+	exampleFlag := command.BoolFlag("example", 'x', "If set, include example stuff in tests")
+	noInputFlag := command.BoolFlag("no-input", 'n', "If set, no input")
+
 	return command.SerialNodes(
 		command.FlagNode(
-			command.BoolFlag(fi, 'f', "If set, new file will accept a file input; otherwise it accepts an integer, N"),
-			command.BoolFlag(x, 'x', "If set, include example stuff in tests"),
-			command.BoolFlag(ni, 'n', "If set, no input"),
+			fileInputFlag,
+			exampleFlag,
+			noInputFlag,
 		),
-		command.Arg[int](pn, "Problem number", command.Positive[int]()),
-		command.ListArg[string](fs, "suffix for file name", 1, command.UnboundedList),
+		problemNumberArg,
+		fileSuffixArg,
 		command.ExecutableNode(func(o command.Output, d *command.Data) ([]string, error) {
-			includeExample := d.Bool(x)
-			fileInput := d.Bool(fi)
-			num := d.Int(pn)
-			noInput := d.Bool(ni)
+			fileInput := fileInputFlag.Get(d)
+			num := problemNumberArg.Get(d)
 
 			template := []string{
 				"package eulerchallenge",
@@ -51,7 +51,7 @@ func FileGenerator() *command.Node {
 					"  })",
 					"}",
 				)
-			} else if noInput {
+			} else if noInputFlag.Get(d) {
 				template = append(template,
 					fmt.Sprintf("  return noInputNode(%d, func(o command.Output) {", num),
 					"  })",
@@ -74,7 +74,7 @@ func FileGenerator() *command.Node {
 			template = append(template)
 
 			// Create go file
-			suffix := strings.ToLower(strings.Join(d.StringList(fs), "_"))
+			suffix := strings.ToLower(strings.Join(fileSuffixArg.Get(d), "_"))
 			if err := ioutil.WriteFile(fmt.Sprintf("p%d_%s.go", num, suffix), []byte(strings.Join(template, "\n")), 0644); err != nil {
 				return nil, o.Stderrf("failed to write new file: %v", err)
 			}
@@ -82,7 +82,7 @@ func FileGenerator() *command.Node {
 			// Write example files if file input
 			if fileInput {
 				parse.Touch(fmt.Sprintf("p%d.txt", num))
-				if includeExample {
+				if exampleFlag.Get(d) {
 					parse.Touch(fmt.Sprintf("p%d_example.txt", num))
 				}
 			}

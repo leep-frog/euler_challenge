@@ -1,8 +1,6 @@
 package eulerchallenge
 
 import (
-	"fmt"
-
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
@@ -38,7 +36,7 @@ func P170() *problem {
 			best := maths.Largest[int, int]()
 
 			// The permutations of the remaining digits (dots above) will all be checked
-			for _, rightDigits := range maths.Permutations(options[k:], len(options[k:]), false) {
+			for _, rightDigits := range maths.Permutations(options[k:]) {
 				concatenatedProduct := append(maths.CopySlice(options[:k]), rightDigits...)
 
 				// Now try splitting the concatenated product at all places
@@ -72,28 +70,4 @@ func P170() *problem {
 		want:     "9857164023",
 		estimate: 1.25,
 	})
-}
-
-func generate(remaining, min, squareSum int, cur []int, all *[][]int) {
-	if remaining == 0 {
-		if maths.IsSquare(squareSum) {
-			*all = append(*all, maths.CopySlice(cur))
-		}
-	}
-
-	for j := min; j <= 9; j++ {
-		generate(remaining-1, j, squareSum+j*j, append(cur, j), all)
-	}
-}
-
-func p171(n int) {
-	for i := 1; i <= n; i++ {
-		fmt.Println(i, "=============")
-
-		var all [][]int
-		generate(i, 0, 0, nil, &all)
-		for _, v := range all {
-			fmt.Println(v)
-		}
-	}
 }

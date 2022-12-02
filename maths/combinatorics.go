@@ -1,12 +1,27 @@
 package maths
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
+
+func StringPermutations(parts []string) []string {
+	var r []string
+	for _, perm := range Permutations(parts) {
+		r = append(r, strings.Join(perm, ""))
+	}
+	return r
+}
 
 func Permutations[T any](parts []T) [][]T {
+	return PermutationsOfLength(parts, len(parts))
+}
+
+func PermutationsOfLength[T any](parts []T, length int) [][]T {
 	return GenerateCombos(&Combinatorics[T]{
 		Parts:            parts,
-		MinLength:        len(parts),
-		MaxLength:        len(parts),
+		MinLength:        length,
+		MaxLength:        length,
 		AllowReplacement: false,
 		OrderMatters:     true,
 	})

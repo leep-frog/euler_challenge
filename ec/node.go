@@ -193,14 +193,13 @@ func getProblems() []*problem {
 		P167(),
 		P168(),
 		P170(),
+		P171(),
 		// END_LIST (needed for file_generator.go)
 	}
 }
 
 func Branches() map[string]*command.Node {
-	m := map[string]*command.Node{
-		"fg": FileGenerator(),
-	}
+	m := map[string]*command.Node{}
 	for i, p := range getProblems() {
 		pStr := fmt.Sprintf("%d", p.num)
 		if _, ok := m[pStr]; ok {

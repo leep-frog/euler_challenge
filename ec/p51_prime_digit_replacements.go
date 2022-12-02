@@ -35,7 +35,7 @@ func P51() *problem {
 				pnStr := strings.Split(strconv.Itoa(pn), "")
 				cp := make([]string, len(pnStr))
 				copy(cp, pnStr)
-				for _, s := range maths.Sets(positions) {
+				for _, s := range maths.ChooseAllSets(positions) {
 					for _, pos := range s {
 						pnStr[pos] = "_"
 					}
