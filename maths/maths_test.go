@@ -155,6 +155,16 @@ func TestPermutations(t *testing.T) {
 				{0},
 			},
 		},
+		{
+			name:    "pair of identical",
+			parts:   []string{"1", "1"},
+			want:    []string{"11"},
+			wantRot: []string{"11", "11"},
+			wantSet: [][]int{
+				{1},
+				{1, 1},
+			},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			gots := Permutations(test.parts)
