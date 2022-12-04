@@ -12,7 +12,7 @@ func P173() *problem {
 		n = n / 4
 
 		var sum int
-		for _, base := range []int{3, 2} {
+		for _, base := range []int{2, 3} {
 			// base + (base + 2) + (base + 4) + (...) < n
 			// k*base + (2 + 4 + 6 + ... + 2*(k-1))
 			// k*base + 2(1 + 2 + 3 + ... + (k - 1)) < n
