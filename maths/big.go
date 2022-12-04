@@ -108,6 +108,10 @@ func (i *Int) ModInt(j int) int {
 	return i.Mod(NewInt(j)).ToInt()
 }
 
+func (i *Int) ModIntBig(j int) *Int {
+	return i.Mod(NewInt(j))
+}
+
 func (i *Int) Div(j *Int) *Int {
 	return nb(big.NewInt(1).Div(i.i, j.i))
 }

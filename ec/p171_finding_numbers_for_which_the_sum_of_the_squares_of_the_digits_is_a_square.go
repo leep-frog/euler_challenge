@@ -57,7 +57,7 @@ func P171() *problem {
 				checked[digit] = true
 
 				parts := append(maths.CopySlice(numbers[:i]), maths.CopySlice(numbers[i+1:])...)
-				cnt := maths.NewPermutationCount(parts)
+				cnt := maths.PermutationCount(parts)
 				digitSum = digitSum.Plus(cnt.TimesInt(digit))
 			}
 			digitSum = digitSum.TrimDigits(numDigits)
@@ -79,8 +79,8 @@ func P171() *problem {
 			want: "28083",
 		},
 		{
-			args: []string{"20"},
-			want: "142989277",
+			args:     []string{"20"},
+			want:     "142989277",
 			estimate: 25,
 		},
 	})

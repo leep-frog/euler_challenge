@@ -3,7 +3,30 @@ package maths
 import (
 	"fmt"
 	"strings"
+
+	"golang.org/x/exp/slices"
 )
+
+var (
+	permutationCountCache = map[string]int{}
+)
+
+func PermutationCount[T any](parts []T) *Int {
+	counts := createCounts(parts)
+	slices.Sort(counts)
+
+	// Total count if all elements were different
+	v := Factorial(len(parts))
+
+	for _, c := range counts {
+		if c == 1 {
+			continue
+		}
+		v, _ = v.Divide(Factorial(c))
+	}
+
+	return v
+}
 
 func StringPermutations(parts []string) []string {
 	var r []string
@@ -85,11 +108,11 @@ type Combinatorics[T any] struct {
 	OrderMatters     bool
 }
 
-func GenerateCombos[T any](c *Combinatorics[T]) [][]T {
-	var counts []int
+func createCounts[T any](parts []T) []int {
 	var realParts []T
+	var counts []int
 	indexMap := map[string]int{}
-	for _, part := range c.Parts {
+	for _, part := range parts {
 		if i, ok := indexMap[fmt.Sprintf("%v", part)]; ok {
 			counts[i]++
 		} else {
@@ -98,9 +121,12 @@ func GenerateCombos[T any](c *Combinatorics[T]) [][]T {
 			realParts = append(realParts, part)
 		}
 	}
+	return counts
+}
 
+func GenerateCombos[T any](c *Combinatorics[T]) [][]T {
 	var all [][]T
-	generateCombos(c, counts, 0, nil, &all)
+	generateCombos(c, createCounts(c.Parts), 0, nil, &all)
 	return all
 }
 

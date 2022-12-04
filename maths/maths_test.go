@@ -167,6 +167,10 @@ func TestPermutations(t *testing.T) {
 				t.Errorf("Permutations(%v) returned incorrect value (-want, +got):\n%s", test.parts, diff)
 			}
 
+			if gotCount := PermutationCount(test.parts).ToInt(); gotCount != len(test.want) {
+				t.Errorf("PermutationCount(%v) returned %d; want %d", test.parts, gotCount, len(test.want))
+			}
+
 			gotRot := Rotations(test.parts)
 			if diff := cmp.Diff(test.wantRot, gotRot); diff != "" {
 				t.Errorf("Rotations(%v) returned incorrect value (-want, +got):\n%s", test.parts, diff)

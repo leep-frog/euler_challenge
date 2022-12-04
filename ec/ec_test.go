@@ -16,14 +16,14 @@ var (
 	// to keep import
 	one = maths.One()
 	// filter out tests
-	timeLimit  = 11.0
+	timeLimit  = 31.0
 	testFilter = func(cct *codingChallengeTest) bool {
 		toCheck := []int{
 			// Test numbers to check
 			171,
 		}
 		set := maths.NewSimpleSet(toCheck...)
-		return true && set[cct.num]
+		return true && (len(toCheck) == 0 || set[cct.num])
 	}
 )
 
