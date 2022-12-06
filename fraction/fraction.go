@@ -29,6 +29,7 @@ func (f *Fraction) Div(that *Fraction) *Fraction {
 	return f.Times(that.Reciprocal())
 }
 
+// TODO: Add int overflow error
 func (f *Fraction) Times(that *Fraction) *Fraction {
 	return New(f.N*that.N, f.D*that.D)
 }

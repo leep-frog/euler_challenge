@@ -55,6 +55,8 @@ func P169() *problem {
 		cache := map[string]int{}
 		fx, f2x := rec169(x, cache), rec169(twoX, cache)
 		d := f2x - fx
+		// Although, my DP approach works really well:
+		// rec169(maths.BigPow(10, n), cache) runs basically as quickly as this optimized approach.
 		o.Stdoutln(fx + n*d)
 	}, []*execution{
 		{
