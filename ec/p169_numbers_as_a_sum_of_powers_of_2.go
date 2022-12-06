@@ -5,6 +5,8 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
+// Related to problem 175
+
 func rec169(rem *maths.Int, cache map[string]int) int {
 	if v, ok := cache[rem.String()]; ok {
 		return v
