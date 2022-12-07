@@ -6,6 +6,23 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
+// Noticed the following pattern:
+// f(x) -> f(2x) -> f(4x) makes a linear progression.
+// Let that progression be defined:
+// a = f(x) (where x % 2 = 0)
+// d = f(2x) - f(x) = f(4x) - f(x)
+// If we want to find a number k for which f(k) = n, then we can just iterate
+// through linear progressions until we find one that contains n.
+//
+// Let all values be defined as (3^p1) * (5^p2) * (7^p3) * (11^p4) * ...
+// where p1 >= p2 >= p3 >= ...
+// Let a_k, d_k be the a and d values for some k
+// If we add another prime with power q, then a_k and d_k are updated as follows:
+// a_r = a_k * (2q + 1) + 1
+// d_r = a_d * (2q + 1)
+// So, we can just iterate over sets of prime powers (p1, p2, p3, ...),
+// keeping track of the linear progression the sequence makes, and see
+// which ones hit n (keeping track of the best value k that does so).
 func recur176(n, rem, max, a, d int, product *maths.Int, cur []int, best *maths.Bester[[]int, *maths.Int], primes *generator.Generator[int]) {
 	if a > n {
 		return
@@ -14,8 +31,9 @@ func recur176(n, rem, max, a, d int, product *maths.Int, cur []int, best *maths.
 	if best.Set() && product.GT(best.Best()) {
 		return
 	}
-	if (n-a)%d == 0 {
 
+	// If the linear progress hits n, check the value that does it.
+	if (n-a)%d == 0 {
 		twoExp := (n - a) / d
 		res := product.Times(maths.BigPow(2, twoExp+1))
 		best.IndexCheck(maths.CopySlice(cur), res)
@@ -25,6 +43,7 @@ func recur176(n, rem, max, a, d int, product *maths.Int, cur []int, best *maths.
 		return
 	}
 
+	// Add all possible powers equal to or lower than the current lowest exponent in the sequence (keep decreasing size of exponents).
 	for exp := max; exp > 0; exp-- {
 		newProduct := product.Times(maths.BigPow(primes.Nth(len(cur)+1), exp))
 		recur176(n, rem-1, exp, a*(2*exp+1)+exp, d*(2*exp+1), newProduct, append(cur, exp), best, primes)

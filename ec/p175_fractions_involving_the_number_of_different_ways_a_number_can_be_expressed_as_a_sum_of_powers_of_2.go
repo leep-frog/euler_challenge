@@ -9,6 +9,8 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
+// Related to problem 169
+
 // Number order:
 //  1  2
 //  1  4  3  2 (swap 2-4)
