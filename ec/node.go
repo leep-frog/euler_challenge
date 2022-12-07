@@ -198,6 +198,7 @@ func getProblems() []*problem {
 		P172(),
 		P174(),
 		P175(),
+		P176(),
 		// END_LIST (needed for file_generator.go)
 	}
 }
@@ -233,12 +234,12 @@ func intInputNode(num int, f func(command.Output, int), executions []*execution)
 	}
 }
 
-func intsInputNode(num, size int, f func(command.Output, []int), executions []*execution) *problem {
+func intsInputNode(num, numInputs, numOptionalInputs int, f func(command.Output, []int), executions []*execution) *problem {
 	return &problem{
 		num: num,
 		n: command.SerialNodes(
 			descNode(num),
-			command.ListArg[int](N, "", size, 0),
+			command.ListArg[int](N, "", numInputs, numOptionalInputs),
 			&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
 				f(o, d.IntList(N))
 				return nil

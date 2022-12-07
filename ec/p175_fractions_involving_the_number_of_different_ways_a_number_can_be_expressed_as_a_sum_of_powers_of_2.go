@@ -194,7 +194,7 @@ func (b *Binary) Minus(that *Binary) *Binary {
 }
 
 func P175() *problem {
-	return intsInputNode(175, 2, func(o command.Output, ns []int) {
+	return intsInputNode(175, 2, 0, func(o command.Output, ns []int) {
 		f := fraction.New(ns[0], ns[1])
 
 		// Use Kepler tree of fractions (https://oeis.org/A294442)

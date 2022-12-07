@@ -175,7 +175,7 @@ func (tb *TromBoard) NumberOfArrangements(depth int, curX, curY, tromCnt int, m 
 }
 
 func P161() *problem {
-	return intsInputNode(161, 2, func(o command.Output, dim []int) {
+	return intsInputNode(161, 2, 0, func(o command.Output, dim []int) {
 		o.Stdoutln(NewTB(dim[0], dim[1]).NumberOfArrangements(0, 0, 0, 1, map[string]int{}))
 	}, []*execution{
 		{

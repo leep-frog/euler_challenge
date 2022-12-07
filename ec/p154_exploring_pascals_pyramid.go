@@ -49,7 +49,7 @@ P_5:
 */
 
 func P154() *problem {
-	return intsInputNode(154, 2, func(o command.Output, ns []int) {
+	return intsInputNode(154, 2, 0, func(o command.Output, ns []int) {
 		// Pascal Pyramid layer
 		n := ns[0]
 		// Divisble by
