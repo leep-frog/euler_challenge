@@ -12,6 +12,7 @@ var (
 	cachedFactorCounts    = map[int]int{}
 	coprimeCache          = map[int]map[int]bool{}
 	cachedResilienceCount = map[int]int{}
+	//primeGenerator        = &Prime{newIntGen(&primer{})}
 )
 
 func clearCaches() {
@@ -22,8 +23,15 @@ func clearCaches() {
 	cachedResilienceCount = map[int]int{}
 }
 
-func Primes() *Generator[int] {
-	return newIntGen(&primer{})
+type Prime struct {
+	*Generator[int]
+}
+
+func Primes() *Prime {
+	return &Prime{newIntGen(&primer{})}
+	// Prettry sure we can use the same instance like below. Just verify
+	// test speed doesn't change (or if it does, that it gets better).
+	//return primeGenerator
 }
 
 type primer struct{}
@@ -76,7 +84,7 @@ func (bp *bigPrimer) Next(g *Generator[*maths.Int]) *maths.Int {
 	}
 }
 
-func Coprimes(a, b int, p *Generator[int]) bool {
+func (p *Prime) Coprimes(a, b int) bool {
 	if b < a {
 		a, b = b, a
 	}
@@ -85,8 +93,8 @@ func Coprimes(a, b int, p *Generator[int]) bool {
 			return v
 		}
 	}
-	bFactors := PrimeFactors(b, p)
-	for k := range PrimeFactors(a, p) {
+	bFactors := p.PrimeFactors(b)
+	for k := range p.PrimeFactors(a) {
 		if _, ok := bFactors[k]; ok {
 			maths.Insert(coprimeCache, a, b, true)
 			return true
@@ -96,12 +104,12 @@ func Coprimes(a, b int, p *Generator[int]) bool {
 	return false
 }
 
-func MutablePrimeFactors(n int, p *Generator[int]) map[int]int {
-	return copy(PrimeFactors(n, p))
+func (p *Prime) MutablePrimeFactors(n int) map[int]int {
+	return copy(p.PrimeFactors(n))
 }
 
-func FactorCount(n int, p *Generator[int]) int {
-	return CompositeCacher(n, p, cachedFactorCounts, func(i int) int {
+func (p *Prime) FactorCount(n int) int {
+	return CompositeCacher(p, n, cachedFactorCounts, func(i int) int {
 		if i == 0 {
 			return 0
 		}
@@ -117,7 +125,7 @@ func FactorCount(n int, p *Generator[int]) int {
 		}
 
 		// prime^primeCnt * rem = n
-		fc := FactorCount(rem, p)
+		fc := p.FactorCount(rem)
 
 		// Now every factor of rem can be used to create primeCnt new factors.
 		// If we have one factor, f, then that factor can create:
@@ -128,15 +136,15 @@ func FactorCount(n int, p *Generator[int]) int {
 }
 
 // AKA Relative Prime Count? (I think)?
-func ResilienceCount(n int, p *Generator[int]) int {
-	return CompositeCacher(n, p, cachedResilienceCount, func(i int) int {
+func (p *Prime) ResilienceCount(n int) int {
+	return CompositeCacher(p, n, cachedResilienceCount, func(i int) int {
 		if i <= 1 {
 			panic("IDK")
 		}
 		// Factors are 1 and the prime number itself
 		return i - 1
 	}, func(primeFactor, otherFactor int) int {
-		r := ResilienceCount(otherFactor, p)
+		r := p.ResilienceCount(otherFactor)
 		// If already has one of the prime, then just multiply
 		if otherFactor%primeFactor == 0 {
 			return r * primeFactor
@@ -149,7 +157,7 @@ func ResilienceCount(n int, p *Generator[int]) int {
 // for two of it's factors (primeFactor being the smallest factor which is inherently prime,
 // and otherFactor which is the largest factor of n != n). If n is zero, one, or prime,
 // then the value generated is created from the provided forZeroOnePrime function.
-func CompositeCacher[T any](n int, p *Generator[int], cache map[int]T, forZeroOnePrime func(int) T, forNonPrime func(primeFactor, otherFactor int) T) T {
+func CompositeCacher[T any](p *Prime, n int, cache map[int]T, forZeroOnePrime func(int) T, forNonPrime func(primeFactor, otherFactor int) T) T {
 	if n < 1 {
 		return forZeroOnePrime(0)
 	}
@@ -160,7 +168,7 @@ func CompositeCacher[T any](n int, p *Generator[int], cache map[int]T, forZeroOn
 		return r
 	}
 
-	if IsPrime(n, p) {
+	if p.Contains(n) {
 		r := forZeroOnePrime(n)
 		cache[n] = r
 		return r
@@ -178,8 +186,8 @@ func CompositeCacher[T any](n int, p *Generator[int], cache map[int]T, forZeroOn
 	}
 }
 
-func Factors(n int, p *Generator[int]) []int {
-	return CompositeCacher(n, p, cachedFactors, func(i int) []int {
+func (p *Prime) Factors(n int) []int {
+	return CompositeCacher(p, n, cachedFactors, func(i int) []int {
 		if n < 1 {
 			return nil
 		}
@@ -189,7 +197,7 @@ func Factors(n int, p *Generator[int]) []int {
 		return []int{1, n}
 	}, func(primeFactor, otherFactor int) []int {
 		// primeFactor is guaranteed to be the smallest factor and (otherFactor = n/primeFactor) the largest.
-		additional := Factors(otherFactor, p)
+		additional := p.Factors(otherFactor)
 		mAdditional := []int{1}
 		for _, a := range additional {
 			mAdditional = append(mAdditional, a*primeFactor)
@@ -198,7 +206,7 @@ func Factors(n int, p *Generator[int]) []int {
 	})
 }
 
-func PrimeFactors(n int, p *Generator[int]) map[int]int {
+func (p *Prime) PrimeFactors(n int) map[int]int {
 	// TODO: update this to use composite cache
 	if n <= 1 {
 		return nil
@@ -206,7 +214,7 @@ func PrimeFactors(n int, p *Generator[int]) map[int]int {
 	if r, ok := cachedPrimeFactors[n]; ok {
 		return r
 	}
-	if IsPrime(n, p) {
+	if p.Contains(n) {
 		r := map[int]int{n: 1}
 		cachedPrimeFactors[n] = r
 		return r
@@ -233,7 +241,8 @@ func PrimeFactors(n int, p *Generator[int]) map[int]int {
 	}
 }
 
-func IsPrime(n int, p *Generator[int]) bool {
+// Overrides Generator.Contains
+func (p *Prime) Contains(n int) bool {
 	if n <= 1 {
 		return false
 	}

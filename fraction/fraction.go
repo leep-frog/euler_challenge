@@ -66,12 +66,12 @@ func (f *Fraction) LT(that *Fraction) bool {
 	return f.N*that.D < f.D*that.N
 }
 
-func Simplify(n, d int, primes *generator.Generator[int]) *Fraction {
+func Simplify(n, d int, primes *generator.Prime) *Fraction {
 	return New(n, d).Simplify(primes)
 }
 
 // Return a simplified fraction.
-func (f *Fraction) Simplify(primes *generator.Generator[int]) *Fraction {
+func (f *Fraction) Simplify(primes *generator.Prime) *Fraction {
 	if f.D == 0 {
 		if f.N == 0 {
 			return New(0, 0)
@@ -93,8 +93,8 @@ func (f *Fraction) Simplify(primes *generator.Generator[int]) *Fraction {
 		sign *= -1
 	}
 
-	nfs := generator.MutablePrimeFactors(f.N, primes)
-	dfs := generator.MutablePrimeFactors(f.D, primes)
+	nfs := primes.MutablePrimeFactors(f.N)
+	dfs := primes.MutablePrimeFactors(f.D)
 
 	for k, v := range nfs {
 		if dv, ok := dfs[k]; ok {

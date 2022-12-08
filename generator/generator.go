@@ -30,7 +30,7 @@ func (gi *Geniterator[T]) Start(startIdx int) T {
 }
 
 func (gi *Geniterator[T]) Last() T {
-	return gi.g.Last()
+	return gi.g.Nth(gi.Idx - 1)
 }
 
 func (gi *Geniterator[T]) Next() T {
