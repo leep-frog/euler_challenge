@@ -7,158 +7,16 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func getEmptyTriangles(pts point.Points[int]) []*point.Triangle[int] {
-	xSorted := maths.CopySlice(pts)
-	ySorted := maths.CopySlice(pts)
+// Previously had a line sweep algorithm that sorted points by x
+// and kept track of all valid convex hulls, but that took > 10 minutes.
 
-	slices.SortFunc(xSorted, func(p, q *point.Point[int]) bool {
-		if p.X != q.X {
-			return p.X < q.X
-		}
-		return p.Y < q.Y
-	})
-
-	slices.SortFunc(ySorted, func(p, q *point.Point[int]) bool {
-		if p.Y != q.Y {
-			return p.Y < q.Y
-		}
-		return p.X < q.X
-	})
-
-	// Map from point to index
-	xm, ym := map[int]int{}, map[int]int{}
-	for xi, xp := range xSorted {
-		xm[xp.X] = xi
-	}
-	for yi, yp := range ySorted {
-		ym[yp.Y] = yi
-	}
-
-	var r []*point.Triangle[int]
-	for i, a := range xSorted {
-		for j := i + 1; j < len(xSorted); j++ {
-			b := xSorted[j]
-			for k := j + 1; k < len(xSorted); k++ {
-				c := xSorted[k]
-				t := point.NewTriangle(a, b, c)
-
-				minX := maths.Min(a.X, b.X, c.X)
-				maxX := maths.Max(a.X, b.X, c.X)
-				minY := maths.Min(a.Y, b.Y, c.Y)
-				maxY := maths.Max(a.Y, b.Y, c.Y)
-
-				xStart := xm[minX]
-				xEnd := xm[maxX]
-				xDiff := xEnd - xStart
-
-				yStart := ym[minY]
-				yEnd := ym[maxY]
-				yDiff := yEnd - yStart
-
-				empty := true
-				if xDiff < yDiff {
-					for _, p := range xSorted[xStart:(xEnd + 1)] {
-						if p.Y >= minY && p.Y <= maxY && t.ContainsExclusive(p) {
-							empty = false
-							goto ADD_TRI
-						}
-					}
-				} else {
-					for _, p := range ySorted[yStart:(yEnd + 1)] {
-						if p.X >= minX && p.X <= maxX && t.ContainsExclusive(p) {
-							empty = false
-							goto ADD_TRI
-						}
-					}
-				}
-
-			ADD_TRI:
-				if empty {
-					r = append(r, t)
-				}
-			}
-		}
-	}
-
-	return r
-}
-
-func P252() *problem {
-	return intInputNode(252, func(o command.Output, n int) {
-
-		pts := generatePoints252(n)
-
-		best := maths.Largest[string, float64]()
-		slices.SortFunc(pts, func(a, b *point.Point[int]) bool {
-			if a.X != b.X {
-				return a.X < b.X
-			}
-			return a.Y < b.Y
-		})
-
-		emptyTriangles := getEmptyTriangles(pts)
-		tm := map[string]bool{}
-		for _, t := range emptyTriangles {
-			tm[t.String()] = true
-		}
-
-		var chs []*point.ConvexHull[int]
-		for _, p := range pts {
-			var newCHs []*point.ConvexHull[int]
-			for _, ch := range chs {
-				newCHs = append(newCHs, ch)
-				if len(ch.Points) == 1 {
-					newCHs = append(newCHs, point.ConvexHullFromPoints(append(ch.Points, p)...))
-					continue
-				}
-
-				if len(ch.Points) == 2 {
-					if tm[point.NewTriangle(p, ch.Points[0], ch.Points[1]).String()] {
-						newCHs = append(newCHs, point.ConvexHullFromPoints(append(ch.Points, p)...))
-					}
-					continue
-				}
-
-				newCH := point.ConvexHullFromPoints(append(ch.Points, p)...)
-				if len(newCH.Points) != len(ch.Points)+1 {
-					continue
-				}
-
-				empty := true
-				for _, a := range ch.Points {
-					for _, b := range ch.Points {
-						if a.Eq(b) {
-							continue
-						}
-						if !tm[point.NewTriangle(a, b, p).String()] {
-							empty = false
-							goto POINT_LOOP
-						}
-					}
-				}
-			POINT_LOOP:
-				if empty {
-					newCHs = append(newCHs, newCH)
-					best.Check(newCH.Area())
-				}
-			}
-
-			chs = append(newCHs, point.ConvexHullFromPoints(p))
-		}
-
-		o.Stdoutf("%.1f\n", best.Best())
-	}, []*execution{
-		{
-			args: []string{"20"},
-			want: "1049694.5",
-		},
-		{
-			args:     []string{"500"},
-			want:     "104924.0",
-			estimate: 700,
-		},
-	})
-}
+// This solution
+// - gets all empty triangles (which was also needed for the previous solution),
+// - constructs a slice of points sorted by x
+// - constructs a set of slices of points sorted by y where the key is a pair of x values;
+//   the points returned all within those two x values
+// - Iterate over all sets of points keeping track of valid points (options) that
+//   can still be added.
 
 func generatePoints252(n int) point.Points[int] {
 	s := []int{290797}
@@ -175,4 +33,147 @@ func generatePoints252(n int) point.Points[int] {
 	}
 
 	return point.Points[int](ps)
+}
+
+func getEmptyTriangles(n int) (point.Points[int], map[int]map[int]map[int]bool) {
+	pts := generatePoints252(n)
+
+	m := map[int]map[int]map[int]bool{}
+	xSorted := maths.CopySlice(pts)
+
+	slices.SortFunc(xSorted, func(p, q *point.Point[int]) bool {
+		if p.X != q.X {
+			return p.X < q.X
+		}
+		return p.Y < q.Y
+	})
+
+	// Map from xStartPoint.X to xEndPoint.X to list of points between the two inclusive
+	ySortedByXs := map[int]map[int][]*point.Point[int]{}
+	// Map from xStartPoint.X to xEndPoint.X to Y coordinate to index of that Y coordinate in ySortedByXs
+	yIndicesSortedByXs := map[int]map[int]map[int]int{}
+	prevX := xSorted[0].X - 1
+	for xStart, xPt := range xSorted {
+		if xPt.X == prevX {
+			continue
+		}
+		prevX = xPt.X
+
+		ySorted := []*point.Point[int]{xPt}
+		for xEnd := xStart + 1; xEnd < len(xSorted); xEnd++ {
+			ePt := xSorted[xEnd]
+			ySorted = append(ySorted, ePt)
+			cpy := maths.CopySlice(ySorted)
+			slices.SortFunc(cpy, func(p, q *point.Point[int]) bool {
+				if p.Y != q.Y {
+					return p.Y < q.Y
+				}
+				return p.X < q.X
+			})
+
+			indices := map[int]int{}
+			for i, p := range cpy {
+				indices[p.Y] = i
+			}
+			maths.Insert(ySortedByXs, xPt.X, ePt.X, cpy)
+			maths.Insert(yIndicesSortedByXs, xPt.X, ePt.X, indices)
+		}
+	}
+
+	// Map from point to index
+	xm := map[int]int{}
+	for xi, xp := range xSorted {
+		xm[xp.X] = xi
+	}
+
+	for i, a := range xSorted {
+		for j := i + 1; j < len(xSorted); j++ {
+			b := xSorted[j]
+			for k := j + 1; k < len(xSorted); k++ {
+				c := xSorted[k]
+				t := point.NewTriangle(a, b, c)
+
+				minX := maths.Min(a.X, b.X, c.X)
+				maxX := maths.Max(a.X, b.X, c.X)
+				minY := maths.Min(a.Y, b.Y, c.Y)
+				maxY := maths.Max(a.Y, b.Y, c.Y)
+
+				ySorted := ySortedByXs[minX][maxX]
+				ym := yIndicesSortedByXs[minX][maxX]
+
+				yStart := ym[minY]
+				yEnd := ym[maxY]
+
+				for _, p := range ySorted[yStart : yEnd+1] {
+					if t.ContainsExclusive(p) {
+						goto DONT_ADD_TRI
+					}
+				}
+				maths.DeepInsert(m, i, j, k, true)
+			DONT_ADD_TRI:
+			}
+		}
+	}
+	return xSorted, m
+}
+
+// Previously had a line
+func rec252(options []int, points []*point.Point[int], triIndices []int, triMap map[int]map[int]map[int]bool, best *maths.Bester[int, float64]) {
+	if len(options) == 0 {
+		var pointSet []*point.Point[int]
+		for _, index := range triIndices {
+			pointSet = append(pointSet, points[index])
+		}
+		ch := point.ConvexHullFromPoints(pointSet...)
+		best.Check(ch.Area())
+	}
+
+	for i, pointIdxA := range options {
+		var newOptions []int
+		for o, pointIdxB := range options {
+			if o <= i {
+				continue
+			}
+
+			valid := true
+			for _, ti := range triIndices {
+				indices := []int{pointIdxA, pointIdxB, ti}
+				slices.Sort(indices)
+				if !triMap[indices[0]][indices[1]][indices[2]] {
+					valid = false
+					break
+				}
+			}
+			if valid {
+				newOptions = append(newOptions, pointIdxB)
+			}
+		}
+		rec252(newOptions, points, append(triIndices, pointIdxA), triMap, best)
+	}
+}
+
+func P252() *problem {
+	return intInputNode(252, func(o command.Output, n int) {
+
+		pts, triangleIndexMap := getEmptyTriangles(n)
+
+		var slopts []int
+		for i := range pts {
+			slopts = append(slopts, i)
+		}
+
+		best := maths.Largest[int, float64]()
+		rec252(slopts, pts, nil, triangleIndexMap, best)
+		o.Stdoutf("%.1f\n", best.Best())
+	}, []*execution{
+		{
+			args: []string{"20"},
+			want: "1049694.5",
+		},
+		{
+			args:     []string{"500"},
+			want:     "104924.0",
+			estimate: 80,
+		},
+	})
 }

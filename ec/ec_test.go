@@ -43,7 +43,7 @@ func (cct *codingChallengeTest) shouldSkip() (string, bool) {
 	if cct.skip != "" {
 		return cct.skip, true
 	}
-	if timeLimit != 0 && cct.estimate < timeLimit {
+	if timeLimit != 0 && cct.estimate > timeLimit {
 		return fmt.Sprintf("Skipping due to test length (limit=%.2f, estimate=%.2f)", timeLimit, cct.estimate), true
 	}
 	return "", false
