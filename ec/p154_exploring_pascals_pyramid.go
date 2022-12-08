@@ -46,6 +46,9 @@ P_5:
   10 30 30 10
  5  20 30 20 5
 1 5  10  10 5 1
+
+I looked into optimization, but everyone else's solution also took on the
+order of 1+ minutes so not much improvement to be made here.
 */
 
 func P154() *problem {
