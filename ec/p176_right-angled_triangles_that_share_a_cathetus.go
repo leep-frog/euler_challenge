@@ -23,7 +23,7 @@ import (
 // So, we can just iterate over sets of prime powers (p1, p2, p3, ...),
 // keeping track of the linear progression the sequence makes, and see
 // which ones hit n (keeping track of the best value k that does so).
-func recur176(n, rem, max, a, d int, product *maths.Int, cur []int, best *maths.Bester[[]int, *maths.Int], primes *generator.Generator[int]) {
+func recur176(n, rem, max, a, d int, product *maths.Int, cur []int, best *maths.Bester[[]int, *maths.Int], primes *generator.Prime) {
 	if a > n {
 		return
 	}

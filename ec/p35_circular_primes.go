@@ -29,7 +29,7 @@ func P35() *problem {
 			rots := maths.Rotations(digits)
 			for _, rot := range rots {
 				checked[rot] = true
-				if !generator.IsPrime(parse.Atoi(rot), p) {
+				if !p.Contains(parse.Atoi(rot)) {
 					allPrime = false
 				}
 			}

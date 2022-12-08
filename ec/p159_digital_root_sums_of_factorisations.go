@@ -20,12 +20,12 @@ func P159() *problem {
 
 		sum := 0
 		for i := 2; i < n; i++ {
-			if generator.IsPrime(i, primes) {
+			if primes.Contains(i) {
 				cache = append(cache, singleDigitSum(i))
 			} else {
 				best := maths.Largest[int, int]()
 				best.Check(singleDigitSum(i))
-				for _, f := range generator.Factors(i, primes) {
+				for _, f := range primes.Factors(i) {
 					if f == 1 || f == i {
 						continue
 					}
@@ -49,8 +49,8 @@ func P159() *problem {
 	})
 }
 
-func recursive159(n int, primes *generator.Generator[int], cache map[int]int) int {
-	return generator.CompositeCacher(n, primes, cache, func(i int) int {
+func recursive159(n int, primes *generator.Prime, cache map[int]int) int {
+	return generator.CompositeCacher(primes, n, cache, func(i int) int {
 		v := maths.SumSys(maths.Digits(i)...)
 		for ; v >= 10; v = maths.SumSys(maths.Digits(v)...) {
 		}

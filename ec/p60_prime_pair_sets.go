@@ -31,7 +31,7 @@ func P60() *problem {
 				sp := strconv.Itoa(spn)
 				np := strconv.Itoa(npn)
 				r, l := parse.Atoi(sp+np), parse.Atoi(np+sp)
-				if generator.IsPrime(r, p) && generator.IsPrime(l, p) {
+				if p.Contains(r) && p.Contains(l) {
 					pairs[spn] = append(pairs[spn], &primePair{npn, n})
 					pairs[npn] = append(pairs[npn], &primePair{spn, n})
 					maths.Insert(edges, spn, npn, true)

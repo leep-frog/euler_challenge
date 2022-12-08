@@ -10,7 +10,7 @@ func P47() *problem {
 		p := generator.Primes()
 		var row int
 		for i := 1; ; i++ {
-			if len(generator.PrimeFactors(i, p)) >= n {
+			if len(p.PrimeFactors(i)) >= n {
 				row++
 				if row == n {
 					o.Stdoutln(i - (n - 1))

@@ -86,10 +86,10 @@ func P111() *problem {
 	})
 }
 
-func p110Generator(d, remainingLen, remainingDs int, cur []int, opts *[]int, g *generator.Generator[int]) {
+func p110Generator(d, remainingLen, remainingDs int, cur []int, opts *[]int, g *generator.Prime) {
 	if remainingLen == 0 {
 		v := maths.FromDigits(cur)
-		if remainingDs == 0 && generator.IsPrime(v, g) {
+		if remainingDs == 0 && g.Contains(v) {
 			*opts = append(*opts, v)
 		}
 		return

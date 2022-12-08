@@ -12,7 +12,7 @@ func P130() *problem {
 
 		var count, sum int
 		for i, j := 3, 1; ; i, j = i+diffs[j], (j+1)%len(diffs) {
-			if generator.IsPrime(i, g) {
+			if g.Contains(i) {
 				continue
 			}
 			k := repunitSmallest(i)

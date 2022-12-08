@@ -16,7 +16,7 @@ func P153() *problem {
 			if i%1_000_000 == 0 {
 				fmt.Println(i)
 			}
-			for _, k := range generator.Factors(i, p) {
+			for _, k := range p.Factors(i) {
 				ss += k
 			}
 			counts[i] = ss
@@ -38,7 +38,7 @@ func P153() *problem {
 		var iSums int
 		for i := 1; i*i <= n; i++ {
 			for j := i; j*j+i*i <= n; j++ {
-				if generator.Coprimes(i, j, p) && (i != 1) && (j != 1) {
+				if p.Coprimes(i, j) && (i != 1) && (j != 1) {
 					continue
 				}
 				val := 2 * (i + j)

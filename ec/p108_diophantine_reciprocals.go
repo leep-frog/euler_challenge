@@ -39,7 +39,7 @@ func P108() *problem {
 type diophantineReciprocals struct {
 	// parts is a decreasing set of positive integers
 	parts []int
-	g     *generator.Generator[int]
+	g     *generator.Prime
 	n     int
 }
 

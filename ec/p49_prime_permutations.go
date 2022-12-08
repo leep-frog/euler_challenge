@@ -27,7 +27,7 @@ func P49() *problem {
 				if !sameDigits(pi, pk) {
 					continue
 				}
-				if generator.IsPrime(pk, primes) {
+				if primes.Contains(pk) {
 					o.Stdoutf("%d%d%d ", pi, pj, pk)
 				}
 			}

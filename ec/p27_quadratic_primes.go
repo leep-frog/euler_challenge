@@ -15,7 +15,7 @@ func P27() *problem {
 				// Try positive direction
 				k := 0
 
-				for ; generator.IsPrime(k*k+a*k+b, p); k++ {
+				for ; p.Contains(k*k + a*k + b); k++ {
 				}
 				if k > max {
 					max = k
@@ -24,7 +24,7 @@ func P27() *problem {
 
 				// Try negative direction
 				k = 0
-				for ; generator.IsPrime(k*k+a*k+b, p); k-- {
+				for ; p.Contains(k*k + a*k + b); k-- {
 				}
 				if k > max {
 					max = k

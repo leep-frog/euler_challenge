@@ -14,7 +14,7 @@ func P133() *problem {
 				sum += pi
 				continue
 			}
-			factors := generator.PrimeFactors(repunitSmallest(pi), g)
+			factors := g.PrimeFactors(repunitSmallest(pi))
 
 			for k := range factors {
 				if k != 2 && k != 5 {

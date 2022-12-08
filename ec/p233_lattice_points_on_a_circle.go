@@ -7,18 +7,18 @@ import (
 	"golang.org/x/exp/maps"
 )
 
-func getSums(v, n int, p *generator.Generator[int]) *maths.Int {
+func getSums(v, n int, p *generator.Prime) *maths.Int {
 	sm := maths.Zero()
 	for i := 1; i*v <= n; i++ {
 		mod4To1Factor := func(factor int) bool { return factor%4 == 1 }
-		if maths.None(maps.Keys(generator.PrimeFactors(i, p)), mod4To1Factor) {
+		if maths.None(maps.Keys(p.PrimeFactors(i)), mod4To1Factor) {
 			sm = sm.PlusInt(i * v)
 		}
 	}
 	return sm
 }
 
-func elegant233(n int, p *generator.Generator[int]) *maths.Int {
+func elegant233(n int, p *generator.Prime) *maths.Int {
 	n = maths.Pow(10, n)
 	upTo := (n / (5 * 5 * 5 * 13 * 13)) + 1
 

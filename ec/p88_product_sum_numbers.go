@@ -57,7 +57,7 @@ type ctx88 struct {
 	factors []int
 	n       int
 	kMap    map[int]int
-	g       *generator.Generator[int]
+	g       *generator.Prime
 }
 
 func (n *n88) Code(ctx *ctx88, dp bfs.DFSPath[*n88]) string {
@@ -106,7 +106,7 @@ func (n *n88) AdjacentStates(ctx *ctx88, dp bfs.DFSPath[*n88]) []*n88 {
 		minFactor = ctx.factors[len(ctx.factors)-1]
 	}
 	var r []*n88
-	for _, i := range generator.Factors(n.remaining, ctx.g) {
+	for _, i := range ctx.g.Factors(n.remaining) {
 		if i == 1 || i < minFactor {
 			continue
 		}

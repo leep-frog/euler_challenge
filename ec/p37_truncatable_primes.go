@@ -23,7 +23,7 @@ func P37() *problem {
 			for j := 1; j < len(pnStr); j++ {
 				leftTrunc := pnStr[j:]
 				rightTrunc := pnStr[:j]
-				if !generator.IsPrime(parse.Atoi(leftTrunc), p) || !generator.IsPrime(parse.Atoi(rightTrunc), p) {
+				if !p.Contains(parse.Atoi(leftTrunc)) || !p.Contains(parse.Atoi(rightTrunc)) {
 					valid = false
 					break
 				}

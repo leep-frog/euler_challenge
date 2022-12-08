@@ -14,7 +14,7 @@ func P73() *problem {
 				if num*3 <= den {
 					continue
 				}
-				if generator.Coprimes(num, den, p) {
+				if p.Coprimes(num, den) {
 					continue
 				}
 				unique++

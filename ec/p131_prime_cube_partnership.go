@@ -19,7 +19,7 @@ func P131() *problem {
 		var count int
 		bigMax := maths.NewInt(max)
 		for i := 0; t.Nth(i + 1).Minus(t.Nth(i)).LT(bigMax); i++ {
-			if generator.IsPrime(t.Nth(i+1).Minus(t.Nth(i)).ToInt(), g) {
+			if g.Contains(t.Nth(i + 1).Minus(t.Nth(i)).ToInt()) {
 				count++
 			}
 		}

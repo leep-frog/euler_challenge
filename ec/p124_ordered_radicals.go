@@ -42,10 +42,10 @@ var (
 	pnc          = false
 )
 
-func calcRadical(n int, g *generator.Generator[int]) int {
+func calcRadical(n int, g *generator.Prime) int {
 	for len(radicalCache) < n {
 		prod := 1
-		for f := range generator.PrimeFactors(len(radicalCache)+1, g) {
+		for f := range g.PrimeFactors(len(radicalCache) + 1) {
 			prod *= f
 		}
 		radicalCache = append(radicalCache, prod)
@@ -53,6 +53,6 @@ func calcRadical(n int, g *generator.Generator[int]) int {
 	return radicalCache[n-1]
 }
 
-func newRadical(n int, g *generator.Generator[int]) *radical {
+func newRadical(n int, g *generator.Prime) *radical {
 	return &radical{n, calcRadical(n, g)}
 }

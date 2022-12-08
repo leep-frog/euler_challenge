@@ -21,7 +21,7 @@ func P77() *problem {
 	})
 }
 
-func dfs77(sum, idx, depth int, m map[int]int, p *generator.Generator[int]) {
+func dfs77(sum, idx, depth int, m map[int]int, p *generator.Prime) {
 	if depth >= 2 {
 		m[sum]++
 	}

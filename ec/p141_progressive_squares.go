@@ -12,12 +12,12 @@ func P141() *problem {
 		squares := generator.SmallPowerGenerator(2)
 		var sum int
 		for a := 1; a*a < n; a++ {
-			factors := generator.Factors(a, p)
+			factors := p.Factors(a)
 			for _, f := range factors {
 				if squares.Contains(f) {
 					den := maths.Sqrt(f)
 					for num := 1; num < den; num++ {
-						if generator.Coprimes(num, den, p) {
+						if p.Coprimes(num, den) {
 							continue
 						}
 						k := a*a*num/den + a*num*num/(den*den)

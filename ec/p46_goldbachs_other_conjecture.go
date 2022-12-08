@@ -9,7 +9,7 @@ func P46() *problem {
 	return noInputNode(46, func(o command.Output) {
 		primes := generator.Primes()
 		for i := 3; ; i += 2 {
-			if generator.IsPrime(i, primes) {
+			if primes.Contains(i) {
 				continue
 			}
 

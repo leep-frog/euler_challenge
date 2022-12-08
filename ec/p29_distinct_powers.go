@@ -17,7 +17,7 @@ func P29() *problem {
 		for a := 2; a <= n; a++ {
 			for b := 2; b <= n; b++ {
 				scaled := map[int]int{}
-				for k, v := range generator.PrimeFactors(a, p) {
+				for k, v := range p.PrimeFactors(a) {
 					scaled[k] = v * b
 				}
 				unique[polyCode(scaled)] = true

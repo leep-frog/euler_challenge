@@ -13,7 +13,7 @@ func P127() *problem {
 		g := generator.Primes()
 		var sum int
 		for c := 1; c < n; c++ {
-			if generator.IsPrime(c, g) {
+			if g.Contains(c) {
 				continue
 			}
 			cRad := calcRadical(c, g)
@@ -54,7 +54,7 @@ type node127 struct {
 }
 
 type context127 struct {
-	g              *generator.Generator[int]
+	g              *generator.Prime
 	c              int
 	cRad           int
 	allowedFactors []int
@@ -76,7 +76,7 @@ func (n *node127) Done(ctx *context127, dp bfs.DFSPath[*node127]) bool {
 		return false
 	}
 	// Don't need to check (a, c) since that is guaranteed based on AdjacentStates
-	if generator.Coprimes(n.a, ctx.c, ctx.g) || generator.Coprimes(b, ctx.c, ctx.g) {
+	if ctx.g.Coprimes(n.a, ctx.c) || ctx.g.Coprimes(b, ctx.c) {
 		return false
 	}
 	ctx.sum += ctx.c

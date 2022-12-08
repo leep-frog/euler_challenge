@@ -16,11 +16,12 @@ var (
 	// to keep import
 	one = maths.One()
 	// filter out tests
-	timeLimit  = 31.0
+	timeLimit  = 100.0
 	testFilter = func(cct *codingChallengeTest) bool {
 		toCheck := []int{
 			// Test numbers to check
-			176,
+			252,
+			//165, 154, 153, 146, 236, 155,
 		}
 		set := maths.NewSimpleSet(toCheck...)
 		return true && (len(toCheck) == 0 || set[cct.num])
@@ -42,7 +43,7 @@ func (cct *codingChallengeTest) shouldSkip() (string, bool) {
 	if cct.skip != "" {
 		return cct.skip, true
 	}
-	if timeLimit != 0 && cct.estimate >= timeLimit {
+	if timeLimit != 0 && cct.estimate < timeLimit {
 		return fmt.Sprintf("Skipping due to test length (limit=%.2f, estimate=%.2f)", timeLimit, cct.estimate), true
 	}
 	return "", false

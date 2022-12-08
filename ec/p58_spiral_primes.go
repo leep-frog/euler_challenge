@@ -15,7 +15,7 @@ func P58() *problem {
 			for j := 0; j < 4; j++ {
 				cur += jump
 				count++
-				if generator.IsPrime(cur, p) {
+				if p.Contains(cur) {
 					numPrimes++
 				}
 			}

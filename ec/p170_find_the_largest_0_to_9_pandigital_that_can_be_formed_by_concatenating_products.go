@@ -47,8 +47,8 @@ func P170() *problem {
 					leftProduct, rightProduct := maths.FromDigits(concatenatedProduct[:split]), maths.FromDigits(concatenatedProduct[split:])
 
 					// Look for factors in common
-					leftFactors := generator.Factors(leftProduct, primes)
-					rightFactors := maths.NewSimpleSet(generator.Factors(rightProduct, primes)...)
+					leftFactors := primes.Factors(leftProduct)
+					rightFactors := maths.NewSimpleSet(primes.Factors(rightProduct)...)
 					for _, lf := range leftFactors {
 						// If common factor, check if the divisors and factor make a pandigital.
 						if rightFactors[lf] {

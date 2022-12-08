@@ -31,10 +31,10 @@ func P135() *problem {
 // diophantineDifferenceCount returns true if the number of solutions to
 // x^2 - y^2 - z^2 = n
 // is exactly count
-func diophantineDifferenceExactCount(n, count int, primes *generator.Generator[int]) bool {
+func diophantineDifferenceExactCount(n, count int, primes *generator.Prime) bool {
 	// Noticed in all solutions have y as a factor of n
 	var solutions int
-	for _, f := range generator.Factors(n, primes) {
+	for _, f := range primes.Factors(n) {
 		if f == 1 {
 			continue
 		}

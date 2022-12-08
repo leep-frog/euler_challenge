@@ -34,7 +34,7 @@ type pandigitalOrdering struct {
 
 type context118 struct {
 	validSets map[string]bool
-	primes    *generator.Generator[int]
+	primes    *generator.Prime
 }
 
 func (po *pandigitalOrdering) copy() *pandigitalOrdering {
@@ -61,7 +61,7 @@ func (po *pandigitalOrdering) Code(*context118) string {
 func (po *pandigitalOrdering) Done(ctx *context118) bool {
 	parts := po.parts()
 	for _, p := range parts {
-		if !generator.IsPrime(p, ctx.primes) {
+		if !ctx.primes.Contains(p) {
 			return false
 		}
 	}
@@ -79,7 +79,7 @@ func (po *pandigitalOrdering) AdjacentStates(ctx *context118) []*pandigitalOrder
 	for i := start + 1; i <= len(po.perm)-1; i++ {
 		cp := po.copy()
 		cp.breaks = append(cp.breaks, i)
-		if generator.IsPrime(maths.FromDigits(cp.perm[start:i]), ctx.primes) {
+		if ctx.primes.Contains(maths.FromDigits(cp.perm[start:i])) {
 			r = append(r, cp)
 		}
 	}

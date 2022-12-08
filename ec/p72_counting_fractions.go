@@ -17,7 +17,7 @@ func P72() *problem {
 				got[i] = i - 1
 			} else {
 				k := 1
-				for num, cnt := range generator.PrimeFactors(i, p) {
+				for num, cnt := range p.PrimeFactors(i) {
 					k *= got[num] * maths.Pow(num, cnt-1)
 				}
 				got[i] = k

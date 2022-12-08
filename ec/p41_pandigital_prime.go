@@ -16,7 +16,7 @@ func P41() *problem {
 		sort.Sort(sort.Reverse(sort.StringSlice(possibilities)))
 		p := generator.Primes()
 		for _, possStr := range possibilities {
-			if generator.IsPrime(parse.Atoi(possStr), p) {
+			if p.Contains(parse.Atoi(possStr)) {
 				o.Stdoutln(possStr)
 				return
 			}

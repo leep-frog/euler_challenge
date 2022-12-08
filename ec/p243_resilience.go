@@ -11,7 +11,7 @@ import (
 
 type context243 struct {
 	f   *fraction.Fraction
-	p   *generator.Generator[int]
+	p   *generator.Prime
 	max int
 }
 
@@ -50,11 +50,10 @@ func (n *node243) AdjacentStates(ctx *context243) []*node243 {
 	return r
 }
 
-func cnt243(n int, p *generator.Generator[int]) int {
+func cnt243(n int, p *generator.Prime) int {
 	cnt := 1
 	for i := 2; i < n; i++ {
-		if !generator.Coprimes(n, i, p) {
-			//fmt.Println(j, i)
+		if !p.Coprimes(n, i) {
 			cnt++
 		}
 	}
@@ -85,7 +84,7 @@ func P243() *problem {
 			offset := i
 			for j := 0; j < prime-1; j++ {
 				i += offset
-				f := fraction.New(generator.ResilienceCount(i, p), i-1)
+				f := fraction.New(p.ResilienceCount(i), i-1)
 				if f.LT(mf) {
 					o.Stdoutln(i)
 					return

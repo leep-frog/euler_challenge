@@ -13,7 +13,7 @@ type ctx236 struct {
 	m      *fraction.Fraction
 	totalA int
 	totalB int
-	primes *generator.Generator[int]
+	primes *generator.Prime
 	checks int
 	path   [][]int
 }
@@ -103,10 +103,10 @@ func P236() *problem {
 		for _, s := range supply {
 			totalA += s[0]
 			totalB += s[1]
-			fmt.Println(s, generator.PrimeFactors(s[0], primes), generator.PrimeFactors(s[1], primes))
+			fmt.Println(s, primes.PrimeFactors(s[0]), primes.PrimeFactors(s[1]))
 		}
-		fmt.Println(totalA, totalB, generator.PrimeFactors(totalA, primes), generator.PrimeFactors(totalB, primes))
-		fmt.Println("M", generator.PrimeFactors(1476, primes), generator.PrimeFactors(1475, primes))
+		fmt.Println(totalA, totalB, primes.PrimeFactors(totalA), primes.PrimeFactors(totalB))
+		fmt.Println("M", primes.PrimeFactors(1476), primes.PrimeFactors(1475))
 
 		checked := map[string]bool{}
 		valid := map[string]bool{}
@@ -179,9 +179,9 @@ func P236() *problem {
 		return
 
 		g := generator.Primes()
-		fmt.Println("[1476 1475]", generator.PrimeFactors(1476, g), generator.PrimeFactors(1475, g))
+		fmt.Println("[1476 1475]", g.PrimeFactors(1476), g.PrimeFactors(1475))
 		for _, product := range supply {
-			fmt.Println(product, generator.PrimeFactors(product[0], g), generator.PrimeFactors(product[1], g))
+			fmt.Println(product, g.PrimeFactors(product[0]), g.PrimeFactors(product[1]))
 		}
 
 		return

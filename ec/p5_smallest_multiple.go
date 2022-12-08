@@ -11,7 +11,7 @@ func P5() *problem {
 		primer := generator.Primes()
 		primes := map[int]int{}
 		for i := 2; i < n; i++ {
-			for p, cnt := range generator.PrimeFactors(i, primer) {
+			for p, cnt := range primer.PrimeFactors(i) {
 				primes[p] = maths.Max(cnt, primes[p])
 			}
 		}

@@ -56,7 +56,7 @@ func P154() *problem {
 		div := ns[1]
 
 		// Create the factors slice (each element is [factor, number of factors needed]).
-		divFactors := generator.PrimeFactors(div, generator.Primes())
+		divFactors := generator.Primes().PrimeFactors(div)
 		var minNeeded, factors []int
 		for f, m := range divFactors {
 			factors = append(factors, f)

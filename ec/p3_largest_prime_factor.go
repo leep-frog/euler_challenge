@@ -7,7 +7,7 @@ import (
 
 func P3() *problem {
 	return intInputNode(3, func(o command.Output, n int) {
-		factors := generator.PrimeFactors(n, generator.Primes())
+		factors := generator.Primes().PrimeFactors(n)
 
 		max := 0
 		for f := range factors {

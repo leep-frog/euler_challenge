@@ -48,7 +48,7 @@ func P146() *problem {
 
 			valid = true
 			for j := 1; j <= 27; j += 2 {
-				if generator.IsPrime(sq+j, p) != offsetM[j] {
+				if p.Contains(sq+j) != offsetM[j] {
 					valid = false
 					break
 				}

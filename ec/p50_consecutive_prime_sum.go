@@ -14,7 +14,7 @@ func P50() *problem {
 			pi := primes.Nth(i)
 			sum := pi + primes.Nth(i+1)
 			for j := 2; sum < n; j++ {
-				if generator.IsPrime(sum, primes) {
+				if primes.Contains(sum) {
 					best.IndexCheck(sum, j)
 				}
 				sum += primes.Nth(i + j)

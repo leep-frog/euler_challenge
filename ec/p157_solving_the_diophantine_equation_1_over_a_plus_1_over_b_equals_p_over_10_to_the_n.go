@@ -27,12 +27,12 @@ func P157() *problem {
 					// a = twos, b = fives
 					// P = ten * (a + b) / ab
 					p := ten * (twos + fives) / (twos * fives)
-					cnt += generator.FactorCount(p, primes)
+					cnt += primes.FactorCount(p)
 
 					if twos != 1 && fives != 1 {
 						// a = 1, b = twos*fives
 						p := ten * (twos*fives + 1) / (twos * fives)
-						cnt += generator.FactorCount(p, primes)
+						cnt += primes.FactorCount(p)
 					}
 				}
 			}
