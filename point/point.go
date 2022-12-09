@@ -374,6 +374,10 @@ func (p *Point[T]) String() string {
 	return fmt.Sprintf("(%v, %v)", p.X, p.Y)
 }
 
+func (p *Point[T]) Copy() *Point[T] {
+	return New(p.X, p.Y)
+}
+
 func (p *Point[T]) Dist(that *Point[T]) float64 {
 	x := p.X - that.X
 	y := p.Y - that.Y
