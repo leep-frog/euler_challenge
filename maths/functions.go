@@ -1,5 +1,7 @@
 package maths
 
+import "golang.org/x/exp/constraints"
+
 func MinT[T Comparable[T]](as ...T) T {
 	var min T
 	if len(as) == 0 {
@@ -28,7 +30,7 @@ func MaxT[T Comparable[T]](as ...T) T {
 	return max
 }
 
-func Min[T Mathable](as ...T) T {
+func Min[T constraints.Ordered](as ...T) T {
 	var min T
 	if len(as) == 0 {
 		return min

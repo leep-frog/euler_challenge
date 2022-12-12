@@ -7,165 +7,129 @@ import (
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/point"
-	"golang.org/x/exp/slices"
 )
 
-type p177Point struct {
-	p      *point.Point[float64]
-	theta  int
-	oTheta int
-	xTheta int
+// Use type so helper functions are scoped to this problem only (and not
+// included in autocomplete suggestions when coding other problems).
+type problem177 struct{}
+
+func (p *problem177) almostEqual(a, b float64) bool {
+	epsilon := 0.000000001
+	return maths.Abs(a-b) < epsilon
 }
 
-func (p *p177Point) String() string {
-	return fmt.Sprintf("[%d %d]: %v", p.oTheta, p.xTheta, p.p)
+func (p *problem177) cos(degree float64) float64 {
+	// math.Cos(degree * 2 * math.Pi / 360.0)
+	return math.Cos(degree * math.Pi / 180.0)
+}
+
+func (p *problem177) acos(v float64) float64 {
+	return 180.0 * math.Acos(v) / math.Pi
+}
+
+func (p *problem177) sin(degree float64) float64 {
+	// math.Cos(degree * 2 * math.Pi / 360.0)
+	return math.Sin(degree * math.Pi / 180.0)
+}
+
+func (p *problem177) integerAngle(p1, p2, p3 *point.Point[float64]) (int, bool) {
+	ax, ay := p1.X-p2.X, p1.Y-p2.Y
+	bx, by := p3.X-p2.X, p3.Y-p2.Y
+	a := math.Sqrt(ax*ax + ay*ay)
+	b := math.Sqrt(bx*bx + by*by)
+	dot := ax*bx + ay*by
+	angle := p.acos(dot / (a * b))
+	rem := maths.Abs(math.Remainder(angle, 1))
+	return int(math.Round(angle)), p.almostEqual(rem, 0)
+}
+
+func (p *problem177) valid(theta1, theta2, theta3, theta4 int, m map[string]bool) bool {
+	if theta2 >= 180-(theta3+theta4) {
+		return false
+	}
+
+	if theta3 >= 180-(theta1+theta2) {
+		return false
+	}
+
+	A := point.Origin[float64]()
+	B := point.New(1.0, 0.0)
+
+	BAD := float64(theta1 + theta2)
+	AD := point.NewLineSegment(A, point.New(p.cos(BAD), p.sin(BAD)))
+
+	BCD := float64(theta2)
+	AC := point.NewLineSegment(A, point.New(p.cos(BCD), p.sin(BCD)))
+
+	ABD := float64(theta3)
+	BD := point.NewLineSegment(B, point.New(B.X-p.cos(ABD), p.sin(ABD)))
+
+	ABC := float64(theta3 + theta4)
+	BC := point.NewLineSegment(B, point.New(B.X-p.cos(ABC), p.sin(ABC)))
+
+	D := AD.Intersect(BD)
+	C := AC.Intersect(BC)
+
+	ACD, ok := p.integerAngle(A, C, D)
+	if !ok {
+		return false
+	}
+
+	// M = middle, intersection point
+	AMB := 180 - theta2 - theta3
+	AMD := 180 - AMB
+	BMC := AMD
+	CMD := AMB
+	// Angle order
+	angleOrder := []int{
+		theta1, theta2, theta3, theta4,
+		180 - BMC - theta4,
+		ACD,
+		180 - ACD - CMD,
+		180 - theta1 - AMD,
+	}
+	if maths.SumSys(angleOrder...) != 360 {
+		panic("ANGLE ORDER")
+	}
+	// Unique ID
+	m[maths.Min(p.quadCode(angleOrder), p.quadCode(maths.Reverse(angleOrder)))] = true
+	return true
+}
+
+func (p *problem177) quadCode(angles []int) string {
+	r := fmt.Sprintf("%v", angles)
+	for i := 2; i < len(angles); i += 2 {
+		var shifted []int
+		for j := 0; j < len(angles); j++ {
+			shifted = append(shifted, angles[(i+j)%len(angles)])
+		}
+		r = maths.Min(r, fmt.Sprintf("%v", shifted))
+	}
+	return r
 }
 
 func P177() *problem {
-	return intInputNode(177, func(o command.Output, n int) {
-
-		epsilon := 0.000000001
-		cos := func(degree float64) float64 {
-			// math.Cos(degree * 2 * math.Pi / 360.0)
-			return math.Cos(degree * math.Pi / 180.0)
-		}
-		acos := func(v float64) float64 {
-			return 180.0 * math.Acos(v) / math.Pi
-		}
-		sin := func(degree float64) float64 {
-			// math.Cos(degree * 2 * math.Pi / 360.0)
-			return math.Sin(degree * math.Pi / 180.0)
-		}
-		integerAngle := func(p1, p2, p3 *point.Point[float64]) (int, bool) {
-			// a = (p1.x - p2.x, p1.y - p2.y)
-			// b = (p1.x - p3.x, p1.y - p3.y)
-			// p2 is the origin
-			// a = p1
-			// b = p2
-			// TODO: Reverse minus order
-			ax, ay := p1.X-p2.X, p1.Y-p2.Y
-			bx, by := p1.X-p3.X, p1.Y-p3.Y
-			a := math.Sqrt(ax*ax + ay*ay)
-			b := math.Sqrt(bx*bx + by*by)
-			dot := ax*bx + ay*by
-			angle := acos(dot / (a * b))
-			rem := maths.Abs(math.Remainder(angle, 1))
-			if rem > epsilon {
-				return 0, false
-			}
-			return int(math.Round(angle)), true
-		}
-
-		// Points will be (0, 0), (0, 1) and then generate all other points from that
-		o.Stdoutln(n)
-		offsets := []*point.Point[float64]{nil}
-		for theta := 1.0; theta < 180; theta++ {
-			offsets = append(offsets, point.New(cos(theta), sin(theta)))
-		}
-
-		// TODO: plot points and make sure they're a semi-circle
-
-		origin := point.Origin[float64]()
-		xPoint := point.New(1.0, 0.0)
-
-		var positiveYpoints []*p177Point
+	return noInputNode(177, func(o command.Output) {
+		p := &problem177{}
+		m := map[string]bool{}
 		for theta1 := 1; theta1 < 180; theta1++ {
-			slope1 := offsets[theta1]
-			// y = m1*x (no b since at the origin)
-			m1 := slope1.Y / slope1.X
-			for theta2 := theta1 + 1; theta2 < 180; theta2++ {
-				slope2 := offsets[theta2]
-				// y = m2*x + b
-				// Point is (1, 0)
-				// 0 = m2 + b
-				// b = -m2
-				m2 := slope2.Y / slope2.X
-				b := -m2
-
-				// Get intersection of points
-				// Equation one: y = m1*x
-				// Equation two: y = m2*x + b
-				// m1 * x = m2 * x + b
-				// (m1 - m2) * x = b
-				// x = b / (m1 - m2)
-				x := b / (m1 - m2)
-				y := m1 * x
-				p := point.New(x, y)
-				midTheta, ok := integerAngle(origin, p, xPoint)
-				if !ok {
-					continue
+			for theta2 := 1; theta1+theta2 < 180; theta2++ {
+				// To ensure the intersection for point D is above the x-axis,
+				// theta3 < 180 - (theta1 + theta2)
+				for theta3 := 1; theta3 < 180-(theta1+theta2); theta3++ {
+					// To ensure the intersection for point C is above the x-axis,
+					// theta2 < 180 - (theta3 + theta4)
+					// theta2 < 180 - theta3 - theta4
+					// theta4 < 180 - (theat3 + theta2)
+					for theta4 := 1; theta4 < 180-(theta3+theta2); theta4++ {
+						p.valid(theta1, theta2, theta3, theta4, m)
+					}
 				}
-				if theta1 == 45 && theta2 == 135 {
-					fmt.Println("THEYO", p)
-				}
-				positiveYpoints = append(positiveYpoints, &p177Point{
-					p, midTheta, theta1, 180 - theta2,
-				})
 			}
 		}
-
-		fmt.Println(len(positiveYpoints))
-
-		cnt := 0
-		fmt.Println("START", len(positiveYpoints))
-		angle := 0
-		ids := map[string]bool{}
-		// TOOD: switch back to:
-		for i, pyp177 := range positiveYpoints {
-			if pyp177.oTheta != angle {
-				angle = pyp177.oTheta
-				fmt.Println("A", angle)
-			}
-			_ = i
-			pyp := pyp177.p
-			// TODO: Use range here since j starts at i (and not i + 1)
-			for j := i; j < len(positiveYpoints); j++ {
-				nyp177 := positiveYpoints[j]
-				good := pyp177.oTheta%45 == 0 && pyp177.xTheta%45 == 0 && nyp177.oTheta%45 == 0 && nyp177.xTheta%45 == 0
-
-				nyp := nyp177.p.Copy()
-				nyp.Y = -nyp.Y
-
-				ps := []*point.Point[float64]{
-					origin,
-					pyp,
-					xPoint,
-					nyp,
-				}
-				if good {
-					fmt.Println("HEYO", pyp177, nyp177, ps, point.IsConvex(ps...))
-				}
-
-				if !point.IsConvex(ps...) {
-					continue
-				}
-
-				if _, ok := integerAngle(origin, nyp, pyp); !ok {
-					continue
-				}
-
-				fmt.Println("YUP")
-				cnt++
-				// ids
-				angles := []int{
-					pyp177.theta,
-					pyp177.oTheta + nyp177.oTheta,
-					pyp177.xTheta + nyp177.xTheta,
-					nyp177.theta,
-				}
-				slices.Sort(angles)
-				if maths.SumSys(angles...) != 360 {
-					fmt.Println(angles)
-					panic("OOPS")
-				}
-				ids[fmt.Sprintf("%v", angles)] = true
-			}
-		}
-		fmt.Println(cnt, len(ids))
-	}, []*execution{
-		{
-			args: []string{"1"},
-			want: "",
-		},
+		o.Stdoutln(len(m))
+	}, &execution{
+		want:     "129325",
+		estimate: 30,
 	})
 }

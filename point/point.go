@@ -103,6 +103,83 @@ type RationalLineSegment struct {
 	A, B *RationalPoint
 }
 
+func (ls *LineSegment[T]) EquationMB() (T, T) {
+	// y1 = m*x1 + b
+	// y2 = m*x2 + b
+	// b = y1 - m*x1 = y2 - m*x2
+	// y1 - m*x1 = y2 - m*x2
+	// y1 - y2 = m*(x1 - x2)
+	// m = (y1 - y2) / (x1 - x2)
+	x1, y1 := ls.A.X, ls.A.Y
+	x2, y2 := ls.B.X, ls.B.Y
+	m := (y1 - y2) / (x1 - x2)
+	// b = y1 - m*x1
+	b := y1 - (m * x1)
+	return m, b
+}
+
+// TODO: Combine RationalLineSegment with LineSegment (do like bfs.Int class)
+func (ls *LineSegment[T]) Intersect(that *LineSegment[T]) *Point[T] {
+	ls1, ls2 := ls, that
+	m1, b1 := ls1.EquationMB()
+	m2, b2 := ls2.EquationMB()
+	// m_1 * x + b_1 = m_2 * x + b_2
+	// x * (m_1 - m_2) = (b_2 - b_1)
+	// x = (b_2 - b_1) / (m_1 - m_2)
+
+	// If slopes are equal, then return
+	//fmt.Println("IF")
+	if m1 == m2 {
+		return nil
+	}
+	// Either slopes are (veritcal, horizontal), (horizontal, K) (vertical, K), or (K, K)
+
+	var x, y T
+	switch true {
+	case math.IsNaN(float64(m2)) && m1 == 0:
+		m1, m2 = m2, m1
+		b1, b2 = b2, b1
+		ls1, ls2 = ls2, ls1
+		fallthrough
+	case math.IsNaN(float64(m1)) && m2 == 0:
+		x = ls1.A.X
+		y = ls2.A.Y
+		break
+	case math.IsNaN(float64(m2)):
+		m1, m2 = m2, m1
+		b1, b2 = b2, b1
+		ls1, ls2 = ls2, ls1
+		fallthrough
+	case math.IsNaN(float64(m1)):
+		x = ls1.A.X
+		y = m2*x + b2
+		break
+	case m2 == 0:
+		m1, m2 = m2, m1
+		b1, b2 = b2, b1
+		ls1, ls2 = ls2, ls1
+		fallthrough
+	case m1 == 0:
+		y = ls1.A.Y
+		x = (y - b2) / m2
+		break
+	default:
+		x = (b2 - b1) / (m1 - m2)
+		y = x*m1 + b1
+	}
+
+	return New(x, y)
+
+	// Now verify it's between them by verifying it's inside the box of
+	// (minX, minY), (maxX, maxY)
+	//p := &RationalPoint{x, y}
+	// TODO: Use OnSegmentExclusive??
+	/*if ls1.InBoxInclusive(p) && ls2.InBoxInclusive(p) && !ls1.HasVertex(p) && !ls2.HasVertex(p) {
+		return p
+	}
+	return nil*/
+}
+
 // returns m, b
 func (rls *RationalLineSegment) EquationMB() (*fraction.Rational, *fraction.Rational) {
 	// y1 = m*x1 + b
