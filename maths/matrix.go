@@ -34,7 +34,7 @@ func BiggifyIntMatrix(matrix [][]int) [][]*big.Rat {
 func SmallifyMatrix(matrix [][]*big.Rat) [][]float64 {
 	var m [][]float64
 	for _, r := range matrix {
-	var row []float64
+		var row []float64
 		for _, v := range r {
 			if v == nil {
 				row = append(row, 0)
@@ -166,8 +166,8 @@ func AdjugateMatrix(matrix [][]*big.Rat) [][]*big.Rat {
 				c.Next.Prev = c.Prev
 			}
 
-			d := determinant(matrix, nRows - 1, nCols - 1, rHead, cHead, detCache)
-			if (r.Value + c.Value) % 2 == 1 {
+			d := determinant(matrix, nRows-1, nCols-1, rHead, cHead, detCache)
+			if (r.Value+c.Value)%2 == 1 {
 				d.Mul(d, big.NewRat(-1, 1))
 			}
 			adjRow = append(adjRow, d)
@@ -230,38 +230,38 @@ func determinant(matrix [][]*big.Rat, nRows, nCols int, rows, cols *linkedlist.N
 
 	pos := true
 	det := big.NewRat(0, 1)
-		firstCol := true
-		rHead := rows.Next
-		for col := cols; col != nil; col = col.Next {
-			cell := matrix[rows.Value][col.Value]
-			cHead := cols
-			if firstCol {
-				cHead = cHead.Next
-			}
+	firstCol := true
+	rHead := rows.Next
+	for col := cols; col != nil; col = col.Next {
+		cell := matrix[rows.Value][col.Value]
+		cHead := cols
+		if firstCol {
+			cHead = cHead.Next
+		}
 
-			if col.Prev != nil {
-				col.Prev.Next = col.Next
-			}
-			if col.Next != nil {
-				col.Next.Prev = col.Prev
-			}
-			
-			subDet := big.NewRat(0, 1).Mul(cell, determinant(matrix, nRows - 1, nCols - 1, rHead, cHead, detCache))
-			if pos {
-				det.Add(det, subDet)
-			} else {
-				det.Sub(det, subDet)
-			}
-			pos = !pos
+		if col.Prev != nil {
+			col.Prev.Next = col.Next
+		}
+		if col.Next != nil {
+			col.Next.Prev = col.Prev
+		}
 
-			if col.Prev != nil {
-				col.Prev.Next = col
-			}
-			if col.Next != nil {
-				col.Next.Prev = col
-			}
+		subDet := big.NewRat(0, 1).Mul(cell, determinant(matrix, nRows-1, nCols-1, rHead, cHead, detCache))
+		if pos {
+			det.Add(det, subDet)
+		} else {
+			det.Sub(det, subDet)
+		}
+		pos = !pos
 
-			firstCol = false
+		if col.Prev != nil {
+			col.Prev.Next = col
+		}
+		if col.Next != nil {
+			col.Next.Prev = col
+		}
+
+		firstCol = false
 	}
 
 	detCache[code] = det
