@@ -6,7 +6,7 @@ import (
 )
 
 func P184() *problem {
-	return intInputNode(181, func(o command.Output, r int) {
+	return intInputNode(184, func(o command.Output, r int) {
 		var pts []*point.Point[int]
 		for x := 1; x < r; x++ {
 			// Add points on axis
