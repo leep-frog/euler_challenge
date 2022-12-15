@@ -19,7 +19,9 @@ var (
 	OperationMap = func() map[string]Operation[int] {
 		m := map[string]Operation[int]{}
 		for _, o := range Operations {
-			m[o.Symbol()] = o
+			for _, sym := range o.Symbols() {
+				m[sym] = o
+			}
 		}
 		return m
 	}()
@@ -27,7 +29,7 @@ var (
 
 // Operation
 type Operation[T maths.Mathable] interface {
-	Symbol() string
+	Symbols() []string
 	Evaluate(a, b T) T
 	PemdasPriority() pemdasPriority
 }
@@ -44,37 +46,37 @@ const (
 
 type Plus[T maths.Mathable] struct{}
 
-func (*Plus[T]) Symbol() string                 { return "+" }
+func (*Plus[T]) Symbols() []string              { return []string{"+", "p"} }
 func (*Plus[T]) Evaluate(a, b T) T              { return a + b }
 func (*Plus[T]) PemdasPriority() pemdasPriority { return plusMinPriority }
 
 type Minus[T maths.Mathable] struct{}
 
-func (*Minus[T]) Symbol() string                 { return "-" }
+func (*Minus[T]) Symbols() []string              { return []string{"-", "m"} }
 func (*Minus[T]) Evaluate(a, b T) T              { return a - b }
 func (*Minus[T]) PemdasPriority() pemdasPriority { return plusMinPriority }
 
 type Times[T maths.Mathable] struct{}
 
-func (*Times[T]) Symbol() string                 { return "*" }
+func (*Times[T]) Symbols() []string              { return []string{"*", "t"} }
 func (*Times[T]) Evaluate(a, b T) T              { return a * b }
 func (*Times[T]) PemdasPriority() pemdasPriority { return mulDivPriority }
 
 type Divide[T maths.Mathable] struct{}
 
-func (*Divide[T]) Symbol() string                 { return "/" }
+func (*Divide[T]) Symbols() []string              { return []string{"/", "d"} }
 func (*Divide[T]) Evaluate(a, b T) T              { return a / b }
 func (*Divide[T]) PemdasPriority() pemdasPriority { return mulDivPriority }
 
 type Exponent[T maths.Mathable] struct{}
 
-func (*Exponent[T]) Symbol() string                 { return "^" }
+func (*Exponent[T]) Symbols() []string              { return []string{"^", "e"} }
 func (*Exponent[T]) Evaluate(a, b T) T              { return maths.Pow(a, b) }
 func (*Exponent[T]) PemdasPriority() pemdasPriority { return exponentPriority }
 
 type Modulo[T Operable] struct{}
 
-func (*Modulo[T]) Symbol() string                 { return "%" }
+func (*Modulo[T]) Symbols() []string              { return []string{"%"} }
 func (*Modulo[T]) Evaluate(a, b T) T              { return a % b }
 func (*Modulo[T]) PemdasPriority() pemdasPriority { return moduloPriority }
 

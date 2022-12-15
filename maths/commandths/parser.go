@@ -139,7 +139,7 @@ type operationState struct{}
 func (*operationState) processTerm(ctx *parserContext, term *parserTerm) (parserState, error) {
 	if term.symbolType == operationSymbol {
 		// TODO: have error include term position
-		return nil, fmt.Errorf("unexpected operation %q", term.operationValue.Symbol())
+		return nil, fmt.Errorf("consecutive operations")
 	}
 	// Otherwise number symbol
 	ctx.appendNumber(term.numberValue)

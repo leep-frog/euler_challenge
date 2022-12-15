@@ -126,7 +126,7 @@ func TestExecute(t *testing.T) {
 			name: "Fails if adjacent operators",
 			etc: &command.ExecuteTestCase{
 				Args:       []string{"17 + + 12"},
-				WantStderr: `unexpected operation "+"`,
+				WantStderr: `consecutive operations`,
 			},
 		},
 		{
