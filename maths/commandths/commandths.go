@@ -16,6 +16,12 @@ func CLI() sourcerer.CLI {
 	return &Maths{}
 }
 
+func Aliasers() sourcerer.Option {
+	return sourcerer.Aliasers(map[string][]string{
+		"pf": {"prime", "factor"},
+	})
+}
+
 var (
 	expArg     = command.ListArg[string]("EXPRESSION", "Expression to evaluate", 1, command.UnboundedList)
 	operations = regexp.MustCompile(`([\*\^\+/\(\)])`)
@@ -37,7 +43,7 @@ func (m *Maths) primeFactor() *command.Node {
 		&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
 			p := generator.Primes()
 			for _, a := range arg.Get(d) {
-				fs := generator.PrimeFactors(a, p)
+				fs := p.PrimeFactors(a)
 				ordered := maps.Keys(fs)
 				slices.Sort(ordered)
 
