@@ -12,13 +12,17 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+const (
+	cliName = "m"
+)
+
 func CLI() sourcerer.CLI {
 	return &Maths{}
 }
 
 func Aliasers() sourcerer.Option {
 	return sourcerer.Aliasers(map[string][]string{
-		"pf": {"prime", "factor"},
+		"pf": {cliName, "prime", "factor"},
 	})
 }
 
@@ -33,7 +37,7 @@ type Maths struct{}
 
 func (m *Maths) Changed() bool { return false }
 func (*Maths) Setup() []string { return nil }
-func (m *Maths) Name() string  { return "m" }
+func (m *Maths) Name() string  { return cliName }
 
 func (m *Maths) primeFactor() *command.Node {
 	arg := command.ListArg[int]("N", "The numbers to prime factor", 1, command.UnboundedList)
