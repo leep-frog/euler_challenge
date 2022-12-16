@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/leep-frog/euler_challenge/maths"
@@ -23,16 +24,213 @@ func clearCaches() {
 	cachedResilienceCount = map[int]int{}
 }
 
+// TODO: Just make a prime generator that loads the primes we've already evaluated
+
 type Prime struct {
 	*Generator[int]
 }
 
 func Primes() *Prime {
 	return &Prime{newIntGen(&primer{})}
+	//return &Prime{newIntGen(&primer{})}
 	// Prettry sure we can use the same instance like below. Just verify
 	// test speed doesn't change (or if it does, that it gets better).
 	//return primeGenerator
 }
+
+func BetterPrimes() *Generator[int] {
+	return newIntGen(&betterPrimer{})
+}
+
+func PrimesUpTo(k int) *Generator[int] {
+	return newIntGen(&bestPrimer{nil, -1, k})
+}
+
+// Pair of prime and current multiple
+type primePair struct {
+	prime int
+	val   int
+}
+
+func (pp *primePair) String() string {
+	return fmt.Sprintf("(%d, %d)", pp.prime, pp.val)
+}
+
+type betterPrimer struct {
+	heap *maths.Heap[*primePair]
+	// slice containing
+	rem []int
+	idx int
+}
+
+func (bp *betterPrimer) Next(g *Generator[int]) int {
+	if len(g.values) == 0 {
+		return 2
+	}
+	if len(g.values) == 1 {
+		bp.heap = maths.NewHeap(func(pp1, pp2 *primePair) bool {
+			return pp1.val < pp2.val
+		})
+		bp.heap.Push(&primePair{3, 9})
+		bp.idx = 5
+		return 3
+	}
+
+	for ; ; bp.idx += 2 {
+
+		valid := true
+		pp := bp.heap.Pop()
+		for ; pp.val <= bp.idx; pp = bp.heap.Pop() {
+			valid = valid && (pp.val != bp.idx)
+			pp.val += pp.prime
+			bp.heap.Push(pp)
+		}
+		// The last one just needs to be pushed unchanged
+		bp.heap.Push(pp)
+
+		if valid {
+			i := bp.idx
+			bp.idx += 2
+			bp.heap.Push(&primePair{i, 2 * i})
+			return i
+		}
+	}
+	/*for ; ; bp.idx += 2 {
+		pp := bp.heap.Peek()
+
+		// bp.idx is prime, in which case add the other thing back on the stack
+		if pp.val != bp.idx {
+			i := bp.idx
+			bp.idx += 2
+			return i
+		}
+
+		for ; pp.val
+		// bp.idx is not prime, so increment its value
+		pp.val += pp.prime
+		bp.heap.Push(pp)
+	}*/
+}
+
+type bestPrimer struct {
+	values []bool
+	idx    int
+	size   int
+}
+
+func (bp *bestPrimer) Next(g *Generator[int]) int {
+	if len(g.values) == 0 {
+		return 2
+	}
+	if len(g.values) == 1 {
+		// TODO: change size to half
+		bp.values = make([]bool, bp.size, bp.size)
+		for i := 3; i < len(bp.values); i += 3 {
+			bp.values[i] = true
+		}
+		bp.values = bp.values[5:]
+		bp.idx = 5
+		return 3
+	}
+
+	offset := 0
+	for ; offset < len(bp.values) && bp.values[offset]; offset += 2 {
+	}
+	if offset+2 > len(bp.values) {
+		panic(fmt.Sprintf("above maximum for prime generator; nth=%d, prime=%d", len(g.values), g.Last()))
+	}
+
+	prime := offset + bp.idx
+	for i := offset; i < len(bp.values); i += prime {
+		bp.values[i] = true
+	}
+	bp.idx += offset + 2
+	bp.values = bp.values[offset+2:]
+	return prime
+}
+
+func FinalPrimes(k int) *Generator[int] {
+	return newIntGen(&finalPrimer{
+		make([][]*finalPair, k, k),
+		nil,
+		0,
+		3,
+	})
+}
+
+type finalPair struct {
+	prime int
+	val   int
+}
+
+type finalPrimer struct {
+	values    [][]*finalPair
+	leftovers []*finalPair
+	idx       int
+	offset    int
+}
+
+func (fp *finalPrimer) insert(pair *finalPair) {
+	index := (pair.val - fp.offset) / 2
+	if index >= len(fp.values) {
+		fp.leftovers = append(fp.leftovers, pair)
+	} else {
+		fp.values[index] = append(fp.values[index], pair)
+	}
+	// TODO: fp.offset should always be odd
+}
+
+func (fp *finalPrimer) update() {
+	fp.offset += 2 * len(fp.values)
+	fp.idx = 0
+	for _, leftover := range fp.leftovers {
+		fp.insert(leftover)
+	}
+	fp.leftovers = nil
+}
+
+// Returns a number and whether the number is prime
+func (fp *finalPrimer) check() (int, bool) {
+	isPrime := len(fp.values[fp.idx]) == 0
+	value := fp.offset + 2*fp.idx
+
+	for _, pair := range fp.values[fp.idx] {
+		pair.val += 2 * pair.prime
+		fp.insert(pair)
+	}
+	fp.values[fp.idx] = nil
+
+	fp.idx++
+	if fp.idx >= len(fp.values) {
+		fmt.Println("UPDATING")
+		fp.update()
+	}
+
+	if isPrime {
+		fp.insert(&finalPair{value, 3 * value})
+	}
+
+	return value, isPrime
+}
+
+func (fp *finalPrimer) Next(g *Generator[int]) int {
+	if len(g.values) == 0 {
+		return 2
+	}
+
+	for {
+		v, ok := fp.check()
+		fmt.Println("A CHECKING", v, ok)
+		for ; !ok; v, ok = fp.check() {
+			fmt.Println("B CHECKING", v, ok)
+		}
+		fmt.Println("GOT", v)
+
+		return v
+	}
+}
+
+// TODO: Cached primer
 
 type primer struct{}
 

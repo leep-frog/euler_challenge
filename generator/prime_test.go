@@ -60,13 +60,13 @@ func TestFactoring(t *testing.T) {
 
 			primes := Primes()
 
-			if got := FactorCount(test.n, primes); got != len(test.want) {
+			if got := primes.FactorCount(test.n); got != len(test.want) {
 				t.Errorf("FactorCount(%d) returned %d; want %d", test.n, got, len(test.want))
 			}
 
 			clearCaches()
 
-			if diff := cmp.Diff(test.want, Factors(test.n, primes)); diff != "" {
+			if diff := cmp.Diff(test.want, primes.Factors(test.n)); diff != "" {
 				t.Errorf("Factors(%d) returned incorrect result (-want, +got):\n%s", test.n, diff)
 			}
 

@@ -6,7 +6,6 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/leep-frog/command/cache"
-	"github.com/leep-frog/euler_challenge/maths"
 )
 
 func TestIsTriangular(t *testing.T) {
@@ -138,25 +137,25 @@ func TestContains(t *testing.T) {
 	}{
 		{
 			name: "works for primes",
-			g:    Primes(),
+			g:    Primes().Generator,
 			want: true,
 			v:    19,
 		},
 		{
 			name: "works when not in cycle",
-			g:    Primes(),
+			g:    Primes().Generator,
 			v:    21,
 		},
 		{
 			name:  "works for primes when already past",
-			g:     Primes(),
+			g:     Primes().Generator,
 			want:  true,
 			v:     19,
 			nexts: 20,
 		},
 		{
 			name:  "works when not in cycle and already past",
-			g:     Primes(),
+			g:     Primes().Generator,
 			v:     21,
 			nexts: 20,
 		},
@@ -174,7 +173,7 @@ func TestContains(t *testing.T) {
 }
 
 func TestGenerators(t *testing.T) {
-	fakeCache(t)
+	//fakeCache(t)
 	for _, test := range []struct {
 		name string
 		g    *Generator[int]
@@ -182,9 +181,30 @@ func TestGenerators(t *testing.T) {
 	}{
 		{
 			name: "Generates primes",
-			g:    Primes(),
+			g:    Primes().Generator,
 			want: []int{
 				2, 3, 5, 7, 11, 13,
+			},
+		},
+		{
+			name: "Generates best primes",
+			g:    PrimesUpTo(101),
+			want: []int{
+				2, 3, 5, 7, 11, 13,
+			},
+		},
+		{
+			name: "Generates best primes",
+			g:    FinalPrimes(11),
+			want: []int{
+				2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59,
+			},
+		},
+		{
+			name: "Generates best primes",
+			g:    FinalPrimes(10),
+			want: []int{
+				2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59,
 			},
 		},
 		{
@@ -215,6 +235,7 @@ func TestGenerators(t *testing.T) {
 				1, 1, 2, 3, 5, 8, 13, 21,
 			},
 		},
+		/* Useful for commenting out tests. */
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			iter := test.g.Iterator()
@@ -247,7 +268,7 @@ func TestGenerators(t *testing.T) {
 	}
 }
 
-func TestBigGenerators(t *testing.T) {
+/*func TestBigGenerators(t *testing.T) {
 	fakeCache(t)
 	for _, test := range []struct {
 		name     string
@@ -286,7 +307,7 @@ func TestBigGenerators(t *testing.T) {
 			want := test.wantInts
 			if len(want) == 0 {
 				for _, w := range test.want {
-					want = append(want, maths.NewInt(int64(w)))
+					want = append(want, maths.NewInt(w))
 				}
 			}
 			var nexts, lasts, nths []*maths.Int
@@ -314,3 +335,4 @@ func TestBigGenerators(t *testing.T) {
 		})
 	}
 }
+*/
