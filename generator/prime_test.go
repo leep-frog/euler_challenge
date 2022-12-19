@@ -7,6 +7,37 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+func TestPrimePi(t *testing.T) {
+	for _, test := range []struct {
+		x    int
+		want int
+	}{
+		{2, 1},
+		{3, 2},
+		{4, 2},
+		{5, 3},
+		{6, 3},
+		{7, 4},
+		{8, 4},
+		{9, 4},
+		{10, 4},
+		{11, 5},
+		{12, 5},
+		{13, 6},
+		{14, 6},
+		{1_000, 168},
+		{1_000_000, 78_498},
+		{1_000_000_000, 50_847_534},
+		{1_000_000_000_000, 0},
+	} {
+		t.Run(fmt.Sprintf("PrimePi(%d)", test.x), func(t *testing.T) {
+			if got := PrimePi(test.x); got != test.want {
+				t.Errorf("PrimePi(%d) returned %d; want %d", test.x, got, test.want)
+			}
+		})
+	}
+}
+
 func TestFactoring(t *testing.T) {
 	for _, test := range []struct {
 		n    int

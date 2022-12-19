@@ -202,7 +202,6 @@ func (fp *finalPrimer) check() (int, bool) {
 
 	fp.idx++
 	if fp.idx >= len(fp.values) {
-		fmt.Println("UPDATING")
 		fp.update()
 	}
 
@@ -213,6 +212,64 @@ func (fp *finalPrimer) check() (int, bool) {
 	return value, isPrime
 }
 
+var (
+	rppCache = map[string]int{}
+)
+
+func recPrimePi(rem, minIdx, maxV, sign int, g *Generator[int], start int) int {
+	if rem <= 0 {
+		return 0
+	}
+	// code := fmt.Sprintf("%d %d %d", rem, minIdx, maxV)
+	// if v, ok := rppCache[code]; ok {
+	// 	return v * sign
+	// }
+	sum := rem * sign
+
+	/*for iter, prime := g.Start(minIdx); prime <= rem; prime = iter.Next() {
+		sum += recPrimePi(rem/prime, iter.Idx+1, -sign, g)
+	}*/
+	for i := minIdx; ; i++ {
+		/*if start == 0 {
+			fmt.Println("IDX", i, g.Nth(i))
+		}*/
+		prime := g.Nth(i)
+		if prime > rem || prime > maxV {
+			break
+		}
+		sum += recPrimePi(rem/prime, i+1, maxV, -sign, g, start+1)
+	}
+
+	// rppCache[code] = sum * sign
+	return sum
+}
+
+func brutePrimePi(x int) int {
+	iter, prime := Primes().Start(0)
+	for prime <= x {
+		prime = iter.Next()
+	}
+	return iter.Idx - 1
+}
+
+var (
+	primePiCache = map[int]int{}
+)
+
+func PrimePi(x int, primes *Generator[int]) int {
+	if v, ok := primePiCache[x]; ok {
+		return v
+	}
+	// fmt.Println("PI", x)
+	if x <= 1 {
+		return brutePrimePi(x)
+	}
+	summation := recPrimePi(x, 0, maths.Sqrt(x), 1, primes, 0)
+	r := summation + PrimePi(maths.Sqrt(x), primes) - 1
+	primePiCache[x] = r
+	return r
+}
+
 func (fp *finalPrimer) Next(g *Generator[int]) int {
 	if len(g.values) == 0 {
 		return 2
@@ -220,11 +277,8 @@ func (fp *finalPrimer) Next(g *Generator[int]) int {
 
 	for {
 		v, ok := fp.check()
-		fmt.Println("A CHECKING", v, ok)
 		for ; !ok; v, ok = fp.check() {
-			fmt.Println("B CHECKING", v, ok)
 		}
-		fmt.Println("GOT", v)
 
 		return v
 	}
