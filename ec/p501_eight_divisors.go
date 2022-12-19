@@ -12,11 +12,11 @@ import (
 type problem501 struct{}
 
 // a^3 * b^1
-func (p *problem501) SingleAndCubePrimeCount(n int, primes *generator.Generator[int]) int {
+func (p *problem501) SingleAndCubePrimeCount(n int, primes *generator.Prime) int {
 	var sum int
 	for iter, prime := primes.Start(0); 2*maths.Pow(prime, 3) <= n; prime = iter.Next() {
 		fmt.Println("1a", prime, time.Now())
-		sum += generator.PrimePi(n/maths.Pow(prime, 3), primes)
+		sum += primes.PrimePi(n / maths.Pow(prime, 3))
 		// Can also check iter
 		if maths.Pow(prime, 4) <= n {
 			sum--
@@ -26,7 +26,7 @@ func (p *problem501) SingleAndCubePrimeCount(n int, primes *generator.Generator[
 }
 
 // a*b*c
-func (p *problem501) ThreeDistinctPrimeCount(n int, primes *generator.Generator[int]) int {
+func (p *problem501) ThreeDistinctPrimeCount(n int, primes *generator.Prime) int {
 	var sum int
 
 	// Do every pair of primes
@@ -34,7 +34,7 @@ func (p *problem501) ThreeDistinctPrimeCount(n int, primes *generator.Generator[
 		pRem := n / primes.Nth(pi)
 		for qi := pi + 1; primes.Nth(qi)*primes.Nth(qi+1) <= pRem; qi++ {
 			pqRem := pRem / primes.Nth(qi)
-			primeCnt := generator.PrimePi(pqRem, primes)
+			primeCnt := primes.PrimePi(pqRem)
 			// Only count numbers greater than qi
 			sum += maths.Max(0, primeCnt-qi-1)
 		}
@@ -44,7 +44,7 @@ func (p *problem501) ThreeDistinctPrimeCount(n int, primes *generator.Generator[
 }
 
 // a^7
-func (p *problem501) SeventhExpCount(n int, primes *generator.Generator[int]) int {
+func (p *problem501) SeventhExpCount(n int, primes *generator.Prime) int {
 	var sum int
 	for g, p := primes.Start(0); maths.Pow(p, 7) <= n; p = g.Next() {
 		sum++
@@ -54,7 +54,7 @@ func (p *problem501) SeventhExpCount(n int, primes *generator.Generator[int]) in
 
 func P501() *problem {
 	return intInputNode(501, func(o command.Output, n int) {
-		primes := generator.FinalPrimes(maths.Sqrt(n))
+		primes := generator.BatchedSievedPrimes(maths.Sqrt(n))
 		p := &problem501{}
 		o.Stdoutln(p.SingleAndCubePrimeCount(n, primes), +p.ThreeDistinctPrimeCount(n, primes)+p.SeventhExpCount(n, primes))
 	}, []*execution{

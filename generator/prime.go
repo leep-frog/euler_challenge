@@ -1,7 +1,6 @@
 package generator
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/leep-frog/euler_challenge/maths"
@@ -13,7 +12,6 @@ var (
 	cachedFactorCounts    = map[int]int{}
 	coprimeCache          = map[int]map[int]bool{}
 	cachedResilienceCount = map[int]int{}
-	//primeGenerator        = &Prime{newIntGen(&primer{})}
 )
 
 func clearCaches() {
@@ -30,130 +28,11 @@ type Prime struct {
 	*Generator[int]
 }
 
-func Primes() *Prime {
-	return &Prime{newIntGen(&primer{})}
-	//return &Prime{newIntGen(&primer{})}
-	// Prettry sure we can use the same instance like below. Just verify
-	// test speed doesn't change (or if it does, that it gets better).
-	//return primeGenerator
-}
-
-func BetterPrimes() *Generator[int] {
-	return newIntGen(&betterPrimer{})
-}
-
-func PrimesUpTo(k int) *Generator[int] {
-	return newIntGen(&bestPrimer{nil, -1, k})
-}
-
-// Pair of prime and current multiple
-type primePair struct {
-	prime int
-	val   int
-}
-
-func (pp *primePair) String() string {
-	return fmt.Sprintf("(%d, %d)", pp.prime, pp.val)
-}
-
-type betterPrimer struct {
-	heap *maths.Heap[*primePair]
-	// slice containing
-	rem []int
-	idx int
-}
-
-func (bp *betterPrimer) Next(g *Generator[int]) int {
-	if len(g.values) == 0 {
-		return 2
-	}
-	if len(g.values) == 1 {
-		bp.heap = maths.NewHeap(func(pp1, pp2 *primePair) bool {
-			return pp1.val < pp2.val
-		})
-		bp.heap.Push(&primePair{3, 9})
-		bp.idx = 5
-		return 3
-	}
-
-	for ; ; bp.idx += 2 {
-
-		valid := true
-		pp := bp.heap.Pop()
-		for ; pp.val <= bp.idx; pp = bp.heap.Pop() {
-			valid = valid && (pp.val != bp.idx)
-			pp.val += pp.prime
-			bp.heap.Push(pp)
-		}
-		// The last one just needs to be pushed unchanged
-		bp.heap.Push(pp)
-
-		if valid {
-			i := bp.idx
-			bp.idx += 2
-			bp.heap.Push(&primePair{i, 2 * i})
-			return i
-		}
-	}
-	/*for ; ; bp.idx += 2 {
-		pp := bp.heap.Peek()
-
-		// bp.idx is prime, in which case add the other thing back on the stack
-		if pp.val != bp.idx {
-			i := bp.idx
-			bp.idx += 2
-			return i
-		}
-
-		for ; pp.val
-		// bp.idx is not prime, so increment its value
-		pp.val += pp.prime
-		bp.heap.Push(pp)
-	}*/
-}
-
-type bestPrimer struct {
-	values []bool
-	idx    int
-	size   int
-}
-
-func (bp *bestPrimer) Next(g *Generator[int]) int {
-	if len(g.values) == 0 {
-		return 2
-	}
-	if len(g.values) == 1 {
-		// TODO: change size to half
-		bp.values = make([]bool, bp.size, bp.size)
-		for i := 3; i < len(bp.values); i += 3 {
-			bp.values[i] = true
-		}
-		bp.values = bp.values[5:]
-		bp.idx = 5
-		return 3
-	}
-
-	offset := 0
-	for ; offset < len(bp.values) && bp.values[offset]; offset += 2 {
-	}
-	if offset+2 > len(bp.values) {
-		panic(fmt.Sprintf("above maximum for prime generator; nth=%d, prime=%d", len(g.values), g.Last()))
-	}
-
-	prime := offset + bp.idx
-	for i := offset; i < len(bp.values); i += prime {
-		bp.values[i] = true
-	}
-	bp.idx += offset + 2
-	bp.values = bp.values[offset+2:]
-	return prime
-}
-
 var (
 	rppCache = map[string]int{}
 )
 
-func recPrimePi(rem, minIdx, maxV, sign int, g *Generator[int], start int) int {
+func (p *Prime) recPrimePi(rem, minIdx, maxV, sign int, start int) int {
 	if rem <= 0 {
 		return 0
 	}
@@ -167,11 +46,11 @@ func recPrimePi(rem, minIdx, maxV, sign int, g *Generator[int], start int) int {
 		sum += recPrimePi(rem/prime, iter.Idx+1, -sign, g)
 	}*/
 	for i := minIdx; ; i++ {
-		prime := g.Nth(i)
+		prime := p.Nth(i)
 		if prime > rem || prime > maxV {
 			break
 		}
-		sum += recPrimePi(rem/prime, i+1, maxV, -sign, g, start+1)
+		sum += p.recPrimePi(rem/prime, i+1, maxV, -sign, start+1)
 	}
 
 	// rppCache[code] = sum * sign
@@ -190,42 +69,17 @@ var (
 	primePiCache = map[int]int{}
 )
 
-func PrimePi(x int, primes *Generator[int]) int {
+func (p *Prime) PrimePi(x int) int {
 	if v, ok := primePiCache[x]; ok {
 		return v
 	}
 	if x <= 1 {
 		return brutePrimePi(x)
 	}
-	summation := recPrimePi(x, 0, maths.Sqrt(x), 1, primes, 0)
-	r := summation + PrimePi(maths.Sqrt(x), primes) - 1
+	summation := p.recPrimePi(x, 0, maths.Sqrt(x), 1, 0)
+	r := summation + p.PrimePi(maths.Sqrt(x)) - 1
 	primePiCache[x] = r
 	return r
-}
-
-// TODO: Cached primer
-
-type primer struct{}
-
-func (p *primer) Next(g *Generator[int]) int {
-	if len(g.values) == 0 {
-		return 2
-	}
-	for i := g.Last() + 1; ; i++ {
-		newPrime := true
-		for _, p := range g.Values() {
-			if p*p > i {
-				break
-			}
-			if i%p == 0 {
-				newPrime = false
-				break
-			}
-		}
-		if newPrime {
-			return i
-		}
-	}
 }
 
 func BigPrimes() *Generator[*maths.Int] {

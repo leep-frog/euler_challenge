@@ -198,17 +198,22 @@ func TestGenerators(t *testing.T) {
 		},
 		{
 			name: "Generates best primes",
-			g:    PrimesUpTo(thousandPrimes[len(thousandPrimes)-1] + 2),
+			g:    SievedPrimes(thousandPrimes[len(thousandPrimes)-1] + 2),
 			want: thousandPrimes,
 		},
 		{
 			name: "Generates best primes",
-			g:    FinalPrimes(2),
+			g:    BatchedSievedPrimes(2),
 			want: thousandPrimes,
 		},
 		{
 			name: "Generates best primes",
-			g:    FinalPrimes(10),
+			g:    BatchedSievedPrimes(10),
+			want: thousandPrimes,
+		},
+		{
+			name: "Generates best primes",
+			g:    BatchedSievedPrimes(11),
 			want: thousandPrimes,
 		},
 		{

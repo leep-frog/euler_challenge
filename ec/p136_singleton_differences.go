@@ -24,7 +24,7 @@ func brute136(n int) int {
 	return count
 }
 
-// After going through brute, noticed that valid n's are one of the following:
+// After going through brute and hints from forum, noticed that valid n's are one of the following:
 // (1) n=4*p with p odd prime or p=1.
 // (2) n=4*4*p with p odd prime or p=1.
 // or (3) n=p with p prime and p+1 mod 4 = 0.
