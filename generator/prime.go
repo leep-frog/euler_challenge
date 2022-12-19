@@ -149,69 +149,6 @@ func (bp *bestPrimer) Next(g *Generator[int]) int {
 	return prime
 }
 
-func FinalPrimes(k int) *Generator[int] {
-	return newIntGen(&finalPrimer{
-		make([][]*finalPair, k, k),
-		nil,
-		0,
-		3,
-	})
-}
-
-type finalPair struct {
-	prime int
-	val   int
-}
-
-type finalPrimer struct {
-	values    [][]*finalPair
-	leftovers []*finalPair
-	idx       int
-	offset    int
-}
-
-func (fp *finalPrimer) insert(pair *finalPair) {
-	index := (pair.val - fp.offset) / 2
-	if index >= len(fp.values) {
-		fp.leftovers = append(fp.leftovers, pair)
-	} else {
-		fp.values[index] = append(fp.values[index], pair)
-	}
-	// TODO: fp.offset should always be odd
-}
-
-func (fp *finalPrimer) update() {
-	fp.offset += 2 * len(fp.values)
-	fp.idx = 0
-	for _, leftover := range fp.leftovers {
-		fp.insert(leftover)
-	}
-	fp.leftovers = nil
-}
-
-// Returns a number and whether the number is prime
-func (fp *finalPrimer) check() (int, bool) {
-	isPrime := len(fp.values[fp.idx]) == 0
-	value := fp.offset + 2*fp.idx
-
-	for _, pair := range fp.values[fp.idx] {
-		pair.val += 2 * pair.prime
-		fp.insert(pair)
-	}
-	fp.values[fp.idx] = nil
-
-	fp.idx++
-	if fp.idx >= len(fp.values) {
-		fp.update()
-	}
-
-	if isPrime {
-		fp.insert(&finalPair{value, 3 * value})
-	}
-
-	return value, isPrime
-}
-
 var (
 	rppCache = map[string]int{}
 )
@@ -230,9 +167,6 @@ func recPrimePi(rem, minIdx, maxV, sign int, g *Generator[int], start int) int {
 		sum += recPrimePi(rem/prime, iter.Idx+1, -sign, g)
 	}*/
 	for i := minIdx; ; i++ {
-		/*if start == 0 {
-			fmt.Println("IDX", i, g.Nth(i))
-		}*/
 		prime := g.Nth(i)
 		if prime > rem || prime > maxV {
 			break
@@ -260,7 +194,6 @@ func PrimePi(x int, primes *Generator[int]) int {
 	if v, ok := primePiCache[x]; ok {
 		return v
 	}
-	// fmt.Println("PI", x)
 	if x <= 1 {
 		return brutePrimePi(x)
 	}
@@ -268,20 +201,6 @@ func PrimePi(x int, primes *Generator[int]) int {
 	r := summation + PrimePi(maths.Sqrt(x), primes) - 1
 	primePiCache[x] = r
 	return r
-}
-
-func (fp *finalPrimer) Next(g *Generator[int]) int {
-	if len(g.values) == 0 {
-		return 2
-	}
-
-	for {
-		v, ok := fp.check()
-		for ; !ok; v, ok = fp.check() {
-		}
-
-		return v
-	}
 }
 
 // TODO: Cached primer
