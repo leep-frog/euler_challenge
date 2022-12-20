@@ -28,7 +28,7 @@ func Aliasers() sourcerer.Option {
 
 var (
 	expArg     = command.ListArg[string]("EXPRESSION", "Expression to evaluate", 1, command.UnboundedList)
-	operations = regexp.MustCompile(`([\*\^\+/\(\)])`)
+	operations = regexp.MustCompile(`([\*\^\+/\(\)\%])`)
 	minusRegex = regexp.MustCompile(`(\-)([^0-9])`)
 	whitespace = regexp.MustCompile(`\s+`)
 )

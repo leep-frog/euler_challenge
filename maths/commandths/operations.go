@@ -76,7 +76,7 @@ func (*Exponent[T]) PemdasPriority() pemdasPriority { return exponentPriority }
 
 type Modulo[T Operable] struct{}
 
-func (*Modulo[T]) Symbols() []string              { return []string{"%"} }
+func (*Modulo[T]) Symbols() []string              { return []string{"%", "o"} }
 func (*Modulo[T]) Evaluate(a, b T) T              { return a % b }
 func (*Modulo[T]) PemdasPriority() pemdasPriority { return moduloPriority }
 

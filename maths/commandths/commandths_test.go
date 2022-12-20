@@ -32,10 +32,38 @@ func TestExecute(t *testing.T) {
 			},
 		},
 		{
+			name: "Adds two numbers",
+			etc: &command.ExecuteTestCase{
+				Args:       []string{"13+23"},
+				WantStdout: "36",
+			},
+		},
+		{
+			name: "Adds two numbers with letter code",
+			etc: &command.ExecuteTestCase{
+				Args:       []string{"78 p 35"},
+				WantStdout: "113",
+			},
+		},
+		{
 			name: "Subtracts two numbers",
 			etc: &command.ExecuteTestCase{
 				Args:       []string{"17 - 19"},
 				WantStdout: "-2",
+			},
+		},
+		/*{
+			name: "Subtracts two numbers with no spaces",
+			etc: &command.ExecuteTestCase{
+				Args:       []string{"17 - 19"},
+				WantStdout: "-2",
+			},
+		},*/
+		{
+			name: "Subtracts two numbers with letter code",
+			etc: &command.ExecuteTestCase{
+				Args:       []string{"486 - 168"},
+				WantStdout: "318",
 			},
 		},
 		{
@@ -46,6 +74,62 @@ func TestExecute(t *testing.T) {
 			},
 		},
 		{
+			name: "Multiplies two numbers with no spaces",
+			etc: &command.ExecuteTestCase{
+				Args:       []string{"-17*-19"},
+				WantStdout: "323",
+			},
+		},
+		{
+			name: "Multiplies two numbers with letter code",
+			etc: &command.ExecuteTestCase{
+				Args:       []string{"13 t 10"},
+				WantStdout: "130",
+			},
+		},
+		{
+			name: "Divides two numbers",
+			etc: &command.ExecuteTestCase{
+				Args:       []string{"17 / 5"},
+				WantStdout: "3",
+			},
+		},
+		{
+			name: "Divides two numbers with no spaces",
+			etc: &command.ExecuteTestCase{
+				Args:       []string{"-17/3"},
+				WantStdout: "-5",
+			},
+		},
+		{
+			name: "Divides two numbers with letter code",
+			etc: &command.ExecuteTestCase{
+				Args:       []string{"-17 d -3"},
+				WantStdout: "5",
+			},
+		},
+		{
+			name: "Modulos two numbers",
+			etc: &command.ExecuteTestCase{
+				Args:       []string{"17 % 3"},
+				WantStdout: "2",
+			},
+		},
+		{
+			name: "Modulos two numbers with no spaces",
+			etc: &command.ExecuteTestCase{
+				Args:       []string{"17%3"},
+				WantStdout: "2",
+			},
+		},
+		{
+			name: "Modulos two numbers with letter code",
+			etc: &command.ExecuteTestCase{
+				Args:       []string{"17 o 3"},
+				WantStdout: "2",
+			},
+		},
+		{
 			name: "Exponentiates two numbers",
 			etc: &command.ExecuteTestCase{
 				Args:       []string{"17 ^ 3"},
@@ -53,7 +137,14 @@ func TestExecute(t *testing.T) {
 			},
 		},
 		{
-			name: "Exponentiates negative odd times",
+			name: "Exponentiates two numbers with no spaces",
+			etc: &command.ExecuteTestCase{
+				Args:       []string{"3^17"},
+				WantStdout: "129140163",
+			},
+		},
+		{
+			name: "Exponentiates negative even times",
 			etc: &command.ExecuteTestCase{
 				Args:       []string{"-17 ^ 4"},
 				WantStdout: "83521",
