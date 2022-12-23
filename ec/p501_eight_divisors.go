@@ -54,7 +54,7 @@ func (p *problem501) SeventhExpCount(n int, primes *generator.Prime) int {
 
 func P501() *problem {
 	return intInputNode(501, func(o command.Output, n int) {
-		primes := generator.BatchedSievedPrimes(maths.Sqrt(n))
+		primes := generator.BatchedSievedPrimes()
 		p := &problem501{}
 		o.Stdoutln(p.SingleAndCubePrimeCount(n, primes), +p.ThreeDistinctPrimeCount(n, primes)+p.SeventhExpCount(n, primes))
 	}, []*execution{
