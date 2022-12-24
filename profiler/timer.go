@@ -27,7 +27,10 @@ func (t *Timer) Start() {
 			select {
 			case <-tr.C:
 				d := time.Now().Sub(t.start)
-				fmt.Printf("%dm:%02ds\r", int(d.Minutes()), int(d.Seconds())%60)
+				// Issues lies in the test package.
+				// It captures output and does something with it.
+				fmt.Printf("%dm:%02dxx\bs", int(d.Minutes()), int(d.Seconds())%60)
+				// fmt.Printf("\b\bS")
 				tr.Reset(time.Second)
 			case <-t.c:
 				goto END_TIMER
