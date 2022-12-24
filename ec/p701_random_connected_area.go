@@ -8,286 +8,41 @@ import (
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/maths"
-	"github.com/leep-frog/euler_challenge/unionfind"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 )
 
-type connectedArea struct {
-	id   int
-	size int
-}
-
-func (ca *connectedArea) String() string {
-	return fmt.Sprintf("(%d,%d)", ca.id, ca.size)
-}
-
-func (ca *connectedArea) Copy() *connectedArea {
-	return &connectedArea{ca.id, ca.size}
-}
-
-type connectedAreaRow struct {
-	squares []*connectedArea
-	maxSize int
-	count   int
-}
-
-func (car *connectedAreaRow) String() string {
-	return fmt.Sprintf("%d %v", car.maxSize, car.squares)
-}
-
-func (car *connectedAreaRow) combine(row []*connectedArea) *connectedAreaRow {
-	// TODO: copy row
-	row = maths.CopySlice(row)
-	added := map[int]bool{}
-	for i, v := range row {
-		if v == nil {
-			continue
-		}
-		if added[v.id] {
-			row[i] = row[i-1]
-		} else {
-			added[v.id] = true
-			row[i] = v.Copy()
-		}
-	}
-
-	// Calculate all the ones that should be connected
-	topDownMap := map[int]map[int]bool{}
-	for i, ca := range car.squares {
-		if row[i] != nil {
-			if topDownMap[ca.id] == nil {
-				topDownMap[ca.id] = map[int]bool{}
-			}
-			topDownMap[ca.id][row[i].id] = true
-		}
-	}
-
-	// Create a union find of groups
-	uf := unionfind.New()
-	for _, group := range topDownMap {
-		for g := range group {
-			for g2 := range group {
-				uf.Merge(g, g2)
-			}
-		}
-	}
-
-	// Map from ID to connectedArea
-	caMap := map[int]*connectedArea{}
-	for _, ca := range row {
-		caMap[ca.id] = ca
-	}
-
-	// Map from ca.id, to what the id should be
-	updateMap := map[int]int{}
-	for _, set := range uf.Sets() {
-		for a := range set {
-			for b := range set {
-				updateMap[a] = maths.Min(updateMap[a], -b)
-			}
-		}
-	}
-	for _, k := range maps.Keys(updateMap) {
-		updateMap[k] = -updateMap[k]
-	}
-
-	// Update each connectedArea to point to the connectedArea in the same group
-	for i, ca := range row {
-		if ca == nil {
-			continue
-		}
-		row[i] = caMap[updateMap[ca.id]]
-	}
-
-	checked := map[int]bool{}
-	max := car.maxSize
-	for i, ca := range row {
-		if ca == nil || car.squares[i] == nil || checked[car.squares[i].id] {
-			continue
-		}
-		checked[car.squares[i].id] = true
-
-		ca.size += car.squares[i].size
-		max = maths.Max(max, ca.size)
-	}
-
-	return &connectedAreaRow{
-		squares: row,
-		maxSize: max,
-		count:   car.count,
-	}
-
-	/*map1 := map[int][]*connectedArea{}
-	map2 := map[int][]*connectedArea{}
-
-	for i, ca := range row {
-
-		if ca == nil || car.squares[i] == nil {
-			continue
-		}
-
-		map1[ca.id] = append(map1[ca.id], car.squares[i])
-		map2[car.squares[i].id] = append(map2[car.squares[i].id], ca)
-	}
-
-	// First, see which new rows should be combined
-	for id, connected := range map2 {
-
-	}
-
-	// See if rows should be combined
-	idChecked := map[int]bool{}
-	for _, ca := range row {
-		if idChecked[ca.id] {
-			continue
-		}
-		idChecked[ca.id] = true
-
-		for _, connected := range map1[ca.id] {
-			ca.size += connected.size
-		}
-	}*/
-
-	// var newSquares []*connectedArea
-	// var maxArea int
-	// startID := len(car.squares)
-	// combined := map[int][]int{}
-	// for i, ca := range row {
-	// 	if ca == nil {
-	// 		newSquares = append(newSquares, nil)
-	// 		continue
-	// 	}
-
-	// 	leftFilled := i > 0 && row[i-1] != nil
-	// 	var left *connectedArea
-	// 	if leftFilled {
-	// 		left = newSquares[i-1]
-	// 	}
-	// 	upFilled := car.squares[i] != nil
-	// 	up := car.squares[i]
-
-	// 	// Now create new cell depending on which neighbors are filled
-	// 	if leftFilled && upFilled {
-	// 		if left.id == up.id {
-	// 			newSquares = append(newSquares, left)
-	// 		} else {
-
-	// 		}
-	// 	} else if leftFilled && !upFilled {
-	// 		newSquares = append(newSquares, left)
-	// 	} else if !leftFilled && upFilled {
-
-	// 	} else { // !leftFilled && !upFilled
-	// 		newSquares = append(newSquares, &connectedArea{startID, 1})
-	// 		startID++
-	// 	}
-
-	// }
-
-	// return &connectedAreaRow{newSquares, maxArea, car.count}
-}
-
-var (
-	cache = map[string]int{}
-)
-
-func uniqueRows(n int) [][]bool {
-	return maths.GenerateCombos(&maths.Combinatorics[bool]{
-		Parts:            []bool{true, false},
-		MinLength:        n,
-		MaxLength:        n,
-		AllowReplacement: true,
-		OrderMatters:     true,
-	})
-}
-
-/*func rec701(n, rem, count, maxArea int, rows map[string][]*connectedArea) int {
-	if rem == 0 {
-		return count * maxArea
-	}
-
-	var nextRows [][]*connectedArea
-
-	for _, boolRow := range uniqueRows(n) {
-
-	}
-
-	return rec701(n, rem-1, count, maxArea, nextRow)
-}*/
-
 func P701() *problem {
 	return intInputNode(701, func(o command.Output, n int) {
 
-		// For each unique row
-		/*for _, boolRow := range uniqueRows(n) {
-			// Convert to row of connectedAreas
-			var row []*connectedArea
-			id := 1
-			for i, filled := range boolRow {
-				if !filled {
-					row = append(row, nil)
-					continue
-				}
-
-				if i > 0 && boolRow[i-1] {
-					row[i-1].size++
-					row = append(row, row[i-1])
-				} else {
-					row = append(row, &connectedArea{id, 1})
-					id++
-				}
-			}
-			fmt.Println(boolRow, row)
-		}*/
-		// o.Stdoutln(len(uniqueRows))
-
-		/*things := []*p701ctx{
-			{n, 3, []int{1, 2}, map[int]int{1: 1, 2: 1}, 1, 2},
-		}
-
-		for _, t := range things {
-			fmt.Println("+++++++++++++++++++")
-			fmt.Println(t.draw())
-			fmt.Println("-------------------")
-			fmt.Println(t.next(true).draw())
-			fmt.Println("-------------------")
-			fmt.Println(t.next(false).draw())
-			fmt.Println("-------------------")
-			fmt.Println(t.draw())
-		}
-
-		return*/
-
-		/*states := map[string]*p701ctx{}
-		start := &p701ctx{n, 0, make([]int, n, n), map[int]int{}, 0, 1}
-		states[start.String()] = start*/
 		states := []*p701ctx{
 			{n, 0, make([]int, n, n), map[int]int{}, 0, 1, ""},
 		}
+
+		sc := make([][]map[string][]int, n*n, n*n)
+		for i := range sc {
+			for j := 0; j < n*n; j++ {
+				sc[i] = append(sc[i], map[string][]int{})
+			}
+		}
+
+		var sci stateCache701 = sc
+		fmt.Println("START")
+		v := rec701(states[0], &sci)
+		o.Stdoutln(float64(v[1]) / float64(v[0]))
+		return
 		var nextStates []*p701ctx
 
 		for i := 0; i < n*n; i++ {
 			fmt.Println("I", i, len(states))
-			// nextStates := map[string]*p701ctx{}
 
 			fmt.Println("Generating", time.Now())
 			for _, state := range states {
 				nextStates = append(nextStates, state.next(true), state.next(false))
-				// for _, filled := range []bool{true, false} {
-				// 	empty := state.next(filled)
-				// 	emptyCode := empty.String()
-				// 	if nextStates[emptyCode] == nil {
-				// 		nextStates[emptyCode] = empty
-				// 	} else {
-				// 		nextStates[emptyCode].count += empty.count
-				// 	}
-				// }
 			}
 
 			fmt.Println("Sorting", len(nextStates), time.Now())
 			slices.SortFunc(nextStates, func(this, that *p701ctx) bool {
-				//return this.String() < that.String()
 				return this.cmp(that) < 0
 			})
 
@@ -320,6 +75,64 @@ func P701() *problem {
 	})
 }
 
+/**************/
+// map from index to max area size to string(squares + setSizes) to (multiplier, areaSum, count)
+type stateCache701 [][]map[string][]int
+
+func (sc *stateCache701) put(state *p701ctx, count, areaSum int) {
+	m := (*sc)[state.index][state.maxArea]
+	code := state.code2()
+	m[code] = []int{count, areaSum}
+}
+
+func (sc *stateCache701) check(state *p701ctx) ([]int, bool) {
+	m := (*sc)[state.index][state.maxArea]
+	code := state.code2()
+	if v, ok := m[code]; ok {
+		return v, true
+	}
+	return nil, false
+}
+
+func (ctx *p701ctx) code2() string {
+	if ctx.strRep == "" {
+		keys := maps.Keys(ctx.setSizes)
+		slices.Sort(keys)
+
+		var kvs []string
+		for _, k := range keys {
+			kvs = append(kvs, fmt.Sprintf("%d:%d", k, ctx.setSizes[k]))
+		}
+		ctx.strRep = fmt.Sprintf("%v %s", ctx.squares, strings.Join(kvs, " "))
+		// ctx.strRep = fmt.Sprintf("[Index:%d Squares:%v SetSizes:{%v} MaxArea:%d]", ctx.index, ctx.squares, strings.Join(kvs, ", "), ctx.maxArea)
+	}
+	return ctx.strRep
+}
+
+// Return the areaSum and number of squares
+func rec701(state *p701ctx, sc *stateCache701) []int {
+	if state.index == state.size*state.size {
+		return []int{1, state.maxArea}
+	}
+
+	if v, ok := sc.check(state); ok {
+		return v
+	}
+
+	v := rec701(state.next(false), sc)
+	u := rec701(state.next(true), sc)
+
+	r := []int{
+		v[0] + u[0],
+		v[1] + u[1],
+	}
+	sc.put(state, r[0], r[1])
+	return r
+}
+
+/*************/
+
+// TODO: Change to p701state
 type p701ctx struct {
 	size     int
 	index    int
@@ -360,10 +173,6 @@ func (ctx *p701ctx) copy() *p701ctx {
 	return &p701ctx{ctx.size, ctx.index, maths.CopySlice(ctx.squares), maths.CopyMap(ctx.setSizes), ctx.maxArea, ctx.count, ""}
 }
 
-// func (ctx *p701ctx) LT(that *p701ctx) bool {
-// 	return ctx.cmp(that) <
-// }
-
 func (ctx *p701ctx) cmp(that *p701ctx) int {
 	if ctx.maxArea != that.maxArea {
 		if ctx.maxArea < that.maxArea {
@@ -398,7 +207,7 @@ func (ctx *p701ctx) cmp(that *p701ctx) int {
 	return 0
 }
 
-func (ctx *p701ctx) String() string {
+/*func (ctx *p701ctx) String() string {
 	if ctx.strRep == "" {
 		keys := maps.Keys(ctx.setSizes)
 		slices.Sort(keys)
@@ -410,7 +219,7 @@ func (ctx *p701ctx) String() string {
 		ctx.strRep = fmt.Sprintf("[Index:%d Squares:%v SetSizes:{%v} MaxArea:%d]", ctx.index, ctx.squares, strings.Join(kvs, ", "), ctx.maxArea)
 	}
 	return ctx.strRep
-}
+}*/
 
 func (ctx *p701ctx) readjust() {
 	// Now simplify the ordering

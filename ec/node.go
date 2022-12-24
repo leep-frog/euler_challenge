@@ -13,6 +13,7 @@ import (
 
 func getProblems() []*problem {
 	return []*problem{
+		// TODO: Separate packages for each of these (for better scoping)
 		P1(),
 		P2(),
 		P3(),
