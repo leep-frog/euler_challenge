@@ -9,6 +9,7 @@ import (
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/maths"
+	"github.com/leep-frog/euler_challenge/profiler"
 )
 
 var (
@@ -20,7 +21,7 @@ var (
 	testFilter = func(cct *codingChallengeTest) bool {
 		toCheck := []int{
 			// Test numbers to check
-			601,
+			701,
 		}
 		set := maths.NewSimpleSet(toCheck...)
 		return true && (len(toCheck) == 0 || set[cct.num])
@@ -74,7 +75,10 @@ func TestAll(t *testing.T) {
 	t.Logf("Test estimate: %dm:%ds", minEst, secEst)
 
 	for _, test := range tests {
+		tmr := profiler.NewTimer()
+		tmr.Start()
 		test.test(t)
+		tmr.End()
 	}
 	sort.SliceStable(tests, func(i, j int) bool {
 		return tests[i].elapsed > tests[j].elapsed

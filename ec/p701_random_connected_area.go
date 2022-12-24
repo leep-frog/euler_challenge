@@ -10,10 +10,11 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+// Solution uses DP (dynamic programming) by adding one cell at a time.
 func P701() *problem {
 	return intInputNode(701, func(o command.Output, n int) {
 
-		initState := &p701state{n, 0, make([]int, n, n), map[int]int{}, 0, ""}
+		initState := &p701state{n, 0, make([]int, n, n), map[int]int{}, 0}
 
 		sc := make([][]map[string][]int, n*n, n*n)
 		for i := range sc {
@@ -23,23 +24,31 @@ func P701() *problem {
 		}
 
 		var sci stateCache701 = sc
-		fmt.Println("START")
 		v := rec701(initState, &sci)
 		o.Stdoutf("%.9f\n", float64(v[1])/float64(v[0]))
 	}, []*execution{
 		{
-			args: []string{"6"},
-			want: "10.742542512147338",
+			args: []string{"2"},
+			want: "1.875000000",
 		},
 		{
-			args: []string{"7"},
-			want: "13.510998363327158",
+			args: []string{"4"},
+			want: "5.764877319",
+		},
+		{
+			args:     []string{"6"},
+			want:     "10.742542512",
+			estimate: 10,
+		},
+		{
+			args:     []string{"7"},
+			want:     "13.510998363",
+			estimate: 90,
 		},
 	})
 }
 
-/**************/
-// map from index to max area size to string(squares + setSizes) to (multiplier, areaSum, count)
+// stateCache701 is a map from index to max area size to string(squares + setSizes) to (areaSum, count of squares that produce that areaSum)
 type stateCache701 [][]map[string][]int
 
 // Have code as an input, so we compute it only once
@@ -55,18 +64,7 @@ func (sc *stateCache701) check(state *p701state, code string) ([]int, bool) {
 	return nil, false
 }
 
-func (state *p701state) code() string {
-	keys := maps.Keys(state.setSizes)
-	slices.Sort(keys)
-
-	var kvs []string
-	for _, k := range keys {
-		kvs = append(kvs, fmt.Sprintf("%d:%d", k, state.setSizes[k]))
-	}
-	return fmt.Sprintf("%v %s", state.squares, strings.Join(kvs, " "))
-}
-
-// Return the areaSum and number of squares
+// Return the areaSum and number of squares that produce that areaSum
 func rec701(state *p701state, sc *stateCache701) []int {
 	if state.index == state.size*state.size {
 		return []int{1, state.maxArea}
@@ -88,22 +86,39 @@ func rec701(state *p701state, sc *stateCache701) []int {
 	return r
 }
 
-/*************/
-
-// TODO: Change to p701state
 type p701state struct {
-	size     int
-	index    int
-	squares  []int
+	// size == n
+	size int
+	// index is number of cells that are populated (aka cell index we are populating next)
+	// row = (index / size), col = (index % size)
+	index int
+	// squares is the bottom cell of each column. Keep this as a slice for performance
+	squares []int
+	// setSizes is the size of each set
 	setSizes map[int]int
-	maxArea  int
-	strRep   string
+	// maxArea is the current maximum area
+	maxArea int
+}
+
+// Produce a string code from squares and setSizes (sinces the cache type above indexes on index and area size already)
+func (state *p701state) code() string {
+	keys := maps.Keys(state.setSizes)
+	slices.Sort(keys)
+
+	var kvs []string
+	for _, k := range keys {
+		kvs = append(kvs, fmt.Sprintf("%d:%d", k, state.setSizes[k]))
+	}
+	return fmt.Sprintf("%v %s", state.squares, strings.Join(kvs, " "))
 }
 
 func (state *p701state) copy() *p701state {
-	return &p701state{state.size, state.index, maths.CopySlice(state.squares), maths.CopyMap(state.setSizes), state.maxArea, ""}
+	return &p701state{state.size, state.index, maths.CopySlice(state.squares), maths.CopyMap(state.setSizes), state.maxArea}
 }
 
+// We need our DP state to be consistent. Specifically, we should number
+// filled in groups in order of appearance. This function updates
+// the squares and setSizes to account for that
 func (state *p701state) readjust() {
 	// Now simplify the ordering
 	numberMap := map[int]int{}
@@ -136,14 +151,18 @@ func (state *p701state) next(filled bool) *p701state {
 	mod := cp.index % cp.size
 
 	if !filled {
+		// Creating an empty cell
 		cp.squares[mod] = 0
 		cp.readjust()
 		cp.index++
 		return cp
 	}
 
+	// Adding a filled-in cell. We need to check if we need to
+	// - add to existing group (up xor left)
+	// - combine existing groups (up and left)
+	// - create new group (!up and !left)
 	var left, up int
-
 	upFilled := cp.index >= cp.size && cp.squares[mod] != 0
 	if upFilled {
 		up = cp.squares[mod]
