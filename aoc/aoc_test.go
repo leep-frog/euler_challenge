@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/leep-frog/command"
@@ -25,7 +26,7 @@ func TestYears(t *testing.T) {
 				command.ExecuteTest(t, &command.ExecuteTestCase{
 					Node:       node(),
 					Args:       args,
-					WantStdout: cse.ExpectedOutput + "\n",
+					WantStdout: strings.Join(cse.ExpectedOutput, "\n") + "\n",
 					WantData: &command.Data{Values: map[string]interface{}{
 						yearArg.Name():    year,
 						dayArg.Name():     dayNumber + 1,

@@ -69,12 +69,10 @@ func node() *command.Node {
 }
 
 func run(year *aoc.Year, day int, suffix string, o command.Output) {
-	fmt.Println("YYY", year.Number, day, suffix)
 	problem := year.Days[day-1]
 	lines := parse.ReadFileLines(filepath.Join(aoc.YearInputDir(year.Number), aoc.InputFile(day, suffix)))
 
-	problem.Solve1(slices.Clone(lines), o)
-	problem.Solve2(lines, o)
+	problem.Solve(slices.Clone(lines), o)
 }
 
 var (
@@ -102,21 +100,24 @@ func generateDay(yearDir, yearInputDir string, year, day int, ed *command.Execut
 		"",
 		"type day%02d struct {}",
 		"",
-		"func (d *day%02d) Solve1(lines []string, o command.Output) {",
-		"}",
-		"",
-		"func (d *day%02d) Solve2(lines []string, o command.Output) {",
+		"func (d *day%02d) Solve(lines []string, o command.Output) {",
 		"}",
 		"",
 		"func (d *day%02d) Cases() []*aoc.Case {",
 		"\treturn []*aoc.Case{",
-		"\t\t{",
-		"\t\t\tExpectedOutput: \"\",",
-		"\t\t},",
-		"\t\t{",
 		"\t\t\tFileSuffix: \"example\",",
-		"\t\t\tExpectedOutput: \"\",",
+		"\t\t\tExpectedOutput: []string{",
+		"\t\t\t\"\"",
+		"\t\t\t\"\"",
+		"\t\t\t},",
 		"\t\t},",
+		"\t\t{",
+		"\t\t\tExpectedOutput: []string{",
+		"\t\t\t\"\"",
+		"\t\t\t\"\"",
+		"\t\t\t},",
+		"\t\t},",
+		"\t\t{",
 		"\t}",
 		"}",
 		"",

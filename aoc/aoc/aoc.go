@@ -14,12 +14,11 @@ type Year struct {
 
 type Case struct {
 	FileSuffix     string
-	ExpectedOutput string
+	ExpectedOutput []string
 }
 
 type Day interface {
-	Solve1([]string, command.Output)
-	Solve2([]string, command.Output)
+	Solve([]string, command.Output)
 	Cases() []*Case
 }
 
