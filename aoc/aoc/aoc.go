@@ -5,8 +5,6 @@ import (
 	"path/filepath"
 
 	"github.com/leep-frog/command"
-	"github.com/leep-frog/euler_challenge/parse"
-	"golang.org/x/exp/slices"
 )
 
 type Year struct {
@@ -46,12 +44,4 @@ func YearDir(year int) string {
 
 func YearInputDir(year int) string {
 	return filepath.Join(YearDir(year), InputDir)
-}
-
-func Run(year *Year, day int, suffix string, o command.Output) {
-	lines := parse.ReadFileLines(filepath.Join(YearInputDir(year.Number), InputFile(day, suffix)))
-
-	problem := year.Days[day-1]
-	problem.Solve1(slices.Clone(lines), o)
-	problem.Solve2(lines, o)
 }

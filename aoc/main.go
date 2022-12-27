@@ -9,6 +9,7 @@ import (
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
 	"github.com/leep-frog/euler_challenge/aoc/y2022"
 	"github.com/leep-frog/euler_challenge/parse"
+	"golang.org/x/exp/slices"
 )
 
 var (
@@ -34,6 +35,7 @@ func node() *command.Node {
 	return command.SerialNodes(
 		command.FlagNode(
 			exampleFlag,
+			suffixFlag,
 		),
 		yearArg,
 		dayArg,
@@ -60,10 +62,19 @@ func node() *command.Node {
 			}
 
 			// Otherwise, run the problem
-			aoc.Run(year, day, suffix, o)
+			run(year, day, suffix, o)
 			return nil
 		}, nil /* No logic for complete */),
 	)
+}
+
+func run(year *aoc.Year, day int, suffix string, o command.Output) {
+	fmt.Println("YYY", year.Number, day, suffix)
+	problem := year.Days[day-1]
+	lines := parse.ReadFileLines(filepath.Join(aoc.YearInputDir(year.Number), aoc.InputFile(day, suffix)))
+
+	problem.Solve1(slices.Clone(lines), o)
+	problem.Solve2(lines, o)
 }
 
 var (

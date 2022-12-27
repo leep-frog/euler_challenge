@@ -17,7 +17,7 @@ func TestYears(t *testing.T) {
 		for dayNumber, day := range year.Days {
 			for _, cse := range day.Cases() {
 				args := []string{
-					fmt.Sprintf("%d", year),
+					fmt.Sprintf("%d", year.Number),
 					fmt.Sprintf("%d", dayNumber+1),
 					"--suffix",
 					cse.FileSuffix,
@@ -26,6 +26,11 @@ func TestYears(t *testing.T) {
 					Node:       node(),
 					Args:       args,
 					WantStdout: cse.ExpectedOutput + "\n",
+					WantData: &command.Data{Values: map[string]interface{}{
+						yearArg.Name():    year,
+						dayArg.Name():     dayNumber + 1,
+						suffixFlag.Name(): cse.FileSuffix,
+					}},
 				})
 			}
 		}
