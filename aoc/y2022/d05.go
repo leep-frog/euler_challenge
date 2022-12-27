@@ -68,14 +68,14 @@ func (d *day05) Cases() []*aoc.Case {
 		{
 			FileSuffix: "example",
 			ExpectedOutput: []string{
-				"",
-				"",
+				"CMZ",
+				"MCD",
 			},
 		},
 		{
 			ExpectedOutput: []string{
-				"",
-				"",
+				"ZWHVFWQWW",
+				"HZFZCCWWV",
 			},
 		},
 	}
