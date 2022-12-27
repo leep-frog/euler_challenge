@@ -3,6 +3,7 @@ package eulerchallenge
 import (
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 	"strings"
 
 	"github.com/leep-frog/command"
@@ -81,9 +82,9 @@ func FileGenerator() *command.Node {
 
 			// Write example files if file input
 			if fileInput {
-				parse.Touch(fmt.Sprintf("p%d.txt", num))
+				touch(fmt.Sprintf("p%d.txt", num))
 				if exampleFlag.Get(d) {
-					parse.Touch(fmt.Sprintf("p%d_example.txt", num))
+					touch(fmt.Sprintf("p%d_example.txt", num))
 				}
 			}
 
@@ -93,4 +94,16 @@ func FileGenerator() *command.Node {
 			}, nil
 		}),
 	)
+}
+
+func touch(f string) {
+	parse.Touch(filepath.Join("input", f))
+}
+
+func readFileInput(f string) string {
+	return parse.ReadFileInput(filepath.Join("input", f))
+}
+
+func readFileLines(f string) []string {
+	return parse.ReadFileLines(filepath.Join("input", f))
 }

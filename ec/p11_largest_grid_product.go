@@ -9,7 +9,7 @@ import (
 
 func P11() *problem {
 	return intInputNode(11, func(o command.Output, n int) {
-		ss := parse.ReadFileLines("p11.txt")
+		ss := readFileLines("p11.txt")
 		var is [][]int
 		for _, rowStr := range ss {
 			var row []int
