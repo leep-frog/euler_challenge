@@ -7,8 +7,10 @@ import (
 func Year() *aoc.Year {
 	return &aoc.Year{
 		Number: 2022,
-		Days:   []aoc.Day{
+		Days: []aoc.Day{
 			Day01(),
+			Day02(),
+			Day03(),
 			// END_OF_DAYS
 		},
 	}

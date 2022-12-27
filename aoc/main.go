@@ -9,7 +9,6 @@ import (
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
 	"github.com/leep-frog/euler_challenge/aoc/y2022"
 	"github.com/leep-frog/euler_challenge/parse"
-	"golang.org/x/exp/slices"
 )
 
 var (
@@ -72,7 +71,11 @@ func run(year *aoc.Year, day int, suffix string, o command.Output) {
 	problem := year.Days[day-1]
 	lines := parse.ReadFileLines(filepath.Join(aoc.YearInputDir(year.Number), aoc.InputFile(day, suffix)))
 
-	problem.Solve(slices.Clone(lines), o)
+	// Remove newlines at end
+	for len(lines) > 0 && lines[len(lines)-1] == "" {
+		lines = lines[:len(lines)-1]
+	}
+	problem.Solve(lines, o)
 }
 
 var (
@@ -98,30 +101,30 @@ func generateDay(yearDir, yearInputDir string, year, day int, ed *command.Execut
 		"\treturn &day%02d{}",
 		"}",
 		"",
-		"type day%02d struct {}",
+		"type day%02d struct{}",
 		"",
 		"func (d *day%02d) Solve(lines []string, o command.Output) {",
 		"}",
 		"",
 		"func (d *day%02d) Cases() []*aoc.Case {",
 		"\treturn []*aoc.Case{",
+		"\t\t{",
 		"\t\t\tFileSuffix: \"example\",",
 		"\t\t\tExpectedOutput: []string{",
-		"\t\t\t\"\"",
-		"\t\t\t\"\"",
+		"\t\t\t\t\"\",",
+		"\t\t\t\t\"\",",
 		"\t\t\t},",
 		"\t\t},",
 		"\t\t{",
 		"\t\t\tExpectedOutput: []string{",
-		"\t\t\t\"\"",
-		"\t\t\t\"\"",
+		"\t\t\t\t\"\",",
+		"\t\t\t\t\"\",",
 		"\t\t\t},",
 		"\t\t},",
-		"\t\t{",
 		"\t}",
 		"}",
 		"",
-	}, "\n"), year, day, day, day, day, day, day))
+	}, "\n"), year, day, day, day, day, day))
 
 	yearFile := parse.FullPath(yearDir, "year.go")
 	ed.Executable = append(ed.Executable,
