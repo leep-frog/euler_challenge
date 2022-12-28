@@ -111,14 +111,10 @@ func (d *day08) Solve(lines []string, o command.Output) {
 		visible = append(visible, vr)
 	}
 
-	// m := map[int]map[int]bool{}
 	d.visibleCount(grid, false, visible)
 	d.visibleCount(maths.SimpleTranspose(grid), true, visible)
 
 	var sum int
-	// for _, mm := range m {
-	// 	sum += len(mm)
-	// }
 	for _, row := range visible {
 		for _, c := range row {
 			if c != "_" {
@@ -134,9 +130,6 @@ func (d *day08) Solve(lines []string, o command.Output) {
 		}
 	}
 	o.Stdoutln(sum, best.Best())
-	// for _, r := range visible {
-	// 	fmt.Println(r)
-	// }
 }
 
 func (d *day08) Cases() []*aoc.Case {
