@@ -13,11 +13,17 @@ import (
 )
 
 func Atoi(s string) int {
-	i, err := strconv.Atoi(s)
+	i, err := strconv.Atoi(strings.TrimSpace(s))
 	if err != nil {
 		panic(fmt.Sprintf("failed to convert string to int: %v", err))
 	}
 	return i
+}
+
+func AtoiArray(s []string) []int {
+	return Map(s, func(v string) int {
+		return Atoi(v)
+	})
 }
 
 func Itos(i int) string {
@@ -85,17 +91,14 @@ func Write(f, contents string) {
 
 func ReadFileLines(f string) []string {
 	rs := strings.Split(readFileInput(f), "\n")
-	for idx := range rs {
-		rs[idx] = strings.TrimSpace(rs[idx])
-	}
 	return rs
 }
 
-func ToGrid(lines []string) [][]int {
+func ToGrid(lines []string, separator string) [][]int {
 	var grid [][]int
 	for _, line := range lines {
 		var row []int
-		for _, str := range strings.Split(line, ",") {
+		for _, str := range strings.Split(line, separator) {
 			row = append(row, Atoi(str))
 		}
 		grid = append(grid, row)
@@ -107,6 +110,44 @@ func IntsToStrings(is []int) []string {
 	var r []string
 	for _, i := range is {
 		r = append(r, strconv.Itoa(i))
+	}
+	return r
+}
+
+func Split(lines []string, delimiter string) [][]string {
+	var r [][]string
+	var cur []string
+	for _, line := range lines {
+		if line == delimiter {
+			r = append(r, cur)
+			cur = nil
+		} else {
+			cur = append(cur, line)
+		}
+	}
+	return append(r, cur)
+}
+
+func Map[I, O any](items []I, f func(I) O) []O {
+	var r []O
+	for _, item := range items {
+		r = append(r, f(item))
+	}
+	return r
+}
+
+func Reduce[B, T any](base B, items []T, f func(B, T) B) B {
+	b := base
+	for _, t := range items {
+		b = f(b, t)
+	}
+	return b
+}
+
+func ToCharArray(s string) []rune {
+	var r []rune
+	for _, c := range s {
+		r = append(r, c)
 	}
 	return r
 }

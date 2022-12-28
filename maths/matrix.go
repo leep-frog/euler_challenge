@@ -98,6 +98,22 @@ func Transpose(matrix [][]*big.Rat) [][]*big.Rat {
 	return m
 }
 
+// SimpleTranspose transposes a matrix of any type (with shallow copying).
+func SimpleTranspose[T any](matrix [][]T) [][]T {
+	var m [][]T
+	if len(matrix) == 0 {
+		return m
+	}
+	for j := range Range(len(matrix[0])) {
+		var col []T
+		for i := range Range(len(matrix)) {
+			col = append(col, matrix[i][j])
+		}
+		m = append(m, col)
+	}
+	return m
+}
+
 // Inverse gets the inverse of the provided matrix.
 func Inverse(matrix [][]*big.Rat) [][]*big.Rat {
 	im := AdjugateMatrix(matrix)

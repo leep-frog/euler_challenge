@@ -455,6 +455,14 @@ func (p *Point[T]) Copy() *Point[T] {
 	return New(p.X, p.Y)
 }
 
+func (p *Point[T]) ManhattanDistance(that *Point[T]) T {
+	return maths.Abs(p.X-that.X) + maths.Abs(p.Y-that.Y)
+}
+
+func (p *Point[T]) ManhattanDistanceWithDiagonals(that *Point[T]) T {
+	return maths.Max(maths.Abs(p.X-that.X), maths.Abs(p.Y-that.Y))
+}
+
 func (p *Point[T]) Dist(that *Point[T]) float64 {
 	x := p.X - that.X
 	y := p.Y - that.Y
@@ -604,6 +612,10 @@ func (ch *ConvexHull[T]) ContainsExclusive(p *Point[T]) bool {
 
 func (p *Point[T]) Minus(that *Point[T]) *Point[T] {
 	return New(p.X-that.X, p.Y-that.Y)
+}
+
+func (p *Point[T]) Plus(that *Point[T]) *Point[T] {
+	return New(p.X+that.X, p.Y+that.Y)
 }
 
 func (p *Point[T]) Cross(that *Point[T]) T {

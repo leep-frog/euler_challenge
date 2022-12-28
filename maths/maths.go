@@ -362,6 +362,16 @@ func NewSimpleSet[T comparable](ts ...T) map[T]bool {
 	return m
 }
 
+func Intersection[T comparable](a, b map[T]bool) map[T]bool {
+	m := map[T]bool{}
+	for v, ok := range a {
+		if ok && b[v] {
+			m[v] = true
+		}
+	}
+	return m
+}
+
 func NewSet[K Mappable](ks ...K) *Set[K] {
 	s := &Set[K]{m: NewMap[K, bool]()}
 	for _, k := range ks {
