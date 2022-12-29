@@ -24,7 +24,7 @@ func PathSearch[CODE comparable, T PathNode[CODE, T]](initStates []T, opts ...Op
 		return &pathNodeWrapper[CODE, T]{t}
 	})
 	reverter := func(sw *pathNodeWrapper[CODE, T]) T { return sw.state }
-	p, d := search[T, bool, CODE, Int](false, convertedStates, reverter, opts...)
+	p, d := search[T, bool, CODE, Int](false, convertedStates, reverter, append(opts, ignoreInitStateDistance())...)
 	return p, int(d)
 }
 

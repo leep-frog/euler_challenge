@@ -23,7 +23,6 @@ type context12 struct {
 // TODO: bfs
 type height struct {
 	x, y int
-	dist int
 }
 
 func (h *height) String() string {
@@ -34,10 +33,6 @@ func (h *height) Code(ctx *context12) string {
 	return fmt.Sprintln(h)
 }
 
-func (h *height) Distance(ctx *context12) bfs.Int {
-	return bfs.Int(h.dist)
-}
-
 func (h *height) Done(ctx *context12) bool {
 	return h.x == ctx.endX && h.y == ctx.endY
 }
@@ -46,16 +41,16 @@ func (h *height) AdjacentStates(ctx *context12) []*height {
 	v := ctx.grid[h.x][h.y]
 	var r []*height
 	if h.x > 0 && ctx.grid[h.x-1][h.y] <= v+1 {
-		r = append(r, &height{h.x - 1, h.y, h.dist + 1})
+		r = append(r, &height{h.x - 1, h.y})
 	}
 	if h.y > 0 && ctx.grid[h.x][h.y-1] <= v+1 {
-		r = append(r, &height{h.x, h.y - 1, h.dist + 1})
+		r = append(r, &height{h.x, h.y - 1})
 	}
 	if h.x < len(ctx.grid)-1 && ctx.grid[h.x+1][h.y] <= v+1 {
-		r = append(r, &height{h.x + 1, h.y, h.dist + 1})
+		r = append(r, &height{h.x + 1, h.y})
 	}
 	if h.y < len(ctx.grid[0])-1 && ctx.grid[h.x][h.y+1] <= v+1 {
-		r = append(r, &height{h.x, h.y + 1, h.dist + 1})
+		r = append(r, &height{h.x, h.y + 1})
 	}
 	return r
 }
@@ -69,15 +64,15 @@ func (d *day12) Solve(lines []string, o command.Output) {
 		for y, c := range line {
 			if c == 'S' {
 				row = append(row, 0)
-				start = &height{x, y, 0}
-				bases = append(bases, &height{x, y, 0})
+				start = &height{x, y}
+				bases = append(bases, &height{x, y})
 			} else if c == 'E' {
 				row = append(row, 25)
 				ctx.endX, ctx.endY = x, y
 			} else {
 				row = append(row, int(c-'a'))
 				if c == 'a' {
-					bases = append(bases, &height{x, y, 0})
+					bases = append(bases, &height{x, y})
 				}
 			}
 		}
@@ -85,8 +80,8 @@ func (d *day12) Solve(lines []string, o command.Output) {
 	}
 
 	// TODO: Add method that doesn't require distance
-	_, dist1 := bfs.ContextualShortestPath[bfs.Int]([]*height{start}, ctx)
-	_, dist2 := bfs.ContextualShortestPath[bfs.Int](bases, ctx)
+	_, dist1 := bfs.ContextSearch[*context12, string](ctx, []*height{start})
+	_, dist2 := bfs.ContextSearch[*context12, string](ctx, bases)
 	o.Stdoutln(dist1, dist2)
 }
 

@@ -24,7 +24,7 @@ func Search[CODE comparable, T Node[CODE, T]](initStates []T, opts ...Option) ([
 		return &nodeWrapper[CODE, T]{t}
 	})
 	reverter := func(sw *nodeWrapper[CODE, T]) T { return sw.state }
-	p, d := search[T, bool, CODE, Int](false, convertedStates, reverter, opts...)
+	p, d := search[T, bool, CODE, Int](false, convertedStates, reverter, append(opts, ignoreInitStateDistance())...)
 	return p, int(d)
 }
 

@@ -24,7 +24,7 @@ func ContextPathSearch[CTX any, CODE comparable, T ContextPathNode[CTX, CODE, T]
 		return &contextPathNodeWrapper[CTX, CODE, T]{t}
 	})
 	reverter := func(sw *contextPathNodeWrapper[CTX, CODE, T]) T { return sw.state }
-	ts, d := search[T, CTX, CODE, Int](ctx, convertedStates, reverter, opts...)
+	ts, d := search[T, CTX, CODE, Int](ctx, convertedStates, reverter, append(opts, ignoreInitStateDistance())...)
 	return ts, int(d)
 }
 

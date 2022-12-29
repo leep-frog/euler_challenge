@@ -92,6 +92,13 @@ type Option func(o *option)
 type option struct {
 	checkDuplicates            bool
 	cumulativeDistanceFunction bool
+	ignoreInitStateDistance    bool
+}
+
+func ignoreInitStateDistance() Option {
+	return func(o *option) {
+		o.ignoreInitStateDistance = true
+	}
 }
 
 func CheckDuplicates() Option {
@@ -118,7 +125,11 @@ func search[RETURN, CTX any, CODE comparable, DIST Distanceable[DIST], T Context
 
 	nodes := &bfsHeap[DIST, T]{}
 	for _, is := range initStates {
-		nodes.PushState(&StateValue[DIST, T]{is, is.Distance(ctx, &path[DIST, T]{nil}), nil, 1})
+		var dist DIST
+		if !o.ignoreInitStateDistance {
+			dist = is.Distance(ctx, &path[DIST, T]{nil})
+		}
+		nodes.PushState(&StateValue[DIST, T]{is, dist, nil, 1})
 	}
 
 	checked := map[CODE]bool{}
