@@ -11,12 +11,12 @@ import (
 
 func P82() *problem {
 	return fileInputNode(82, func(lines []string, o command.Output) {
-		grid := parse.ToGrid(lines)
+		grid := parse.ToGrid(lines, ",")
 		var initStates []*p82
 		for i := 0; i < len(grid); i++ {
 			initStates = append(initStates, &p82{i, 0})
 		}
-		_, dist := bfs.ContextualShortestOffsetPath[bfs.Int](initStates, grid)
+		_, dist := bfs.ContextDistanceSearch[[][]int, string, bfs.Int](grid, initStates)
 		o.Stdoutln(dist)
 	}, []*execution{
 		{

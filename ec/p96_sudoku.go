@@ -33,7 +33,7 @@ func P96() *problem {
 
 		for idx, board := range boards {
 			board.Solve()
-			path, _ := bfs.ShortestPath[bfs.Int]([]*sudokuBoard{board})
+			path, _ := bfs.Search[string]([]*sudokuBoard{board})
 			if len(path) == 0 {
 				o.Stderrln("unsolved board ", idx)
 				o.Stderrln(board)

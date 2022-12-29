@@ -25,7 +25,7 @@ func P18() *problem {
 			tower = append(tower, row)
 		}
 
-		_, dist := bfs.ContextualShortestOffsetPath[bfs.Int]([]*place{{0, 0}}, tower)
+		_, dist := bfs.ContextDistanceSearch[[][]int, string, bfs.Int](tower, []*place{{0, 0}})
 		o.Stdoutln((maxValue * len(tower)) - int(dist))
 	}, []*execution{
 		{

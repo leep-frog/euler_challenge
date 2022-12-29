@@ -34,7 +34,7 @@ func P61() *problem {
 				maths.CopyMap(generators),
 			})
 		}
-		path, _ := bfs.ContextualShortestPathWithPath[bfs.Int](initStates, startMap, bfs.CheckDuplicates())
+		path, _ := bfs.ContextDistancePathSearch[map[int]int, string, bfs.Int](startMap, initStates, bfs.CheckDuplicates())
 		o.Stdoutln(maths.SumType(path))
 	}, []*execution{
 		{

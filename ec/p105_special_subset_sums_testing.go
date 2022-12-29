@@ -11,7 +11,7 @@ import (
 func P105() *problem {
 	return fileInputNode(105, func(lines []string, o command.Output) {
 		var total int
-		for _, nums := range parse.ToGrid(lines) {
+		for _, nums := range parse.ToGrid(lines, ",") {
 			sort.Ints(nums)
 			if verifySpecialSubsetSum(nums) {
 				total += maths.SumSys(nums...)

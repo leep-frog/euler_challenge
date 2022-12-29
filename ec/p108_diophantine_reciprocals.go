@@ -18,7 +18,7 @@ func P108() *problem {
 			generator.Primes(),
 			n,
 		}}
-		bfs.ContextualShortestPath[bfs.Int](initStates, best)
+		bfs.ContextDistanceSearch[*maths.Bester[int, int], string, bfs.Int](best, initStates, bfs.CumulativeDistanceFunction())
 		o.Stdoutln(best.Best())
 	}, []*execution{
 		{
