@@ -17,21 +17,23 @@ func TestYears(t *testing.T) {
 		year := years[y]
 		for dayNumber, day := range year.Days {
 			for _, cse := range day.Cases() {
-				args := []string{
-					fmt.Sprintf("%d", year.Number),
-					fmt.Sprintf("%d", dayNumber+1),
-					"--suffix",
-					cse.FileSuffix,
-				}
-				command.ExecuteTest(t, &command.ExecuteTestCase{
-					Node:       node(),
-					Args:       args,
-					WantStdout: strings.Join(cse.ExpectedOutput, "\n") + "\n",
-					WantData: &command.Data{Values: map[string]interface{}{
-						yearArg.Name():    year,
-						dayArg.Name():     dayNumber + 1,
-						suffixFlag.Name(): cse.FileSuffix,
-					}},
+				t.Run(fmt.Sprintf("%d.%d %s", year.Number, dayNumber+1, cse.FileSuffix), func(t *testing.T) {
+					args := []string{
+						fmt.Sprintf("%d", year.Number),
+						fmt.Sprintf("%d", dayNumber+1),
+						"--suffix",
+						cse.FileSuffix,
+					}
+					command.ExecuteTest(t, &command.ExecuteTestCase{
+						Node:       node(),
+						Args:       args,
+						WantStdout: strings.Join(cse.ExpectedOutput, "\n") + "\n",
+						WantData: &command.Data{Values: map[string]interface{}{
+							yearArg.Name():    year,
+							dayArg.Name():     dayNumber + 1,
+							suffixFlag.Name(): cse.FileSuffix,
+						}},
+					})
 				})
 			}
 		}
