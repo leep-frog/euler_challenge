@@ -22,6 +22,7 @@ func Year() *aoc.Year {
 			Day12(),
 			Day13(),
 			Day14(),
+			Day15(),
 			// END_OF_DAYS
 		},
 	}
