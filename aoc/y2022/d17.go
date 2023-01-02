@@ -1,7 +1,6 @@
 package y2022
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/leep-frog/command"
@@ -123,7 +122,6 @@ func hasPattern(heights []int, patternLength int) (int, int, bool) {
 			}
 		}
 		if pattern {
-			fmt.Println("HUZZAH", pMult, patternLength)
 			return pMult * patternLength, heights[len(heights)-1] - heights[start1-1], true
 		}
 	}
