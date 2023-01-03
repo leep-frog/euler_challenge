@@ -1,8 +1,6 @@
 package y2022
 
 import (
-	"fmt"
-
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
 	"github.com/leep-frog/euler_challenge/bfs"
@@ -42,7 +40,6 @@ func (d *day18) checkGrid(grid [][][]bool, point *point.Point3D) int {
 			continue
 		}
 
-		// fmt.Println("CLOSER")
 		if !grid[neighbor.X][neighbor.Y][neighbor.Z] {
 			count++
 		}
@@ -79,12 +76,11 @@ func (d *day18) Solve(lines []string, o command.Output) {
 	for _, droplet := range droplets {
 		count += d.checkGrid(grid, droplet)
 	}
-	fmt.Println(count)
 
 	ctx := &dropletCtx{grid, 0}
 	start := &dropletNode{point.Origin3D()}
 	bfs.ContextSearch[*dropletCtx, string](ctx, []*dropletNode{start})
-	fmt.Println(len(grid), len(grid[0]), len(grid[0][0]), ctx.count)
+	o.Stdoutln(count, ctx.count)
 }
 
 type dropletNode struct {
@@ -135,12 +131,12 @@ func (d *day18) Cases() []*aoc.Case {
 		{
 			FileSuffix: "example",
 			ExpectedOutput: []string{
-				"",
+				"64 58",
 			},
 		},
 		{
 			ExpectedOutput: []string{
-				"",
+				"4242 2428",
 			},
 		},
 	}

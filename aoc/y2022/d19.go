@@ -36,7 +36,7 @@ func (r resource) String() string {
 	case geode:
 		return "geode"
 	}
-	panic("IDK")
+	panic("Unknown resource")
 }
 
 type blueprint struct {
@@ -47,15 +47,6 @@ type blueprint struct {
 
 type robot struct {
 	requirements []int
-}
-
-func (r *robot) constructable(resources []int) bool {
-	for res, required := range r.requirements {
-		if required > resources[res] {
-			return false
-		}
-	}
-	return true
 }
 
 func (r *robot) construct(resources []int) {
