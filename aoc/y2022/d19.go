@@ -1,9 +1,7 @@
 package y2022
 
 import (
-	"fmt"
 	"regexp"
-	"time"
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
@@ -100,61 +98,23 @@ func (d *day19) unelapse(minutes int, resources, robots []int) {
 	}
 }
 
-var (
-	cc = map[string]bool{}
-	// maxMinutes = 24
-	maxMinutes = 32
-)
-
-func (d *day19) reconstruct(bp *blueprint, path [][]int) {
-	idx := 0
-	robots := make([]int, resourceCount, resourceCount)
-	robots[ore] = 1
-	resources := make([]int, resourceCount, resourceCount)
-
-	for min := maxMinutes; min >= 0; min-- {
-		fmt.Printf("== Minute %d ==\n", maxMinutes-min+1)
-
-		built := make([]bool, resourceCount, resourceCount)
-		if idx < len(path) {
-			minute, robot := path[idx][0], path[idx][1]
-			if min == minute {
-				fmt.Printf("Spend resources to start building a %v-collecting robot\n", resource(robot))
-				idx++
-				bp.robots[robot].construct(resources)
-				robots[robot]++
-				built[robot] = true
-			}
-		}
-
-		for r, cnt := range robots {
-			rbt := resource(r)
-			if built[r] {
-				cnt--
-			}
-			if cnt > 0 {
-				fmt.Printf("%d %v-collecting robot collects %d %v; you now have %d %v\n", cnt, rbt, cnt, rbt, resources[rbt]+cnt, rbt)
-				resources[rbt] += cnt
-			}
-		}
-	}
-}
-
-func (d *day19) evalBlueprint2(minutes int, bp *blueprint, resources, robots []int, cur [][]int, best *maths.Bester[[][]int, int]) {
+func (d *day19) evalBlueprint(minutes int, bp *blueprint, resources, robots []int, best *maths.Bester[int, int]) {
 	if minutes <= 0 {
 		return
 	}
-	// best.IndexCheck(slices.Clone(cur), resources[geode]+robots[geode]*minutes)
-	best.IndexCheck(nil, resources[geode]+robots[geode]*minutes)
+	best.Check(resources[geode] + robots[geode]*minutes)
 	if minutes == 0 {
 		return
 	}
-	// best we can possibly do is construct one per minute
+
+	// The best we can possibly do is construct one per minute. See if current path can no longer beat that.
 	maxBest := resources[geode] + robots[geode]*minutes
 	maxBest += (minutes * (minutes - 1)) / 2
 	if best.Best() >= maxBest {
 		return
 	}
+
+	// Otherwise, iterate through the rest of the tree
 	for res, rbt := range bp.robots {
 		if res == int(ore) && robots[ore] >= bp.maxOreRobots {
 			continue
@@ -163,7 +123,7 @@ func (d *day19) evalBlueprint2(minutes int, bp *blueprint, resources, robots []i
 			d.elapse(mins+1, resources, robots)
 			robots[res]++
 			rbt.construct(resources)
-			d.evalBlueprint2(minutes-mins-1, bp, resources, robots, append(cur, []int{minutes - mins, res}), best)
+			d.evalBlueprint(minutes-mins-1, bp, resources, robots, best)
 			rbt.deconstruct(resources)
 			robots[res]--
 			d.unelapse(mins+1, resources, robots)
@@ -171,45 +131,19 @@ func (d *day19) evalBlueprint2(minutes int, bp *blueprint, resources, robots []i
 	}
 }
 
-// TODO: Change this to branch at each robot we will build next.
-// For example, determine the earliest turn at which we can build
-// a clay robot and then jump to that turn.
-// TODO: Also check best (aka no more buliding) at each step
-func (d *day19) evalBlueprint(minutes int, bp *blueprint, resources, robots []int, cur []int, dont []bool) int {
-	if minutes <= 0 {
-		return resources[geode]
-	}
-
-	for rbt, cnt := range robots {
-		resources[rbt] += cnt
-	}
-
-	var max int
-	for res, r := range bp.robots {
-		if !dont[res] && r.constructable(resources) {
-			r.construct(resources)
-			robots[res]++
-			max = maths.Max(max, d.evalBlueprint(minutes-1, bp, resources, robots, append(cur, res), make([]bool, resourceCount)))
-			r.deconstruct(resources)
-			robots[res]--
-		} else {
-			dont[res] = true
-		}
-	}
-
-	max = maths.Max(max, d.evalBlueprint(minutes-1, bp, resources, robots, append(cur, -1), dont))
-
-	for rbt, cnt := range robots {
-		resources[rbt] -= cnt
-	}
-
-	return max
+func (d *day19) solveBlueprint(bp *blueprint, minutes int) int {
+	resources := make([]int, resourceCount, resourceCount)
+	robots := make([]int, resourceCount, resourceCount)
+	robots[ore] = 1
+	best := maths.Largest[int, int]()
+	d.evalBlueprint(minutes, bp, resources, robots, best)
+	return best.Best()
 }
 
 func (d *day19) Solve(lines []string, o command.Output) {
-	fmt.Println("START")
 	r := regexp.MustCompile("^Blueprint ([0-9]+): Each ore robot costs ([0-9]+) ore. Each clay robot costs ([0-9]+) ore. Each obsidian robot costs ([0-9]+) ore and ([0-9]+) clay. Each geode robot costs ([0-9]+) ore and ([0-9]+) obsidian.")
 
+	// Construct the blueprints
 	bps := parse.Map(lines, func(line string) *blueprint {
 		m := r.FindStringSubmatch(line)
 		robots := make([]*robot, resourceCount, resourceCount)
@@ -226,10 +160,10 @@ func (d *day19) Solve(lines []string, o command.Output) {
 		reqs[geode][ore] = parse.Atoi(m[6])
 		reqs[geode][obsidian] = parse.Atoi(m[7])
 
-		var maxOre int
+		var maxOre int // Maximum number of ore required for any robot
 		for res := 0; res < int(resourceCount); res++ {
 			robots[res] = &robot{reqs[res]}
-			// Don't need to check against ore robot
+			// Don't need to check the max against ore robot requirements
 			if res != int(ore) {
 				maxOre = maths.Max(maxOre, reqs[res][ore])
 			}
@@ -239,35 +173,23 @@ func (d *day19) Solve(lines []string, o command.Output) {
 			robots,
 			maxOre,
 		}
-		fmt.Println(line, bp)
 		return bp
 	})
 
-	fmt.Println("MID")
-
-	var sum int
-	bestBest := 1
+	// Solve blueprints
+	var part1 int
+	part2 := 1
 	for i, bp := range bps {
-		fmt.Println("BP", time.Now())
-		resources := make([]int, resourceCount, resourceCount)
-		robots := make([]int, resourceCount, resourceCount)
-		robots[ore] = 1
+		// Part 1: Get quality (index times best)
+		part1 += bp.id * d.solveBlueprint(bp, 24)
 
-		best := maths.Largest[[][]int, int]()
-		d.evalBlueprint2(maxMinutes, bp, resources, robots, nil, best)
-		fmt.Println("HEYO", bp.id, best)
-		sum += bp.id * best.Best()
-		fmt.Println(time.Now(), best.Best())
+		// Part 2: Multiplicative product of first three blueprints
 		if i < 3 {
-			bestBest *= best.Best()
+			part2 *= d.solveBlueprint(bp, 32)
 		}
-
-		// d.reconstruct(bp, best.BestIndex())
-
-		// break
 	}
 
-	fmt.Println(sum, bestBest)
+	o.Stdoutln(part1, part2)
 }
 
 func (d *day19) Cases() []*aoc.Case {
@@ -275,12 +197,12 @@ func (d *day19) Cases() []*aoc.Case {
 		{
 			FileSuffix: "example",
 			ExpectedOutput: []string{
-				"",
+				"33 3472",
 			},
 		},
 		{
 			ExpectedOutput: []string{
-				"",
+				"1427 4400",
 			},
 		},
 	}
