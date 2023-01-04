@@ -71,10 +71,9 @@ func (d *day20) brute(lines []string, iterations, coefficient int) int {
 		}
 	}
 
-	a := ordered[(zeroIdx+1000)%len(ordered)]
-	b := ordered[(zeroIdx+2000)%len(ordered)]
-	c := ordered[(zeroIdx+3000)%len(ordered)]
-	return a + b + c
+	return parse.Reduce(0, []int{1, 2, 3}, func(base, i int) int {
+		return base + ordered[(zeroIdx+i*1000)%len(ordered)]
+	})
 }
 
 func (d *day20) Solve(lines []string, o command.Output) {
