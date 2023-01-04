@@ -33,6 +33,10 @@ func (p *Point3D) Minus(s *Point3D) *Point3D {
 	return New3D(p.X-s.X, p.Y-s.Y, p.Z-s.Z)
 }
 
+func (p *Point3D) Plus(s *Point3D) *Point3D {
+	return New3D(p.X+s.X, p.Y+s.Y, p.Z+s.Z)
+}
+
 func (p *Point3D) Cross(s *Point3D) *Point3D {
 	iMatrix := [][]int{
 		{p.Y, p.Z},
@@ -106,7 +110,7 @@ func (p *Point3D) Offset(x, y, z int) *Point3D {
 }
 
 func (p *Point3D) String() string {
-	return fmt.Sprintf("%d,%d,%d", p.X, p.Y, p.Z)
+	return fmt.Sprintf("(%d,%d,%d)", p.X, p.Y, p.Z)
 }
 
 func (p *Point3D) RotateX(x, y, z int) *Point3D {

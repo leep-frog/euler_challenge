@@ -128,12 +128,18 @@ func Split(lines []string, delimiter string) [][]string {
 	return append(r, cur)
 }
 
-func Map[I, O any](items []I, f func(I) O) []O {
+func MapWithIndex[I, O any](items []I, f func(int, I) O) []O {
 	var r []O
-	for _, item := range items {
-		r = append(r, f(item))
+	for idx, item := range items {
+		r = append(r, f(idx, item))
 	}
 	return r
+}
+
+func Map[I, O any](items []I, f func(I) O) []O {
+	return MapWithIndex(items, func(idx int, i I) O {
+		return f(i)
+	})
 }
 
 func Reduce[B, T any](base B, items []T, f func(B, T) B) B {
