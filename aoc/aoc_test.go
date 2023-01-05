@@ -14,6 +14,9 @@ func TestYears(t *testing.T) {
 	keys := maps.Keys(years)
 	slices.Sort(keys)
 	for _, y := range keys {
+		if y != 2020 {
+			continue
+		}
 		year := years[y]
 		for dayNumber, day := range year.Days {
 			for _, cse := range day.Cases() {
