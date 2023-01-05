@@ -94,6 +94,29 @@ func ReadFileLines(f string) []string {
 	return rs
 }
 
+func MapToGrid[T any](lines []string, m map[rune]T) [][]T {
+	var grid [][]T
+	for _, line := range lines {
+		var row []T
+		for _, c := range line {
+			v, ok := m[c]
+			if !ok {
+				log.Fatalf("Unknown grid key: %c", c)
+			}
+			row = append(row, v)
+		}
+		grid = append(grid, row)
+	}
+	return grid
+}
+
+func AOCGrid[T any](lines []string, dotValue, hashtagValue T) [][]T {
+	return MapToGrid(lines, map[rune]T{
+		'.': dotValue,
+		'#': hashtagValue,
+	})
+}
+
 func ToGrid(lines []string, separator string) [][]int {
 	var grid [][]int
 	for _, line := range lines {

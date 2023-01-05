@@ -18,6 +18,9 @@ func TestYears(t *testing.T) {
 		for dayNumber, day := range year.Days {
 			for _, cse := range day.Cases() {
 				t.Run(fmt.Sprintf("%d.%d %s", year.Number, dayNumber+1, cse.FileSuffix), func(t *testing.T) {
+					if strings.Join(cse.ExpectedOutput, "") == "" {
+						t.Skipf("No expected output set, skipping")
+					}
 					args := []string{
 						fmt.Sprintf("%d", year.Number),
 						fmt.Sprintf("%d", dayNumber+1),
