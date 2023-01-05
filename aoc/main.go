@@ -2,20 +2,27 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
-	"github.com/leep-frog/euler_challenge/aoc/y2022"
 	"github.com/leep-frog/euler_challenge/parse"
+
+	// YEAR_IMPOTS
+	"github.com/leep-frog/euler_challenge/aoc/y2022"
+	"github.com/leep-frog/euler_challenge/aoc/y2020"
+	// END_YEAR_IMPORTS
 )
 
 var (
 	years = map[int]*aoc.Year{
 		2022: y2022.Year(),
+		2020: y2020.Year(),
+		// END_AOC_YEARS
 	}
-	yearArg = command.MapArg("YEAR", "Problem year", years, false)
+	yearArg = command.MapArg("YEAR", "Problem year", years, true)
 	dayArg  = command.Arg[int]("DAY", "Problem day", command.Between(1, 25, true))
 
 	exampleFlag = command.BoolFlag("example", 'x', "Whether or not to run on the example input")
@@ -42,16 +49,8 @@ func node() *command.Node {
 			day := dayArg.Get(d)
 			year := yearArg.Get(d)
 
-			dayList := year.Days
-
-			// Create all files
-			var done bool
-			for d := len(dayList) + 1; d <= day; d++ {
-				done = true
-				generateDay(aoc.YearDir(year.Number), aoc.YearInputDir(year.Number), year.Number, d, ed)
-			}
-			if done {
-				return nil
+			if year == nil {
+				return generateYear(aoc.YearDir(yearArg.GetKey()), aoc.YearInputDir(yearArg.GetKey()), yearArg.GetKey(), ed, o)
 			}
 
 			// TODO: Mutually exclusive flags
@@ -81,6 +80,53 @@ func run(year *aoc.Year, day int, suffix string, o command.Output) {
 var (
 	generated = 0
 )
+
+func generateYear(yearDir, yearInputDir string, year int, ed *command.ExecuteData, o command.Output) error {
+	if !parse.Exists(yearDir) {
+		if err := os.Mkdir(yearDir, 0644); err != nil {
+			return o.Stderrf("failed to create year dir: %v", err)
+		}
+	}
+
+	if !parse.Exists(yearInputDir) {
+		if err := os.Mkdir(yearInputDir, 0644); err != nil {
+			return o.Stderrf("failed to create year input dir: %v", err)
+		}
+	}
+
+	parse.Write(filepath.Join(yearDir, "year.go"), fmt.Sprintf(strings.Join([]string{
+		"package y%d",
+		"",
+		`import (`,
+		`	"github.com/leep-frog/euler_challenge/aoc/aoc"`,
+		`)`,
+		"",
+		"func Year() *aoc.Year {",
+		"\treturn &aoc.Year{",
+		"\t\tNumber: %d,",
+		"\t\tDays: []aoc.Day{",
+		"\t\t\t// END_OF_DAYS",
+		"\t\t},",
+		"\t}",
+		"}",
+		"",
+	}, "\n"), year, year))
+
+	for day := 1; day <= 25; day++ {
+		generateDay(yearDir, yearInputDir, year, day, ed)
+	}
+
+	mainFile := parse.FullPath(".", "main.go")
+	ed.Executable = append(ed.Executable,
+		// Add import
+		// Plus sign to avoid replacing this line as well
+		fmt.Sprintf("r \"(^.*// END_YEAR"+"_IMPORTS.*$)\" '\t\"github.com/leep-frog/euler_challenge/aoc/y%d\"\n$1' %q", year, mainFile),
+		// Add map value
+		fmt.Sprintf("r \"(^.*// END_AOC"+"_YEARS.*$)\" '\t\t%d: y%d.Year(),\n$1' %q", year, year, mainFile),
+	)
+
+	return nil
+}
 
 func generateDay(yearDir, yearInputDir string, year, day int, ed *command.ExecuteData) {
 	generated++
