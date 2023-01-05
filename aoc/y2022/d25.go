@@ -24,7 +24,6 @@ var (
 
 func (d *day25) Solve(lines []string, o command.Output) {
 	o.Stdoutln(d.toSnafu(maths.SumSys(parse.Map(lines, d.fromSnafu)...)))
-	// fmt.Println(d.toSnafu(sum))
 }
 
 func (d *day25) fromSnafu(k string) int {
@@ -41,12 +40,10 @@ func (d *day25) fromSnafu(k string) int {
 		}
 		v *= 5
 	}
-	// fmt.Println(k, sum, d.toSnafu(sum))
 	return sum
 }
 
 func (d *day25) toSnafu(k int) string {
-	// v := 5
 	var r []string
 	for ; k > 0; k = (k + 2) / 5 {
 		m := (k % 5)
@@ -67,12 +64,12 @@ func (d *day25) Cases() []*aoc.Case {
 		{
 			FileSuffix: "example",
 			ExpectedOutput: []string{
-				"",
+				"2=-1=0",
 			},
 		},
 		{
 			ExpectedOutput: []string{
-				"",
+				"2=020-===0-1===2=020",
 			},
 		},
 	}
