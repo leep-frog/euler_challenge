@@ -611,12 +611,23 @@ func (ch *ConvexHull[T]) ContainsExclusive(p *Point[T]) bool {
 	return true
 }
 
+func (p *Point[T]) Rotate(clockwise bool) *Point[T] {
+	if clockwise {
+		return New(p.Y, -p.X)
+	}
+	return New(-p.Y, p.X)
+}
+
 func (p *Point[T]) Minus(that *Point[T]) *Point[T] {
 	return New(p.X-that.X, p.Y-that.Y)
 }
 
 func (p *Point[T]) Plus(that *Point[T]) *Point[T] {
 	return New(p.X+that.X, p.Y+that.Y)
+}
+
+func (p *Point[T]) Times(t T) *Point[T] {
+	return New(p.X*t, p.Y*t)
 }
 
 func (p *Point[T]) Cross(that *Point[T]) T {

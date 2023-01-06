@@ -112,6 +112,15 @@ func MapToGrid[T any](lines []string, m map[rune]T) [][]T {
 	return grid
 }
 
+func PrintAOCGrid[T comparable](grid [][]T, m map[T]rune) {
+	for _, row := range grid {
+		for _, t := range row {
+			fmt.Printf("%c", m[t])
+		}
+		fmt.Println()
+	}
+}
+
 func AOCGrid[T any](lines []string, dotValue, hashtagValue T) [][]T {
 	return MapToGrid(lines, map[rune]T{
 		'.': dotValue,
