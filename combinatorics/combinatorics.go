@@ -1,10 +1,11 @@
-package maths
+package combinatorics
 
 import (
 	"fmt"
 	"strings"
 
 	"github.com/leep-frog/euler_challenge/bread"
+	"github.com/leep-frog/euler_challenge/maths"
 	"golang.org/x/exp/slices"
 )
 
@@ -12,18 +13,18 @@ var (
 	permutationCountCache = map[string]int{}
 )
 
-func PermutationCount[T any](parts []T) *Int {
+func PermutationCount[T any](parts []T) *maths.Int {
 	counts := createCounts(parts)
 	slices.Sort(counts)
 
 	// Total count if all elements were different
-	v := Factorial(len(parts))
+	v := maths.Factorial(len(parts))
 
 	for _, c := range counts {
 		if c == 1 {
 			continue
 		}
-		v, _ = v.Divide(Factorial(c))
+		v, _ = v.Divide(maths.Factorial(c))
 	}
 
 	return v
@@ -78,18 +79,18 @@ func ChooseSetsOfLength[T any](parts []T, length int) [][]T {
 // Anagrams returns all anagram integers of n, not including numbers with leading zeroes.
 func Anagrams(n int) map[int]bool {
 	r := map[int]bool{}
-	digits := Digits(n)
+	digits := maths.Digits(n)
 	for _, p := range Permutations(digits) {
 		if p[0] != 0 {
-			r[FromDigits(p)] = true
+			r[maths.FromDigits(p)] = true
 		}
 	}
 	return r
 }
 
 func Anagram(j, k int) bool {
-	jm := DigitMap(j)
-	km := DigitMap(k)
+	jm := maths.DigitMap(j)
+	km := maths.DigitMap(k)
 	if len(jm) != len(km) {
 		return false
 	}
@@ -152,4 +153,15 @@ func generateCombos[T any](c *Combinatorics[T], counts []int, minIndex int, cur 
 			counts[k]++
 		}
 	}
+}
+
+// Rotations returns all rotations of the elements of parts.
+// For example, if parts is `["ab", "cd", "ef"]`, then this will return
+// `["abcdef", "cdefab", "efabcd"]`.
+func Rotations(parts []string) []string {
+	var r []string
+	for i := 0; i < len(parts); i++ {
+		r = append(r, strings.Join(append(parts[i:], parts[:i]...), ""))
+	}
+	return r
 }

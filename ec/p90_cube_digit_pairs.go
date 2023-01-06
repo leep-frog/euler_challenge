@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/combinatorics"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
@@ -13,9 +14,9 @@ func P90() *problem {
 		squares := []string{"01", "04", "09", "16", "25", "36", "49", "64", "81"}
 		opts := []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
 		unique := map[string]bool{}
-		for _, dieOneSlice := range maths.ChooseSetsOfLength(opts, 6) {
+		for _, dieOneSlice := range combinatorics.ChooseSetsOfLength(opts, 6) {
 			dieOne := maths.NewSimpleSet(dieOneSlice...)
-			for _, dieTwoSlice := range maths.ChooseSetsOfLength(opts, 6) {
+			for _, dieTwoSlice := range combinatorics.ChooseSetsOfLength(opts, 6) {
 				dieTwo := maths.NewSimpleSet(dieTwoSlice...)
 
 				hasAll := true

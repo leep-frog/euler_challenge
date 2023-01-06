@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/combinatorics"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
@@ -31,7 +32,7 @@ func recursive172(rem, min int, cur []int) *maths.Int {
 			parts = append(parts, i)
 		}
 	}
-	pc := maths.PermutationCount(parts)
+	pc := combinatorics.PermutationCount(parts)
 
 	// We want to consider swapping numbers identical. Numbers that
 	// appear the same number of times can be rearranged in all possible ways.

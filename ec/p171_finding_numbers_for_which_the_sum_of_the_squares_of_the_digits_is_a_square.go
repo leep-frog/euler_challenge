@@ -3,6 +3,7 @@ package eulerchallenge
 import (
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/bread"
+	"github.com/leep-frog/euler_challenge/combinatorics"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
@@ -23,7 +24,7 @@ func brute171(all [][]int) *maths.Int {
 	sum := maths.Zero()
 
 	for _, numbers := range all {
-		perms := maths.Permutations(bread.Copy(numbers))
+		perms := combinatorics.Permutations(bread.Copy(numbers))
 		for _, perm := range perms {
 			sum = sum.Plus(maths.IntFromDigits(perm))
 		}
@@ -58,7 +59,7 @@ func P171() *problem {
 				checked[digit] = true
 
 				parts := append(bread.Copy(numbers[:i]), bread.Copy(numbers[i+1:])...)
-				cnt := maths.PermutationCount(parts)
+				cnt := combinatorics.PermutationCount(parts)
 				digitSum = digitSum.Plus(cnt.TimesInt(digit))
 			}
 			digitSum = digitSum.TrimDigits(numDigits)

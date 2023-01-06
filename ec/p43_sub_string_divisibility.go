@@ -2,14 +2,14 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/combinatorics"
 	"github.com/leep-frog/euler_challenge/generator"
-	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/parse"
 )
 
 func P43() *problem {
 	return noInputNode(43, func(o command.Output) {
-		perms := maths.StringPermutations([]string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"})
+		perms := combinatorics.StringPermutations([]string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"})
 		primes := generator.Primes()
 
 		var sum int

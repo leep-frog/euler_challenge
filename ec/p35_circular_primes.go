@@ -4,8 +4,8 @@ import (
 	"strconv"
 
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/combinatorics"
 	"github.com/leep-frog/euler_challenge/generator"
-	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/parse"
 )
 
@@ -26,7 +26,7 @@ func P35() *problem {
 			}
 
 			allPrime := true
-			rots := maths.Rotations(digits)
+			rots := combinatorics.Rotations(digits)
 			for _, rot := range rots {
 				checked[rot] = true
 				if !p.Contains(parse.Atoi(rot)) {

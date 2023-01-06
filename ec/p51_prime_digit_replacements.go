@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/combinatorics"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
 )
@@ -35,7 +36,7 @@ func P51() *problem {
 				pnStr := strings.Split(strconv.Itoa(pn), "")
 				cp := make([]string, len(pnStr))
 				copy(cp, pnStr)
-				for _, s := range maths.ChooseAllSets(positions) {
+				for _, s := range combinatorics.ChooseAllSets(positions) {
 					for _, pos := range s {
 						pnStr[pos] = "_"
 					}

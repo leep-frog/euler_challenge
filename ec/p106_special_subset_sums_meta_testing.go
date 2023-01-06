@@ -2,7 +2,7 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
-	"github.com/leep-frog/euler_challenge/maths"
+	"github.com/leep-frog/euler_challenge/combinatorics"
 )
 
 func P106() *problem {
@@ -13,7 +13,7 @@ func P106() *problem {
 			"N", // neither
 		}
 		var count int
-		for _, perm := range maths.GenerateCombos(&maths.Combinatorics[string]{
+		for _, perm := range combinatorics.GenerateCombos(&combinatorics.Combinatorics[string]{
 			Parts:            options,
 			MinLength:        n,
 			MaxLength:        n,

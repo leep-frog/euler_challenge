@@ -2,6 +2,7 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/combinatorics"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
 )
@@ -18,7 +19,7 @@ func P70() *problem {
 				pj := p.Nth(j)
 				k := pi * pj
 				phi := k - (k/pi + k/pj) + 1
-				if maths.Anagram(k, phi) {
+				if combinatorics.Anagram(k, phi) {
 					best.IndexCheck(k, float64(k)/float64(phi))
 				}
 			}

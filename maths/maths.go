@@ -148,14 +148,6 @@ func Pandigital(v int) bool {
 	return true
 }
 
-func Rotations(parts []string) []string {
-	var r []string
-	for i := 0; i < len(parts); i++ {
-		r = append(r, strings.Join(append(parts[i:], parts[:i]...), ""))
-	}
-	return r
-}
-
 type Trie[T comparable] struct {
 	subTries      map[T]*Trie[T]
 	endOfSequence bool

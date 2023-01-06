@@ -7,6 +7,7 @@ import (
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/bfs"
 	"github.com/leep-frog/euler_challenge/bread"
+	"github.com/leep-frog/euler_challenge/combinatorics"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
 )
@@ -14,7 +15,7 @@ import (
 func P118() *problem {
 	return intInputNode(118, func(o command.Output, n int) {
 		ctx := &context118{map[string]bool{}, generator.Primes()}
-		perms := maths.Permutations([]int{1, 2, 3, 4, 5, 6, 7, 8, 9})
+		perms := combinatorics.Permutations([]int{1, 2, 3, 4, 5, 6, 7, 8, 9})
 		for _, p := range perms {
 			bfs.DFS([]*pandigitalOrdering{{p, nil}}, ctx)
 		}

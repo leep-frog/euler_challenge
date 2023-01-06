@@ -2,6 +2,7 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/combinatorics"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
@@ -52,7 +53,7 @@ var (
 
 func P93() *problem {
 	return intInputNode(93, func(o command.Output, n int) {
-		opSets := maths.GenerateCombos(&maths.Combinatorics[p93op]{
+		opSets := combinatorics.GenerateCombos(&combinatorics.Combinatorics[p93op]{
 			Parts:            p93ops,
 			MinLength:        3,
 			MaxLength:        3,
@@ -65,7 +66,7 @@ func P93() *problem {
 				for b := c - 1; b >= 0; b-- {
 					for a := b - 1; a >= 0; a-- {
 						values := map[int]bool{}
-						for _, order := range maths.Permutations([]float64{a, b, c, d}) {
+						for _, order := range combinatorics.Permutations([]float64{a, b, c, d}) {
 							m := maths.NewSimpleSet(order...)
 							bad := false
 							for k := range m {
