@@ -3,6 +3,7 @@ package y2020
 import (
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
+	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/parse"
 )
@@ -16,7 +17,7 @@ type day09 struct{}
 func (d *day09) Solve(lines []string, o command.Output) {
 
 	preamble := 25
-	numbers := parse.Map(lines, parse.Atoi)
+	numbers := functional.Map(lines, parse.Atoi)
 	var invalid int
 	for i, k := range numbers {
 		if i >= preamble {

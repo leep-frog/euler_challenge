@@ -3,7 +3,7 @@ package bfs
 import (
 	"fmt"
 
-	"github.com/leep-frog/euler_challenge/parse"
+	"github.com/leep-frog/euler_challenge/functional"
 )
 
 type ContextPathNode[CTX any, CODE comparable, T any] interface {
@@ -20,7 +20,7 @@ type ContextPathNode[CTX any, CODE comparable, T any] interface {
 }
 
 func ContextPathSearch[CTX any, CODE comparable, T ContextPathNode[CTX, CODE, T]](ctx CTX, initStates []T, opts ...Option) ([]T, int) {
-	convertedStates := parse.Map(initStates, func(t T) *contextPathNodeWrapper[CTX, CODE, T] {
+	convertedStates := functional.Map(initStates, func(t T) *contextPathNodeWrapper[CTX, CODE, T] {
 		return &contextPathNodeWrapper[CTX, CODE, T]{t}
 	})
 	reverter := func(sw *contextPathNodeWrapper[CTX, CODE, T]) T { return sw.state }
@@ -49,7 +49,7 @@ func (sc *contextPathNodeWrapper[CTX, CODE, T]) Done(ctx CTX, p Path[*contextPat
 }
 
 func (sc *contextPathNodeWrapper[CTX, CODE, T]) AdjacentStates(ctx CTX, p Path[*contextPathNodeWrapper[CTX, CODE, T]]) []*contextPathNodeWrapper[CTX, CODE, T] {
-	return parse.Map(sc.state.AdjacentStates(ctx, &pathWrapper[*contextPathNodeWrapper[CTX, CODE, T], T]{p, ctswConvert[CTX, CODE, T]}), func(t T) *contextPathNodeWrapper[CTX, CODE, T] {
+	return functional.Map(sc.state.AdjacentStates(ctx, &pathWrapper[*contextPathNodeWrapper[CTX, CODE, T], T]{p, ctswConvert[CTX, CODE, T]}), func(t T) *contextPathNodeWrapper[CTX, CODE, T] {
 		return &contextPathNodeWrapper[CTX, CODE, T]{t}
 	})
 }

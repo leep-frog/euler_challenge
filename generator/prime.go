@@ -3,6 +3,7 @@ package generator
 import (
 	"strconv"
 
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
@@ -227,7 +228,7 @@ func (p *Prime) Factors(n int) []int {
 		for _, a := range additional {
 			mAdditional = append(mAdditional, a*primeFactor)
 		}
-		return maths.MergeSort(additional, mAdditional, true)
+		return bread.MergeSort(additional, mAdditional, true)
 	})
 }
 

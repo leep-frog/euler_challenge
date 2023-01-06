@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"strings"
 
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/parse"
 	"golang.org/x/exp/slices"
 )
@@ -73,7 +74,7 @@ func (i *Int) Digits() []int {
 }
 
 func (i *Int) DigitSum() int {
-	return SumSys(i.Digits()...)
+	return bread.Sum(i.Digits())
 }
 
 func (i *Int) Plus(j *Int) *Int {
@@ -192,7 +193,7 @@ func (i *Int) Hex() string {
 		hex = append(hex, hexLetters[r.ToInt()])
 		i = q
 	}
-	return strings.Join(Reverse(hex), "")
+	return strings.Join(bread.Reverse(hex), "")
 }
 
 func (i *Int) ToInt() int {

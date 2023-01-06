@@ -2,13 +2,14 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
 func singleDigitSum(k int) int {
-	v := maths.SumSys(maths.Digits(k)...)
-	for ; v >= 10; v = maths.SumSys(maths.Digits(v)...) {
+	v := bread.Sum(maths.Digits(k))
+	for ; v >= 10; v = bread.Sum(maths.Digits(v)) {
 	}
 	return v
 }
@@ -51,12 +52,12 @@ func P159() *problem {
 
 func recursive159(n int, primes *generator.Prime, cache map[int]int) int {
 	return generator.CompositeCacher(primes, n, cache, func(i int) int {
-		v := maths.SumSys(maths.Digits(i)...)
-		for ; v >= 10; v = maths.SumSys(maths.Digits(v)...) {
+		v := bread.Sum(maths.Digits(i))
+		for ; v >= 10; v = bread.Sum(maths.Digits(v)) {
 		}
 		return v
 	}, func(primeFactor, otherFactor int) int {
-		single := maths.SumSys(maths.Digits(n)...)
+		single := bread.Sum(maths.Digits(n))
 		fromFactor := primeFactor + recursive159(otherFactor, primes, cache)
 		return maths.Max(single, fromFactor)
 	})

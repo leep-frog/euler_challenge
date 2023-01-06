@@ -6,7 +6,8 @@ import (
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
-	"github.com/leep-frog/euler_challenge/maths"
+	"github.com/leep-frog/euler_challenge/bread"
+	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/parse"
 	"golang.org/x/exp/slices"
 )
@@ -45,7 +46,7 @@ func (d *day05) solve(lines []string, o command.Output, part1 bool) {
 	}
 
 	for i, stack := range stacks {
-		stacks[i] = maths.Reverse(stack)
+		stacks[i] = bread.Reverse(stack)
 	}
 
 	for _, move := range lines[i+1:] {
@@ -53,14 +54,14 @@ func (d *day05) solve(lines []string, o command.Output, part1 bool) {
 		from--
 		to--
 		if part1 {
-			stacks[to] = append(stacks[to], maths.Reverse(stacks[from][len(stacks[from])-count:])...)
+			stacks[to] = append(stacks[to], bread.Reverse(stacks[from][len(stacks[from])-count:])...)
 		} else {
 			stacks[to] = append(stacks[to], stacks[from][len(stacks[from])-count:]...)
 		}
 		stacks[from] = stacks[from][:len(stacks[from])-count]
 	}
 
-	o.Stdoutln(strings.Join(parse.Map(stacks, func(stack []string) string { return stack[len(stack)-1] }), ""))
+	o.Stdoutln(strings.Join(functional.Map(stacks, func(stack []string) string { return stack[len(stack)-1] }), ""))
 }
 
 func (d *day05) Cases() []*aoc.Case {

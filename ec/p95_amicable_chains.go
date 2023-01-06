@@ -2,6 +2,7 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
@@ -11,7 +12,7 @@ func P95() *problem {
 
 		m := map[int]int{}
 		for i := 2; i <= n; i++ {
-			m[i] = maths.SumSys(maths.Divisors(i)...) - i
+			m[i] = bread.Sum(maths.Divisors(i)) - i
 		}
 
 		chainLens := map[int]int{}

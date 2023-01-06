@@ -2,6 +2,7 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
@@ -13,7 +14,7 @@ func brute164(n int) int {
 		valid := true
 		for j := 0; j < len(ds); j++ {
 			end := maths.Min(j+3, len(ds))
-			if maths.SumSys(ds[j:end]...) > 9 {
+			if bread.Sum(ds[j:end]) > 9 {
 				valid = false
 				break
 			}
@@ -68,7 +69,7 @@ func elegant164(n int) int {
 	sum := 0
 	for i, row := range startCounts {
 		if i != 0 {
-			sum += maths.SumSys(row...)
+			sum += bread.Sum(row)
 		}
 	}
 	return sum

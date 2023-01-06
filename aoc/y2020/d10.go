@@ -3,6 +3,7 @@ package y2020
 import (
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/parse"
 	"golang.org/x/exp/slices"
@@ -15,7 +16,7 @@ func Day10() aoc.Day {
 type day10 struct{}
 
 func (d *day10) numPaths(numbers []int) int {
-	numbers = maths.Reverse(maths.CopySlice(numbers))
+	numbers = bread.Reverse(numbers)
 	sums := make([]int, len(numbers), len(numbers))
 	sums[0] = 1
 	for i := 1; i < len(numbers); i++ {

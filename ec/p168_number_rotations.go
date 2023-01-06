@@ -2,6 +2,7 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
@@ -15,7 +16,7 @@ func check168(maxSize, factor, rightDigit int) int {
 		rem = product / 10
 
 		if digits[len(digits)-1] != 0 && rem+digits[len(digits)-1]*factor == digits[0] {
-			sum += maths.FromDigits(maths.Reverse(digits[:maths.Min(len(digits), 5)]))
+			sum += maths.FromDigits(bread.Reverse(digits[:maths.Min(len(digits), 5)]))
 		}
 	}
 	return sum

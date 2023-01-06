@@ -29,7 +29,7 @@ func (t *Timer) Start() {
 				d := time.Now().Sub(t.start)
 				// Issues lies in the test package.
 				// It captures output and does something with it.
-				fmt.Printf("%dm:%02dxx\bs", int(d.Minutes()), int(d.Seconds())%60)
+				fmt.Printf("%dm:%02ds", int(d.Minutes()), int(d.Seconds())%60)
 				// fmt.Printf("\b\bS")
 				tr.Reset(time.Second)
 			case <-t.c:

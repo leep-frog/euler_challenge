@@ -3,6 +3,7 @@ package y2022
 import (
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
+	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/parse"
 )
 
@@ -36,7 +37,7 @@ func (d *day20) toList(nodes []*simpleNode) []int {
 
 func (d *day20) brute(lines []string, iterations, coefficient int) int {
 	// Convert values to nodes
-	nodes := parse.Map(lines, func(line string) *simpleNode {
+	nodes := functional.Map(lines, func(line string) *simpleNode {
 		return &simpleNode{nil, nil, parse.Atoi(line) * coefficient}
 	})
 
@@ -71,7 +72,7 @@ func (d *day20) brute(lines []string, iterations, coefficient int) int {
 		}
 	}
 
-	return parse.Reduce(0, []int{1, 2, 3}, func(base, i int) int {
+	return functional.Reduce(0, []int{1, 2, 3}, func(base, i int) int {
 		return base + ordered[(zeroIdx+i*1000)%len(ordered)]
 	})
 }

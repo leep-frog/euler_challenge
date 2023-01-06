@@ -3,7 +3,7 @@ package bfs
 import (
 	"fmt"
 
-	"github.com/leep-frog/euler_challenge/parse"
+	"github.com/leep-frog/euler_challenge/functional"
 )
 
 type ContextDistanceNode[CTX any, CODE comparable, DIST Distanceable[DIST], T any] interface {
@@ -23,7 +23,7 @@ type ContextDistanceNode[CTX any, CODE comparable, DIST Distanceable[DIST], T an
 }
 
 func ContextDistanceSearch[CTX any, CODE comparable, DIST Distanceable[DIST], T ContextDistanceNode[CTX, CODE, DIST, T]](ctx CTX, initStates []T, opts ...Option) ([]T, DIST) {
-	convertedStates := parse.Map(initStates, func(t T) *contextDistanceNodeWrapper[CTX, CODE, DIST, T] {
+	convertedStates := functional.Map(initStates, func(t T) *contextDistanceNodeWrapper[CTX, CODE, DIST, T] {
 		return &contextDistanceNodeWrapper[CTX, CODE, DIST, T]{t}
 	})
 	reverter := func(sw *contextDistanceNodeWrapper[CTX, CODE, DIST, T]) T { return sw.state }
@@ -47,7 +47,7 @@ func (sc *contextDistanceNodeWrapper[CTX, CODE, DIST, T]) Done(ctx CTX, _ Path[*
 }
 
 func (sc *contextDistanceNodeWrapper[CTX, CODE, DIST, T]) AdjacentStates(ctx CTX, _ Path[*contextDistanceNodeWrapper[CTX, CODE, DIST, T]]) []*contextDistanceNodeWrapper[CTX, CODE, DIST, T] {
-	return parse.Map(sc.state.AdjacentStates(ctx), func(t T) *contextDistanceNodeWrapper[CTX, CODE, DIST, T] {
+	return functional.Map(sc.state.AdjacentStates(ctx), func(t T) *contextDistanceNodeWrapper[CTX, CODE, DIST, T] {
 		return &contextDistanceNodeWrapper[CTX, CODE, DIST, T]{t}
 	})
 }

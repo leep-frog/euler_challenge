@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/generator"
-	"github.com/leep-frog/euler_challenge/maths"
 	"golang.org/x/exp/slices"
 )
 
@@ -35,7 +35,7 @@ func P301() *problem {
 
 // Explore the game tree of nim and return whether player1 wins.
 func nim(player1 bool, stacks []int, cache map[string]bool) bool {
-	copy := maths.CopySlice(stacks)
+	copy := bread.Copy(stacks)
 	slices.Sort(copy)
 	code := fmt.Sprintf("%v", copy)
 	if v, ok := cache[code]; ok {

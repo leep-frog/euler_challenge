@@ -6,6 +6,7 @@ import (
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/bfs"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
 )
@@ -39,8 +40,8 @@ type context118 struct {
 
 func (po *pandigitalOrdering) copy() *pandigitalOrdering {
 	return &pandigitalOrdering{
-		maths.CopySlice(po.perm),
-		maths.CopySlice(po.breaks),
+		bread.Copy(po.perm),
+		bread.Copy(po.breaks),
 	}
 }
 

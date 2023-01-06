@@ -1,5 +1,7 @@
 package unionfind
 
+import "github.com/leep-frog/euler_challenge/maths"
+
 // UnionFind implements a union find object for keeping track of distinct groups.
 type UnionFind struct {
 	// elementMap is a map from element to group
@@ -17,6 +19,14 @@ func New() *UnionFind {
 		map[int]map[int]bool{},
 		0,
 	}
+}
+
+func (uf *UnionFind) Sets() []map[int]bool {
+	var r []map[int]bool
+	for _, k := range uf.setMap {
+		r = append(r, maths.CopyMap(k))
+	}
+	return r
 }
 
 // Merge merges the groups for a and b. If a and b are already in the same group

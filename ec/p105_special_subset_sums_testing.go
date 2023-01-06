@@ -4,7 +4,7 @@ import (
 	"sort"
 
 	"github.com/leep-frog/command"
-	"github.com/leep-frog/euler_challenge/maths"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/parse"
 )
 
@@ -14,7 +14,7 @@ func P105() *problem {
 		for _, nums := range parse.ToGrid(lines, ",") {
 			sort.Ints(nums)
 			if verifySpecialSubsetSum(nums) {
-				total += maths.SumSys(nums...)
+				total += bread.Sum(nums)
 			}
 			//set := maths.Set(nums...)
 		}

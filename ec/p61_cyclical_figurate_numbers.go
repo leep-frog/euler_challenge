@@ -5,6 +5,8 @@ import (
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/bfs"
+	"github.com/leep-frog/euler_challenge/bread"
+	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
 )
@@ -35,7 +37,7 @@ func P61() *problem {
 			})
 		}
 		path, _ := bfs.ContextDistancePathSearch[map[int]int, string, bfs.Int](startMap, initStates, bfs.CheckDuplicates())
-		o.Stdoutln(maths.SumType(path))
+		o.Stdoutln(bread.Sum(functional.Map(path, func(cfg *cycFigNum) int { return cfg.n })))
 	}, []*execution{
 		{
 			args: []string{"6"},
@@ -51,10 +53,6 @@ func P61() *problem {
 type cycFigNum struct {
 	n               int
 	remainingShapes map[int]*generator.Generator[int]
-}
-
-func (cfn *cycFigNum) ToInt() int {
-	return cfn.n
 }
 
 func (cfn *cycFigNum) Distance(m map[int]int, path bfs.Path[*cycFigNum]) bfs.Int {

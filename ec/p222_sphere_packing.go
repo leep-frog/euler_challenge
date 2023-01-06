@@ -4,6 +4,7 @@ import (
 	"math"
 
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
@@ -37,7 +38,7 @@ func P222() *problem {
 			firstHalf = append(firstHalf, 50-2*i)
 			secondHalf = append(secondHalf, 49-2*i)
 		}
-		middleOutOrder := append(append(firstHalf, 30), maths.Reverse(secondHalf)...)
+		middleOutOrder := append(append(firstHalf, 30), bread.Reverse(secondHalf)...)
 		best.IndexCheck("middleOut", pipeLength(middleOutOrder))
 
 		o.Stdoutf("%s %.0f\n", best.BestIndex(), 1000.0*best.Best())

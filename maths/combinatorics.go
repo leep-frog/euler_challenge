@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/leep-frog/euler_challenge/bread"
 	"golang.org/x/exp/slices"
 )
 
@@ -132,7 +133,7 @@ func GenerateCombos[T any](c *Combinatorics[T]) [][]T {
 
 func generateCombos[T any](c *Combinatorics[T], counts []int, minIndex int, cur []T, all *[][]T) {
 	if c.MinLength <= len(cur) && len(cur) <= c.MaxLength && len(cur) > 0 {
-		*all = append(*all, CopySlice(cur))
+		*all = append(*all, bread.Copy(cur))
 	}
 
 	if len(cur) >= c.MaxLength {

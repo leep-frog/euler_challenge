@@ -6,6 +6,7 @@ import (
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
+	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/parse"
 	"github.com/leep-frog/euler_challenge/point"
@@ -459,7 +460,7 @@ func (d *day22) wrapAroundStitch(squareLength int, squareSides [][]*squareSide) 
 func (d *day22) solveIt(lines []string, stitcher func(int, [][]*squareSide)) int {
 	// Parse input
 	numberPath := strings.Split(strings.Replace(strings.Replace(lines[len(lines)-1], "L", fmt.Sprintf(" %d ", leftTurn), -1), "R", fmt.Sprintf(" %d ", rightTurn), -1), " ")
-	path := parse.Map(numberPath, parse.Atoi)
+	path := functional.Map(numberPath, parse.Atoi)
 	lines = lines[:len(lines)-2]
 
 	// Calculate square sizes
@@ -534,10 +535,10 @@ func (d *day22) solveIt(lines []string, stitcher func(int, [][]*squareSide)) int
 // but the part2 solution also can solve part1
 func (d *day22) oldSolve(lines []string) int {
 	numberPath := strings.Split(strings.Replace(strings.Replace(lines[len(lines)-1], "L", fmt.Sprintf(" %d ", leftTurn), -1), "R", fmt.Sprintf(" %d ", rightTurn), -1), " ")
-	path := parse.Map(numberPath, parse.Atoi)
+	path := functional.Map(numberPath, parse.Atoi)
 	lines = lines[:len(lines)-2]
 
-	max := maths.Max(parse.Map(lines, func(line string) int { return len(line) })...)
+	max := maths.Max(functional.Map(lines, func(line string) int { return len(line) })...)
 
 	var start *gridNode
 

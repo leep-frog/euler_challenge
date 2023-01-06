@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/leep-frog/command"
-	"github.com/leep-frog/euler_challenge/maths"
+	"github.com/leep-frog/euler_challenge/bread"
 )
 
 type matrix458 struct {
@@ -120,7 +120,7 @@ func brute458(size, n int) int {
 		}
 	}
 
-	return maths.SumSys(qn[:size]...)
+	return bread.Sum(qn[:size])
 }
 
 func P458() *problem {

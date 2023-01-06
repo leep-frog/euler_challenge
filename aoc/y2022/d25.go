@@ -5,7 +5,8 @@ import (
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
-	"github.com/leep-frog/euler_challenge/maths"
+	"github.com/leep-frog/euler_challenge/bread"
+	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/parse"
 )
 
@@ -23,13 +24,13 @@ var (
 )
 
 func (d *day25) Solve(lines []string, o command.Output) {
-	o.Stdoutln(d.toSnafu(maths.SumSys(parse.Map(lines, d.fromSnafu)...)))
+	o.Stdoutln(d.toSnafu(bread.Sum(functional.Map(lines, d.fromSnafu))))
 }
 
 func (d *day25) fromSnafu(k string) int {
 	v := 1
 	var sum int
-	for _, c := range maths.Reverse(strings.Split(k, "")) {
+	for _, c := range bread.Reverse(strings.Split(k, "")) {
 		switch c {
 		case "-":
 			sum -= v
@@ -56,7 +57,7 @@ func (d *day25) toSnafu(k int) string {
 			r = append(r, parse.Itos(m))
 		}
 	}
-	return strings.Join(maths.Reverse(r), "")
+	return strings.Join(bread.Reverse(r), "")
 }
 
 func (d *day25) Cases() []*aoc.Case {

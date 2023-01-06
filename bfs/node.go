@@ -3,7 +3,7 @@ package bfs
 import (
 	"fmt"
 
-	"github.com/leep-frog/euler_challenge/parse"
+	"github.com/leep-frog/euler_challenge/functional"
 )
 
 type Node[CODE, T any] interface {
@@ -20,7 +20,7 @@ type Node[CODE, T any] interface {
 }
 
 func Search[CODE comparable, T Node[CODE, T]](initStates []T, opts ...Option) ([]T, int) {
-	convertedStates := parse.Map(initStates, func(t T) *nodeWrapper[CODE, T] {
+	convertedStates := functional.Map(initStates, func(t T) *nodeWrapper[CODE, T] {
 		return &nodeWrapper[CODE, T]{t}
 	})
 	reverter := func(sw *nodeWrapper[CODE, T]) T { return sw.state }
@@ -45,7 +45,7 @@ func (sc *nodeWrapper[CODE, T]) Done(bool, Path[*nodeWrapper[CODE, T]]) bool {
 }
 
 func (sc *nodeWrapper[CODE, T]) AdjacentStates(bool, Path[*nodeWrapper[CODE, T]]) []*nodeWrapper[CODE, T] {
-	return parse.Map(sc.state.AdjacentStates(), func(t T) *nodeWrapper[CODE, T] {
+	return functional.Map(sc.state.AdjacentStates(), func(t T) *nodeWrapper[CODE, T] {
 		return &nodeWrapper[CODE, T]{t}
 	})
 }

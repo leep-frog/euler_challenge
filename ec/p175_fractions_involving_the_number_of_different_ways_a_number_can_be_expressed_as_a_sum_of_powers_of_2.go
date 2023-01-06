@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/fraction"
 	"github.com/leep-frog/euler_challenge/maths"
 )
@@ -116,7 +117,7 @@ func (b *Binary) String() string {
 			r = append(r, "0")
 		}
 	}
-	return strings.Join(maths.Reverse(r), "")
+	return strings.Join(bread.Reverse(r), "")
 }
 
 func (b *Binary) ToInt() int {
@@ -136,7 +137,7 @@ func BinaryFromInt(k int) *Binary {
 	for i := k; i > 0; i /= 2 {
 		digits = append(digits, i%2 == 1)
 	}
-	return &Binary{maths.Reverse(digits)}
+	return &Binary{bread.Reverse(digits)}
 }
 
 func (b *Binary) at(i int) bool {
@@ -192,7 +193,7 @@ func (b *Binary) Minus(that *Binary) *Binary {
 		digits = digits[:len(digits)-1]
 	}
 
-	return &Binary{maths.Reverse(digits)}
+	return &Binary{bread.Reverse(digits)}
 }
 
 func P175() *problem {
@@ -252,7 +253,7 @@ func P175() *problem {
 				f = fraction.New(f.D-f.N, f.N)
 			}
 		}
-		path = maths.Reverse(path)
+		path = bread.Reverse(path)
 
 		// Keep track of the sequence and the index value
 		fractionIndex := BinaryFromInt(1)

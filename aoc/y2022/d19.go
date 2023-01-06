@@ -5,6 +5,7 @@ import (
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
+	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/parse"
 )
@@ -135,7 +136,7 @@ func (d *day19) Solve(lines []string, o command.Output) {
 	r := regexp.MustCompile("^Blueprint ([0-9]+): Each ore robot costs ([0-9]+) ore. Each clay robot costs ([0-9]+) ore. Each obsidian robot costs ([0-9]+) ore and ([0-9]+) clay. Each geode robot costs ([0-9]+) ore and ([0-9]+) obsidian.")
 
 	// Construct the blueprints
-	bps := parse.Map(lines, func(line string) *blueprint {
+	bps := functional.Map(lines, func(line string) *blueprint {
 		m := r.FindStringSubmatch(line)
 		robots := make([]*robot, resourceCount, resourceCount)
 

@@ -2,6 +2,7 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
@@ -25,7 +26,7 @@ func rec169(rem *maths.Int, cache map[string]int) int {
 		r = append(r, rec169(rem.DivInt(2), cache))
 		r = append(r, rec169(rem.Minus(maths.NewInt(2)).DivInt(2), cache))
 	}
-	s := maths.SumSys(r...)
+	s := bread.Sum(r)
 	cache[rem.String()] = s
 	return s
 }

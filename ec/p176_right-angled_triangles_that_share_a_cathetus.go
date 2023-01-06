@@ -2,6 +2,7 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
 )
@@ -36,7 +37,7 @@ func recur176(n, rem, max, a, d int, product *maths.Int, cur []int, best *maths.
 	if (n-a)%d == 0 {
 		twoExp := (n - a) / d
 		res := product.Times(maths.BigPow(2, twoExp+1))
-		best.IndexCheck(maths.CopySlice(cur), res)
+		best.IndexCheck(bread.Copy(cur), res)
 	}
 
 	if rem == 0 {

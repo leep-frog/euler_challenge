@@ -5,8 +5,8 @@ import (
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
-	"github.com/leep-frog/euler_challenge/maths"
-	"github.com/leep-frog/euler_challenge/parse"
+	"github.com/leep-frog/euler_challenge/bread"
+	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/point"
 )
 
@@ -42,7 +42,7 @@ func printChamber(chamber [][]bool, coord *point.Point[int], rock *rock) string 
 		}
 		c = append(c, strings.Join(r, ""))
 	}
-	return strings.Join(maths.Reverse(c), "\n")
+	return strings.Join(bread.Reverse(c), "\n")
 }
 
 func (r *rock) place(coord *point.Point[int], chamber [][]bool) {
@@ -186,7 +186,7 @@ func rec17(remRocks int, rocks []*rock, jets []bool) int {
 }
 
 func (d *day17) Solve(lines []string, o command.Output) {
-	jets := parse.Map(strings.Split(lines[0], ""), func(s string) bool { return s == "<" })
+	jets := functional.Map(strings.Split(lines[0], ""), func(s string) bool { return s == "<" })
 	// Rocks are going to be falling, but the bottom will be the 0th row
 	// .....#. 4
 	// .....#. 3

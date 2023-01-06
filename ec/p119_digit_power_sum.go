@@ -7,6 +7,7 @@ import (
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/bfs"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
@@ -56,7 +57,7 @@ func (n *node119) Distance(*context119) bfs.Int {
 }
 
 func (n *node119) Done(ctx *context119) bool {
-	if maths.SumSys(n.p.Digits()...) == n.int_ {
+	if bread.Sum(n.p.Digits()) == n.int_ {
 		ctx.values[n.p.String()] = true
 		if ctx.max == nil || n.p.GT(ctx.max) {
 			ctx.max = n.p

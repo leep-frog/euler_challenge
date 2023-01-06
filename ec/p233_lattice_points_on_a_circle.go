@@ -2,6 +2,7 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
 	"golang.org/x/exp/maps"
@@ -11,7 +12,7 @@ func getSums(v, n int, p *generator.Prime) *maths.Int {
 	sm := maths.Zero()
 	for i := 1; i*v <= n; i++ {
 		mod4To1Factor := func(factor int) bool { return factor%4 == 1 }
-		if maths.None(maps.Keys(p.PrimeFactors(i)), mod4To1Factor) {
+		if functional.None(maps.Keys(p.PrimeFactors(i)), mod4To1Factor) {
 			sm = sm.PlusInt(i * v)
 		}
 	}

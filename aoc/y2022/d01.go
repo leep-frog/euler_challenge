@@ -3,6 +3,8 @@ package y2022
 import (
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
+	"github.com/leep-frog/euler_challenge/bread"
+	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/parse"
 	"golang.org/x/exp/slices"
@@ -16,15 +18,15 @@ type day01 struct{}
 
 func (d *day01) Solve(lines []string, o command.Output) {
 	// Part 1
-	sums := parse.Map(parse.Split(lines, ""), func(group []string) int {
-		return maths.SumSys(parse.Map(group, parse.Atoi)...)
+	sums := functional.Map(parse.Split(lines, ""), func(group []string) int {
+		return bread.Sum(functional.Map(group, parse.Atoi))
 	})
 	o.Stdoutln(maths.Max(sums...))
 
 	// Part 2
 	slices.Sort(sums)
-	sums = maths.Reverse(sums)
-	o.Stdoutln(maths.SumSys(sums[:3]...))
+	sums = bread.Reverse(sums)
+	o.Stdoutln(bread.Sum(sums[:3]))
 }
 
 func (d *day01) Cases() []*aoc.Case {

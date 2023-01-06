@@ -2,6 +2,7 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
 )
@@ -54,8 +55,8 @@ func P111() *problem {
 			for k := range m[d] {
 				max = maths.Max(max, k)
 			}
-			//fmt.Println(d, max, len(m[d][max]), maths.SumSys(m[d][max]...))
-			sum += maths.SumSys(m[d][max]...)
+			//fmt.Println(d, max, len(m[d][max]), bread.Sum(m[d][max]))
+			sum += bread.Sum(m[d][max])
 		}
 
 		o.Stdoutln(sum)*/
@@ -67,7 +68,7 @@ func P111() *problem {
 				var os []int
 				p110Generator(d, n, j, []int{}, &os, g)
 				if len(os) > 0 {
-					sum += maths.SumSys(os...)
+					sum += bread.Sum(os)
 					break
 				}
 			}

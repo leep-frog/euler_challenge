@@ -165,6 +165,14 @@ func TestExecute(t *testing.T) {
 			},
 		},
 		{
+			name: "Fails if close paren after operation",
+			etc: &command.ExecuteTestCase{
+				// Args: []string{"-17 + (24 -) 3"},
+				Args: []string{"(24 -)"},
+				// WantStdout: "7",
+			},
+		},
+		{
 			name: "Handles parens with expression number",
 			etc: &command.ExecuteTestCase{
 				Args:       []string{"-17 + (-12 + 30)"},

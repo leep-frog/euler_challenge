@@ -4,6 +4,7 @@ import (
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
 	"github.com/leep-frog/euler_challenge/bfs"
+	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/parse"
 	"github.com/leep-frog/euler_challenge/point"
@@ -48,7 +49,7 @@ func (d *day18) checkGrid(grid [][][]bool, point *point.Point3D) int {
 }
 
 func (d *day18) Solve(lines []string, o command.Output) {
-	droplets := parse.Map(parse.ToGrid(lines, ","), func(parts []int) *point.Point3D {
+	droplets := functional.Map(parse.ToGrid(lines, ","), func(parts []int) *point.Point3D {
 		return point.New3D(parts[0]+1, parts[1]+1, parts[2]+1)
 	})
 

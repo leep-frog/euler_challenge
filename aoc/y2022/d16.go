@@ -8,6 +8,7 @@ import (
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
 	"github.com/leep-frog/euler_challenge/bfs"
+	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/parse"
 	"golang.org/x/exp/maps"
@@ -133,7 +134,7 @@ func (d *day16) Solve(lines []string, o command.Output) {
 
 	// Populate vMap from vMapStr
 	for v, n := range vMapStr {
-		vMap[v] = parse.Map(n, func(id string) *valve { return valves[id] })
+		vMap[v] = functional.Map(n, func(id string) *valve { return valves[id] })
 	}
 
 	// Now populate valve.neighbors (and distance to them) for all neighbors.

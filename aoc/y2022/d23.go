@@ -3,6 +3,7 @@ package y2022
 import (
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
+	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/point"
 )
@@ -112,7 +113,7 @@ func (d *day23) Solve(lines []string, o command.Output) {
 		// Plan all moves
 		for _, e := range elves {
 			// If no elves nearby, then stay still
-			if maths.All(allMoves, func(m *point.Point[int]) bool {
+			if functional.All(allMoves, func(m *point.Point[int]) bool {
 				return !occupied[e.Plus(m).String()]
 			}) {
 				plannedMoves = append(plannedMoves, nil)

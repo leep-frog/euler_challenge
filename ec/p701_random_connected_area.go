@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/maths"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
@@ -113,7 +114,7 @@ func (state *p701state) code() string {
 }
 
 func (state *p701state) copy() *p701state {
-	return &p701state{state.size, state.index, maths.CopySlice(state.squares), maths.CopyMap(state.setSizes), state.maxArea}
+	return &p701state{state.size, state.index, bread.Copy(state.squares), maths.CopyMap(state.setSizes), state.maxArea}
 }
 
 // We need our DP state to be consistent. Specifically, we should number

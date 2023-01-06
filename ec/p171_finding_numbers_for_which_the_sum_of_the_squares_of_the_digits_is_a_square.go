@@ -2,13 +2,14 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
 func generate171(remaining, min, squareSum int, cur []int, all *[][]int) {
 	if remaining == 0 {
 		if maths.IsSquare(squareSum) {
-			*all = append(*all, maths.CopySlice(cur))
+			*all = append(*all, bread.Copy(cur))
 		}
 		return
 	}
@@ -22,7 +23,7 @@ func brute171(all [][]int) *maths.Int {
 	sum := maths.Zero()
 
 	for _, numbers := range all {
-		perms := maths.Permutations(maths.CopySlice(numbers))
+		perms := maths.Permutations(bread.Copy(numbers))
 		for _, perm := range perms {
 			sum = sum.Plus(maths.IntFromDigits(perm))
 		}
@@ -56,7 +57,7 @@ func P171() *problem {
 				}
 				checked[digit] = true
 
-				parts := append(maths.CopySlice(numbers[:i]), maths.CopySlice(numbers[i+1:])...)
+				parts := append(bread.Copy(numbers[:i]), bread.Copy(numbers[i+1:])...)
 				cnt := maths.PermutationCount(parts)
 				digitSum = digitSum.Plus(cnt.TimesInt(digit))
 			}

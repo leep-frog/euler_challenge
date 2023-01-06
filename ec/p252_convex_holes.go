@@ -2,6 +2,7 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/point"
 	"golang.org/x/exp/slices"
@@ -39,7 +40,7 @@ func getEmptyTriangles(n int) (point.Points[int], map[int]map[int]map[int]bool) 
 	pts := generatePoints252(n)
 
 	m := map[int]map[int]map[int]bool{}
-	xSorted := maths.CopySlice(pts)
+	xSorted := bread.Copy(pts)
 
 	slices.SortFunc(xSorted, func(p, q *point.Point[int]) bool {
 		if p.X != q.X {
@@ -63,7 +64,7 @@ func getEmptyTriangles(n int) (point.Points[int], map[int]map[int]map[int]bool) 
 		for xEnd := xStart + 1; xEnd < len(xSorted); xEnd++ {
 			ePt := xSorted[xEnd]
 			ySorted = append(ySorted, ePt)
-			cpy := maths.CopySlice(ySorted)
+			cpy := bread.Copy(ySorted)
 			slices.SortFunc(cpy, func(p, q *point.Point[int]) bool {
 				if p.Y != q.Y {
 					return p.Y < q.Y

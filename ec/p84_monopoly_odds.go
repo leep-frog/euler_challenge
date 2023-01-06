@@ -305,7 +305,7 @@ func P84() *problem {
 /*func convertBoard(board [][]float64) []float64 {
 	var cum []float64
 	for _, vals := range board {
-		cum = append(cum, maths.SumSys(vals...))
+		cum = append(cum, bread.Sum(vals))
 	}
 	return cum
 }

@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/leep-frog/command"
-	"github.com/leep-frog/euler_challenge/maths"
+	"github.com/leep-frog/euler_challenge/bread"
 )
 
 var (
@@ -129,7 +129,7 @@ func (tb *TromBoard) String() string {
 		}
 		ss = append(ss, strings.Join(s, " "))
 	}
-	return strings.Join(maths.Reverse(ss), "\n")
+	return strings.Join(bread.Reverse(ss), "\n")
 }
 
 func (tb *TromBoard) Hash() string {

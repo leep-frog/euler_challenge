@@ -6,6 +6,7 @@ import (
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
+	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/parse"
 	"golang.org/x/exp/slices"
 )
@@ -73,7 +74,7 @@ func (d *day11) solve(lines []string, o command.Output, part1 bool, rounds int) 
 		})
 	}
 
-	superMod := parse.Reduce(1, monkeys, func(b int, m *monkey) int {
+	superMod := functional.Reduce(1, monkeys, func(b int, m *monkey) int {
 		return b * m.mod
 	})
 
@@ -94,7 +95,7 @@ func (d *day11) solve(lines []string, o command.Output, part1 bool, rounds int) 
 		}
 	}
 
-	counts := parse.Map(monkeys, func(m *monkey) int { return m.inspectionCount })
+	counts := functional.Map(monkeys, func(m *monkey) int { return m.inspectionCount })
 	slices.Sort(counts)
 	return counts[len(counts)-1] * counts[len(counts)-2]
 }

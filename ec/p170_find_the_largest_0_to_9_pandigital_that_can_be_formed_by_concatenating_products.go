@@ -2,6 +2,7 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
 )
@@ -37,7 +38,7 @@ func P170() *problem {
 
 			// The permutations of the remaining digits (dots above) will all be checked
 			for _, rightDigits := range maths.Permutations(options[k:]) {
-				concatenatedProduct := append(maths.CopySlice(options[:k]), rightDigits...)
+				concatenatedProduct := append(bread.Copy(options[:k]), rightDigits...)
 
 				// Now try splitting the concatenated product at all places
 				for split := len(options) - 2; split > 0; split-- {

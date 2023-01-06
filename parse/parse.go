@@ -10,6 +10,8 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+
+	"github.com/leep-frog/euler_challenge/functional"
 )
 
 func Atoi(s string) int {
@@ -21,7 +23,7 @@ func Atoi(s string) int {
 }
 
 func AtoiArray(s []string) []int {
-	return Map(s, func(v string) int {
+	return functional.Map(s, func(v string) int {
 		return Atoi(v)
 	})
 }
@@ -149,28 +151,6 @@ func Split(lines []string, delimiter string) [][]string {
 		}
 	}
 	return append(r, cur)
-}
-
-func MapWithIndex[I, O any](items []I, f func(int, I) O) []O {
-	var r []O
-	for idx, item := range items {
-		r = append(r, f(idx, item))
-	}
-	return r
-}
-
-func Map[I, O any](items []I, f func(I) O) []O {
-	return MapWithIndex(items, func(idx int, i I) O {
-		return f(i)
-	})
-}
-
-func Reduce[B, T any](base B, items []T, f func(B, T) B) B {
-	b := base
-	for _, t := range items {
-		b = f(b, t)
-	}
-	return b
 }
 
 func ToCharArray(s string) []rune {

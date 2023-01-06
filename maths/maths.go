@@ -10,8 +10,8 @@ import (
 	"strings"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/parse"
-	"golang.org/x/exp/constraints"
 )
 
 type Operable[T any] interface {
@@ -26,7 +26,7 @@ type Comparable[T any] interface {
 }
 
 type Mathable interface {
-	~int | ~float64 | ~int64 | ~uint64
+	bread.Operable
 }
 
 type mathableOperator[T Mathable] struct {
@@ -56,36 +56,6 @@ func (mo *mathableOperator[T]) LT(that *mathableOperator[T]) bool {
 var (
 	cachedDivisors = map[int][]int{}
 )
-
-// Returns true if f(t) == true for any t in ts.
-func Any[T any](ts []T, f func(t T) bool) bool {
-	for _, t := range ts {
-		if f(t) {
-			return true
-		}
-	}
-	return false
-}
-
-// Returns true if f(t) == true for all t in ts.
-func All[T any](ts []T, f func(t T) bool) bool {
-	for _, t := range ts {
-		if !f(t) {
-			return false
-		}
-	}
-	return true
-}
-
-// None returns true if f(t) == false for all t in ts.
-func None[T any](ts []T, f func(t T) bool) bool {
-	for _, t := range ts {
-		if f(t) {
-			return false
-		}
-	}
-	return true
-}
 
 func Divisors(i int) []int {
 	v, ok := cachedDivisors[i]
@@ -176,14 +146,6 @@ func Pandigital(v int) bool {
 	}
 
 	return true
-}
-
-func SumSys[T Mathable](ts ...T) T {
-	var s T
-	for _, t := range ts {
-		s += t
-	}
-	return s
 }
 
 func Rotations(parts []string) []string {
@@ -419,23 +381,11 @@ func Palindrome(n int) bool {
 }
 
 func (i *Int) Reverse() *Int {
-	r := IntFromDigits(Reverse(i.Digits()))
+	r := IntFromDigits(bread.Reverse(i.Digits()))
 	if i.Negative() {
 		return r.Negation()
 	}
 	return r
-}
-
-func Zip[T any](slc ...[]T) [][]T {
-	var zipped [][]T
-	for i := 0; i < len(slc[0]); i++ {
-		var r []T
-		for _, s := range slc {
-			r = append(r, s[i])
-		}
-		zipped = append(zipped, r)
-	}
-	return zipped
 }
 
 func Sum(is ...*Int) *Int {
@@ -677,22 +627,6 @@ func (b *Binary) Equals(that *Binary) bool {
 	return true
 }
 
-func Reverse[T any](ts []T) []T {
-	st := make([]T, len(ts))
-	for i, v := range ts {
-		st[len(ts)-1-i] = v
-	}
-	return st
-}
-
-func CopySlice[T any](ts []T) []T {
-	var r []T
-	for _, t := range ts {
-		r = append(r, t)
-	}
-	return r
-}
-
 func CopyMap[K comparable, V any](m map[K]V, except ...K) map[K]V {
 	ignore := map[K]bool{}
 	for _, k := range except {
@@ -705,18 +639,6 @@ func CopyMap[K comparable, V any](m map[K]V, except ...K) map[K]V {
 		}
 	}
 	return r
-}
-
-type Intable interface {
-	ToInt() int
-}
-
-func SumType[T Intable](ts []T) int {
-	var sum int
-	for _, t := range ts {
-		sum += t.ToInt()
-	}
-	return sum
 }
 
 // TODO: map package
@@ -872,30 +794,4 @@ func Cumulative(is []int) []int {
 		rs = append(rs, is[i]+rs[i-1])
 	}
 	return rs
-}
-
-// MergeSort merge sorts the provided arrays. It assumes the
-// arrays are sorted.
-func MergeSort[T constraints.Ordered](a, b []T, removeDuplicates bool) []T {
-	var merged []T
-	for ai, bi := 0, 0; ai < len(a) || bi < len(b); {
-		var contender T
-		if ai == len(a) {
-			contender = b[bi]
-			bi++
-		} else if bi == len(b) {
-			contender = a[ai]
-			ai++
-		} else if a[ai] <= b[bi] {
-			contender = a[ai]
-			ai++
-		} else {
-			contender = b[bi]
-			bi++
-		}
-		if !removeDuplicates || len(merged) == 0 || contender != merged[len(merged)-1] {
-			merged = append(merged, contender)
-		}
-	}
-	return merged
 }

@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/point"
 )
@@ -88,11 +89,11 @@ func (p *problem177) valid(theta1, theta2, theta3, theta4 int, m map[string]bool
 		180 - ACD - CMD,
 		180 - theta1 - AMD,
 	}
-	if maths.SumSys(angleOrder...) != 360 {
+	if bread.Sum(angleOrder) != 360 {
 		panic("ANGLE ORDER")
 	}
 	// Unique ID
-	m[maths.Min(p.quadCode(angleOrder), p.quadCode(maths.Reverse(angleOrder)))] = true
+	m[maths.Min(p.quadCode(angleOrder), p.quadCode(bread.Reverse(angleOrder)))] = true
 	return true
 }
 

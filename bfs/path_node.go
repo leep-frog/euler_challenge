@@ -3,7 +3,7 @@ package bfs
 import (
 	"fmt"
 
-	"github.com/leep-frog/euler_challenge/parse"
+	"github.com/leep-frog/euler_challenge/functional"
 )
 
 type PathNode[CODE comparable, T any] interface {
@@ -20,7 +20,7 @@ type PathNode[CODE comparable, T any] interface {
 }
 
 func PathSearch[CODE comparable, T PathNode[CODE, T]](initStates []T, opts ...Option) ([]T, int) {
-	convertedStates := parse.Map(initStates, func(t T) *pathNodeWrapper[CODE, T] {
+	convertedStates := functional.Map(initStates, func(t T) *pathNodeWrapper[CODE, T] {
 		return &pathNodeWrapper[CODE, T]{t}
 	})
 	reverter := func(sw *pathNodeWrapper[CODE, T]) T { return sw.state }
@@ -49,7 +49,7 @@ func (sc *pathNodeWrapper[CODE, T]) Done(_ bool, p Path[*pathNodeWrapper[CODE, T
 }
 
 func (sc *pathNodeWrapper[CODE, T]) AdjacentStates(_ bool, p Path[*pathNodeWrapper[CODE, T]]) []*pathNodeWrapper[CODE, T] {
-	return parse.Map(sc.state.AdjacentStates(&pathWrapper[*pathNodeWrapper[CODE, T], T]{p, pathNodeConvert[CODE, T]}), func(t T) *pathNodeWrapper[CODE, T] {
+	return functional.Map(sc.state.AdjacentStates(&pathWrapper[*pathNodeWrapper[CODE, T], T]{p, pathNodeConvert[CODE, T]}), func(t T) *pathNodeWrapper[CODE, T] {
 		return &pathNodeWrapper[CODE, T]{t}
 	})
 }

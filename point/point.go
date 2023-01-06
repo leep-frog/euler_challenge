@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/fraction"
 	"github.com/leep-frog/euler_challenge/maths"
 	"golang.org/x/exp/slices"
@@ -652,7 +653,7 @@ func IsConvex[T maths.Mathable](points ...*Point[T]) bool {
 
 // Returns a sorted thing of points
 func ConvexHullFromPoints[T maths.Mathable](points ...*Point[T]) *ConvexHull[T] {
-	points = maths.CopySlice(points)
+	points = bread.Copy(points)
 	if len(points) < 3 {
 		return &ConvexHull[T]{Points: points}
 		//panic("Need at least 3 points to compute the convex hull")
@@ -684,5 +685,5 @@ func ConvexHullFromPoints[T maths.Mathable](points ...*Point[T]) *ConvexHull[T] 
 		bottom = append(bottom, p)
 	}
 
-	return &ConvexHull[T]{append(top, maths.Reverse(bottom)[1:len(bottom)-1]...)}
+	return &ConvexHull[T]{append(top, bread.Reverse(bottom)[1:len(bottom)-1]...)}
 }

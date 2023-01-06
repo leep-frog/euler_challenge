@@ -3,7 +3,7 @@ package y2020
 import (
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
-	"github.com/leep-frog/euler_challenge/maths"
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/parse"
 )
 
@@ -33,7 +33,7 @@ func (d *day03) Solve(lines []string, o command.Output) {
 		d.slopeCount(grid, 7, 1),
 		d.slopeCount(grid, 1, 2),
 	}
-	o.Stdoutln(parts[1], maths.ProdSys(parts))
+	o.Stdoutln(parts[1], bread.Product(parts))
 }
 
 func (d *day03) Cases() []*aoc.Case {

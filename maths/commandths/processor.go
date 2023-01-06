@@ -54,7 +54,7 @@ func (ot *operationTerm) string(m map[int]bool) string {
 func (ne *numericalTerm) evaluate() int {
 	var ops []*operationTerm
 	got := map[int]bool{}
-	for cur := ne; cur.next != nil; cur = cur.next.next {
+	for cur := ne; cur.next != nil && cur.next.next != nil; cur = cur.next.next {
 		if got[cur.next.position] {
 			panic("Infinite loop")
 		}

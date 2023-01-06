@@ -138,15 +138,25 @@ type operationState struct{}
 
 func (*operationState) processTerm(ctx *parserContext, term *parserTerm) (parserState, error) {
 	if term.symbolType == operationSymbol {
-		// TODO: have error include term position
+		// We are
+		// if slices.Contains(term.operationValue.Symbols(), "-") {
+		// 	return nil,
+		// }
+		// if term.operationValue == m.
+		// TODO: have error include term position and string value
 		return nil, fmt.Errorf("consecutive operations")
+	}
+	if term.symbolType == closeParenSymbol {
+		panic("RATS")
 	}
 	// Otherwise number symbol
 	ctx.appendNumber(term.numberValue)
 	return &numberState{}, nil
 }
 
-type numberState struct{}
+type numberState struct {
+	negate bool
+}
 
 func (*numberState) processTerm(ctx *parserContext, term *parserTerm) (parserState, error) {
 	if term.symbolType == numberSymbol {

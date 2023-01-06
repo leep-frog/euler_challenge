@@ -3,7 +3,7 @@ package bfs
 import (
 	"fmt"
 
-	"github.com/leep-frog/euler_challenge/parse"
+	"github.com/leep-frog/euler_challenge/functional"
 )
 
 type DistancePathNode[CODE comparable, DIST Distanceable[DIST], T any] interface {
@@ -23,7 +23,7 @@ type DistancePathNode[CODE comparable, DIST Distanceable[DIST], T any] interface
 }
 
 func DistancePathSearch[CODE comparable, DIST Distanceable[DIST], T DistancePathNode[CODE, DIST, T]](_ bool, initStates []T, opts ...Option) ([]T, DIST) {
-	convertedStates := parse.Map(initStates, func(t T) *distancePathNodeWrapper[CODE, DIST, T] {
+	convertedStates := functional.Map(initStates, func(t T) *distancePathNodeWrapper[CODE, DIST, T] {
 		return &distancePathNodeWrapper[CODE, DIST, T]{t}
 	})
 	reverter := func(sw *distancePathNodeWrapper[CODE, DIST, T]) T { return sw.state }
@@ -51,7 +51,7 @@ func (sc *distancePathNodeWrapper[CODE, DIST, T]) Done(_ bool, p Path[*distanceP
 }
 
 func (sc *distancePathNodeWrapper[CODE, DIST, T]) AdjacentStates(_ bool, p Path[*distancePathNodeWrapper[CODE, DIST, T]]) []*distancePathNodeWrapper[CODE, DIST, T] {
-	return parse.Map(sc.state.AdjacentStates(&pathWrapper[*distancePathNodeWrapper[CODE, DIST, T], T]{p, distPathConvert[CODE, DIST, T]}), func(t T) *distancePathNodeWrapper[CODE, DIST, T] {
+	return functional.Map(sc.state.AdjacentStates(&pathWrapper[*distancePathNodeWrapper[CODE, DIST, T], T]{p, distPathConvert[CODE, DIST, T]}), func(t T) *distancePathNodeWrapper[CODE, DIST, T] {
 		return &distancePathNodeWrapper[CODE, DIST, T]{t}
 	})
 }

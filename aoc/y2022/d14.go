@@ -5,6 +5,7 @@ import (
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
+	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/parse"
 	"github.com/leep-frog/euler_challenge/point"
@@ -89,8 +90,8 @@ func (c *cave) addSand() bool {
 }
 
 func (d *day14) solve(lines []string, part1 bool) int {
-	rockWalls := parse.Map(lines, func(line string) []*point.Point[int] {
-		return parse.Map(strings.Split(line, " -> "), func(s string) *point.Point[int] {
+	rockWalls := functional.Map(lines, func(line string) []*point.Point[int] {
+		return functional.Map(strings.Split(line, " -> "), func(s string) *point.Point[int] {
 			parts := strings.Split(s, ",")
 			return point.New(parse.Atoi(parts[0]), parse.Atoi(parts[1]))
 		})
