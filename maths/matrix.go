@@ -88,9 +88,9 @@ func Transpose(matrix [][]*big.Rat) [][]*big.Rat {
 	if len(matrix) == 0 {
 		return m
 	}
-	for j := range Range(len(matrix[0])) {
+	for j := 0; j < len(matrix[0]); j++ {
 		var col []*big.Rat
-		for i := range Range(len(matrix)) {
+		for i := 0; i < len(matrix); i++ {
 			col = append(col, big.NewRat(0, 1).Set(matrix[i][j]))
 		}
 		m = append(m, col)
@@ -104,9 +104,9 @@ func SimpleTranspose[T any](matrix [][]T) [][]T {
 	if len(matrix) == 0 {
 		return m
 	}
-	for j := range Range(len(matrix[0])) {
+	for j := 0; j < len(matrix[0]); j++ {
 		var col []T
-		for i := range Range(len(matrix)) {
+		for i := 0; i < len(matrix); i++ {
 			col = append(col, matrix[i][j])
 		}
 		m = append(m, col)
@@ -144,10 +144,10 @@ func AdjugateMatrix(matrix [][]*big.Rat) [][]*big.Rat {
 	}
 
 	var rs, cs []int
-	for i := range Range(nRows) {
+	for i := 0; i < nRows; i++ {
 		rs = append(rs, i)
 	}
-	for i := range Range(nCols) {
+	for i := 0; i < nCols; i++ {
 		cs = append(cs, i)
 	}
 
@@ -222,10 +222,10 @@ func Determinant(matrix [][]*big.Rat) *big.Rat {
 	}
 
 	var rs, cs []int
-	for i := range Range(nRows) {
+	for i := 0; i < nRows; i++ {
 		rs = append(rs, i)
 	}
-	for i := range Range(nCols) {
+	for i := 0; i < nCols; i++ {
 		cs = append(cs, i)
 	}
 

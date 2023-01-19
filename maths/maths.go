@@ -477,11 +477,6 @@ func BigPow(a, b int) *Int {
 	return start.Copy()
 }
 
-// Range returns an empty int slice of length n
-func Range(n int) []int {
-	return make([]int, n)
-}
-
 func Pow[T Mathable](a, b T) T {
 	if b == 0 {
 		return 1

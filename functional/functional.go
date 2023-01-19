@@ -11,6 +11,16 @@ func Any[T any](ts []T, f func(t T) bool) bool {
 	return false
 }
 
+func Filter[T any](ts []T, f func(t T) bool) []T {
+	var r []T
+	for _, t := range ts {
+		if f(t) {
+			r = append(r, t)
+		}
+	}
+	return r
+}
+
 // All Returns true if f(t) == true for all t in ts.
 func All[T any](ts []T, f func(t T) bool) bool {
 	for _, t := range ts {
