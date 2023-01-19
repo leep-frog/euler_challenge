@@ -6,6 +6,10 @@ import (
 	"github.com/leep-frog/command"
 )
 
+type parser struct {
+	OperationMap map[string]Operation[int]
+}
+
 type parserContext struct {
 	head, cur *numericalTerm
 	curOp     *operationTerm
@@ -39,12 +43,12 @@ func (pc *parserContext) appendOperation(op Operation[int]) {
 	pc.cur = nil
 }
 
-func parse(seq *expressionSequence, inParen bool) (int, error) {
+func (p *parser) parse(seq *expressionSequence, inParen bool) (int, error) {
 
 	var state parserState = &operationState{}
 	ctx := &parserContext{}
 	for !seq.done() {
-		pt, err := toParserTerm(seq.next())
+		pt, err := p.toParserTerm(seq.next())
 		if err != nil {
 			return 0, err
 		}
@@ -57,7 +61,7 @@ func parse(seq *expressionSequence, inParen bool) (int, error) {
 		}
 
 		if pt.symbolType == openParenSymbol {
-			v, err := parse(seq, true)
+			v, err := p.parse(seq, true)
 			if err != nil {
 				return 0, err
 			}
@@ -90,14 +94,14 @@ type parserTerm struct {
 	numberValue    int
 }
 
-func toParserTerm(s string) (*parserTerm, error) {
+func (p *parser) toParserTerm(s string) (*parserTerm, error) {
 	// Parse int first (incase we have a negative number)
 	i, parseIntErr := command.ParseInt(s)
 	if parseIntErr == nil {
 		return &parserTerm{numberSymbol, nil, i}, nil
 	}
 	// Check if operation
-	if op, ok := OperationMap[s]; ok {
+	if op, ok := p.OperationMap[s]; ok {
 		return &parserTerm{operationSymbol, op, 0}, nil
 	}
 

@@ -88,20 +88,31 @@ func (m *Maths) Node() *command.Node {
 			// TODO: Flag(s) to change mode (int, float, fraction)
 			expArg,
 			&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
-				expressionStr := strings.Join(expArg.Get(d), " ")
-				expressionStr = operations.ReplaceAllString(expressionStr, " $1 ")
-				expressionStr = minusRegex.ReplaceAllString(expressionStr, " $1 $2 ")
-
-				expression := whitespace.Split(strings.TrimSpace(expressionStr), -1)
-				v, err := parse(newSequence(expression), false)
+				v, err := Parse(strings.Join(expArg.Get(d), " "), Operations...)
 				if err != nil {
 					return o.Err(err)
 				}
-
 				o.Stdoutln(v)
 				return nil
 			}},
 		),
 		DefaultCompletion: true,
 	})
+}
+
+func Parse(expressionStr string, ops ...Operation[int]) (int, error) {
+	expressionStr = operations.ReplaceAllString(expressionStr, " $1 ")
+	expressionStr = minusRegex.ReplaceAllString(expressionStr, " $1 $2 ")
+
+	expression := whitespace.Split(strings.TrimSpace(expressionStr), -1)
+
+	opMap := map[string]Operation[int]{}
+	for _, o := range ops {
+		for _, sym := range o.Symbols() {
+			opMap[sym] = o
+		}
+	}
+
+	parser := &parser{opMap}
+	return parser.parse(newSequence(expression), false)
 }
