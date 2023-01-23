@@ -14,6 +14,7 @@ func TestMatrix(t *testing.T) {
 		matrix        [][]float64
 		wantDet       float64
 		wantTranspose [][]float64
+		wantRotate    [][]float64
 	}{
 		{
 			name: "1x1",
@@ -21,6 +22,9 @@ func TestMatrix(t *testing.T) {
 				{3},
 			},
 			wantTranspose: [][]float64{
+				{3},
+			},
+			wantRotate: [][]float64{
 				{3},
 			},
 			wantDet: 3,
@@ -35,6 +39,10 @@ func TestMatrix(t *testing.T) {
 				{3, 5},
 				{4, 6},
 			},
+			wantRotate: [][]float64{
+				{5, 3},
+				{6, 4},
+			},
 			wantDet: -2,
 		},
 		{
@@ -46,6 +54,10 @@ func TestMatrix(t *testing.T) {
 			wantTranspose: [][]float64{
 				{4, 6},
 				{9, 4},
+			},
+			wantRotate: [][]float64{
+				{6, 4},
+				{4, 9},
 			},
 			wantDet: -38,
 		},
@@ -61,6 +73,11 @@ func TestMatrix(t *testing.T) {
 				{0, 4, 6},
 				{0, 9, 4},
 			},
+			wantRotate: [][]float64{
+				{0, 0, 5},
+				{6, 4, 0},
+				{4, 9, 0},
+			},
 			wantDet: -190,
 		},
 		{
@@ -75,6 +92,11 @@ func TestMatrix(t *testing.T) {
 				{3, 4, 6},
 				{7, 9, 4},
 			},
+			wantRotate: [][]float64{
+				{3, 2, 5},
+				{6, 4, 3},
+				{4, 9, 7},
+			},
 			wantDet: -133,
 		},
 		{
@@ -88,6 +110,11 @@ func TestMatrix(t *testing.T) {
 				{1, 0, 5},
 				{2, 1, 6},
 				{3, 4, 0},
+			},
+			wantRotate: [][]float64{
+				{5, 0, 1},
+				{6, 1, 2},
+				{0, 4, 3},
 			},
 			wantDet: 1,
 		},
@@ -105,6 +132,12 @@ func TestMatrix(t *testing.T) {
 				{7, 9, 4, 7},
 				{2, 3, 4, 8},
 			},
+			wantRotate: [][]float64{
+				{5, 3, 2, 5},
+				{6, 6, 4, 3},
+				{7, 4, 9, 7},
+				{8, 4, 3, 2},
+			},
 			wantDet: -531,
 		},
 		/* Useful for commenting out tests. */
@@ -118,6 +151,10 @@ func TestMatrix(t *testing.T) {
 
 			if diff := cmp.Diff(test.wantTranspose, SmallifyMatrix(Transpose(m))); diff != "" {
 				t.Errorf("Transpose(%v) produced diff (-want, +got):\n%s", test.matrix, diff)
+			}
+
+			if diff := cmp.Diff(test.wantRotate, SmallifyMatrix(Rotate(m))); diff != "" {
+				t.Errorf("Rotate(%v) produced diff (-want, +got):\n%s", test.matrix, diff)
 			}
 		})
 	}

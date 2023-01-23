@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/linkedlist"
 )
 
@@ -80,6 +81,23 @@ func MultiplyMatrices(this, that [][]*big.Rat) [][]*big.Rat {
 		result = append(result, row)
 	}
 	return result
+}
+
+// Rotate rotates the provided matrix clockwise
+func Rotate[T any](matrix [][]T) [][]T {
+	var m [][]T
+	if len(matrix) == 0 {
+		return nil
+	}
+	rev := bread.Reverse(matrix)
+	for j := 0; j < len(matrix[0]); j++ {
+		var rotatedRow []T
+		for _, row := range rev {
+			rotatedRow = append(rotatedRow, row[j])
+		}
+		m = append(m, rotatedRow)
+	}
+	return m
 }
 
 // Transpose transposes the provided matrix.
