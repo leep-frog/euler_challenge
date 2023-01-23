@@ -38,21 +38,19 @@ func (d *day20) Solve(lines []string, o command.Output) {
 		}
 	}
 
-	ctx := &tileContext{map[string][]*tile{}, map[string][]*tile{}, map[string][]*tile{}, map[string][]*tile{}}
-	for _, t := range tiles {
-		ctx.add(t)
-	}
-
 	size := maths.Sqrt(len(tiles) / 8)
 	var grid [][]*tile
 	for i := 0; i < size; i++ {
 		grid = append(grid, make([]*tile, size, size))
 	}
-	if !d.search(tMap, ctx, grid, 0, 0, size, idMap) {
+
+	// DFS for a solution
+	if !d.search(tMap, grid, 0, 0, size, idMap) {
 		o.Stdoutln("Search yielded no results :(")
 		return
 	}
 
+	// Get the corners of the solution
 	corners := []int{
 		grid[0][0].id, grid[size-1][0].id, grid[0][size-1].id, grid[size-1][size-1].id,
 	}
@@ -65,9 +63,7 @@ func (d *day20) Solve(lines []string, o command.Output) {
 			for _, c := range row {
 				pictureRow = append(pictureRow, c.cells[crowIdx][1:len(c.cells[crowIdx])-1]...)
 			}
-			// if crowIdx > 0 && crowIdx < len(row[0].cells)-1 {
 			picture = append(picture, pictureRow)
-			// }
 		}
 	}
 
@@ -82,10 +78,14 @@ func (d *day20) Solve(lines []string, o command.Output) {
 		})
 	})
 
+	// Number of hashtags in picture
 	htCount := functional.Count2D(picture, true)
+	// Number of hashtags in sea monster
 	smSize := functional.Count2D(seaMonster, true)
+	// Number of sea monsters
 	var smCount int
 
+	// Check all orientations
 	for range []bool{true, false} {
 		for rot := 0; rot < 4; rot++ {
 
@@ -108,6 +108,8 @@ func (d *day20) Solve(lines []string, o command.Output) {
 				NOT_A_MONSTER:
 				}
 			}
+
+			// If we found some monsters:
 			if smCount > 0 {
 				o.Stdoutln(bread.Product(corners), htCount-smCount*smSize)
 				return
@@ -120,7 +122,7 @@ func (d *day20) Solve(lines []string, o command.Output) {
 	o.Stderr("No match found")
 }
 
-func (d *day20) search(tiles map[int][]*tile, ctx *tileContext, grid [][]*tile, row, col, size int, ids map[int]bool) bool {
+func (d *day20) search(tiles map[int][]*tile, grid [][]*tile, row, col, size int, ids map[int]bool) bool {
 	if col == size {
 		col = 0
 		row++
@@ -159,7 +161,7 @@ func (d *day20) search(tiles map[int][]*tile, ctx *tileContext, grid [][]*tile, 
 	for _, o := range options {
 		grid[row][col] = o
 		delete(ids, o.id)
-		if d.search(tiles, ctx, grid, row, col+1, size, ids) {
+		if d.search(tiles, grid, row, col+1, size, ids) {
 			return true
 		}
 		ids[o.id] = true
@@ -167,18 +169,6 @@ func (d *day20) search(tiles map[int][]*tile, ctx *tileContext, grid [][]*tile, 
 	}
 
 	return false
-}
-
-type tileContext struct {
-	leftSides, rightSides, bottomSides, topSides map[string][]*tile
-}
-
-func (ctx *tileContext) add(t *tile) {
-	lc, rc, tc, bc := t.leftCode(), t.rightCode(), t.topCode(), t.bottomCode()
-	ctx.leftSides[lc] = append(ctx.leftSides[lc], t)
-	ctx.rightSides[rc] = append(ctx.rightSides[rc], t)
-	ctx.topSides[tc] = append(ctx.topSides[tc], t)
-	ctx.bottomSides[bc] = append(ctx.bottomSides[bc], t)
 }
 
 type tile struct {
