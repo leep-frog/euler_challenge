@@ -11,6 +11,21 @@ func Any[T any](ts []T, f func(t T) bool) bool {
 	return false
 }
 
+func Count[T comparable](ts []T, k T) int {
+	return Reduce(0, ts, func(b int, t T) int {
+		if t == k {
+			return b + 1
+		}
+		return b
+	})
+}
+
+func Count2D[T comparable](tts [][]T, k T) int {
+	return Reduce(0, tts, func(b int, ts []T) int {
+		return b + Count(ts, k)
+	})
+}
+
 func Filter[T any](ts []T, f func(t T) bool) []T {
 	var r []T
 	for _, t := range ts {
