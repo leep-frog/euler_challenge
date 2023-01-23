@@ -121,7 +121,7 @@ func (d *day13) parsePacket(q *maths.Queue[string]) *packet {
 }
 
 func (d *day13) parsePacketFromString(line string) *packet {
-	return d.parsePacket(maths.NewQueue(strings.Split(line, "")))
+	return d.parsePacket(maths.NewQueue(strings.Split(line, "")...))
 }
 
 func (d *day13) Solve(lines []string, o command.Output) {
