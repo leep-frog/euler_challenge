@@ -71,9 +71,7 @@ func (d *day07) Solve(lines []string, o command.Output) {
 
 	containable := map[string]bool{}
 	d.explore("shiny gold", paths, containable)
-	fmt.Println(revPaths)
-	o.Stdoutln(d.explore2("shiny gold", revPaths, map[string]int{}))
-	fmt.Println(len(containable))
+	o.Stdoutln(len(containable)-1, d.explore2("shiny gold", revPaths, map[string]int{}))
 }
 
 func (d *day07) Cases() []*aoc.Case {
@@ -81,12 +79,12 @@ func (d *day07) Cases() []*aoc.Case {
 		{
 			FileSuffix: "example",
 			ExpectedOutput: []string{
-				"",
+				"4 32",
 			},
 		},
 		{
 			ExpectedOutput: []string{
-				"",
+				"101 108636",
 			},
 		},
 	}

@@ -87,12 +87,12 @@ func (d *day23) Cases() []*aoc.Case {
 		{
 			FileSuffix: "example",
 			ExpectedOutput: []string{
-				"",
+				"67384529 149245887792",
 			},
 		},
 		{
 			ExpectedOutput: []string{
-				"",
+				"94238657 3072905352",
 			},
 		},
 	}

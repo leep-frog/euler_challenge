@@ -17,6 +17,9 @@ type day09 struct{}
 func (d *day09) Solve(lines []string, o command.Output) {
 
 	preamble := 25
+	if len(lines) < 100 {
+		preamble = 5
+	}
 	numbers := functional.Map(lines, parse.Atoi)
 	var invalid int
 	for i, k := range numbers {
@@ -41,7 +44,6 @@ func (d *day09) Solve(lines []string, o command.Output) {
 			return
 		}
 	}
-	// for
 }
 
 func (d *day09) Cases() []*aoc.Case {
@@ -49,12 +51,12 @@ func (d *day09) Cases() []*aoc.Case {
 		{
 			FileSuffix: "example",
 			ExpectedOutput: []string{
-				"",
+				"127 62",
 			},
 		},
 		{
 			ExpectedOutput: []string{
-				"",
+				"3199139634 438559930",
 			},
 		},
 	}
