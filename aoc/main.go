@@ -13,6 +13,7 @@ import (
 	// YEAR_IMPOTS
 	"github.com/leep-frog/euler_challenge/aoc/y2022"
 	"github.com/leep-frog/euler_challenge/aoc/y2020"
+	"github.com/leep-frog/euler_challenge/aoc/y2015"
 	// END_YEAR_IMPORTS
 )
 
@@ -20,6 +21,7 @@ var (
 	years = map[int]*aoc.Year{
 		2022: y2022.Year(),
 		2020: y2020.Year(),
+		2015: y2015.Year(),
 		// END_AOC_YEARS
 	}
 	yearArg = command.MapArg("YEAR", "Problem year", years, true)
