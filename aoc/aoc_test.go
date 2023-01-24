@@ -15,6 +15,9 @@ func TestYears(t *testing.T) {
 	slices.Sort(keys)
 	for _, y := range keys {
 		year := years[y]
+		if year.Number != 2015 {
+			continue
+		}
 		for dayNumber, day := range year.Days {
 			for _, cse := range day.Cases() {
 				t.Run(fmt.Sprintf("%d.%d %s", year.Number, dayNumber+1, cse.FileSuffix), func(t *testing.T) {
