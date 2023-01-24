@@ -7,12 +7,19 @@ import (
 
 type Node[T any] struct {
 	Value T
-	Next *Node[T]
-	Prev *Node[T]
+	Next  *Node[T]
+	Prev  *Node[T]
 }
 
-// List with hashed positions
-//type List
+func CircularRepresentation[T int](n *Node[T]) string {
+	var r []string
+	got := map[T]bool{}
+	for k := n; k != nil && !got[k.Value]; k = k.Next {
+		got[k.Value] = true
+		r = append(r, fmt.Sprintf("%v", k.Value))
+	}
+	return strings.Join(r, " -> ")
+}
 
 func (n *Node[T]) String() string {
 	var r []string
