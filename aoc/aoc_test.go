@@ -14,15 +14,16 @@ func TestYears(t *testing.T) {
 	keys := maps.Keys(years)
 	slices.Sort(keys)
 	for _, y := range keys {
-		if y != 2020 {
+		if y != 2015 {
 			continue
 		}
 		year := years[y]
 		for dayNumber, day := range year.Days {
 			for _, cse := range day.Cases() {
 				t.Run(fmt.Sprintf("%d.%d %s", year.Number, dayNumber+1, cse.FileSuffix), func(t *testing.T) {
-					if strings.Join(cse.ExpectedOutput, "") == "" {
-						t.Skipf("No expected output set, skipping")
+					var wantOutput string
+					if strings.Join(cse.ExpectedOutput, "") != "" {
+						wantOutput = strings.Join(cse.ExpectedOutput, "\n") + "\n"
 					}
 					args := []string{
 						fmt.Sprintf("%d", year.Number),
@@ -33,7 +34,7 @@ func TestYears(t *testing.T) {
 					command.ExecuteTest(t, &command.ExecuteTestCase{
 						Node:       node(),
 						Args:       args,
-						WantStdout: strings.Join(cse.ExpectedOutput, "\n") + "\n",
+						WantStdout: wantOutput,
 						WantData: &command.Data{Values: map[string]interface{}{
 							yearArg.Name():    year,
 							dayArg.Name():     dayNumber + 1,
