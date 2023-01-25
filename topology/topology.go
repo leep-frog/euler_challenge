@@ -2,6 +2,8 @@
 // and processing.
 package topology
 
+import "fmt"
+
 // Graph is a topoligcal graph that calculates and caches
 // data at each topological node.
 type Graph[V any] struct {
@@ -23,7 +25,11 @@ func (g *Graph[V]) Get(key string) V {
 	if v, ok := g.Values[key]; ok {
 		return v
 	}
-	v := g.items[key].Process(g)
+	d, ok := g.items[key]
+	if !ok {
+		panic(fmt.Sprintf("Unknown topological key: %q", key))
+	}
+	v := d.Process(g)
 	g.Values[key] = v
 	return v
 }

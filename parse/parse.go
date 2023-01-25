@@ -7,12 +7,21 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
 
 	"github.com/leep-frog/euler_challenge/functional"
 )
+
+var (
+	numberRegex = regexp.MustCompile("^[0-9]+$")
+)
+
+func IsNumberFormat(s string) bool {
+	return numberRegex.MatchString(s)
+}
 
 func Atoi(s string) int {
 	i, err := strconv.Atoi(strings.TrimSpace(s))
