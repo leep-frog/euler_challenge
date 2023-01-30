@@ -178,3 +178,27 @@ func ToCharArray(s string) []rune {
 	}
 	return r
 }
+
+var (
+	diagNeighbors = [][]int{
+		{1, 1},
+		{1, 0},
+		{1, -1},
+		{0, 1},
+		{0, -1},
+		{-1, 1},
+		{-1, 0},
+		{-1, -1},
+	}
+)
+
+func NeighborCount[T comparable](grid [][]T, i, j int, value T) int {
+	var count int
+	for _, move := range diagNeighbors {
+		a, b := move[0]+i, move[1]+j
+		if a >= 0 && a < len(grid) && b >= 0 && b < len(grid[a]) && grid[a][b] == value {
+			count++
+		}
+	}
+	return count
+}
