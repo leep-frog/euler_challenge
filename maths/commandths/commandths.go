@@ -39,7 +39,7 @@ func (m *Maths) Changed() bool { return false }
 func (*Maths) Setup() []string { return nil }
 func (m *Maths) Name() string  { return cliName }
 
-func (m *Maths) primeFactor() *command.Node {
+func (m *Maths) primeFactor() command.Node {
 	arg := command.ListArg[int]("N", "The numbers to prime factor", 1, command.UnboundedList)
 	return command.SerialNodes(
 		command.Description("Prints out the prime factors of the provided numbers"),
@@ -62,7 +62,7 @@ func (m *Maths) primeFactor() *command.Node {
 	)
 }
 
-func (m *Maths) nthPrime() *command.Node {
+func (m *Maths) nthPrime() command.Node {
 	arg := command.Arg[int]("N", "The prime index to get", command.NonNegative[int]())
 	return command.SerialNodes(
 		command.Description("Prints out the Nth prime number (1-indexed)"),
@@ -74,15 +74,15 @@ func (m *Maths) nthPrime() *command.Node {
 	)
 }
 
-func (m *Maths) Node() *command.Node {
-	return command.AsNode(&command.BranchNode{
-		Branches: map[string]*command.Node{
-			"prime": command.AsNode(&command.BranchNode{
-				Branches: map[string]*command.Node{
+func (m *Maths) Node() command.Node {
+	return &command.BranchNode{
+		Branches: map[string]command.Node{
+			"prime": &command.BranchNode{
+				Branches: map[string]command.Node{
 					"factor": m.primeFactor(),
 					"nth":    m.nthPrime(),
 				},
-			}),
+			},
 		},
 		Default: command.SerialNodes(
 			// TODO: Flag(s) to change mode (int, float, fraction)
@@ -97,7 +97,7 @@ func (m *Maths) Node() *command.Node {
 			}},
 		),
 		DefaultCompletion: true,
-	})
+	}
 }
 
 func Parse(expressionStr string, ops ...Operation[int]) (int, error) {

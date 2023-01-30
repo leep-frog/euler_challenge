@@ -1,6 +1,7 @@
 package twentyone
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/leep-frog/command"
@@ -9,7 +10,7 @@ import (
 func TestAll(t *testing.T) {
 	for _, test := range []struct {
 		name string
-		node *command.Node
+		node command.Node
 		args []string
 		want []string
 	}{
@@ -28,7 +29,7 @@ func TestAll(t *testing.T) {
 			etc := &command.ExecuteTestCase{
 				Node:          test.node,
 				Args:          test.args,
-				WantStdout:    test.want,
+				WantStdout:    strings.Join(test.want, "\n"),
 				SkipDataCheck: true,
 			}
 			command.ExecuteTest(t, etc)

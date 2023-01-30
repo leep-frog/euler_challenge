@@ -214,8 +214,8 @@ func getProblems() []*problem {
 	}
 }
 
-func Branches() map[string]*command.Node {
-	m := map[string]*command.Node{}
+func Branches() map[string]command.Node {
+	m := map[string]command.Node{}
 	for i, p := range getProblems() {
 		pStr := fmt.Sprintf("%d", p.num)
 		if _, ok := m[pStr]; ok {
@@ -262,8 +262,12 @@ func intsInputNode(num, numInputs, numOptionalInputs int, f func(command.Output,
 
 type problem struct {
 	num        int
-	n          *command.Node
+	n          command.Node
 	executions []*execution
+}
+
+func (p *problem) Node() command.Node {
+	return p.n
 }
 
 type execution struct {

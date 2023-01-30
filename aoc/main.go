@@ -11,9 +11,9 @@ import (
 	"github.com/leep-frog/euler_challenge/parse"
 
 	// YEAR_IMPOTS
-	"github.com/leep-frog/euler_challenge/aoc/y2022"
-	"github.com/leep-frog/euler_challenge/aoc/y2020"
 	"github.com/leep-frog/euler_challenge/aoc/y2015"
+	"github.com/leep-frog/euler_challenge/aoc/y2020"
+	"github.com/leep-frog/euler_challenge/aoc/y2022"
 	// END_YEAR_IMPORTS
 )
 
@@ -39,7 +39,7 @@ func goFile(day int) string {
 	return fmt.Sprintf("d%02d.go", day)
 }
 
-func node() *command.Node {
+func node() command.Node {
 	return command.SerialNodes(
 		command.FlagNode(
 			exampleFlag,

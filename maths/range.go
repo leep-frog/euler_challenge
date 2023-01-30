@@ -26,8 +26,7 @@ func (r *Range) String() string {
 		s = append(s, fmt.Sprintf("%d-%d", r.inflectionPoints[i], r.inflectionPoints[i+1]))
 	}
 
-	return fmt.Sprintf("[%v]", strings.Join(s, ";"))
-	// return fmt.Sprintf("[%d])
+	return fmt.Sprintf("[%s]", strings.Join(s, ";"))
 }
 
 func (r *Range) Contains(k int) bool {

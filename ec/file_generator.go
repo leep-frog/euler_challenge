@@ -10,7 +10,7 @@ import (
 	"github.com/leep-frog/euler_challenge/parse"
 )
 
-func FileGenerator() *command.Node {
+func FileGenerator() command.Node {
 	problemNumberArg := command.Arg[int]("PROBLEM_NUMBER", "Problem number", command.Positive[int]())
 	fileSuffixArg := command.ListArg[string]("FILE_SUFFIX", "suffix for file name", 1, command.UnboundedList)
 
