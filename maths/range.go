@@ -31,7 +31,8 @@ func (r *Range) String() string {
 }
 
 func (r *Range) Contains(k int) bool {
-	idx := slices.BinarySearch(r.inflectionPoints, k)
+	// idx, _ := slices.BinarySearch(r.inflectionPoints, k)
+	idx, _ := slices.BinarySearch(r.inflectionPoints, k)
 
 	if idx >= len(r.inflectionPoints) {
 		return false
