@@ -66,11 +66,13 @@ func (b *Bester[I, T]) BestIndex() I {
 	return b.bestI
 }
 
-func (b *Bester[I, T]) Check(v T) {
+func (b *Bester[I, T]) Check(v T) bool {
 	if !b.set || b.better(v, b.best) {
 		b.best = v
 		b.set = true
+		return true
 	}
+	return false
 }
 
 func (b *Bester[I, T]) IndexCheck(idx I, v T) bool {
