@@ -7,7 +7,7 @@ import (
 )
 
 // Change order of these for best inference from search functions.
-type ContextDistancePathNode[CTX any, CODE comparable, DIST Distanceable[DIST], T any] interface {
+type ContextDistancePathNode[CODE comparable, DIST Distanceable[DIST], CTX any, T any] interface {
 	// A unique code for the current state. This may be called multiple times
 	// so this should be cached in the implementing code if computation is expensive.
 	Code(CTX, Path[T]) CODE
@@ -23,40 +23,40 @@ type ContextDistancePathNode[CTX any, CODE comparable, DIST Distanceable[DIST], 
 	Distance(CTX, Path[T]) DIST
 }
 
-func ContextDistancePathSearch[CTX any, CODE comparable, DIST Distanceable[DIST], T ContextDistancePathNode[CTX, CODE, DIST, T]](ctx CTX, initStates []T, opts ...Option) ([]T, DIST) {
-	convertedStates := functional.Map(initStates, func(t T) *contextDistPathNodeWrapper[CTX, CODE, DIST, T] {
-		return &contextDistPathNodeWrapper[CTX, CODE, DIST, T]{t}
+func ContextDistancePathSearch[CODE comparable, DIST Distanceable[DIST], CTX any, T ContextDistancePathNode[CODE, DIST, CTX, T]](ctx CTX, initStates []T, opts ...Option) ([]T, DIST) {
+	convertedStates := functional.Map(initStates, func(t T) *contextDistPathNodeWrapper[CODE, DIST, CTX, T] {
+		return &contextDistPathNodeWrapper[CODE, DIST, CTX, T]{t}
 	})
-	reverter := func(sw *contextDistPathNodeWrapper[CTX, CODE, DIST, T]) T { return sw.state }
+	reverter := func(sw *contextDistPathNodeWrapper[CODE, DIST, CTX, T]) T { return sw.state }
 	return search[T, CTX, CODE, DIST](ctx, convertedStates, reverter, opts...)
 }
 
-type contextDistPathNodeWrapper[CTX any, CODE comparable, DIST Distanceable[DIST], T ContextDistancePathNode[CTX, CODE, DIST, T]] struct {
+type contextDistPathNodeWrapper[CODE comparable, DIST Distanceable[DIST], CTX any, T ContextDistancePathNode[CODE, DIST, CTX, T]] struct {
 	state T
 }
 
-func cdpnConvert[CTX any, CODE comparable, DIST Distanceable[DIST], T ContextDistancePathNode[CTX, CODE, DIST, T]](w *contextDistPathNodeWrapper[CTX, CODE, DIST, T]) T {
+func cdpnConvert[CODE comparable, DIST Distanceable[DIST], CTX any, T ContextDistancePathNode[CODE, DIST, CTX, T]](w *contextDistPathNodeWrapper[CODE, DIST, CTX, T]) T {
 	return w.state
 }
 
-func (sc *contextDistPathNodeWrapper[CTX, CODE, DIST, T]) String() string {
+func (sc *contextDistPathNodeWrapper[CODE, DIST, CTX, T]) String() string {
 	return fmt.Sprintf("%v", sc.state)
 }
 
-func (sc *contextDistPathNodeWrapper[CTX, CODE, DIST, T]) Code(ctx CTX, p Path[*contextDistPathNodeWrapper[CTX, CODE, DIST, T]]) CODE {
-	return sc.state.Code(ctx, &pathWrapper[*contextDistPathNodeWrapper[CTX, CODE, DIST, T], T]{p, cdpnConvert[CTX, CODE, DIST, T]})
+func (sc *contextDistPathNodeWrapper[CODE, DIST, CTX, T]) Code(ctx CTX, p Path[*contextDistPathNodeWrapper[CODE, DIST, CTX, T]]) CODE {
+	return sc.state.Code(ctx, &pathWrapper[*contextDistPathNodeWrapper[CODE, DIST, CTX, T], T]{p, cdpnConvert[CODE, DIST, CTX, T]})
 }
 
-func (sc *contextDistPathNodeWrapper[CTX, CODE, DIST, T]) Done(ctx CTX, p Path[*contextDistPathNodeWrapper[CTX, CODE, DIST, T]]) bool {
-	return sc.state.Done(ctx, &pathWrapper[*contextDistPathNodeWrapper[CTX, CODE, DIST, T], T]{p, cdpnConvert[CTX, CODE, DIST, T]})
+func (sc *contextDistPathNodeWrapper[CODE, DIST, CTX, T]) Done(ctx CTX, p Path[*contextDistPathNodeWrapper[CODE, DIST, CTX, T]]) bool {
+	return sc.state.Done(ctx, &pathWrapper[*contextDistPathNodeWrapper[CODE, DIST, CTX, T], T]{p, cdpnConvert[CODE, DIST, CTX, T]})
 }
 
-func (sc *contextDistPathNodeWrapper[CTX, CODE, DIST, T]) AdjacentStates(ctx CTX, p Path[*contextDistPathNodeWrapper[CTX, CODE, DIST, T]]) []*contextDistPathNodeWrapper[CTX, CODE, DIST, T] {
-	return functional.Map(sc.state.AdjacentStates(ctx, &pathWrapper[*contextDistPathNodeWrapper[CTX, CODE, DIST, T], T]{p, cdpnConvert[CTX, CODE, DIST, T]}), func(t T) *contextDistPathNodeWrapper[CTX, CODE, DIST, T] {
-		return &contextDistPathNodeWrapper[CTX, CODE, DIST, T]{t}
+func (sc *contextDistPathNodeWrapper[CODE, DIST, CTX, T]) AdjacentStates(ctx CTX, p Path[*contextDistPathNodeWrapper[CODE, DIST, CTX, T]]) []*contextDistPathNodeWrapper[CODE, DIST, CTX, T] {
+	return functional.Map(sc.state.AdjacentStates(ctx, &pathWrapper[*contextDistPathNodeWrapper[CODE, DIST, CTX, T], T]{p, cdpnConvert[CODE, DIST, CTX, T]}), func(t T) *contextDistPathNodeWrapper[CODE, DIST, CTX, T] {
+		return &contextDistPathNodeWrapper[CODE, DIST, CTX, T]{t}
 	})
 }
 
-func (sc *contextDistPathNodeWrapper[CTX, CODE, DIST, T]) Distance(ctx CTX, p Path[*contextDistPathNodeWrapper[CTX, CODE, DIST, T]]) DIST {
-	return sc.state.Distance(ctx, &pathWrapper[*contextDistPathNodeWrapper[CTX, CODE, DIST, T], T]{p, cdpnConvert[CTX, CODE, DIST, T]})
+func (sc *contextDistPathNodeWrapper[CODE, DIST, CTX, T]) Distance(ctx CTX, p Path[*contextDistPathNodeWrapper[CODE, DIST, CTX, T]]) DIST {
+	return sc.state.Distance(ctx, &pathWrapper[*contextDistPathNodeWrapper[CODE, DIST, CTX, T], T]{p, cdpnConvert[CODE, DIST, CTX, T]})
 }

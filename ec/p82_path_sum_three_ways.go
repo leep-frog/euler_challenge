@@ -16,7 +16,7 @@ func P82() *problem {
 		for i := 0; i < len(grid); i++ {
 			initStates = append(initStates, &p82{i, 0})
 		}
-		_, dist := bfs.ContextDistanceSearch[[][]int, string, bfs.Int](grid, initStates)
+		_, dist := bfs.ContextDistanceSearch[string, bfs.Int](grid, initStates)
 		o.Stdoutln(dist)
 	}, []*execution{
 		{

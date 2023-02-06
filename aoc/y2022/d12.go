@@ -79,8 +79,8 @@ func (d *day12) Solve(lines []string, o command.Output) {
 		ctx.grid = append(ctx.grid, row)
 	}
 
-	_, dist1 := bfs.ContextSearch[*context12, string](ctx, []*height{start})
-	_, dist2 := bfs.ContextSearch[*context12, string](ctx, bases)
+	_, dist1 := bfs.ContextSearch[string](ctx, []*height{start})
+	_, dist2 := bfs.ContextSearch[string](ctx, bases)
 	o.Stdoutln(dist1, dist2)
 }
 

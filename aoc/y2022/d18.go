@@ -80,7 +80,7 @@ func (d *day18) Solve(lines []string, o command.Output) {
 
 	ctx := &dropletCtx{grid, 0}
 	start := &dropletNode{point.Origin3D()}
-	bfs.ContextSearch[*dropletCtx, string](ctx, []*dropletNode{start})
+	bfs.ContextSearch[string](ctx, []*dropletNode{start})
 	o.Stdoutln(count, ctx.count)
 }
 

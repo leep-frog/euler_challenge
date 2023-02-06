@@ -52,7 +52,7 @@ type blizzardMap struct {
 
 func (bm *blizzardMap) solve(start, end []int) int {
 	bm.start, bm.end = start, end
-	path, _ := bfs.ContextPathSearch[*blizzardMap, string](bm, []*blizzardLocation{{bm.start[0], bm.start[1], bm.minutes}})
+	path, _ := bfs.ContextPathSearch[string](bm, []*blizzardLocation{{bm.start[0], bm.start[1], bm.minutes}})
 	bm.minutes += len(path)
 	return len(path) - 1
 }

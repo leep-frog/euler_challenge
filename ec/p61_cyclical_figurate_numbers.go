@@ -36,7 +36,7 @@ func P61() *problem {
 				maths.CopyMap(generators),
 			})
 		}
-		path, _ := bfs.ContextDistancePathSearch[map[int]int, string, bfs.Int](startMap, initStates, bfs.CheckDuplicates())
+		path, _ := bfs.ContextDistancePathSearch[string, bfs.Int](startMap, initStates, bfs.CheckDuplicates())
 		o.Stdoutln(bread.Sum(functional.Map(path, func(cfg *cycFigNum) int { return cfg.n })))
 	}, []*execution{
 		{

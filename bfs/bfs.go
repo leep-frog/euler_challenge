@@ -117,7 +117,7 @@ func CumulativeDistanceFunction() Option {
 	}
 }
 
-func search[RETURN, CTX any, CODE comparable, DIST Distanceable[DIST], T ContextDistancePathNode[CTX, CODE, DIST, T]](ctx CTX, initStates []T, tConverter converter[T, RETURN], opts ...Option) ([]RETURN, DIST) {
+func search[RETURN, CTX any, CODE comparable, DIST Distanceable[DIST], T ContextDistancePathNode[CODE, DIST, CTX, T]](ctx CTX, initStates []T, tConverter converter[T, RETURN], opts ...Option) ([]RETURN, DIST) {
 	o := &option{}
 	for _, opt := range opts {
 		opt(o)

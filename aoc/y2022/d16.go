@@ -143,7 +143,7 @@ func (d *day16) Solve(lines []string, o command.Output) {
 	// get to it (and not have to worry about re-visiting any valves).
 	for _, v := range valves {
 		if v.flow != 0 || v.id == "AA" {
-			bfs.ContextPathSearch[*valveContext, string](&valveContext{vMap, v}, []*valve{v})
+			bfs.ContextPathSearch[string](&valveContext{vMap, v}, []*valve{v})
 		}
 	}
 

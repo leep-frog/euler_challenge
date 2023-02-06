@@ -10,7 +10,7 @@ import (
 
 func P81() *problem {
 	return fileInputNode(81, func(lines []string, o command.Output) {
-		_, dist := bfs.ContextDistanceSearch[[][]int, string, bfs.Int](parse.ToGrid(lines, ","), []*p81{{}})
+		_, dist := bfs.ContextDistanceSearch[string, bfs.Int](parse.ToGrid(lines, ","), []*p81{{}})
 		o.Stdoutln(dist)
 	}, []*execution{
 		{

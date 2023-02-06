@@ -14,7 +14,7 @@ import (
 func P119() *problem {
 	return intInputNode(119, func(o command.Output, n int) {
 		ctx := &context119{map[string]bool{}, n, nil}
-		bfs.ContextDistanceSearch[*context119, string, bfs.Int](ctx, []*node119{{2, 2, maths.NewInt(4)}})
+		bfs.ContextDistanceSearch[string, bfs.Int](ctx, []*node119{{2, 2, maths.NewInt(4)}})
 
 		var values []string
 		for k := range ctx.values {
