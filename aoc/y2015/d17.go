@@ -59,7 +59,7 @@ func (d *day17) Cases() []*aoc.Case {
 		},
 		{
 			ExpectedOutput: []string{
-				"4372",
+				"4372 4",
 			},
 		},
 	}
