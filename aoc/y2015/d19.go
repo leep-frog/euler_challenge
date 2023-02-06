@@ -1,12 +1,12 @@
 package y2015
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc/aoc"
 	"github.com/leep-frog/euler_challenge/maths"
+	"github.com/leep-frog/euler_challenge/pair"
 	"golang.org/x/exp/slices"
 )
 
@@ -16,15 +16,15 @@ func Day19() aoc.Day {
 
 type day19 struct{}
 
-func (d *day19) donzo(depth int, mol string, transformations [][]string) (int, bool) {
+func (d *day19) donzo(depth int, mol string, transformations []*pair.Pair[string]) (int, bool) {
 	if mol == "e" {
 		return depth, true
 	}
 
 	for _, t := range transformations {
-		parts := strings.Split(mol, t[0])
+		parts := strings.Split(mol, t.A)
 		for i := 1; i < len(parts); i++ {
-			if v, ok := d.donzo(depth+1, strings.Join(parts[:i], t[0])+t[1]+strings.Join(parts[i:], t[0]), transformations); ok {
+			if v, ok := d.donzo(depth+1, strings.Join(parts[:i], t.A)+t.B+strings.Join(parts[i:], t.A), transformations); ok {
 				return v, ok
 			}
 		}
@@ -33,7 +33,7 @@ func (d *day19) donzo(depth int, mol string, transformations [][]string) (int, b
 }
 
 func (d *day19) Solve(lines []string, o command.Output) {
-	fmt.Println("START")
+	// Generate objects
 	ops := map[string][]string{}
 	revOps := map[string][]string{}
 	var maxLen, revMaxLen int
@@ -47,22 +47,20 @@ func (d *day19) Solve(lines []string, o command.Output) {
 	mol := lines[len(lines)-1]
 	mc := &moleculeContext{ops, maxLen}
 	revMC := &moleculeContext{revOps, revMaxLen}
-	_ = revMC
+
+	// Solve part 1
 	part1 := len(mc.transformations(mol))
-	fmt.Println("UNO", part1)
 
-	fmt.Println()
-	fmt.Println("PART 2 ------")
-
-	var ts [][]string
+	// Generate array of pairs
+	var ts []*pair.Pair[string]
 	for from, tos := range revMC.ops {
 		for _, to := range tos {
-			ts = append(ts, []string{from, to})
+			ts = append(ts, pair.New(from, to))
 		}
 	}
-	slices.SortFunc(ts, func(this, that []string) bool {
-		thisDist := len(this[0]) - len(this[1])
-		thatDist := len(that[0]) - len(that[1])
+	slices.SortFunc(ts, func(this, that *pair.Pair[string]) bool {
+		thisDist := len(this.A) - len(this.B)
+		thatDist := len(that.A) - len(that.B)
 		return thisDist > thatDist
 	})
 
@@ -99,12 +97,12 @@ func (d *day19) Cases() []*aoc.Case {
 		{
 			FileSuffix: "example",
 			ExpectedOutput: []string{
-				"",
+				"4 3",
 			},
 		},
 		{
 			ExpectedOutput: []string{
-				"",
+				"518 200",
 			},
 		},
 	}
