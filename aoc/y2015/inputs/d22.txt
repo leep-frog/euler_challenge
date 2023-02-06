@@ -1,0 +1,4 @@
+Wizard Hit Points: 50
+Wizard Mana: 500
+Boss Hit Points: 51
+Boss Damage: 9

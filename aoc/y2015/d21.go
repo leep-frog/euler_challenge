@@ -1,6 +1,7 @@
 package y2015
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/leep-frog/command"
@@ -85,6 +86,14 @@ type player struct {
 	hp     int
 	damage int
 	armor  int
+}
+
+func (p *player) String() string {
+	return fmt.Sprintf("{hp:%d, damage:%d, armor:%d}", p.hp, p.damage, p.armor)
+}
+
+func (p *player) copy() *player {
+	return &player{p.hp, p.damage, p.armor}
 }
 
 func (p *player) fight(boss *player) bool {

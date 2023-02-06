@@ -6,7 +6,7 @@ import (
 	"github.com/leep-frog/euler_challenge/functional"
 )
 
-type DistanceNode[CTX any, CODE comparable, DIST Distanceable[DIST], T any] interface {
+type DistanceNode[CODE comparable, DIST Distanceable[DIST], T any] interface {
 	// A unique code for the current state. This may be called multiple times
 	// so this should be cached in the implementing code if computation is expensive.
 	Code() CODE
@@ -22,36 +22,36 @@ type DistanceNode[CTX any, CODE comparable, DIST Distanceable[DIST], T any] inte
 	Distance() DIST
 }
 
-func DistanceSearch[CTX any, CODE comparable, DIST Distanceable[DIST], T DistanceNode[CTX, CODE, DIST, T]](ctx CTX, initStates []T, opts ...Option) ([]T, DIST) {
-	convertedStates := functional.Map(initStates, func(t T) *DistanceNodeWrapper[CTX, CODE, DIST, T] {
-		return &DistanceNodeWrapper[CTX, CODE, DIST, T]{t}
+func DistanceSearch[CODE comparable, DIST Distanceable[DIST], T DistanceNode[CODE, DIST, T]](initStates []T, opts ...Option) ([]T, DIST) {
+	convertedStates := functional.Map(initStates, func(t T) *DistanceNodeWrapper[CODE, DIST, T] {
+		return &DistanceNodeWrapper[CODE, DIST, T]{t}
 	})
-	reverter := func(sw *DistanceNodeWrapper[CTX, CODE, DIST, T]) T { return sw.state }
-	return search[T, CTX, CODE, DIST](ctx, convertedStates, reverter, opts...)
+	reverter := func(sw *DistanceNodeWrapper[CODE, DIST, T]) T { return sw.state }
+	return search[T, bool, CODE, DIST](false, convertedStates, reverter, opts...)
 }
 
-type DistanceNodeWrapper[CTX any, CODE comparable, DIST Distanceable[DIST], T DistanceNode[CTX, CODE, DIST, T]] struct {
+type DistanceNodeWrapper[CODE comparable, DIST Distanceable[DIST], T DistanceNode[CODE, DIST, T]] struct {
 	state T
 }
 
-func (sc *DistanceNodeWrapper[CTX, CODE, DIST, T]) String() string {
+func (sc *DistanceNodeWrapper[CODE, DIST, T]) String() string {
 	return fmt.Sprintf("%v", sc.state)
 }
 
-func (sc *DistanceNodeWrapper[CTX, CODE, DIST, T]) Code(CTX, Path[*DistanceNodeWrapper[CTX, CODE, DIST, T]]) CODE {
+func (sc *DistanceNodeWrapper[CODE, DIST, T]) Code(bool, Path[*DistanceNodeWrapper[CODE, DIST, T]]) CODE {
 	return sc.state.Code()
 }
 
-func (sc *DistanceNodeWrapper[CTX, CODE, DIST, T]) Done(CTX, Path[*DistanceNodeWrapper[CTX, CODE, DIST, T]]) bool {
+func (sc *DistanceNodeWrapper[CODE, DIST, T]) Done(bool, Path[*DistanceNodeWrapper[CODE, DIST, T]]) bool {
 	return sc.state.Done()
 }
 
-func (sc *DistanceNodeWrapper[CTX, CODE, DIST, T]) AdjacentStates(CTX, Path[*DistanceNodeWrapper[CTX, CODE, DIST, T]]) []*DistanceNodeWrapper[CTX, CODE, DIST, T] {
-	return functional.Map(sc.state.AdjacentStates(), func(t T) *DistanceNodeWrapper[CTX, CODE, DIST, T] {
-		return &DistanceNodeWrapper[CTX, CODE, DIST, T]{t}
+func (sc *DistanceNodeWrapper[CODE, DIST, T]) AdjacentStates(bool, Path[*DistanceNodeWrapper[CODE, DIST, T]]) []*DistanceNodeWrapper[CODE, DIST, T] {
+	return functional.Map(sc.state.AdjacentStates(), func(t T) *DistanceNodeWrapper[CODE, DIST, T] {
+		return &DistanceNodeWrapper[CODE, DIST, T]{t}
 	})
 }
 
-func (sc *DistanceNodeWrapper[CTX, CODE, DIST, T]) Distance(CTX, Path[*DistanceNodeWrapper[CTX, CODE, DIST, T]]) DIST {
+func (sc *DistanceNodeWrapper[CODE, DIST, T]) Distance(bool, Path[*DistanceNodeWrapper[CODE, DIST, T]]) DIST {
 	return sc.state.Distance()
 }
