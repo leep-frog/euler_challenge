@@ -41,7 +41,7 @@ func goFile(day int) string {
 
 func node() command.Node {
 	return command.SerialNodes(
-		command.FlagNode(
+		command.FlagProcessor(
 			exampleFlag,
 			suffixFlag,
 		),
