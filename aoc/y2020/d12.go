@@ -24,7 +24,6 @@ func (d *day12) Solve(lines []string, o command.Output) {
 
 	// Part 1 elements
 	w := walker.CardinalWalker(walker.East, false)
-	start1 := point.Origin[int]()
 
 	// Part 2 elements
 	wayPoint := point.New(10, 1)
@@ -34,7 +33,7 @@ func (d *day12) Solve(lines []string, o command.Output) {
 		d, v := line[0], parse.Atoi(line[1:])
 		switch d {
 		case 'F':
-			start1 = start1.Plus(w.CurrentVector().Times(v))
+			w.Walk(v)
 			start2 = start2.Plus(wayPoint.Times(v))
 		case 'R':
 			for i := 0; i < v; i += 90 {
@@ -47,12 +46,12 @@ func (d *day12) Solve(lines []string, o command.Output) {
 				wayPoint = wayPoint.Rotate(false)
 			}
 		default:
-			start1 = start1.Plus(w.GetVector(dirMap[d]).Times(v))
+			w.Move(dirMap[d], v)
 			wayPoint = wayPoint.Plus(w.GetVector(dirMap[d]).Times(v))
 		}
 	}
 	o.Stdoutln(
-		start1.ManhattanDistance(point.Origin[int]()),
+		w.Position().ManhattanDistance(point.Origin[int]()),
 		start2.ManhattanDistance(point.Origin[int]()),
 	)
 }

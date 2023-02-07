@@ -40,10 +40,23 @@ type Directionable interface {
 type Walker[T ~int] struct {
 	directionIdx T
 	directions   []*point.Point[int]
+	position     *point.Point[int]
 }
 
 func CardinalWalker(direction CardinalDirection, grid bool) *Walker[CardinalDirection] {
-	return &Walker[CardinalDirection]{direction, CardinalDirections(grid)}
+	return &Walker[CardinalDirection]{direction, CardinalDirections(grid), point.Origin[int]()}
+}
+
+func (w *Walker[T]) Position() *point.Point[int] {
+	return w.position.Copy()
+}
+
+func (w *Walker[T]) Move(d CardinalDirection, steps int) {
+	w.position = w.position.Plus(w.directions[d].Times(steps))
+}
+
+func (w *Walker[T]) Walk(steps int) {
+	w.position = w.position.Plus(w.CurrentVector().Times(steps))
 }
 
 func (w *Walker[T]) Right() {
