@@ -19,15 +19,16 @@ func TestYears(t *testing.T) {
 			continue
 		}
 		for dayNumber, day := range year.Days {
+			dayNumber++
 			for _, cse := range day.Cases() {
-				t.Run(fmt.Sprintf("%d.%d %s", year.Number, dayNumber+1, cse.FileSuffix), func(t *testing.T) {
+				t.Run(fmt.Sprintf("%d.%d %s", year.Number, dayNumber, cse.FileSuffix), func(t *testing.T) {
 					var wantOutput string
 					if strings.Join(cse.ExpectedOutput, "") != "" {
 						wantOutput = strings.Join(cse.ExpectedOutput, "\n") + "\n"
 					}
 					args := []string{
 						fmt.Sprintf("%d", year.Number),
-						fmt.Sprintf("%d", dayNumber+1),
+						fmt.Sprintf("%d", dayNumber),
 						"--suffix",
 						cse.FileSuffix,
 					}
@@ -37,7 +38,7 @@ func TestYears(t *testing.T) {
 						WantStdout: wantOutput,
 						WantData: &command.Data{Values: map[string]interface{}{
 							yearArg.Name():    year,
-							dayArg.Name():     dayNumber + 1,
+							dayArg.Name():     dayNumber,
 							suffixFlag.Name(): cse.FileSuffix,
 						}},
 					})
