@@ -33,7 +33,7 @@ func (d *day24) getGroupings(idx int, rem int, parts []int, cur []int, groupings
 	}
 }
 
-func (d *day24) evaluate2(opts map[int]bool, groupings [][]int, length int) bool {
+func (d *day24) partOneCheck(opts map[int]bool, groupings [][]int, length int) bool {
 	for _, group := range groupings {
 		if functional.All(group, func(t int) bool { return opts[t] }) && len(group) >= length && len(opts)-len(group) >= length {
 			return true
@@ -42,7 +42,7 @@ func (d *day24) evaluate2(opts map[int]bool, groupings [][]int, length int) bool
 	return false
 }
 
-func (d *day24) evaluate3(opts map[int]bool, groupings [][]int, length int) bool {
+func (d *day24) partTwoCheck(opts map[int]bool, groupings [][]int, length int) bool {
 	for _, group := range groupings {
 		var subOpts map[int]bool
 		if len(group) < length {
@@ -59,7 +59,7 @@ func (d *day24) evaluate3(opts map[int]bool, groupings [][]int, length int) bool
 			delete(subOpts, g)
 		}
 
-		if d.evaluate2(subOpts, groupings, length) {
+		if d.partOneCheck(subOpts, groupings, length) {
 			return true
 		}
 
@@ -81,11 +81,11 @@ func (d *day24) Solve(lines []string, o command.Output) {
 		parts = append(parts, v)
 	}
 
-	o.Stdoutln(d.solve1(parts, total), d.solve2(parts, total))
+	o.Stdoutln(d.solve(parts, total, 3, d.partOneCheck), d.solve(parts, total, 4, d.partTwoCheck))
 }
 
-func (d *day24) solve2(partsArr []int, total int) int {
-	size := total / 4
+func (d *day24) solve(partsArr []int, total, segmentCount int, checker func(map[int]bool, [][]int, int) bool) int {
+	size := total / segmentCount
 	var groups [][]int
 	d.getGroupings(0, size, partsArr, nil, &groups)
 
@@ -99,7 +99,7 @@ func (d *day24) solve2(partsArr []int, total int) int {
 	}
 
 	for _, g := range groups {
-		if len(g) > len(partsArr)/4 {
+		if len(g) > len(partsArr)/segmentCount {
 			continue
 		}
 		var opts []int
@@ -111,41 +111,7 @@ func (d *day24) solve2(partsArr []int, total int) int {
 				optsM[k] = true
 			}
 		}
-		if d.evaluate3(optsM, groups, len(g)) {
-			return bread.Product(g)
-		}
-	}
-	return 0
-}
-
-func (d *day24) solve1(partsArr []int, total int) int {
-	size := total / 3
-	var groups [][]int
-	d.getGroupings(0, size, partsArr, nil, &groups)
-
-	slices.SortFunc(groups, func(this, that []int) bool {
-		return bread.Product(this) < bread.Product(that)
-	})
-
-	for i, g := range groups {
-		slices.Sort(g)
-		groups[i] = g
-	}
-
-	for _, g := range groups {
-		if len(g) > len(partsArr)/3 {
-			continue
-		}
-		var opts []int
-		optsM := map[int]bool{}
-		used := maths.NewSimpleSet(g...)
-		for _, k := range partsArr {
-			if !used[k] {
-				opts = append(opts, k)
-				optsM[k] = true
-			}
-		}
-		if d.evaluate2(optsM, groups, len(g)) {
+		if checker(optsM, groups, len(g)) {
 			return bread.Product(g)
 		}
 	}
@@ -157,12 +123,12 @@ func (d *day24) Cases() []*aoc.Case {
 		{
 			FileSuffix: "example",
 			ExpectedOutput: []string{
-				"",
+				"88 44",
 			},
 		},
 		{
 			ExpectedOutput: []string{
-				"",
+				"11846773891 80393059",
 			},
 		},
 	}
