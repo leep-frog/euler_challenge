@@ -16,7 +16,7 @@ func Day19() aoc.Day {
 
 type day19 struct{}
 
-func (d *day19) donzo(depth int, mol string, transformations []*pair.Pair[string]) (int, bool) {
+func (d *day19) donzo(depth int, mol string, transformations []*pair.Pair[string, string]) (int, bool) {
 	if mol == "e" {
 		return depth, true
 	}
@@ -52,13 +52,13 @@ func (d *day19) Solve(lines []string, o command.Output) {
 	part1 := len(mc.transformations(mol))
 
 	// Generate array of pairs
-	var ts []*pair.Pair[string]
+	var ts []*pair.Pair[string, string]
 	for from, tos := range revMC.ops {
 		for _, to := range tos {
 			ts = append(ts, pair.New(from, to))
 		}
 	}
-	slices.SortFunc(ts, func(this, that *pair.Pair[string]) bool {
+	slices.SortFunc(ts, func(this, that *pair.Pair[string, string]) bool {
 		thisDist := len(this.A) - len(this.B)
 		thatDist := len(that.A) - len(that.B)
 		return thisDist > thatDist

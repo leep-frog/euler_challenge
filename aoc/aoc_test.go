@@ -15,7 +15,7 @@ func TestYears(t *testing.T) {
 	slices.Sort(keys)
 	for _, y := range keys {
 		year := years[y]
-		if year.Number != 2015 {
+		if year.Number != 2016 {
 			continue
 		}
 		for dayNumber, day := range year.Days {
