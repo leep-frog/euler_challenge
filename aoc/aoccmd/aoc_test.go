@@ -1,4 +1,4 @@
-package main
+package aoccmd
 
 import (
 	"fmt"
@@ -6,13 +6,17 @@ import (
 	"testing"
 
 	"github.com/leep-frog/command"
+	"github.com/leep-frog/euler_challenge/functional"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 )
 
 func TestYears(t *testing.T) {
-	keys := maps.Keys(years)
+	n := CLI().Node()
+
+	keys := functional.Filter(maps.Keys(years), func(y int) bool { return y > 2000 })
 	slices.Sort(keys)
+
 	for _, y := range keys {
 		year := years[y]
 		if year.Number != 2016 {
@@ -33,13 +37,13 @@ func TestYears(t *testing.T) {
 						cse.FileSuffix,
 					}
 					command.ExecuteTest(t, &command.ExecuteTestCase{
-						Node:       node(),
+						Node:       n,
 						Args:       args,
 						WantStdout: wantOutput,
 						WantData: &command.Data{Values: map[string]interface{}{
-							yearArg.Name():    year,
-							dayArg.Name():     dayNumber,
-							suffixFlag.Name(): cse.FileSuffix,
+							"YEAR":   year,
+							"DAY":    dayNumber,
+							"suffix": cse.FileSuffix,
 						}},
 					})
 				})

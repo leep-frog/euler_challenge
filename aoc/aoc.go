@@ -7,9 +7,9 @@ import (
 	"github.com/leep-frog/command"
 )
 
-type Year struct {
-	Number int
-	Days   []Day
+type Day interface {
+	Solve([]string, command.Output)
+	Cases() []*Case
 }
 
 type Case struct {
@@ -17,9 +17,9 @@ type Case struct {
 	ExpectedOutput []string
 }
 
-type Day interface {
-	Solve([]string, command.Output)
-	Cases() []*Case
+type Year struct {
+	Number int
+	Days   []Day
 }
 
 const (

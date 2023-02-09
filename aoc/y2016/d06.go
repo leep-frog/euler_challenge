@@ -1,11 +1,10 @@
 package y2016
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/leep-frog/command"
-	"github.com/leep-frog/euler_challenge/aoc/aoc"
+	"github.com/leep-frog/euler_challenge/aoc"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
@@ -26,15 +25,18 @@ func (d *day06) Solve(lines []string, o command.Output) {
 		}
 	}
 
-	var r []string
+	var r1, r2 []string
 	for _, m := range counts {
-		best := maths.Smallest[rune, int]()
+		best1 := maths.Largest[rune, int]()
+		best2 := maths.Smallest[rune, int]()
 		for k, v := range m {
-			best.IndexCheck(k, v)
+			best1.IndexCheck(k, v)
+			best2.IndexCheck(k, v)
 		}
-		r = append(r, string(best.BestIndex()))
+		r1 = append(r1, string(best1.BestIndex()))
+		r2 = append(r2, string(best2.BestIndex()))
 	}
-	fmt.Println(strings.Join(r, ""))
+	o.Stdoutln(strings.Join(r1, ""), strings.Join(r2, ""))
 }
 
 func (d *day06) Cases() []*aoc.Case {

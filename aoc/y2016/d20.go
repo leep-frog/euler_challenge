@@ -2,7 +2,7 @@ package y2016
 
 import (
 	"github.com/leep-frog/command"
-	"github.com/leep-frog/euler_challenge/aoc/aoc"
+	"github.com/leep-frog/euler_challenge/aoc"
 )
 
 func Day20() aoc.Day {

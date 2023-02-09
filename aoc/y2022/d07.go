@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/leep-frog/command"
-	"github.com/leep-frog/euler_challenge/aoc/aoc"
+	"github.com/leep-frog/euler_challenge/aoc"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/parse"
 	"golang.org/x/exp/maps"

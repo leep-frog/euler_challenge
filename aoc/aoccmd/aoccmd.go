@@ -1,4 +1,4 @@
-package main
+package aoccmd
 
 import (
 	"fmt"
@@ -7,7 +7,8 @@ import (
 	"strings"
 
 	"github.com/leep-frog/command"
-	"github.com/leep-frog/euler_challenge/aoc/aoc"
+	"github.com/leep-frog/command/sourcerer"
+	"github.com/leep-frog/euler_challenge/aoc"
 	"github.com/leep-frog/euler_challenge/parse"
 
 	// YEAR_IMPOTS
@@ -30,22 +31,39 @@ var (
 		16:   y2016.Year(),
 		// END_AOC_YEARS
 	}
-	yearArg = command.MapArg("YEAR", "Problem year", years, true)
-	dayArg  = command.Arg[int]("DAY", "Problem day", command.Between(1, 25, true))
-
-	exampleFlag = command.BoolFlag("example", 'x', "Whether or not to run on the example input")
-	suffixFlag  = command.Flag[string]("suffix", 's', "File suffix to use for problem")
 )
 
-func main() {
-	command.RunNodes(node())
+func CLI() sourcerer.CLI {
+	return &AdventOfCode{years}
 }
+
+func Aliasers() sourcerer.Option {
+	return sourcerer.Aliasers(map[string][]string{
+		"ac": nil,
+	})
+}
+
+type AdventOfCode struct {
+	years map[int]*aoc.Year
+}
+
+func (*AdventOfCode) Name() string    { return "aoc" }
+func (*AdventOfCode) Setup() []string { return nil }
+
+// TODO: set default year
+func (*AdventOfCode) Changed() bool { return false }
 
 func goFile(day int) string {
 	return fmt.Sprintf("d%02d.go", day)
 }
 
-func node() command.Node {
+func (a *AdventOfCode) Node() command.Node {
+	yearArg := command.MapArg("YEAR", "Problem year", a.years, true)
+	dayArg := command.Arg[int]("DAY", "Problem day", command.Between(1, 25, true))
+
+	exampleFlag := command.BoolFlag("example", 'x', "Whether or not to run on the example input")
+	suffixFlag := command.Flag[string]("suffix", 's', "File suffix to use for problem")
+
 	return command.SerialNodes(
 		command.FlagProcessor(
 			exampleFlag,
@@ -80,7 +98,7 @@ func node() command.Node {
 
 func run(year *aoc.Year, day int, suffix string, o command.Output) {
 	problem := year.Days[day-1]
-	lines := parse.ReadFileLines(filepath.Join(aoc.YearInputDir(year.Number), aoc.InputFile(day, suffix)))
+	lines := parse.ReadFileLines(filepath.Join("..", aoc.YearInputDir(year.Number), aoc.InputFile(day, suffix)))
 
 	// Remove newlines at end
 	for len(lines) > 0 && lines[len(lines)-1] == "" {
@@ -110,7 +128,7 @@ func generateYear(yearDir, yearInputDir string, year int, ed *command.ExecuteDat
 		"package y%d",
 		"",
 		`import (`,
-		`	"github.com/leep-frog/euler_challenge/aoc/aoc"`,
+		`	"github.com/leep-frog/euler_challenge/aoc"`,
 		`)`,
 		"",
 		"func Year() *aoc.Year {",
@@ -152,7 +170,7 @@ func generateDay(yearDir, yearInputDir string, year, day int, ed *command.Execut
 		"",
 		`import (`,
 		`	"github.com/leep-frog/command"`,
-		`	"github.com/leep-frog/euler_challenge/aoc/aoc"`,
+		`	"github.com/leep-frog/euler_challenge/aoc"`,
 		`)`,
 		"",
 		"func Day%02d() aoc.Day {",

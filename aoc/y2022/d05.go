@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/leep-frog/command"
-	"github.com/leep-frog/euler_challenge/aoc/aoc"
+	"github.com/leep-frog/euler_challenge/aoc"
 	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/parse"

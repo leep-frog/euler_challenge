@@ -1,7 +1,7 @@
 package y2020
 
 import (
-	"github.com/leep-frog/euler_challenge/aoc/aoc"
+	"github.com/leep-frog/euler_challenge/aoc"
 )
 
 func Year() *aoc.Year {
