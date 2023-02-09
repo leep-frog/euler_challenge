@@ -12,18 +12,22 @@ import (
 
 	// YEAR_IMPOTS
 	"github.com/leep-frog/euler_challenge/aoc/y2015"
+	"github.com/leep-frog/euler_challenge/aoc/y2016"
 	"github.com/leep-frog/euler_challenge/aoc/y2020"
 	"github.com/leep-frog/euler_challenge/aoc/y2022"
-	"github.com/leep-frog/euler_challenge/aoc/y2016"
 	// END_YEAR_IMPORTS
 )
 
 var (
 	years = map[int]*aoc.Year{
 		2022: y2022.Year(),
+		22:   y2022.Year(),
 		2020: y2020.Year(),
+		20:   y2020.Year(),
 		2015: y2015.Year(),
+		15:   y2015.Year(),
 		2016: y2016.Year(),
+		16:   y2016.Year(),
 		// END_AOC_YEARS
 	}
 	yearArg = command.MapArg("YEAR", "Problem year", years, true)
@@ -126,7 +130,7 @@ func generateYear(yearDir, yearInputDir string, year int, ed *command.ExecuteDat
 		// Plus sign to avoid replacing this line as well
 		fmt.Sprintf("r \"(^.*// END_YEAR"+"_IMPORTS.*$)\" '\t\"github.com/leep-frog/euler_challenge/aoc/y%d\"\n$1' %q", year, mainFile),
 		// Add map value
-		fmt.Sprintf("r \"(^.*// END_AOC"+"_YEARS.*$)\" '\t\t%d: y%d.Year(),\n$1' %q", year, year, mainFile),
+		fmt.Sprintf("r \"(^.*// END_AOC"+"_YEARS.*$)\" '\t\t%d: y%d.Year(),\n\t\t%d: y%d.Year(),\n$1' %q", year, year, year%100, year%100, mainFile),
 	)
 
 	return nil
