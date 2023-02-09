@@ -62,7 +62,7 @@ func node() command.Node {
 				if yearNumber < 2000 {
 					yearNumber += 2000
 				}
-				return generateYear(aoc.YearDir(yearArg.GetKey()), aoc.YearInputDir(yearNumber), yearNumber, ed, o)
+				return generateYear(aoc.YearDir(yearNumber), aoc.YearInputDir(yearNumber), yearNumber, ed, o)
 			}
 
 			// TODO: Mutually exclusive flags
