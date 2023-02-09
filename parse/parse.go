@@ -23,6 +23,11 @@ func IsNumberFormat(s string) bool {
 	return numberRegex.MatchString(s)
 }
 
+func AtoiOK(s string) (int, bool) {
+	i, err := strconv.Atoi(strings.TrimSpace(s))
+	return i, err == nil
+}
+
 func Atoi(s string) int {
 	i, err := strconv.Atoi(strings.TrimSpace(s))
 	if err != nil {
