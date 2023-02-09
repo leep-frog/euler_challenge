@@ -74,6 +74,7 @@ func (d *day08) Cases() []*aoc.Case {
 		{
 			ExpectedOutput: []string{
 				"110",
+				// ZJHRKCPLYJ
 			},
 		},
 	}
