@@ -134,7 +134,7 @@ func generateYear(yearDir, yearInputDir string, year int, ed *command.ExecuteDat
 		// Plus sign to avoid replacing this line as well
 		fmt.Sprintf("r \"(^.*// END_YEAR"+"_IMPORTS.*$)\" '\t\"github.com/leep-frog/euler_challenge/aoc/y%d\"\n$1' %q", year, mainFile),
 		// Add map value
-		fmt.Sprintf("r \"(^.*// END_AOC"+"_YEARS.*$)\" '\t\t%d: y%d.Year(),\n\t\t%d: y%d.Year(),\n$1' %q", year, year, year%100, year%100, mainFile),
+		fmt.Sprintf("r \"(^.*// END_AOC"+"_YEARS.*$)\" '\t\t%d: y%d.Year(),\n\t\t%d: y%d.Year(),\n$1' %q", year, year, year%100, year, mainFile),
 	)
 
 	return nil
