@@ -1,10 +1,12 @@
 package main
 
 import (
-	"github.com/leep-frog/command"
+	"os"
+
+	"github.com/leep-frog/command/sourcerer"
 	"github.com/leep-frog/euler_challenge/aoc/aoccmd"
 )
 
 func main() {
-	command.RunNodes(aoccmd.CLI().Node())
+	os.Exit(sourcerer.Run(aoccmd.CLI()))
 }

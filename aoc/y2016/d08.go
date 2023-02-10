@@ -29,7 +29,6 @@ func (d *day08) rotateCol(grid [][]bool, row, by int) [][]bool {
 func (d *day08) Solve(lines []string, o command.Output) {
 	var grid [][]bool
 	rows, cols := 6, 50
-	// rows, cols := 3, 7
 	for i := 0; i < rows; i++ {
 		grid = append(grid, make([]bool, cols, cols))
 	}

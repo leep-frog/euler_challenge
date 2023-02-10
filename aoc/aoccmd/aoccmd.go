@@ -34,7 +34,7 @@ var (
 )
 
 func CLI() sourcerer.CLI {
-	return &AdventOfCode{years}
+	return &AdventOfCode{years, 0, false}
 }
 
 func Aliasers() sourcerer.Option {
@@ -44,14 +44,15 @@ func Aliasers() sourcerer.Option {
 }
 
 type AdventOfCode struct {
-	years map[int]*aoc.Year
+	years       map[int]*aoc.Year
+	DefaultYear int
+	changed     bool
 }
 
 func (*AdventOfCode) Name() string    { return "aoc" }
 func (*AdventOfCode) Setup() []string { return nil }
 
-// TODO: set default year
-func (*AdventOfCode) Changed() bool { return false }
+func (a *AdventOfCode) Changed() bool { return a.changed }
 
 func goFile(day int) string {
 	return fmt.Sprintf("d%02d.go", day)
@@ -64,11 +65,23 @@ func (a *AdventOfCode) Node() command.Node {
 	exampleFlag := command.BoolFlag("example", 'x', "Whether or not to run on the example input")
 	suffixFlag := command.Flag[string]("suffix", 's', "File suffix to use for problem")
 
-	return command.SerialNodes(
+	var usedDefault bool
+
+	mainNode := command.SerialNodes(
 		command.FlagProcessor(
 			exampleFlag,
 			suffixFlag,
 		),
+		// Adds default year if first argument is "d"
+		command.SuperSimpleProcessor(func(i *command.Input, d *command.Data) error {
+			if s, ok := i.Peek(); !ok || s != "d" {
+				return nil
+			}
+			i.Pop()
+			i.PushFront(fmt.Sprintf("%d", a.DefaultYear))
+			usedDefault = true
+			return nil
+		}),
 		yearArg,
 		dayArg,
 		command.SimpleProcessor(func(i *command.Input, o command.Output, d *command.Data, ed *command.ExecuteData) error {
@@ -76,6 +89,9 @@ func (a *AdventOfCode) Node() command.Node {
 			year := yearArg.Get(d)
 
 			if year == nil {
+				if usedDefault {
+					return o.Stderrf("Default year does not exist!")
+				}
 				yearNumber := yearArg.GetKey()
 				if yearNumber < 2000 {
 					yearNumber += 2000
@@ -94,6 +110,20 @@ func (a *AdventOfCode) Node() command.Node {
 			return nil
 		}, nil /* No logic for complete */),
 	)
+
+	return &command.BranchNode{
+		Branches: map[string]command.Node{
+			"setDefault": command.SerialNodes(
+				command.Arg[int]("DEFAULT_YEAR", "Default year to use"),
+				&command.ExecutorProcessor{func(o command.Output, d *command.Data) error {
+					a.DefaultYear = d.Int("DEFAULT_YEAR")
+					a.changed = true
+					return nil
+				}},
+			),
+		},
+		Default: mainNode,
+	}
 }
 
 func run(year *aoc.Year, day int, suffix string, o command.Output) {
@@ -124,6 +154,7 @@ func generateYear(yearDir, yearInputDir string, year int, ed *command.ExecuteDat
 		}
 	}
 
+	dayFmt := "\t\t\tDay%2d(),"
 	parse.Write(filepath.Join(yearDir, "year.go"), fmt.Sprintf(strings.Join([]string{
 		"package y%d",
 		"",
@@ -135,7 +166,31 @@ func generateYear(yearDir, yearInputDir string, year int, ed *command.ExecuteDat
 		"\treturn &aoc.Year{",
 		"\t\tNumber: %d,",
 		"\t\tDays: []aoc.Day{",
-		"\t\t\t// END_OF_DAYS",
+		fmt.Sprintf(dayFmt, 1),
+		fmt.Sprintf(dayFmt, 2),
+		fmt.Sprintf(dayFmt, 3),
+		fmt.Sprintf(dayFmt, 4),
+		fmt.Sprintf(dayFmt, 5),
+		fmt.Sprintf(dayFmt, 6),
+		fmt.Sprintf(dayFmt, 7),
+		fmt.Sprintf(dayFmt, 8),
+		fmt.Sprintf(dayFmt, 9),
+		fmt.Sprintf(dayFmt, 10),
+		fmt.Sprintf(dayFmt, 11),
+		fmt.Sprintf(dayFmt, 12),
+		fmt.Sprintf(dayFmt, 13),
+		fmt.Sprintf(dayFmt, 14),
+		fmt.Sprintf(dayFmt, 15),
+		fmt.Sprintf(dayFmt, 16),
+		fmt.Sprintf(dayFmt, 17),
+		fmt.Sprintf(dayFmt, 18),
+		fmt.Sprintf(dayFmt, 19),
+		fmt.Sprintf(dayFmt, 20),
+		fmt.Sprintf(dayFmt, 21),
+		fmt.Sprintf(dayFmt, 22),
+		fmt.Sprintf(dayFmt, 23),
+		fmt.Sprintf(dayFmt, 24),
+		fmt.Sprintf(dayFmt, 25),
 		"\t\t},",
 		"\t}",
 		"}",
@@ -199,9 +254,4 @@ func generateDay(yearDir, yearInputDir string, year, day int, ed *command.Execut
 		"}",
 		"",
 	}, "\n"), year, day, day, day, day, day))
-
-	yearFile := parse.FullPath(yearDir, "year.go")
-	ed.Executable = append(ed.Executable,
-		fmt.Sprintf("r \"(^.*END_OF_DAYS.*$)\" '\t\t\tDay%02d(),\n$1' %q", day, yearFile),
-	)
 }
