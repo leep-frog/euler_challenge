@@ -2,12 +2,12 @@ package y2016
 
 import (
 	"fmt"
-	"regexp"
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc"
 	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/parse"
+	"github.com/leep-frog/euler_challenge/rgx"
 	"github.com/leep-frog/euler_challenge/topology"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
@@ -79,24 +79,22 @@ func (d *day10) Solve(lines []string, o command.Output) {
 		map[int]int{},
 	}
 
-	// TODO: Regex package and typo fixer for regex
-	r1 := regexp.MustCompile("^value ([0-9]+) goes to bot ([0-9]+)$")
-	r2 := regexp.MustCompile("^bot ([0-9]+) gives low to ([a-z]+) ([0-9]+) and high to ([a-z]+) ([0-9]+)$")
+	r1 := rgx.New("^value ([0-9]+) goes to bot ([0-9]+)$")
+	r2 := rgx.New("^bot ([0-9]+) gives low to ([a-z]+) ([0-9]+) and high to ([a-z]+) ([0-9]+)$")
 	for _, line := range lines {
-		m := r1.FindStringSubmatch(line)
-		if m != nil {
-			value, bot := parse.Atoi(m[1]), parse.Atoi(m[2])
+		if m, ok := r1.Match(line); ok {
+			value, bot := parse.Atoi(m[0]), parse.Atoi(m[1])
 			rb := ctx.getRobot(bot)
 			rb.chips = append(rb.chips, value)
 			continue
 		}
 
-		m = r2.FindStringSubmatch(line)
-		rb := ctx.getRobot(parse.Atoi(m[1]))
-		rb.lowRobot = m[2] == "bot"
-		rb.lowId = parse.Atoi(m[3])
-		rb.highRobot = m[4] == "bot"
-		rb.highId = parse.Atoi(m[5])
+		m := r2.MustMatch(line)
+		rb := ctx.getRobot(parse.Atoi(m[0]))
+		rb.lowRobot = m[1] == "bot"
+		rb.lowId = parse.Atoi(m[2])
+		rb.highRobot = m[3] == "bot"
+		rb.highId = parse.Atoi(m[4])
 
 		if rb.lowRobot {
 			lowRb := ctx.getRobot(rb.lowId)
