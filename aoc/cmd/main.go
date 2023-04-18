@@ -8,5 +8,5 @@ import (
 )
 
 func main() {
-	os.Exit(sourcerer.Run(aoccmd.CLI()))
+	os.Exit(sourcerer.Source([]sourcerer.CLI{aoccmd.CLI()}))
 }

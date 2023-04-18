@@ -2,9 +2,9 @@
 
 _aoc_path="$(dirname -- "${BASH_SOURCE[0]}")/cmd"
 _aoccmd_path="$(dirname -- "${BASH_SOURCE[0]}")/aoccmd"
-aliaser aoc goleep -d $_aoc_path
-aliaser ac goleep -d $_aoc_path d
-aliaser ax goleep -d $_aoc_path d -x
+aliaser aoc goleep aoc -d $_aoc_path
+aliaser ac goleep aoc -d $_aoc_path d
+aliaser ax goleep aoc -d $_aoc_path d -x
 
 function at {
   pushd . > /dev/null 2>&1

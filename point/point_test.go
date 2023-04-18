@@ -1,7 +1,6 @@
 package point
 
 import (
-	"fmt"
 	"math"
 	"testing"
 
@@ -65,6 +64,19 @@ func TestQuadrant(t *testing.T) {
 			if diff := cmp.Diff(test.want, test.p.Quadrant()); diff != "" {
 				t.Errorf("(%v).Quadrant() returned incorrect value (-want, +got):\n%s", test.p, diff)
 			}
+		})
+	}
+}
+
+func TestNothing(t *testing.T) {
+	for _, test := range []struct {
+		name string
+	}{
+		{
+			name: "someTest",
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
 		})
 	}
 }
@@ -422,7 +434,6 @@ func TestIntersect(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			fmt.Println(test.name, "===============")
 			p := test.ls1.Intersect(test.ls2)
 			if diff := cmp.Diff(test.want, p, fraction.CmpOpts()...); diff != "" {
 				t.Errorf("(%v).Intersect(%v) returned incorrect result (-want, +got):\n%s", test.ls1, test.ls2, diff)
@@ -761,7 +772,6 @@ func TestConvexHull(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			ch := ConvexHullFromPoints(test.points...)
-			fmt.Println(test.name, ch.Points)
 			if diff := cmp.Diff(test.want, ch); diff != "" {
 				t.Errorf("ConvexHullFromPoints(%v) produced incorrect convex hull (-want, +got):\n%s", test.points, diff)
 			}
