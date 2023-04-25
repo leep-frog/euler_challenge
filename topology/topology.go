@@ -35,7 +35,7 @@ func (g *Graph[V]) Get(key string) V {
 }
 
 // Graphical is an intermediate interface which just wraps the `Graph` type.
-// It is required to avoid an interface cycle in `Topological`.
+// It is required to avoid an interface cycle in `Graph -> Node -> Graph`.
 type Graphical[V any] interface {
 	// Get retrieves the value for the item with the provided key.
 	Get(string) V
@@ -51,20 +51,57 @@ type Node[V any] interface {
 	Process(Graphical[V]) V
 }
 
-/*func recursiveProcess[T Topological[V], V any](item T, itemMap map[string]T, dependents map[string][]string, dependencies map[string]map[string]bool, values map[string]V) {
-	c := item.Code()
+// Topological is an interface used by the `Process` function.
+type TopologicalNode[CTX any, ID comparable] interface {
+	// A unique identifier of the
+	Code(CTX) ID
+	Dependencies(CTX) []ID
+	Process(CTX)
+}
+
+// Process processes the set of nodes provided in topological order.
+func Process[CTX any, T TopologicalNode[CTX, ID], ID comparable](ctx CTX, items []T) {
+	// Map from item to list of items that depend on that item.
+	dependents := map[ID][]ID{}
+	// Map from item to list of items that the item is still waiting on.
+	dependencies := map[ID]map[ID]bool{}
+	itemMap := map[ID]T{}
+
+	for _, item := range items {
+		c := item.Code(ctx)
+		itemMap[c] = item
+
+		deps := item.Dependencies(ctx)
+		dependencies[c] = map[ID]bool{}
+		for _, d := range deps {
+			dependents[d] = append(dependents[d], c)
+			dependencies[c][d] = true
+		}
+	}
+
+	processed := map[ID]bool{}
+	for _, item := range items {
+		recursiveProcess(ctx, item, itemMap, dependents, dependencies, processed)
+	}
+}
+
+// recursiveProcess recursively processes the provided node and any downstream nodes
+// that are now unblocked after processing the provided node.
+func recursiveProcess[CTX any, T TopologicalNode[CTX, ID], ID comparable](ctx CTX, item T, itemMap map[ID]T, dependents map[ID][]ID, dependencies map[ID]map[ID]bool, processed map[ID]bool) {
+	c := item.Code(ctx)
 	// Check if still waiting on dependencies.
 	if len(dependencies[c]) != 0 {
 		return
 	}
 
 	// Check if already processed.
-	if _, ok := values[c]; ok {
+	if processed[c] {
 		return
 	}
+	processed[c] = true
 
 	// Process the item.
-	values[c] = item.Process(values)
+	item.Process(ctx)
 
 	// Process dependents
 	for _, dc := range dependents[c] {
@@ -73,37 +110,7 @@ type Node[V any] interface {
 		deps := dependencies[dc]
 		delete(deps, c)
 		if len(deps) == 0 {
-			recursiveProcess(d, itemMap, dependents, dependencies, values)
+			recursiveProcess(ctx, d, itemMap, dependents, dependencies, processed)
 		}
 	}
 }
-
-func Process[T Topological[V], V any](items []T) map[string]V {
-	// TODO: Can convert string codes to ints so these can be int slices instead of maps
-
-	// Map from item to list of items that depend on that item.
-	dependents := map[string][]string{}
-	// Map from item to list of items that the item is still waiting on.
-	dependencies := map[string]map[string]bool{}
-	values := map[string]V{}
-	itemMap := map[string]T{}
-
-	for _, item := range items {
-		c := item.Code()
-		itemMap[c] = item
-
-		deps := item.Dependencies()
-		dependencies[c] = map[string]bool{}
-		for _, d := range deps {
-			dependents[d] = append(dependents[d], c)
-			dependencies[c][d] = true
-		}
-	}
-
-	for _, item := range items {
-		recursiveProcess(item, itemMap, dependents, dependencies, values)
-	}
-
-	return values
-}
-*/

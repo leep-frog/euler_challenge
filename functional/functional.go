@@ -1,6 +1,14 @@
 // functional implements functional programming utilities.
 package functional
 
+// If returns t if v is true; f otherwise
+func If[T any](v bool, t, f T) T {
+	if v {
+		return t
+	}
+	return f
+}
+
 // Any returns true if f(t) == true for any t in ts.
 func Any[T any](ts []T, f func(t T) bool) bool {
 	for _, t := range ts {
