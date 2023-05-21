@@ -1,13 +1,16 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/leep-frog/command"
 	twentyone "github.com/leep-frog/euler_challenge/aoc/2021"
 	eulerchallenge "github.com/leep-frog/euler_challenge/ec"
 )
 
 func main() {
-	command.RunNodes(node())
+	fmt.Println("Needs fixing")
+	// command.RunNodes(node())
 }
 
 // Separate method for testing purposes.

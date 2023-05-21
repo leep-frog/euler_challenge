@@ -10,7 +10,7 @@ func P65() *problem {
 		num: 65,
 		n: command.SerialNodes(
 			command.Description("https://projecteuler.net/problem=65"),
-			command.FlagNode(
+			command.FlagProcessor(
 				command.BoolFlag("two", 't', "find the convergence for the square root of 2"),
 			),
 			command.Arg[int](N, "", command.Positive[int]()),

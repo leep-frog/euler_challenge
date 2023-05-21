@@ -59,3 +59,8 @@ func (sc *distancePathNodeWrapper[CODE, DIST, T]) AdjacentStates(_ bool, p Path[
 func (sc *distancePathNodeWrapper[CODE, DIST, T]) Distance(_ bool, p Path[*distancePathNodeWrapper[CODE, DIST, T]]) DIST {
 	return sc.state.Distance(&pathWrapper[*distancePathNodeWrapper[CODE, DIST, T], T]{p, distPathConvert[CODE, DIST, T]})
 }
+
+func (sc *distancePathNodeWrapper[CODE, DIST, T]) AStarEstimate(_ bool, p Path[*distancePathNodeWrapper[CODE, DIST, T]]) DIST {
+	var zero DIST
+	return zero
+}

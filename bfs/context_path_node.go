@@ -57,3 +57,7 @@ func (sc *contextPathNodeWrapper[CODE, CTX, T]) AdjacentStates(ctx CTX, p Path[*
 func (sc *contextPathNodeWrapper[CODE, CTX, T]) Distance(CTX, Path[*contextPathNodeWrapper[CODE, CTX, T]]) Int {
 	return 1
 }
+
+func (sc *contextPathNodeWrapper[CODE, CTX, T]) AStarEstimate(CTX, Path[*contextPathNodeWrapper[CODE, CTX, T]]) Int {
+	return 0
+}

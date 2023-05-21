@@ -117,7 +117,7 @@ func CumulativeDistanceFunction() Option {
 	}
 }
 
-func search[RETURN, CTX any, CODE comparable, DIST Distanceable[DIST], T ContextDistancePathNode[CODE, DIST, CTX, T]](ctx CTX, initStates []T, tConverter converter[T, RETURN], opts ...Option) ([]RETURN, DIST) {
+func search[RETURN, CTX any, CODE comparable, DIST Distanceable[DIST], T AStarContextDistancePathNode[CODE, DIST, CTX, T]](ctx CTX, initStates []T, tConverter converter[T, RETURN], opts ...Option) ([]RETURN, DIST) {
 	o := &option{}
 	for _, opt := range opts {
 		opt(o)
@@ -129,7 +129,7 @@ func search[RETURN, CTX any, CODE comparable, DIST Distanceable[DIST], T Context
 		if !o.ignoreInitStateDistance {
 			dist = is.Distance(ctx, &path[DIST, T]{nil})
 		}
-		nodes.PushState(&StateValue[DIST, T]{is, dist, nil, 1})
+		nodes.PushState(&StateValue[DIST, T]{is, dist, is.AStarEstimate(ctx, &path[DIST, T]{nil}), nil, 1})
 	}
 
 	checked := map[CODE]bool{}
@@ -158,6 +158,7 @@ func search[RETURN, CTX any, CODE comparable, DIST Distanceable[DIST], T Context
 			nodes.PushState(&StateValue[DIST, T]{
 				neighbor,
 				dist,
+				neighbor.AStarEstimate(ctx, p),
 				func() *StateValue[DIST, T] { return sv },
 				sv.pathLen + 1,
 			})
@@ -189,7 +190,9 @@ func (bh *bfsHeap[DIST, T]) Len() int {
 }
 
 func (bh *bfsHeap[DIST, T]) Less(i, j int) bool {
-	return bh.values[i].dist.LT(bh.values[j].dist)
+	left := bh.values[i].dist.Plus(bh.values[i].aStarEst)
+	right := bh.values[j].dist.Plus(bh.values[j].aStarEst)
+	return left.LT(right)
 }
 
 func (bh *bfsHeap[DIST, T]) Push(x interface{}) {
@@ -209,7 +212,8 @@ func (bh *bfsHeap[DIST, T]) Swap(i, j int) {
 type StateValue[DIST Distanceable[DIST], T any] struct {
 	state T
 	// This can be replaced by wrapping type for specific search type wrapper
-	dist DIST
+	dist     DIST
+	aStarEst DIST
 	// TODO: this can be replaced by improving container method (to include CurrentPath() function)
 	prev func() *StateValue[DIST, T]
 	//

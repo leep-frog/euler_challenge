@@ -77,7 +77,7 @@ func (a *AdventOfCode) Node() command.Node {
 			if s, ok := i.Peek(); !ok || s != "d" {
 				return nil
 			}
-			i.Pop()
+			i.Pop(d)
 			i.PushFront(fmt.Sprintf("%d", a.DefaultYear))
 			usedDefault = true
 			return nil

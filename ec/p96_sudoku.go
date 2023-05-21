@@ -285,9 +285,9 @@ func (sb *sudokuBoard) Distance() bfs.Int {
 
 func (sb *sudokuBoard) copy() *sudokuBoard {
 	var newBoard [][]*sudokuCell
-	for i := range maths.Range(sb.n) {
+	for i := 0; i < sb.n; i++ {
 		var row []*sudokuCell
-		for j := range maths.Range(sb.n) {
+		for j := 0; j < sb.n; j++ {
 			row = append(row, sb.board[i][j].copy())
 		}
 		newBoard = append(newBoard, row)
@@ -302,8 +302,8 @@ func (sb *sudokuBoard) AdjacentStates() []*sudokuBoard {
 	}
 
 	var neighbors []*sudokuBoard
-	for row := range maths.Range(sb.n) {
-		for col := range maths.Range(sb.n) {
+	for row := 0; row < sb.n; row++ {
+		for col := 0; col < sb.n; col++ {
 			cell := sb.board[row][col]
 			if cell.done() {
 				continue

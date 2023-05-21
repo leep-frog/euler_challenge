@@ -19,14 +19,14 @@ func FileGenerator() command.Node {
 	noInputFlag := command.BoolFlag("no-input", 'n', "If set, no input")
 
 	return command.SerialNodes(
-		command.FlagNode(
+		command.FlagProcessor(
 			fileInputFlag,
 			exampleFlag,
 			noInputFlag,
 		),
 		problemNumberArg,
 		fileSuffixArg,
-		command.ExecutableNode(func(o command.Output, d *command.Data) ([]string, error) {
+		command.ExecutableProcessor(func(o command.Output, d *command.Data) ([]string, error) {
 			fileInput := fileInputFlag.Get(d)
 			num := problemNumberArg.Get(d)
 

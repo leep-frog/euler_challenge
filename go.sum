@@ -29,6 +29,8 @@ github.com/jung-kurt/gofpdf v1.0.0/go.mod h1:7Id9E/uU8ce6rXgefFLlgrJj/GYY22cpxn+
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/leep-frog/command v0.0.0-20230418131145-080d4fae09c2 h1:IdAQyGsQFRplicDNvOMBefI9IiWDFPEw/qZTTc3aOxY=
 github.com/leep-frog/command v0.0.0-20230418131145-080d4fae09c2/go.mod h1:nnUXeUudB6nssW6tQa3R64YK2ybnnRA11Wd0Gc2a5iA=
+github.com/leep-frog/command v0.0.0-20230430185839-777424e6831b h1:iii3roFGEgw/gCpNg0eQyUOqi+y/ahfL1gV6OgWG6/U=
+github.com/leep-frog/command v0.0.0-20230430185839-777424e6831b/go.mod h1:nnUXeUudB6nssW6tQa3R64YK2ybnnRA11Wd0Gc2a5iA=
 github.com/phpdave11/gofpdf v1.4.2/go.mod h1:zpO6xFn9yxo3YLyMvW8HcKWVdbNqgIfOOp2dXMnm1mY=
 github.com/phpdave11/gofpdi v1.0.12/go.mod h1:vBmVV0Do6hSBHC8uKUQ71JGW+ZGQq74llk/7bXwjDoI=
 github.com/phpdave11/gofpdi v1.0.13/go.mod h1:vBmVV0Do6hSBHC8uKUQ71JGW+ZGQq74llk/7bXwjDoI=

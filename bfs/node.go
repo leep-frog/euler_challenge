@@ -54,6 +54,10 @@ func (sc *nodeWrapper[CODE, T]) Distance(bool, Path[*nodeWrapper[CODE, T]]) Int 
 	return 1
 }
 
+func (sc *nodeWrapper[CODE, T]) AStarEstimate(bool, Path[*nodeWrapper[CODE, T]]) Int {
+	return 0
+}
+
 type Int int
 
 func (i Int) LT(j Int) bool  { return i < j }

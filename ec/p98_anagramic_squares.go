@@ -120,7 +120,7 @@ func stringAnagramPattern(nStr string) string {
 
 func createAnagramMap(length int) (map[string][]int, map[string]map[int]bool) {
 	maxSquare := 1
-	for range maths.Range(length) {
+	for i := 0; i < length; i++ {
 		maxSquare *= 10
 	}
 

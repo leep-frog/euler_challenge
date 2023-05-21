@@ -7,7 +7,6 @@ import (
 
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/equilibrium"
-	"github.com/leep-frog/euler_challenge/maths"
 )
 
 /*type spaceProb struct {
@@ -94,8 +93,8 @@ func (ms *monopolySquare) Code(*monopolyBoard) int {
 
 func (ms *monopolySquare) Paths(board *monopolyBoard) []*equilibrium.WeightedPath[*monopolyBoard, *monopolySquare, int] {
 	mWs := map[int]float64{}
-	for d1 := range maths.Range(board.diceSides) {
-		for d2 := range maths.Range(board.diceSides) {
+	for d1 := 0; d1 < board.diceSides; d1++ {
+		for d2 := 0; d2 < board.diceSides; d2++ {
 			to := (ms.idx + d1 + d2) % 40
 			if d1 == d2 {
 				if ms.doubles == 2 {
