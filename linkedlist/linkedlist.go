@@ -20,6 +20,14 @@ func Numbered(n int) *Node[int] {
 	return NewList(arr...)
 }
 
+func CircularNumbered(n int) *Node[int] {
+	var arr []int
+	for i := 0; i < n; i++ {
+		arr = append(arr, i)
+	}
+	return NewCircularList(arr...)
+}
+
 func CircularRepresentation[T comparable](n *Node[T]) string {
 	var r []string
 	got := map[T]bool{}

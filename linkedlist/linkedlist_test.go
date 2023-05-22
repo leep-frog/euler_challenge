@@ -58,16 +58,27 @@ func TestEndAndString(t *testing.T) {
 			wantNil: true,
 		},
 		{
-			name:    "Numbered with 1",
-			list:    Numbered(1),
+			name:    "CircularNumbered with 0",
+			list:    CircularNumbered(0),
+			wantNil: true,
+		},
+		{
+			name:    "CircularNumbered with 1",
+			list:    CircularNumbered(1),
 			want:    0,
-			wantStr: "0",
+			wantStr: "0 -> (0) -> ...",
 		},
 		{
 			name:    "Numbered with multiple",
 			list:    Numbered(4),
 			want:    3,
 			wantStr: "0 -> 1 -> 2 -> 3",
+		},
+		{
+			name:    "Numbered with multiple",
+			list:    CircularNumbered(4),
+			want:    3,
+			wantStr: "0 -> 1 -> 2 -> 3 -> (0) -> ...",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
