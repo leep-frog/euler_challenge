@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/leep-frog/euler_challenge/bread"
 	"golang.org/x/exp/slices"
 )
 
@@ -18,6 +19,10 @@ func NewRange(vs ...int) *Range {
 	r := &Range{vs}
 	r.verifyAndSimplify()
 	return r
+}
+
+func (r *Range) InflectionPoints() []int {
+	return bread.Copy(r.inflectionPoints)
 }
 
 func (r *Range) String() string {

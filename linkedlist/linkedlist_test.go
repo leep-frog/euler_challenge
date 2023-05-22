@@ -17,6 +17,7 @@ func TestEndAndString(t *testing.T) {
 		want    int
 		wantNil bool
 		wantStr string
+		wantLen int
 	}{
 		{
 			name:    "nil node",
@@ -27,30 +28,35 @@ func TestEndAndString(t *testing.T) {
 			list:    NewList(3),
 			want:    3,
 			wantStr: "3",
+			wantLen: 1,
 		},
 		{
 			name:    "single circular node",
 			list:    NewCircularList(3),
 			want:    3,
 			wantStr: "3 -> (3) -> ...",
+			wantLen: 1,
 		},
 		{
 			name:    "multiple nodes",
 			list:    NewList(1, 2, 3, 5, 8, 13, 21),
 			want:    21,
 			wantStr: "1 -> 2 -> 3 -> 5 -> 8 -> 13 -> 21",
+			wantLen: 7,
 		},
 		{
 			name:    "multiple circular nodes",
 			list:    NewCircularList(1, 2, 3, 5, 8, 13, 21),
 			want:    21,
 			wantStr: "1 -> 2 -> 3 -> 5 -> 8 -> 13 -> 21 -> (1) -> ...",
+			wantLen: 7,
 		},
 		{
 			name:    "single to cycle",
 			list:    singleToCycle,
 			want:    8,
 			wantStr: "1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> (4) -> ...",
+			wantLen: 8,
 		},
 		{
 			name:    "Numbered with 0",
@@ -63,22 +69,32 @@ func TestEndAndString(t *testing.T) {
 			wantNil: true,
 		},
 		{
+			name:    "Numbered with 1",
+			list:    Numbered(1),
+			want:    0,
+			wantStr: "0",
+			wantLen: 1,
+		},
+		{
 			name:    "CircularNumbered with 1",
 			list:    CircularNumbered(1),
 			want:    0,
 			wantStr: "0 -> (0) -> ...",
+			wantLen: 1,
 		},
 		{
 			name:    "Numbered with multiple",
 			list:    Numbered(4),
 			want:    3,
 			wantStr: "0 -> 1 -> 2 -> 3",
+			wantLen: 4,
 		},
 		{
 			name:    "Numbered with multiple",
 			list:    CircularNumbered(4),
 			want:    3,
 			wantStr: "0 -> 1 -> 2 -> 3 -> (0) -> ...",
+			wantLen: 4,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -95,6 +111,11 @@ func TestEndAndString(t *testing.T) {
 
 			if diff := cmp.Diff(test.wantStr, CircularRepresentation(test.list)); diff != "" {
 				t.Errorf("CircularRepresentation(%v) returned incorrect value (-want, +got):\n%s", test.list, diff)
+			}
+
+			gotLen := Len(test.list)
+			if test.wantLen != gotLen {
+				t.Errorf("Len(%v) returned %d; want %d", test.list, gotLen, test.wantLen)
 			}
 		})
 	}

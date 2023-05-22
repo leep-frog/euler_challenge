@@ -169,7 +169,7 @@ func AdjugateMatrix(matrix [][]*big.Rat) [][]*big.Rat {
 		cs = append(cs, i)
 	}
 
-	rows, cols := linkedlist.NewList(rs), linkedlist.NewList(cs)
+	rows, cols := linkedlist.NewList(rs...), linkedlist.NewList(cs...)
 
 	var adj [][]*big.Rat
 	firstRow := true
@@ -247,7 +247,7 @@ func Determinant(matrix [][]*big.Rat) *big.Rat {
 		cs = append(cs, i)
 	}
 
-	return determinant(matrix, nRows, nCols, linkedlist.NewList(rs), linkedlist.NewList(cs), map[string]*big.Rat{})
+	return determinant(matrix, nRows, nCols, linkedlist.NewList(rs...), linkedlist.NewList(cs...), map[string]*big.Rat{})
 }
 
 func determinant(matrix [][]*big.Rat, nRows, nCols int, rows, cols *linkedlist.Node[int], detCache map[string]*big.Rat) *big.Rat {

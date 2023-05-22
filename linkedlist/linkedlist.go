@@ -5,10 +5,35 @@ import (
 	"strings"
 )
 
-type Node[T any] struct {
+type Node[T comparable] struct {
 	Value T
 	Next  *Node[T]
 	Prev  *Node[T]
+}
+
+func (n *Node[T]) String() string {
+	return fmt.Sprintf("%v", n.Value)
+}
+
+func (n *Node[T]) PopNext() *Node[T] {
+	if n == nil {
+		return nil
+	}
+	toPop := n.Next
+	if toPop == nil || n.Value == toPop.Value {
+		return toPop
+	}
+
+	if toPop.Next != nil {
+		toPop.Next.Prev = n
+	}
+	n.Next = toPop.Next
+
+	// Unset popped node neighbors
+	toPop.Prev = nil
+	toPop.Next = nil
+
+	return toPop
 }
 
 // Numbered returns n nodes starting with value 0.
@@ -59,11 +84,19 @@ func End[T comparable](n *Node[T]) *Node[T] {
 	}
 }
 
-func (n *Node[T]) String() string {
-	return fmt.Sprintf("%v", n.Value)
+func Len[T comparable](n *Node[T]) int {
+	if n == nil {
+		return 0
+	}
+
+	got := map[T]bool{}
+	for k := n; k != nil && !got[k.Value]; k = k.Next {
+		got[k.Value] = true
+	}
+	return len(got)
 }
 
-func NewList[T any](ts ...T) *Node[T] {
+func NewList[T comparable](ts ...T) *Node[T] {
 	start := NewCircularList(ts...)
 	if start == nil {
 		return start
@@ -74,7 +107,7 @@ func NewList[T any](ts ...T) *Node[T] {
 	return start
 }
 
-func NewCircularList[T any](ts ...T) *Node[T] {
+func NewCircularList[T comparable](ts ...T) *Node[T] {
 	if len(ts) == 0 {
 		return nil
 	}
