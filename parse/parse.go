@@ -162,7 +162,19 @@ func IntsToStrings(is []int) []string {
 	return r
 }
 
-func Split(lines []string, delimiter string) [][]string {
+// SplitOnLines splits the provided lines into groups sectioned off by lines matching the delimiter string.
+// For example, the following input:
+// ```
+// 123
+// 456
+//
+// 789
+//
+// abc
+// def
+// ```
+// produces the output [[123, 456], [789], [abc, def]]
+func SplitOnLines(lines []string, delimiter string) [][]string {
 	var r [][]string
 	var cur []string
 	for _, line := range lines {
@@ -174,6 +186,15 @@ func Split(lines []string, delimiter string) [][]string {
 		}
 	}
 	return append(r, cur)
+}
+
+// Split splits each line in lines by the provided delimiter
+func Split(lines []string, delimiter string) [][]string {
+	var r [][]string
+	for _, line := range lines {
+		r = append(r, strings.Split(line, delimiter))
+	}
+	return r
 }
 
 func ToCharArray(s string) []rune {

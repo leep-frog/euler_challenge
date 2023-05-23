@@ -13,10 +13,10 @@ func Day12() aoc.Day {
 type day12 struct{}
 
 func (d *day12) Solve(lines []string, o command.Output) {
-	o.Stdoutln(d.solve(lines, map[string]int{}), d.solve(lines, map[string]int{"c": 1}))
+	o.Stdoutln(d.solve(lines, map[string]int{}, nil), d.solve(lines, map[string]int{"c": 1}, nil))
 }
 
-func (d *day12) solve(lines []string, registers map[string]int) int {
+func (d *day12) solve(lines []string, registers map[string]int, outFunc func(int) bool) int {
 	numOrReg := func(p string) int {
 		v, ok := parse.AtoiOK(p)
 		if !ok {
@@ -27,9 +27,17 @@ func (d *day12) solve(lines []string, registers map[string]int) int {
 
 	allParts := parse.Split(lines, " ")
 
+	var outCounter int
+
 	for i := 0; i < len(allParts); i++ {
 		parts := allParts[i]
-		// fmt.Println(registers)
+
+		// Added for day 25
+		outCounter++
+		if outCounter > 100_000 {
+			return 0
+		}
+
 		switch parts[0] {
 		case "cpy":
 			if _, ok := parse.AtoiOK(parts[2]); !ok {
@@ -39,11 +47,16 @@ func (d *day12) solve(lines []string, registers map[string]int) int {
 			if _, ok := parse.AtoiOK(parts[1]); !ok {
 				registers[parts[1]]++
 			}
+		case "out": // Added for day 25
+			outCounter = 0
+			if !outFunc(numOrReg(parts[1])) {
+				return 0
+			}
 		case "dec":
 			if _, ok := parse.AtoiOK(parts[1]); !ok {
 				registers[parts[1]]--
 			}
-		case "tgl":
+		case "tgl": // Added for day 23
 			v := i + numOrReg(parts[1])
 			if v < 0 || v >= len(lines) {
 				continue

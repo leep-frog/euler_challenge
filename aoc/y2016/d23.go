@@ -14,7 +14,7 @@ type day23 struct{}
 
 func (d *day23) Solve(lines []string, o command.Output) {
 	do := &day12{}
-	part1 := do.solve(bread.Copy(lines), map[string]int{"a": 7})
+	part1 := do.solve(bread.Copy(lines), map[string]int{"a": 7}, nil)
 
 	// part two takes too long and requires inspecting the input, but
 	// not worth because still can't do it generically.
