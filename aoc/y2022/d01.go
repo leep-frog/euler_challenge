@@ -18,7 +18,7 @@ type day01 struct{}
 
 func (d *day01) Solve(lines []string, o command.Output) {
 	// Part 1
-	sums := functional.Map(parse.Split(lines, ""), func(group []string) int {
+	sums := functional.Map(parse.SplitOnLines(lines, ""), func(group []string) int {
 		return bread.Sum(functional.Map(group, parse.Atoi))
 	})
 	o.Stdoutln(maths.Max(sums...))
