@@ -2,7 +2,6 @@ package aoccmd
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 
@@ -16,6 +15,7 @@ import (
 	"github.com/leep-frog/euler_challenge/aoc/y2016"
 	"github.com/leep-frog/euler_challenge/aoc/y2020"
 	"github.com/leep-frog/euler_challenge/aoc/y2022"
+	"github.com/leep-frog/euler_challenge/aoc/y2017"
 	// END_YEAR_IMPORTS
 )
 
@@ -29,6 +29,8 @@ var (
 		15:   y2015.Year(),
 		2016: y2016.Year(),
 		16:   y2016.Year(),
+		2017: y2017.Year(),
+		17: y2017.Year(),
 		// END_AOC_YEARS
 	}
 )
@@ -142,19 +144,12 @@ var (
 )
 
 func generateYear(yearDir, yearInputDir string, year int, ed *command.ExecuteData, o command.Output) error {
-	if !parse.Exists(yearDir) {
-		if err := os.Mkdir(yearDir, 0644); err != nil {
-			return o.Stderrf("failed to create year dir: %v", err)
-		}
-	}
+	yearDir = filepath.Join("..", yearDir)
+	yearInputDir = filepath.Join("..", yearInputDir)
+	parse.Mkdir(yearDir)
+	parse.Mkdir(yearInputDir)
 
-	if !parse.Exists(yearInputDir) {
-		if err := os.Mkdir(yearInputDir, 0644); err != nil {
-			return o.Stderrf("failed to create year input dir: %v", err)
-		}
-	}
-
-	dayFmt := "\t\t\tDay%2d(),"
+	dayFmt := "\t\t\tDay%02d(),"
 	parse.Write(filepath.Join(yearDir, "year.go"), fmt.Sprintf(strings.Join([]string{
 		"package y%d",
 		"",
@@ -201,11 +196,11 @@ func generateYear(yearDir, yearInputDir string, year int, ed *command.ExecuteDat
 		generateDay(yearDir, yearInputDir, year, day, ed)
 	}
 
-	mainFile := parse.FullPath(".", "main.go")
+	mainFile := parse.FullPath(".", "aoccmd.go")
 	ed.Executable = append(ed.Executable,
 		// Add import
 		// Plus sign to avoid replacing this line as well
-		fmt.Sprintf("r \"(^.*// END_YEAR"+"_IMPORTS.*$)\" '\t\"github.com/leep-frog/euler_challenge/aoc/y%d\"\n$1' %q", year, mainFile),
+		fmt.Sprintf("r \"(^.*// END_YEAR"+"_IMPORTS.*$)\" '\t\\\"github.com/leep-frog/euler_challenge/aoc/y%d\\\"\n$1' %q", year, mainFile),
 		// Add map value
 		fmt.Sprintf("r \"(^.*// END_AOC"+"_YEARS.*$)\" '\t\t%d: y%d.Year(),\n\t\t%d: y%d.Year(),\n$1' %q", year, year, year%100, year, mainFile),
 	)
