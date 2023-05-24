@@ -19,7 +19,7 @@ func TestYears(t *testing.T) {
 
 	for _, y := range keys {
 		year := years[y]
-		if year.Number != 2016 {
+		if year.Number != 2017 {
 			continue
 		}
 		for dayNumber, day := range year.Days {

@@ -33,6 +33,19 @@ func CardinalDirections(grid bool) []*point.Point[int] {
 	}
 }
 
+func NeighborsWithDiagonals() []*point.Point[int] {
+	return []*point.Point[int]{
+		point.New(0, 1),
+		point.New(0, -1),
+		point.New(1, 1),
+		point.New(1, 0),
+		point.New(1, -1),
+		point.New(-1, 1),
+		point.New(-1, 0),
+		point.New(-1, -1),
+	}
+}
+
 type Directionable interface {
 	~int
 }
