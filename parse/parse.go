@@ -76,9 +76,14 @@ func readFileInput(f string) string {
 }
 
 func Exists(f string) bool {
-	_, err := os.Stat(fullPath(f, 2))
+	fp := fullPath(f, 2)
+	return exists(fp)
+}
+
+func exists(f string) bool {
+	_, err := os.Stat(f)
 	if err != nil && !os.IsNotExist(err) {
-		log.Fatalf("failed to check file info: %v", err)
+		log.Fatalf("[Exists] failed to check file info: %v", err)
 	}
 	return err == nil
 }
@@ -94,11 +99,20 @@ func Touch(f string) {
 	}
 }
 
+func Mkdir(f string) {
+	fp := fullPath(f, 2)
+	if !exists(fp) {
+		if err := os.Mkdir(fp, 0644); err != nil {
+			log.Fatalf("failed to create dir (%s): %v", f, err)
+		}
+	}
+}
+
 func Write(f, contents string) {
 	fp := fullPath(f, 2)
 	if _, err := os.Stat(fp); os.IsNotExist(err) {
 		if err := ioutil.WriteFile(fp, []byte(contents), 0644); err != nil {
-			log.Fatalf("failed to write to file: %v", err)
+			log.Fatalf("failed to write to file (%s): %v", f, err)
 		}
 	} else if err != nil {
 		log.Fatalf("failed to check file: %v", err)
