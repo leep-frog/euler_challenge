@@ -211,6 +211,19 @@ func Split(lines []string, delimiter string) [][]string {
 	return r
 }
 
+var (
+	WhitespaceRegex = regexp.MustCompile(`\s+`)
+)
+
+// SplitWhitespace splits each line in lines by whitespace
+func SplitWhitespace(lines []string) [][]string {
+	var r [][]string
+	for _, line := range lines {
+		r = append(r, WhitespaceRegex.Split(line, -1))
+	}
+	return r
+}
+
 func ToCharArray(s string) []rune {
 	var r []rune
 	for _, c := range s {
