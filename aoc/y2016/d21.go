@@ -64,12 +64,7 @@ func (d *day21) solve(pwd string, lines []string) string {
 			if x > y {
 				x, y = y, x
 			}
-			a, b := password.Nth(x), password.Nth(y)
-
-			for i := x; i <= (x+y-1)/2; i++ {
-				a.Value, b.Value = b.Value, a.Value
-				a, b = a.Next, b.Prev
-			}
+			password.Nth(x).ReverseUpTo(y - x)
 		} else if parts[0] == "move" {
 			from, to := parse.Atoi(parts[2]), parse.Atoi(parts[5])
 			if from == to {
