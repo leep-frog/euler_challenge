@@ -17,7 +17,7 @@ func Day12() aoc.Day {
 type day12 struct{}
 
 func (d *day12) Solve(lines []string, o command.Output) {
-	uf := unionfind.New()
+	uf := unionfind.New[int]()
 
 	for _, line := range lines {
 		sides := strings.Split(line, " <-> ")

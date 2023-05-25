@@ -31,23 +31,29 @@ func (d *day10) Solve(lines []string, o command.Output) {
 	if len(lines) > 2 {
 		input = lines[2]
 	}
+
+	part1 := fixed.Value * fixed.Next.Value
+	o.Stdoutln(part1, knotHash(input))
+}
+
+func knotHash(input string) string {
 	lengths := functional.Map(strings.Split(input, ""), func(s string) int {
 		return int(s[0])
 	})
 	lengths = append(lengths, 17, 31, 73, 47, 23)
 
 	skipSize := 0
-	root2 := linkedlist.CircularNumbered(256)
-	fixed2 := root2
+	root := linkedlist.CircularNumbered(256)
+	fixed := root
 	for round := 0; round < 64; round++ {
 		for _, length := range lengths {
-			root2.ReverseUpTo(length - 1)
-			root2 = root2.Nth(skipSize + length)
+			root.ReverseUpTo(length - 1)
+			root = root.Nth(skipSize + length)
 			skipSize++
 		}
 	}
 
-	parts := fixed2.ToSlice()
+	parts := fixed.ToSlice()
 	var results []string
 	for i := 0; i < 16; i++ {
 		res := functional.Reduce(0, parts[16*i:16*(i+1)], func(b, p int) int {
@@ -60,9 +66,7 @@ func (d *day10) Solve(lines []string, o command.Output) {
 		results = append(results, hex)
 	}
 
-	part1 := fixed.Value * fixed.Next.Value
-	part2 := strings.ToLower(strings.Join(results, ""))
-	o.Stdoutln(part1, part2)
+	return strings.ToLower(strings.Join(results, ""))
 }
 
 func (d *day10) Cases() []*aoc.Case {

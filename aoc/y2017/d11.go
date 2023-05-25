@@ -16,7 +16,6 @@ func Day11() aoc.Day {
 type day11 struct{}
 
 func (d *day11) Solve(lines []string, o command.Output) {
-	// 643 too low
 	tile := hexgrid.Origin()
 	max := maths.Largest[int, int]()
 	for _, path := range strings.Split(lines[0], ",") {
