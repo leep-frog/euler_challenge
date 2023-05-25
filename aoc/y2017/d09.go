@@ -12,6 +12,32 @@ func Day09() aoc.Day {
 type day09 struct{}
 
 func (d *day09) Solve(lines []string, o command.Output) {
+	puzzle := lines[0]
+	var garbage bool
+	var depth, sum, garbageCount int
+	for i := 0; i < len(puzzle); i++ {
+		if garbage {
+			switch puzzle[i] {
+			case '!':
+				i++
+			case '>':
+				garbage = false
+			default:
+				garbageCount++
+			}
+		} else {
+			switch puzzle[i] {
+			case '{':
+				depth++
+			case '}':
+				sum += depth
+				depth--
+			case '<':
+				garbage = true
+			}
+		}
+	}
+	o.Stdoutln(sum, garbageCount)
 }
 
 func (d *day09) Cases() []*aoc.Case {
@@ -19,12 +45,12 @@ func (d *day09) Cases() []*aoc.Case {
 		{
 			FileSuffix: "example",
 			ExpectedOutput: []string{
-				"",
+				"3 17",
 			},
 		},
 		{
 			ExpectedOutput: []string{
-				"",
+				"11347 5404",
 			},
 		},
 	}
