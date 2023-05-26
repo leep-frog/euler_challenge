@@ -23,6 +23,14 @@ func (n *Node[T]) ToSlice() []T {
 	return ts
 }
 
+func (n *Node[T]) ReverseUpTo(k int) {
+	a, b := n, n.Nth(k)
+	for i := 0; i <= (k-1)/2; i++ {
+		a.Value, b.Value = b.Value, a.Value
+		a, b = a.Next, b.Prev
+	}
+}
+
 // TODO: Test with cycles
 func (n *Node[T]) Nth(k int) *Node[T] {
 	if k < 0 {

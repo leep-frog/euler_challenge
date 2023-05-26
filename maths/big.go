@@ -196,8 +196,31 @@ func (i *Int) Hex() string {
 	return strings.Join(bread.Reverse(hex), "")
 }
 
+func FromHex(h string) *Int {
+	h = strings.ToUpper(h)
+	sum := Zero()
+	coef := One()
+	for i := len(h) - 1; i >= 0; i-- {
+		v, ok := intToHex[h[i:i+1]]
+		if !ok {
+			log.Fatalf("Unknown hex value: %q", h[i:i+1])
+		}
+		sum = sum.Plus(coef.TimesInt(v))
+		coef = coef.TimesInt(16)
+	}
+	return sum
+}
+
 func (i *Int) ToInt() int {
 	return int(i.i.Int64())
+}
+
+func (i *Int) ToBinary() *Binary {
+	b := &Binary{}
+	for ; i.GT(Zero()); i = i.DivInt(2) {
+		b.digits = append(b.digits, i.ModIntBig(2).EQ(One()))
+	}
+	return b
 }
 
 func Sort(is []*Int) {

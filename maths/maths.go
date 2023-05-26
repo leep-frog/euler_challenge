@@ -239,6 +239,7 @@ func NewMap[K Mappable, V any]() *Map[K, V] {
 	}
 }
 
+// TODO: Invert f return value behavior
 func (m *Map[K, V]) ForKs(f func(K) bool) {
 	for _, k := range m.km {
 		if f(k) {
@@ -439,6 +440,13 @@ func BigMin(is []*Int) *Int {
 var (
 	powCache   = map[int][]*Int{}
 	hexLetters = []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"}
+	intToHex   = func() map[string]int {
+		r := map[string]int{}
+		for i, v := range hexLetters {
+			r[v] = i
+		}
+		return r
+	}()
 )
 
 func ToHex(i int) string {
