@@ -83,6 +83,7 @@ func iterate[T comparable](root *Node[T], nilBreakFunc func(prev *Node[T]), repe
 	}
 }
 
+// TODO: Change k to T
 func (n *Node[T]) PushAt(position int, k *Node[T]) {
 	if position < 0 {
 		panic("Negative positions not supported")
