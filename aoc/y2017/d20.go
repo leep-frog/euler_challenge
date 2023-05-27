@@ -61,23 +61,35 @@ func (p *particle) bruteIntersects(q *particle) []int {
 THIS DOES NOT WORK
 Because the formulas for continuous acceleration don't apply easily
 to systems with discrete acceleration changes
+*/
 func (p *particle) intersects(q *particle) []int {
 	// Check if x intersects
-	// Formula x_t = px + vx * t + ax * ax * t / 2
+	// Formula p_pt = p_p + v_p * t + a_p * t * t / 2
+	// WAIT: above is formula for continuous acceleration. Since
+	// the problem uses discrete formula, we need to use the following
+	// term for acceleration: a_p * (t)*(t+1)/2
+	//                      = a_p * (t^2 + t) / 2
+	//                      = a_p * t / 2 + a_p * t*t / 2
+	// p_pt = p_p + v_p * t + a_p * t * t / 2
+	// p_pt = p_p + t * (v_p + a_p/2) + t^2 * (a_p / 2)
+
 	// Check when x_t for p equals x_t q
-	// px_q + t * vx_q + t^2 * ax_q / 2 = px_p + t * vx_p + t^2 * ax_p / 2
-	// 0 = (px_q - px_p) + (vx_q - vx_p) * t + (ax_q - ax_p)/2 * t^2
-	var ts map[int]bool
+	// p_p + t * (v_p + a_p/2) + t^2 * (a_p / 2) = p_q + t * (v_qp + a_q/2) + t^2 * (a_q / 2)
+	// 0 = (p_p - p_q) + t * [(v_p + a_p/2)-(v_q + a_q/2)] + t*t * [(a_p / 2) - (a_q / 2)]
+	// Multiple the whole thing by 2 to avoid fractions
+	// 0 = 2*(p_p - p_q) + t * [(2*v_p + a_p)-(2*v_q + a_q)] + t*t * [a_p - a_q]
+	// var ts map[int]bool
 	var ntrs []map[int]bool
 	for i := 2; i >= 0; i-- {
 		// (-b += sqrt(b*b - 4 * a * c)) / 2 * a
 		px_p, vx_p, ax_p := p.ps[i], p.vs[i], p.as[i]
 		px_q, vx_q, ax_q := q.ps[i], q.vs[i], q.as[i]
-		vx_p -= ax_p
-		vx_q -= ax_q
+		// vx_p -= ax_p
+		// vx_q -= ax_q
 
 		// a is the
-		c, b, a := 2*(px_q-px_p), 2*(vx_q-vx_p), (ax_q - ax_p)
+		// c, b, a := 2*(px_q-px_p), 2*(vx_q-vx_p), (ax_q - ax_p)
+		c, b, a := 2*(px_p-px_q), (2*vx_p + ax_p - 2*vx_q - ax_q), (ax_p - ax_q)
 
 		if a == 0 && b == 0 {
 			// Will always be at separate spot
@@ -125,14 +137,19 @@ func (p *particle) intersects(q *particle) []int {
 		return nil
 	}
 
-	if len(ntrs) > 0 {
-		fmt.Println("NT", ntrs)
+	ts := ntrs[0]
+	for _, ni := range ntrs[1:] {
+		ts = maths.Intersection(ts, ni)
 	}
+	// if len(ntrs) > 0 {
+	// fmt.Println("NT", ntrs)
+	// }
 
 	var r []int
-	if len(ts) > 0 {
-		fmt.Println("HURRAY", ts)
-	}
+	// if len(ts) > 0 {
+	// 	fmt.Println("HURRAY", ts)
+	// }
+	// for t := range ts {
 	for t := range ts {
 		if t >= 0 {
 			r = append(r, t)
@@ -140,7 +157,6 @@ func (p *particle) intersects(q *particle) []int {
 	}
 	return r
 }
-*/
 
 type intersection struct {
 	pi, qi, t int
@@ -171,7 +187,16 @@ func (d *day20) Solve(lines []string, o command.Output) {
 	intersections := map[int][]*intersection{}
 	for i, p := range particles {
 		for _, q := range particles[i+1:] {
-			ts := p.bruteIntersects(q)
+			// bts := p.bruteIntersects(q)
+			ts := p.intersects(q)
+			// slices.Sort(bts)
+			// slices.Sort(ts)
+			// if !slices.Equal(bts, ts) {
+			// fmt.Println("MISMATCH", p, q)
+			// fmt.Println(bts)
+			// fmt.Println(ts)
+			// return
+			// }
 			if len(ts) > 0 {
 				for _, t := range ts {
 					intersections[t] = append(intersections[t], &intersection{p.idx, q.idx, t})
