@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	cliName = "m"
+	cliName = "mth"
 )
 
 func CLI() sourcerer.CLI {

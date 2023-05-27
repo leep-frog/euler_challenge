@@ -77,6 +77,10 @@ func Divisors(i int) []int {
 	return r
 }
 
+func IntSquareRoot(i int) int {
+	return int(math.Sqrt(float64(i)))
+}
+
 func IsSquare(i int) bool {
 	rt := int(math.Sqrt(float64(i)))
 	return rt*rt == i
