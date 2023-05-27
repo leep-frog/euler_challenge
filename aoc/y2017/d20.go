@@ -82,14 +82,11 @@ func (p *particle) intersects(q *particle) []int {
 	var ntrs []map[int]bool
 	for i := 2; i >= 0; i-- {
 		// (-b += sqrt(b*b - 4 * a * c)) / 2 * a
-		px_p, vx_p, ax_p := p.ps[i], p.vs[i], p.as[i]
-		px_q, vx_q, ax_q := q.ps[i], q.vs[i], q.as[i]
-		// vx_p -= ax_p
-		// vx_q -= ax_q
+		p_p, v_p, a_p := p.ps[i], p.vs[i], p.as[i]
+		p_q, v_q, a_q := q.ps[i], q.vs[i], q.as[i]
 
-		// a is the
-		// c, b, a := 2*(px_q-px_p), 2*(vx_q-vx_p), (ax_q - ax_p)
-		c, b, a := 2*(px_p-px_q), (2*vx_p + ax_p - 2*vx_q - ax_q), (ax_p - ax_q)
+		// c, b, a := 2*(p_q-p_p), 2*(v_q-v_p), (a_q - a_p)
+		c, b, a := 2*(p_p-p_q), (2*v_p + a_p - 2*v_q - a_q), (a_p - a_q)
 
 		if a == 0 && b == 0 {
 			// Will always be at separate spot
@@ -100,22 +97,20 @@ func (p *particle) intersects(q *particle) []int {
 			continue
 		}
 
-		// var roots []int
 		if a == 0 {
 			// Then just a linear equation
-			// 0 = (px_q - px_p) + (vx_q - vx_p) * t
-			// t = (px_p - px_q) / (vx_q - vx_p)
-			t := (px_p - px_q) / (vx_q - vx_p)
+			// 0 = (p_q - p_p) + (v_q - v_p) * t
+			// t = (p_p - p_q) / (v_q - v_p)
+			t := (p_p - p_q) / (v_q - v_p)
 			// Make sure no fractions
-			if ((px_q - px_p) + (vx_q-vx_p)*t) != 0 {
+			if ((p_q - p_p) + (v_q-v_p)*t) != 0 {
 				return nil
 			}
-			// roots = append(roots, t)
 			ntrs = append(ntrs, map[int]bool{
 				t: true,
 			})
 		} else {
-			// quadratic
+			// Otherwise, a quadratic equation
 			determinant := b*b - 4*a*c
 			if determinant < 0 {
 				return nil
@@ -133,24 +128,8 @@ func (p *particle) intersects(q *particle) []int {
 		}
 	}
 
-	if len(ntrs) == 0 {
-		return nil
-	}
-
-	ts := ntrs[0]
-	for _, ni := range ntrs[1:] {
-		ts = maths.Intersection(ts, ni)
-	}
-	// if len(ntrs) > 0 {
-	// fmt.Println("NT", ntrs)
-	// }
-
 	var r []int
-	// if len(ts) > 0 {
-	// 	fmt.Println("HURRAY", ts)
-	// }
-	// for t := range ts {
-	for t := range ts {
+	for t := range maths.Intersection(ntrs...) {
 		if t >= 0 {
 			r = append(r, t)
 		}

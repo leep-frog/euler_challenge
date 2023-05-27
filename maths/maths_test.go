@@ -11,6 +11,82 @@ func tn(name string) string {
 	return fmt.Sprintf("[maxInt = %d] %s", maxInt(), name)
 }
 
+func TestIntersection(t *testing.T) {
+	for _, test := range []struct {
+		name string
+		ms   []map[int]bool
+		want map[int]bool
+	}{
+		{
+			name: "no input returns empty map",
+			want: map[int]bool{},
+		},
+		{
+			name: "empty map returns empty map",
+			ms: []map[int]bool{
+				{},
+			},
+			want: map[int]bool{},
+		},
+		{
+			name: "single map returns itself",
+			ms: []map[int]bool{
+				{1: true, 2: true, 3: true, 5: true, 8: true},
+			},
+			want: map[int]bool{1: true, 2: true, 3: true, 5: true, 8: true},
+		},
+		{
+			name: "empty maps returns empty map",
+			ms: []map[int]bool{
+				{},
+				{},
+			},
+			want: map[int]bool{},
+		},
+		{
+			name: "empty and populated map returns empty map",
+			ms: []map[int]bool{
+				{1: true, 5: true},
+				{},
+			},
+			want: map[int]bool{},
+		},
+		{
+			name: "identical sets return same map",
+			ms: []map[int]bool{
+				{2: true, 3: true, 5: true},
+				{2: true, 3: true, 5: true},
+			},
+			want: map[int]bool{2: true, 3: true, 5: true},
+		},
+		{
+			name: "Multiple sets return same map",
+			ms: []map[int]bool{
+				{2: true, 3: true, 5: true, 7: true},
+				{3: true, 5: true, 7: true},
+				{2: true, 3: true, 5: true, 6: true},
+			},
+			want: map[int]bool{3: true, 5: true},
+		},
+		{
+			name: "Multiple sets with empty",
+			ms: []map[int]bool{
+				{2: true, 3: true, 5: true, 7: true},
+				{3: true, 5: true, 7: true},
+				{2: true, 3: true, 5: true, 6: true},
+				{},
+			},
+			want: map[int]bool{},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			if diff := cmp.Diff(test.want, Intersection(test.ms...)); diff != "" {
+				t.Errorf("Intersection(%v) returned incorrect result (-want, +got):\n%s", test.ms, diff)
+			}
+		})
+	}
+}
+
 func TestPandigital(t *testing.T) {
 	for _, test := range []struct {
 		v    int

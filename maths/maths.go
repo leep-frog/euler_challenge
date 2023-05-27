@@ -11,7 +11,9 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/leep-frog/euler_challenge/bread"
+	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/parse"
+	"golang.org/x/exp/maps"
 )
 
 type Operable[T any] interface {
@@ -321,13 +323,24 @@ func NewSimpleSet[T comparable](ts ...T) map[T]bool {
 	return m
 }
 
-func Intersection[T comparable](a, b map[T]bool) map[T]bool {
+// Intersection returns a set (map[T]bool) that contains keys that are
+// present (and have a true value) in all of the provided maps.
+func Intersection[T comparable](ms ...map[T]bool) map[T]bool {
+	if len(ms) == 0 {
+		return map[T]bool{}
+	}
+
+	if len(ms) == 1 {
+		return maps.Clone(ms[0])
+	}
+
 	m := map[T]bool{}
-	for v, ok := range a {
-		if ok && b[v] {
-			m[v] = true
+	for _, k := range maps.Keys(ms[0]) {
+		if functional.All(ms, func(o map[T]bool) bool { return o[k] }) {
+			m[k] = true
 		}
 	}
+
 	return m
 }
 
