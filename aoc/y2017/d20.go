@@ -32,6 +32,35 @@ func (p *particle) String() string {
 	return fmt.Sprintf("{idx=%d; ps=%v; vs=%v; as=%v}", p.idx, p.ps, p.vs, p.as)
 }
 
+func (p *particle) bruteIntersects(q *particle) []int {
+	var ntrs map[int]bool
+	for i := 0; i < 3; i++ {
+		p_p, v_p, a_p := p.ps[i], p.vs[i], p.as[i]
+		p_q, v_q, a_q := q.ps[i], q.vs[i], q.as[i]
+		var ts []int
+		for t := 0; t < 1_000; t++ {
+			if p_p == p_q {
+				ts = append(ts, t)
+			}
+			v_p += a_p
+			v_q += a_q
+			p_p += v_p
+			p_q += v_q
+		}
+		if ntrs == nil {
+			ntrs = maths.NewSimpleSet(ts...)
+		} else {
+			ntrs = maths.Intersection(ntrs, maths.NewSimpleSet(ts...))
+		}
+	}
+	ks := maps.Keys(ntrs)
+	return ks
+}
+
+/*
+THIS DOES NOT WORK
+Because the formulas for continuous acceleration don't apply easily
+to systems with discrete acceleration changes
 func (p *particle) intersects(q *particle) []int {
 	// Check if x intersects
 	// Formula x_t = px + vx * t + ax * ax * t / 2
@@ -39,10 +68,13 @@ func (p *particle) intersects(q *particle) []int {
 	// px_q + t * vx_q + t^2 * ax_q / 2 = px_p + t * vx_p + t^2 * ax_p / 2
 	// 0 = (px_q - px_p) + (vx_q - vx_p) * t + (ax_q - ax_p)/2 * t^2
 	var ts map[int]bool
-	for i := 0; i < 3; i++ {
+	var ntrs []map[int]bool
+	for i := 2; i >= 0; i-- {
 		// (-b += sqrt(b*b - 4 * a * c)) / 2 * a
 		px_p, vx_p, ax_p := p.ps[i], p.vs[i], p.as[i]
 		px_q, vx_q, ax_q := q.ps[i], q.vs[i], q.as[i]
+		vx_p -= ax_p
+		vx_q -= ax_q
 
 		// a is the
 		c, b, a := 2*(px_q-px_p), 2*(vx_q-vx_p), (ax_q - ax_p)
@@ -56,7 +88,7 @@ func (p *particle) intersects(q *particle) []int {
 			continue
 		}
 
-		var roots []int
+		// var roots []int
 		if a == 0 {
 			// Then just a linear equation
 			// 0 = (px_q - px_p) + (vx_q - vx_p) * t
@@ -66,7 +98,10 @@ func (p *particle) intersects(q *particle) []int {
 			if ((px_q - px_p) + (vx_q-vx_p)*t) != 0 {
 				return nil
 			}
-			roots = append(roots, t)
+			// roots = append(roots, t)
+			ntrs = append(ntrs, map[int]bool{
+				t: true,
+			})
 		} else {
 			// quadratic
 			determinant := b*b - 4*a*c
@@ -76,22 +111,28 @@ func (p *particle) intersects(q *particle) []int {
 			if !maths.IsSquare(determinant) {
 				return nil
 			}
+
 			// (-b += sqrt(b*b - 4 * a * c)) / 2 * a
 			sq := maths.IntSquareRoot(determinant)
-			roots = append(roots, (-b+sq)/(2*a), (-b-sq)/(2*a))
-		}
-
-		if ts == nil {
-			ts = maths.NewSimpleSet(roots...)
-		} else {
-			if len(ts) == 1 && len(roots) == 1 && ts[roots[0]] {
-				fmt.Println("YUP", p, q, ts)
-			}
-			ts = maths.Intersection(ts, maths.NewSimpleSet(roots...))
+			ntrs = append(ntrs, map[int]bool{
+				(-b + sq) / (2 * a): true,
+				(-b - sq) / (2 * a): true,
+			})
 		}
 	}
 
+	if len(ntrs) == 0 {
+		return nil
+	}
+
+	if len(ntrs) > 0 {
+		fmt.Println("NT", ntrs)
+	}
+
 	var r []int
+	if len(ts) > 0 {
+		fmt.Println("HURRAY", ts)
+	}
 	for t := range ts {
 		if t >= 0 {
 			r = append(r, t)
@@ -99,6 +140,7 @@ func (p *particle) intersects(q *particle) []int {
 	}
 	return r
 }
+*/
 
 type intersection struct {
 	pi, qi, t int
@@ -124,15 +166,12 @@ func (d *day20) Solve(lines []string, o command.Output) {
 		}
 		particles = append(particles, np)
 	}
-	o.Stdoutln(best.BestIndex())
-
-	particles = []*particle{particles[346], particles[349]}
 
 	// Calculate all of the intersections
 	intersections := map[int][]*intersection{}
 	for i, p := range particles {
 		for _, q := range particles[i+1:] {
-			ts := p.intersects(q)
+			ts := p.bruteIntersects(q)
 			if len(ts) > 0 {
 				for _, t := range ts {
 					intersections[t] = append(intersections[t], &intersection{p.idx, q.idx, t})
@@ -161,7 +200,7 @@ func (d *day20) Solve(lines []string, o command.Output) {
 		}
 	}
 
-	o.Stdoutln(len(particles) - len(destroyed))
+	o.Stdoutln(best.BestIndex(), len(particles)-len(destroyed))
 }
 
 func (d *day20) Cases() []*aoc.Case {
@@ -169,19 +208,13 @@ func (d *day20) Cases() []*aoc.Case {
 		{
 			FileSuffix: "example",
 			ExpectedOutput: []string{
-				"",
+				"0 1",
 			},
 		},
 		{
 			ExpectedOutput: []string{
-				"",
+				"125 461",
 			},
 		},
 	}
 }
-
-/*
-{idx=346; ps=[-939 -4363 2031]; vs=[35 140 -73]; as=[0 1 0]}
-{idx=349; ps=[2393 1125 2717]; vs=[-84 -56 -83]; as=[0 1 -1]}
-2293 - 84 * 28
-*/
