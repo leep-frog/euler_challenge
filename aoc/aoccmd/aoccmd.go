@@ -16,6 +16,7 @@ import (
 	"github.com/leep-frog/euler_challenge/aoc/y2020"
 	"github.com/leep-frog/euler_challenge/aoc/y2022"
 	"github.com/leep-frog/euler_challenge/aoc/y2017"
+	"github.com/leep-frog/euler_challenge/aoc/y2018"
 	// END_YEAR_IMPORTS
 )
 
@@ -31,6 +32,8 @@ var (
 		16:   y2016.Year(),
 		2017: y2017.Year(),
 		17: y2017.Year(),
+		2018: y2018.Year(),
+		18: y2018.Year(),
 		// END_AOC_YEARS
 	}
 )
