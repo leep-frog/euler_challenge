@@ -46,7 +46,7 @@ func (d *day23) Solve(lines []string, o command.Output) {
 			}
 		}
 	}
-	o.Stdoutln(mc)
+	o.Stdoutln(mc, registers)
 }
 
 func (d *day23) Cases() []*aoc.Case {
