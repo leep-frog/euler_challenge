@@ -31,7 +31,7 @@ func AtoiOK(s string) (int, bool) {
 func Atoi(s string) int {
 	i, err := strconv.Atoi(strings.TrimSpace(s))
 	if err != nil {
-		panic(fmt.Sprintf("failed to convert string to int: %v", err))
+		panic(fmt.Sprintf("failed to convert string (%s) to int: %v", s, err))
 	}
 	return i
 }
@@ -219,7 +219,7 @@ var (
 func SplitWhitespace(lines []string) [][]string {
 	var r [][]string
 	for _, line := range lines {
-		r = append(r, WhitespaceRegex.Split(line, -1))
+		r = append(r, WhitespaceRegex.Split(strings.TrimSpace(line), -1))
 	}
 	return r
 }

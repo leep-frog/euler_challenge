@@ -23,7 +23,7 @@ func Count[T comparable](ts []T, k T) int {
 	return CountFunc(ts, func(t T) bool { return t == k })
 }
 
-func CountFunc[T comparable](ts []T, f func(T) bool) int {
+func CountFunc[T any](ts []T, f func(T) bool) int {
 	return Reduce(0, ts, func(b int, t T) int {
 		if f(t) {
 			return b + 1

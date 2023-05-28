@@ -6,6 +6,7 @@ import (
 
 	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/linkedlist"
+	"golang.org/x/exp/slices"
 )
 
 func BiggifyMatrix(matrix [][]float64) [][]*big.Rat {
@@ -311,4 +312,25 @@ func CrossProduct(x1, y1, x2, y2 int) *big.Rat {
 
 func CrossProductSign(x1, y1, x2, y2 int) int {
 	return CrossProduct(x1, y1, x2, y2).Sign()
+}
+
+func MatrixCopy[T any](m [][]T) [][]T {
+	var c [][]T
+	for _, r := range m {
+		c = append(c, bread.Copy(r))
+	}
+	return c
+}
+
+func MatrixEquals[T comparable](a, b [][]T) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	for i, ai := range a {
+		if !slices.Equal(ai, b[i]) {
+			return false
+		}
+	}
+	return true
 }

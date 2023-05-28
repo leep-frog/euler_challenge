@@ -68,6 +68,10 @@ func (w *Walker[T]) Move(d CardinalDirection, steps int) {
 	w.position = w.position.Plus(w.directions[d].Times(steps))
 }
 
+func (w *Walker[T]) MoveTo(p *point.Point[int]) {
+	w.position = p.Copy()
+}
+
 func (w *Walker[T]) Walk(steps int) {
 	w.position = w.position.Plus(w.CurrentVector().Times(steps))
 }

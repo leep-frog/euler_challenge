@@ -14,14 +14,14 @@ func Day15() aoc.Day {
 
 type day15 struct{}
 
-type generator struct {
+type valueGenerator struct {
 	value  int
 	factor int
 	rem    int
 	divBy  int
 }
 
-func (g *generator) Next() int {
+func (g *valueGenerator) Next() int {
 	g.value = (g.value * g.factor) % g.rem
 	for (g.value % g.divBy) != 0 {
 		g.value = (g.value * g.factor) % g.rem
@@ -31,7 +31,7 @@ func (g *generator) Next() int {
 
 func (d *day15) solve(aStart, aDiv, bStart, bDiv, times int) int {
 	rem := 2147483647
-	a, b := &generator{aStart, 16807, rem, aDiv}, &generator{bStart, 48271, rem, bDiv}
+	a, b := &valueGenerator{aStart, 16807, rem, aDiv}, &valueGenerator{bStart, 48271, rem, bDiv}
 	var count int
 	for i := 0; i < times; i++ {
 		av, bv := a.Next(), b.Next()
