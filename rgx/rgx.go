@@ -3,6 +3,9 @@ package rgx
 import (
 	"fmt"
 	"regexp"
+
+	"github.com/leep-frog/euler_challenge/functional"
+	"github.com/leep-frog/euler_challenge/parse"
 )
 
 type Rgx struct {
@@ -27,4 +30,14 @@ func (r *Rgx) Match(input string) ([]string, bool) {
 		return nil, false
 	}
 	return match[1:], true
+}
+
+func (r *Rgx) MatchInts(input string) []int {
+	return functional.Map(r.MustMatch(input), func(s string) int {
+		return parse.Atoi(s)
+	})
+}
+
+func (r *Rgx) ReplaceAll(input, replaceStr string) string {
+	return r.r.ReplaceAllString(input, replaceStr)
 }

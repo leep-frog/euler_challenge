@@ -2,7 +2,11 @@ package maths
 
 import "fmt"
 
-func Smallest[I any, T Mathable]() *Bester[I, T] {
+type Bestable interface {
+	~int | ~int64 | ~float64 | ~string
+}
+
+func Smallest[I any, T Bestable]() *Bester[I, T] {
 	return &Bester[I, T]{
 		better: func(i, j T) bool {
 			return i < j
@@ -10,7 +14,7 @@ func Smallest[I any, T Mathable]() *Bester[I, T] {
 	}
 }
 
-func Largest[I any, T Mathable]() *Bester[I, T] {
+func Largest[I any, T Bestable]() *Bester[I, T] {
 	return &Bester[I, T]{
 		better: func(i, j T) bool {
 			return i > j
@@ -18,13 +22,13 @@ func Largest[I any, T Mathable]() *Bester[I, T] {
 	}
 }
 
-func Closest[I any, T Mathable](center T) *Bester[I, T] {
+/*func Closest[I any, T Bestable](center T) *Bester[I, T] {
 	return &Bester[I, T]{
 		better: func(i, j T) bool {
 			return Abs(center-i) < Abs(center-j)
 		},
 	}
-}
+}*/
 
 func SmallestT[I any, T Comparable[T]]() *Bester[I, T] {
 	return &Bester[I, T]{
