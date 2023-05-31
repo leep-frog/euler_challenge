@@ -57,11 +57,23 @@ type Walker[T ~int] struct {
 }
 
 func CardinalWalker(direction CardinalDirection, grid bool) *Walker[CardinalDirection] {
-	return &Walker[CardinalDirection]{direction, CardinalDirections(grid), point.Origin[int]()}
+	return CardinalWalkerAt(direction, 0, 0, grid)
+}
+
+func CardinalWalkerAt(direction CardinalDirection, x, y int, grid bool) *Walker[CardinalDirection] {
+	return &Walker[CardinalDirection]{
+		direction,
+		CardinalDirections(grid),
+		point.New(x, y),
+	}
 }
 
 func (w *Walker[T]) Position() *point.Point[int] {
 	return w.position.Copy()
+}
+
+func (w *Walker[T]) Direction() T {
+	return w.directionIdx
 }
 
 func (w *Walker[T]) Move(d CardinalDirection, steps int) {
