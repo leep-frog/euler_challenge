@@ -15,7 +15,7 @@ type Fraction struct {
 
 func New(n, d int) *Fraction {
 	absN, absD := maths.Abs(n), maths.Abs(d)
-	if n*d < 0 {
+	if n != 0 && d != 0 && ((n < 0) != (d < 0)) {
 		absN = -absN
 	}
 	return &Fraction{absN, absD}
@@ -93,26 +93,23 @@ func (f *Fraction) Simplify(primes *generator.Prime) *Fraction {
 		sign *= -1
 	}
 
-	nfs := primes.MutablePrimeFactors(f.N)
-	dfs := primes.MutablePrimeFactors(f.D)
-
-	for k, v := range nfs {
-		if dv, ok := dfs[k]; ok {
-			m := maths.Min(v, dv)
-			nfs[k] -= m
-			dfs[k] -= m
-		}
+	// Only get one set of the prime factors in case the larger is too big.
+	var factors map[int]int
+	if f.N < f.D {
+		factors = primes.MutablePrimeFactors(f.N)
+	} else {
+		factors = primes.MutablePrimeFactors(f.D)
 	}
 
-	newN, newD := 1, 1
-	for k, v := range nfs {
-		for i := 0; i < v; i++ {
-			newN *= k
-		}
-	}
-	for k, v := range dfs {
-		for i := 0; i < v; i++ {
-			newD *= k
+	newN, newD := f.N, f.D
+	for f, cnt := range factors {
+		for i := 0; i < cnt; i++ {
+			if (newN%f == 0) && (newD%f == 0) {
+				newN = newN / f
+				newD = newD / f
+			} else {
+				break
+			}
 		}
 	}
 	return New(sign*newN, newD)
