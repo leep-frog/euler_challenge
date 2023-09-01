@@ -224,7 +224,7 @@ func (i *Int) ToBinary() *Binary {
 }
 
 func Sort(is []*Int) {
-	slices.SortFunc(is, func(this, that *Int) bool { return this.LT(that) })
+	slices.SortFunc(is, func(this, that *Int) int { return this.Cmp(that) })
 }
 
 // TODO

@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/google/go-cmp v0.5.8
 	github.com/leep-frog/command v0.0.0-20230430185839-777424e6831b
-	golang.org/x/exp v0.0.0-20230130191013-ac48d9c7dd6e
+  golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63
 	gonum.org/v1/plot v0.12.0
 )
 
