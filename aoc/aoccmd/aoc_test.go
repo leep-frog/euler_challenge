@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/leep-frog/command"
-	"github.com/leep-frog/euler_challenge/functional"
+	"github.com/leep-frog/functional"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 )

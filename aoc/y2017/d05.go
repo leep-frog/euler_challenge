@@ -3,8 +3,8 @@ package y2017
 import (
 	"github.com/leep-frog/command"
 	"github.com/leep-frog/euler_challenge/aoc"
-	"github.com/leep-frog/euler_challenge/functional"
 	"github.com/leep-frog/euler_challenge/parse"
+	"github.com/leep-frog/functional"
 )
 
 func Day05() aoc.Day {
