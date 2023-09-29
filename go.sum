@@ -25,12 +25,16 @@ github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 h1:DACJavvAHhabrF0
 github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0/go.mod h1:E/TSTwGwJL78qG/PmXZO1EjYhfJinVAhrmmHX6Z8B9k=
 github.com/google/go-cmp v0.5.8 h1:e6P7q2lk1O+qJJb4BtCQXlK8vWEO8V1ZeuEdJNOqZyg=
 github.com/google/go-cmp v0.5.8/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
+github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
+github.com/google/go-cmp v0.5.9/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/jung-kurt/gofpdf v1.0.0/go.mod h1:7Id9E/uU8ce6rXgefFLlgrJj/GYY22cpxn+r32jIOes=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/leep-frog/command v0.0.0-20230418131145-080d4fae09c2 h1:IdAQyGsQFRplicDNvOMBefI9IiWDFPEw/qZTTc3aOxY=
 github.com/leep-frog/command v0.0.0-20230418131145-080d4fae09c2/go.mod h1:nnUXeUudB6nssW6tQa3R64YK2ybnnRA11Wd0Gc2a5iA=
 github.com/leep-frog/command v0.0.0-20230430185839-777424e6831b h1:iii3roFGEgw/gCpNg0eQyUOqi+y/ahfL1gV6OgWG6/U=
 github.com/leep-frog/command v0.0.0-20230430185839-777424e6831b/go.mod h1:nnUXeUudB6nssW6tQa3R64YK2ybnnRA11Wd0Gc2a5iA=
+github.com/leep-frog/functional v0.0.0-20230929192826-ee37e92835fc h1:gOdaOCSj52QtIvuAlbbBOvyF7Mm6b8r1j9a8EGQZ8BY=
+github.com/leep-frog/functional v0.0.0-20230929192826-ee37e92835fc/go.mod h1:krs1oG8Zl8Q4a+k5tAILF687omW7s2s1qdH5jeRXPH0=
 github.com/phpdave11/gofpdf v1.4.2/go.mod h1:zpO6xFn9yxo3YLyMvW8HcKWVdbNqgIfOOp2dXMnm1mY=
 github.com/phpdave11/gofpdi v1.0.12/go.mod h1:vBmVV0Do6hSBHC8uKUQ71JGW+ZGQq74llk/7bXwjDoI=
 github.com/phpdave11/gofpdi v1.0.13/go.mod h1:vBmVV0Do6hSBHC8uKUQ71JGW+ZGQq74llk/7bXwjDoI=

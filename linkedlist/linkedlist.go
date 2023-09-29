@@ -184,6 +184,14 @@ func CircularNumbered(n int) *Node[int] {
 	return NewCircularList(arr...)
 }
 
+func Representation[T comparable](n *Node[T]) string {
+	var r []string
+	for ; n != nil; n = n.Next {
+		r = append(r, fmt.Sprintf("%v", n.Value))
+	}
+	return strings.Join(r, " -> ")
+}
+
 func CircularRepresentation[T comparable](n *Node[T]) string {
 	var r []string
 	iterate(n, nil,

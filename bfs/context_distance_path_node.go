@@ -3,7 +3,7 @@ package bfs
 import (
 	"fmt"
 
-	"github.com/leep-frog/euler_challenge/functional"
+	"github.com/leep-frog/functional"
 )
 
 // Change order of these for best inference from search functions.

@@ -11,7 +11,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/leep-frog/euler_challenge/bread"
-	"github.com/leep-frog/euler_challenge/functional"
+	"github.com/leep-frog/functional"
 	"github.com/leep-frog/euler_challenge/parse"
 	"golang.org/x/exp/maps"
 )

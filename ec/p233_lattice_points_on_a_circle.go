@@ -2,7 +2,7 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command"
-	"github.com/leep-frog/euler_challenge/functional"
+	"github.com/leep-frog/functional"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
 	"golang.org/x/exp/maps"

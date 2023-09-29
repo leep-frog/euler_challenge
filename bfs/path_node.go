@@ -3,7 +3,7 @@ package bfs
 import (
 	"fmt"
 
-	"github.com/leep-frog/euler_challenge/functional"
+	"github.com/leep-frog/functional"
 )
 
 type PathNode[CODE comparable, T any] interface {

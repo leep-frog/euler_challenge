@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/leep-frog/euler_challenge/functional"
+	"github.com/leep-frog/functional"
 )
 
 var (

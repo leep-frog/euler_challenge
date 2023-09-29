@@ -3,7 +3,7 @@ package bfs
 import (
 	"fmt"
 
-	"github.com/leep-frog/euler_challenge/functional"
+	"github.com/leep-frog/functional"
 )
 
 type DistanceNode[CODE comparable, DIST Distanceable[DIST], T any] interface {

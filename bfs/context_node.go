@@ -3,7 +3,7 @@ package bfs
 import (
 	"fmt"
 
-	"github.com/leep-frog/euler_challenge/functional"
+	"github.com/leep-frog/functional"
 )
 
 // ContextNode defines an interface that can be used by the `ContextSearch` function.
