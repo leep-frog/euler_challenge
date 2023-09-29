@@ -3,6 +3,7 @@ package aoccmd
 import (
 	"fmt"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/leep-frog/command"
@@ -13,10 +14,10 @@ import (
 	// YEAR_IMPOTS
 	"github.com/leep-frog/euler_challenge/aoc/y2015"
 	"github.com/leep-frog/euler_challenge/aoc/y2016"
-	"github.com/leep-frog/euler_challenge/aoc/y2020"
-	"github.com/leep-frog/euler_challenge/aoc/y2022"
 	"github.com/leep-frog/euler_challenge/aoc/y2017"
 	"github.com/leep-frog/euler_challenge/aoc/y2018"
+	"github.com/leep-frog/euler_challenge/aoc/y2020"
+	"github.com/leep-frog/euler_challenge/aoc/y2022"
 	// END_YEAR_IMPORTS
 )
 
@@ -31,9 +32,9 @@ var (
 		2016: y2016.Year(),
 		16:   y2016.Year(),
 		2017: y2017.Year(),
-		17: y2017.Year(),
+		17:   y2017.Year(),
 		2018: y2018.Year(),
-		18: y2018.Year(),
+		18:   y2018.Year(),
 		// END_AOC_YEARS
 	}
 )
@@ -73,6 +74,23 @@ func (a *AdventOfCode) Node() command.Node {
 	var usedDefault bool
 
 	mainNode := command.SerialNodes(
+		// Transform ["#x"] into ["#", "-x"]
+		// Note: this needs to come before the flag processor
+		&command.InputTransformer{
+			UpToIndex: -1,
+			F: func(o command.Output, d *command.Data, s string) ([]string, error) {
+				r, err := regexp.Compile(`^([0-9]+)x$`)
+				if err != nil {
+					return nil, o.Annotatef(err, "invalid transformer regex")
+				}
+
+				m := r.FindStringSubmatch(s)
+				if m == nil {
+					return []string{s}, nil
+				}
+				return []string{m[1], "-x"}, nil
+			},
+		},
 		command.FlagProcessor(
 			exampleFlag,
 			suffixFlag,

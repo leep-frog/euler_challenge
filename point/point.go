@@ -400,11 +400,20 @@ func Origin[T maths.Mathable]() *Point[T] {
 
 func NewTriangle[T maths.Mathable](a, b, c *Point[T]) *Triangle[T] {
 	ps := []*Point[T]{a, b, c}
-	slices.SortFunc(ps, func(this, that *Point[T]) bool {
-		if this.X != that.X {
-			return this.X < that.X
+	slices.SortFunc(ps, func(this, that *Point[T]) int {
+		if this.X < that.X {
+			return -1
 		}
-		return this.Y < that.Y
+		if this.X > that.X {
+			return 1
+		}
+		if this.Y < that.Y {
+			return -1
+		}
+		if this.Y > that.Y {
+			return 1
+		}
+		return 0
 	})
 	return &Triangle[T]{ps[0], ps[1], ps[2]}
 }
@@ -671,11 +680,21 @@ func ConvexHullFromPoints[T maths.Mathable](points ...*Point[T]) *ConvexHull[T] 
 	}
 
 	// Sort by *ascending* Y coordinate for the bottom hull.
-	slices.SortFunc(points, func(this, that *Point[T]) bool {
-		if this.X != that.X {
-			return this.X < that.X
+	slices.SortFunc(points, func(this, that *Point[T]) int {
+		if this.X < that.X {
+			return -1
 		}
-		return this.Y > that.Y
+		if this.X > that.X {
+			return 1
+		}
+		// Note ascending Y coordinate condition here
+		if this.Y > that.Y {
+			return -1
+		}
+		if this.Y < that.Y {
+			return 1
+		}
+		return 0
 	})
 
 	var top []*Point[T]

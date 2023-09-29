@@ -41,7 +41,6 @@ func TestNew(t *testing.T) {
 			if test.wantD != 0 {
 				wantI = &Rational{big.NewRat(int64(test.wantN), int64(test.wantD))}
 			}
-			fmt.Println("FI", fI, wantI)
 			if diff := cmp.Diff(wantI, fI, CmpOpts()...); diff != "" {
 				t.Errorf("NewI(%d, %d) returned incorrect fraction (-want, +got):\n%s", test.n, test.d, diff)
 			}
@@ -247,6 +246,15 @@ func TestSimplify(t *testing.T) {
 			New(2*2*2*2*2*3*7, 2*2*2*7*13),
 			New(2*2*3, 13),
 		},
+		{
+			New(4000000001002500, 2500),
+			New(1600000000401, 1),
+		},
+		{
+			New(2500, 4000000001002500),
+			New(1, 1600000000401),
+		},
+		// Only need to get the factors of the smaller of really big numbers
 		/* Useful for commenting out tests. */
 	} {
 		t.Run(fmt.Sprintf("(%v).Simplify()", test.f), func(t *testing.T) {
