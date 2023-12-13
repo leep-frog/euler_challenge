@@ -17,6 +17,6 @@ require (
 	github.com/go-pdf/fpdf v0.6.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/leep-frog/functional v0.0.0-20230929192826-ee37e92835fc // indirect
-	golang.org/x/image v0.5.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/image v0.10.0 // indirect
+	golang.org/x/text v0.11.0 // indirect
 )
