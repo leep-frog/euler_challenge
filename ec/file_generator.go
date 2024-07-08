@@ -2,31 +2,32 @@ package eulerchallenge
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/leep-frog/command/command"
+	"github.com/leep-frog/command/commander"
 	"github.com/leep-frog/euler_challenge/parse"
 )
 
 func FileGenerator() command.Node {
-	problemNumberArg := command.Arg[int]("PROBLEM_NUMBER", "Problem number", command.Positive[int]())
-	fileSuffixArg := command.ListArg[string]("FILE_SUFFIX", "suffix for file name", 1, command.UnboundedList)
+	problemNumberArg := commander.Arg[int]("PROBLEM_NUMBER", "Problem number", commander.Positive[int]())
+	fileSuffixArg := commander.ListArg[string]("FILE_SUFFIX", "suffix for file name", 1, command.UnboundedList)
 
-	fileInputFlag := command.BoolFlag("file-input", 'f', "If set, new file will accept a file input; otherwise it accepts an integer, N")
-	exampleFlag := command.BoolFlag("example", 'x', "If set, include example stuff in tests")
-	noInputFlag := command.BoolFlag("no-input", 'n', "If set, no input")
+	fileInputFlag := commander.BoolFlag("file-input", 'f', "If set, new file will accept a file input; otherwise it accepts an integer, N")
+	exampleFlag := commander.BoolFlag("example", 'x', "If set, include example stuff in tests")
+	noInputFlag := commander.BoolFlag("no-input", 'n', "If set, no input")
 
-	return command.SerialNodes(
-		command.FlagProcessor(
+	return commander.SerialNodes(
+		commander.FlagProcessor(
 			fileInputFlag,
 			exampleFlag,
 			noInputFlag,
 		),
 		problemNumberArg,
 		fileSuffixArg,
-		command.ExecutableProcessor(func(o command.Output, d *command.Data) ([]string, error) {
+		commander.ExecutableProcessor(func(o command.Output, d *command.Data) ([]string, error) {
 			fileInput := fileInputFlag.Get(d)
 			num := problemNumberArg.Get(d)
 
@@ -76,7 +77,7 @@ func FileGenerator() command.Node {
 
 			// Create go file
 			suffix := strings.ToLower(strings.Join(fileSuffixArg.Get(d), "_"))
-			if err := ioutil.WriteFile(fmt.Sprintf("p%d_%s.go", num, suffix), []byte(strings.Join(template, "\n")), 0644); err != nil {
+			if err := os.WriteFile(fmt.Sprintf("p%d_%s.go", num, suffix), []byte(strings.Join(template, "\n")), 0644); err != nil {
 				return nil, o.Stderrf("failed to write new file: %v", err)
 			}
 

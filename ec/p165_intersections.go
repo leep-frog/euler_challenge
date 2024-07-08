@@ -4,7 +4,7 @@ import (
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/point"
-	"golang.org/x/exp/slices"
+	"github.com/leep-frog/functional"
 )
 
 func P165() *problem {
@@ -21,7 +21,7 @@ func P165() *problem {
 		}
 
 		// Sort the points
-		slices.SortFunc(intersections, func(p, q *point.RationalPoint) bool {
+		functional.SortFunc(intersections, func(p, q *point.RationalPoint) bool {
 			if maths.NEQ(p.X, q.X) {
 				return p.X.LT(q.X)
 			}

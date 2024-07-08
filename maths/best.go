@@ -14,6 +14,14 @@ func Smallest[I any, T Bestable]() *Bester[I, T] {
 	}
 }
 
+func Closest[I any, T ~int | ~int64 | ~float64](target T) *Bester[I, T] {
+	return &Bester[I, T]{
+		better: func(i, j T) bool {
+			return Abs(target-i) < Abs(target-j)
+		},
+	}
+}
+
 func Largest[I any, T Bestable]() *Bester[I, T] {
 	return &Bester[I, T]{
 		better: func(i, j T) bool {

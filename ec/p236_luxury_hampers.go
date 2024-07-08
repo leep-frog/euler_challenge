@@ -6,7 +6,7 @@ import (
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/fraction"
 	"github.com/leep-frog/euler_challenge/generator"
-	"golang.org/x/exp/slices"
+	"github.com/leep-frog/functional"
 )
 
 type ctx236 struct {
@@ -93,7 +93,7 @@ func P236() *problem {
 			*/
 		}
 
-		slices.SortFunc(supply, func(a, b []int) bool {
+		functional.SortFunc(supply, func(a, b []int) bool {
 			return a[0] < b[0]
 		})
 

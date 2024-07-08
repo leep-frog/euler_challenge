@@ -2,19 +2,20 @@ package eulerchallenge
 
 import (
 	"github.com/leep-frog/command/command"
+	"github.com/leep-frog/command/commander"
 	"github.com/leep-frog/euler_challenge/fraction"
 )
 
 func P65() *problem {
 	return &problem{
 		num: 65,
-		n: command.SerialNodes(
-			command.Description("https://projecteuler.net/problem=65"),
-			command.FlagProcessor(
-				command.BoolFlag("two", 't', "find the convergence for the square root of 2"),
+		n: commander.SerialNodes(
+			commander.Description("https://projecteuler.net/problem=65"),
+			commander.FlagProcessor(
+				commander.BoolFlag("two", 't', "find the convergence for the square root of 2"),
 			),
-			command.Arg[int](N, "", command.Positive[int]()),
-			&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
+			commander.Arg[int](N, "", commander.Positive[int]()),
+			&commander.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
 				n := d.Int(N)
 
 				var f *fraction.Rational

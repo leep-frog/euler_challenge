@@ -26,7 +26,7 @@ func P107() *problem {
 		sort.SliceStable(edges, func(i, j int) bool { return edges[i].weight < edges[j].weight })
 
 		var totalWeight, mstWeight int
-		uf := unionfind.New()
+		uf := unionfind.New[int]()
 		for _, edge := range edges {
 			totalWeight += edge.weight
 			if uf.Merge(edge.vertexA, edge.vertexB) {

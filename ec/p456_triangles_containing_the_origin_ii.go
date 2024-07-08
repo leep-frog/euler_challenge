@@ -5,7 +5,7 @@ import (
 	"github.com/leep-frog/euler_challenge/fraction"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/point"
-	"golang.org/x/exp/slices"
+	"github.com/leep-frog/functional"
 )
 
 /* Solution: If we have two points, draw a line that intersects those points
@@ -73,7 +73,7 @@ func generateSlopeGroups(pts []*point.Point[int]) []*slopeGroup {
 			sgs = append(sgs, d)
 		}
 	}
-	slices.SortFunc(sgs, func(this, that *slopeGroup) bool { return this.LT(that) })
+	functional.SortFunc(sgs, func(this, that *slopeGroup) bool { return this.LT(that) })
 
 	// Set cumulative number of points between (-1, 0) and each slope group.
 	sum := 0

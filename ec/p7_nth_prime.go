@@ -14,15 +14,15 @@ func P7() *problem {
 	}, []*execution{
 		{
 			args: []string{"6"},
-			want: "13 13",
+			want: "13",
 		},
 		{
 			args: []string{"9"},
-			want: "23 23",
+			want: "23",
 		},
 		{
 			args: []string{"10001"},
-			want: "104743 104743",
+			want: "104743",
 		},
 		{
 			args:     []string{"10000001"},

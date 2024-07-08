@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/leep-frog/command/command"
+	"github.com/leep-frog/command/commander"
 )
 
 func getProblems() []*problem {
@@ -227,16 +228,16 @@ func Branches() map[string]command.Node {
 }
 
 func descNode(problem int) command.Processor {
-	return command.Descriptionf("https://projecteuler.net/problem=%d", problem)
+	return commander.Descriptionf("https://projecteuler.net/problem=%d", problem)
 }
 
 func intInputNode(num int, f func(command.Output, int), executions []*execution) *problem {
 	return &problem{
 		num: num,
-		n: command.SerialNodes(
+		n: commander.SerialNodes(
 			descNode(num),
-			command.Arg[int](N, "", command.Positive[int]()),
-			&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
+			commander.Arg[int](N, "", commander.Positive[int]()),
+			&commander.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
 				f(o, d.Int(N))
 				return nil
 			}},
@@ -248,10 +249,10 @@ func intInputNode(num int, f func(command.Output, int), executions []*execution)
 func intsInputNode(num, numInputs, numOptionalInputs int, f func(command.Output, []int), executions []*execution) *problem {
 	return &problem{
 		num: num,
-		n: command.SerialNodes(
+		n: commander.SerialNodes(
 			descNode(num),
-			command.ListArg[int](N, "", numInputs, numOptionalInputs),
-			&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
+			commander.ListArg[int](N, "", numInputs, numOptionalInputs),
+			&commander.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
 				f(o, d.IntList(N))
 				return nil
 			}},
@@ -286,13 +287,13 @@ func fileInputNode(num int, f func([]string, command.Output), executions []*exec
 
 	return &problem{
 		num: num,
-		n: command.SerialNodes(
+		n: commander.SerialNodes(
 			descNode(num),
 			// TODO: RelativeFileNode
-			command.Arg[string]("FILE", "", &command.FileCompleter[string]{
+			commander.Arg[string]("FILE", "", &commander.FileCompleter[string]{
 				Directory: filepath.Join(dir, "input"),
 			}),
-			&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
+			&commander.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
 				b, err := os.ReadFile(filepath.Join(dir, "input", d.String("FILE")))
 				if err != nil {
 					return o.Annotatef(err, "failed to read fileee")
@@ -308,9 +309,9 @@ func fileInputNode(num int, f func([]string, command.Output), executions []*exec
 func noInputNode(num int, f func(command.Output), ex *execution) *problem {
 	return &problem{
 		num: num,
-		n: command.SerialNodes(
+		n: commander.SerialNodes(
 			descNode(num),
-			&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
+			&commander.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
 				f(o)
 				return nil
 			}},

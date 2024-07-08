@@ -7,9 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/leep-frog/command/command"
+	"github.com/leep-frog/command/commander"
+	"github.com/leep-frog/command/commandertest"
+	"github.com/leep-frog/command/commandtest"
 	"github.com/leep-frog/euler_challenge/maths"
-	"github.com/leep-frog/euler_challenge/profiler"
 )
 
 var (
@@ -23,7 +24,7 @@ var (
 			// Test numbers to check
 
 			// List of problems that use bfs package
-			18, 60, 61, 81, 82, 83, 88, 96, 108, 109, 118, 119, 122, 127, 151, 152, 233, 243,
+			// 18, 60, 61, 81, 82, 83, 88, 96, 108, 109, 118, 119, 122, 127, 151, 152, 233, 243,
 		}
 		set := maths.NewSimpleSet(toCheck...)
 		return true && (len(toCheck) == 0 || set[cct.num])
@@ -77,10 +78,10 @@ func TestAll(t *testing.T) {
 	t.Logf("Test estimate: %dm:%ds", minEst, secEst)
 
 	for _, test := range tests {
-		tmr := profiler.NewTimer()
-		tmr.Start()
+		// tmr := profiler.NewTimer()
+		// tmr.Start()
 		test.test(t)
-		tmr.End()
+		// tmr.End()
 	}
 	sort.SliceStable(tests, func(i, j int) bool {
 		return tests[i].elapsed > tests[j].elapsed
@@ -104,15 +105,15 @@ func (ct *codingChallengeTest) test(t *testing.T) {
 		}
 
 		start := time.Now()
-		etc := &command.ExecuteTestCase{
-			Node: command.AsNode(&command.BranchNode{
+		etc := &commandtest.ExecuteTestCase{
+			Node: &commander.BranchNode{
 				Branches: Branches(),
-			}),
+			},
 			Args:          ct.args,
 			WantStdout:    fmt.Sprintf("%s\n", strings.Join(ct.want, "\n")),
 			SkipDataCheck: true,
 		}
-		command.ExecuteTest(t, etc)
+		commandertest.ExecuteTest(t, etc)
 
 		estimate := ct.estimate
 		if estimate == 0 {
