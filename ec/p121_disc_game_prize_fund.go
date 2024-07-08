@@ -3,7 +3,7 @@ package eulerchallenge
 import (
 	"math/big"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 )
 
 func P121() *problem {

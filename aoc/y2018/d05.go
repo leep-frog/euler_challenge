@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/aoc"
 	"github.com/leep-frog/euler_challenge/linkedlist"
 	"github.com/leep-frog/euler_challenge/maths"

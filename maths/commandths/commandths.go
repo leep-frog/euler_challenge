@@ -5,7 +5,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
+	"github.com/leep-frog/command/commander"
 	"github.com/leep-frog/command/sourcerer"
 	"github.com/leep-frog/euler_challenge/generator"
 	"golang.org/x/exp/maps"
@@ -27,7 +28,7 @@ func Aliasers() sourcerer.Option {
 }
 
 var (
-	expArg     = command.ListArg[string]("EXPRESSION", "Expression to evaluate", 1, command.UnboundedList)
+	expArg     = commander.ListArg[string]("EXPRESSION", "Expression to evaluate", 1, command.UnboundedList)
 	operations = regexp.MustCompile(`([\*\^\+/\(\)\%])`)
 	minusRegex = regexp.MustCompile(`(\-)([^0-9])`)
 	whitespace = regexp.MustCompile(`\s+`)
@@ -40,11 +41,11 @@ func (*Maths) Setup() []string { return nil }
 func (m *Maths) Name() string  { return cliName }
 
 func (m *Maths) primeFactor() command.Node {
-	arg := command.ListArg[int]("N", "The numbers to prime factor", 1, command.UnboundedList)
-	return command.SerialNodes(
-		command.Description("Prints out the prime factors of the provided numbers"),
+	arg := commander.ListArg[int]("N", "The numbers to prime factor", 1, command.UnboundedList)
+	return commander.SerialNodes(
+		commander.Description("Prints out the prime factors of the provided numbers"),
 		arg,
-		&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
+		&commander.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
 			p := generator.Primes()
 			for _, a := range arg.Get(d) {
 				fs := p.PrimeFactors(a)
@@ -63,11 +64,11 @@ func (m *Maths) primeFactor() command.Node {
 }
 
 func (m *Maths) nthPrime() command.Node {
-	arg := command.Arg[int]("N", "The prime index to get", command.NonNegative[int]())
-	return command.SerialNodes(
-		command.Description("Prints out the Nth prime number (1-indexed)"),
+	arg := commander.Arg[int]("N", "The prime index to get", commander.NonNegative[int]())
+	return commander.SerialNodes(
+		commander.Description("Prints out the Nth prime number (1-indexed)"),
 		arg,
-		&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
+		&commander.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
 			o.Stdoutln(generator.Primes().Nth(arg.Get(d) - 1))
 			return nil
 		}},
@@ -75,19 +76,19 @@ func (m *Maths) nthPrime() command.Node {
 }
 
 func (m *Maths) Node() command.Node {
-	return &command.BranchNode{
+	return &commander.BranchNode{
 		Branches: map[string]command.Node{
-			"prime": &command.BranchNode{
+			"prime": &commander.BranchNode{
 				Branches: map[string]command.Node{
 					"factor": m.primeFactor(),
 					"nth":    m.nthPrime(),
 				},
 			},
 		},
-		Default: command.SerialNodes(
+		Default: commander.SerialNodes(
 			// TODO: Flag(s) to change mode (int, float, fraction)
 			expArg,
-			&command.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
+			&commander.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
 				v, err := Parse(strings.Join(expArg.Get(d), " "), Operations...)
 				if err != nil {
 					return o.Err(err)

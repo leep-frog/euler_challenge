@@ -1,7 +1,7 @@
 package y2020
 
 import (
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/aoc"
 	"github.com/leep-frog/euler_challenge/maths"
 )

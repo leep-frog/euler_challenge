@@ -3,11 +3,11 @@ package y2018
 import (
 	"fmt"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/aoc"
 	"github.com/leep-frog/euler_challenge/walker"
+	"github.com/leep-frog/functional"
 	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 )
 
 func Day13() aoc.Day {
@@ -75,7 +75,7 @@ func (d *day13) Solve(lines []string, o command.Output) {
 	var part1 string
 
 	for {
-		slices.SortFunc(carts, func(a, b *cart) bool {
+		functional.SortFunc(carts, func(a, b *cart) bool {
 			ap, bp := a.w.Position(), b.w.Position()
 			if ap.Y != bp.Y {
 				return ap.Y < bp.Y

@@ -3,12 +3,12 @@ package eulerchallenge
 import (
 	"fmt"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/bfs"
 	"github.com/leep-frog/euler_challenge/bread"
-	"github.com/leep-frog/functional"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
+	"github.com/leep-frog/functional"
 )
 
 func P61() *problem {

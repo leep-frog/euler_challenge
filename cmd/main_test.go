@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 )
 
 var (

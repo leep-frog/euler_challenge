@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/aoc"
 	"github.com/leep-frog/euler_challenge/bfs"
 	"github.com/leep-frog/euler_challenge/maths"
@@ -172,7 +172,7 @@ func (d *day16) Solve(lines []string, o command.Output) {
 			if best.Best()+best2.Best() > secondAbsoluteBest.Best() || !secondAbsoluteBest.Set() {
 				index := [][]string{best.BestIndex(), best2.BestIndex()}
 				// Sort indices so order is deterministic
-				slices.SortFunc(index, func(this, that []string) bool {
+				functional.SortFunc(index, func(this, that []string) bool {
 					if len(this) != len(that) {
 						return len(this) < len(that)
 					}

@@ -6,7 +6,7 @@ import (
 	"math"
 	"sort"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 )

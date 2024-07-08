@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 )
 
 type Day interface {

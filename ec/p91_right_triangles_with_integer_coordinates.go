@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 )
 
 func P91() *problem {

@@ -3,7 +3,7 @@ package eulerchallenge
 import (
 	"fmt"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 )
 
 func rec(depth, remB, remW, minB, minW int, cur [][]int, cache map[string]int) int {

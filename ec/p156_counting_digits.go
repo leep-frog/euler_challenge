@@ -1,7 +1,7 @@
 package eulerchallenge
 
 import (
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 )
 
 // numberOfDigitAppearances returns the number of times the digit d has appeared

@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 )
 
 func getProblems() []*problem {

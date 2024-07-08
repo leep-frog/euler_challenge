@@ -3,12 +3,12 @@ package y2022
 import (
 	"regexp"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/aoc"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/parse"
 	"github.com/leep-frog/euler_challenge/point"
-	"golang.org/x/exp/slices"
+	"github.com/leep-frog/functional"
 )
 
 func Day15() aoc.Day {
@@ -36,7 +36,7 @@ func (d *day15) boundedRangeLength(ranges [][]int, bound int) (int, bool) {
 }
 
 func (d *day15) simplifyRange(ranges [][]int) [][]int {
-	slices.SortFunc(ranges, func(this, that []int) bool {
+	functional.SortFunc(ranges, func(this, that []int) bool {
 		return this[0] < that[0]
 	})
 

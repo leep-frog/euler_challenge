@@ -4,12 +4,11 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/aoc"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/functional"
 	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 )
 
 func Day21() aoc.Day {
@@ -80,7 +79,7 @@ func (d *day21) Solve(lines []string, o command.Output) {
 		soln = append(soln, []string{i, a})
 	}
 
-	slices.SortFunc(soln, func(this, that []string) bool {
+	functional.SortFunc(soln, func(this, that []string) bool {
 		return this[1] < that[1]
 	})
 	o.Stdoutln(sum, strings.Join(functional.Map(soln, func(s []string) string { return s[0] }), ","))

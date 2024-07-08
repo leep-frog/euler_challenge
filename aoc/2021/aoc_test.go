@@ -4,7 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
+	"github.com/leep-frog/command/commandertest"
+	"github.com/leep-frog/command/commandtest"
 )
 
 func TestAll(t *testing.T) {
@@ -26,13 +28,13 @@ func TestAll(t *testing.T) {
 		},*/
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			etc := &command.ExecuteTestCase{
+			etc := &commandtest.ExecuteTestCase{
 				Node:          test.node,
 				Args:          test.args,
 				WantStdout:    strings.Join(test.want, "\n"),
 				SkipDataCheck: true,
 			}
-			command.ExecuteTest(t, etc)
+			commandertest.ExecuteTest(t, etc)
 		})
 	}
 }

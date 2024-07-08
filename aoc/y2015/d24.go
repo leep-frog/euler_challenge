@@ -3,7 +3,7 @@ package y2015
 import (
 	"fmt"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/aoc"
 	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/maths"
@@ -89,7 +89,7 @@ func (d *day24) solve(partsArr []int, total, segmentCount int, checker func(map[
 	var groups [][]int
 	d.getGroupings(0, size, partsArr, nil, &groups)
 
-	slices.SortFunc(groups, func(this, that []int) bool {
+	functional.SortFunc(groups, func(this, that []int) bool {
 		return bread.Product(this) < bread.Product(that)
 	})
 

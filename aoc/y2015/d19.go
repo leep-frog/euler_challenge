@@ -3,11 +3,11 @@ package y2015
 import (
 	"strings"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/aoc"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/pair"
-	"golang.org/x/exp/slices"
+	"github.com/leep-frog/functional"
 )
 
 func Day19() aoc.Day {
@@ -58,7 +58,7 @@ func (d *day19) Solve(lines []string, o command.Output) {
 			ts = append(ts, pair.New(from, to))
 		}
 	}
-	slices.SortFunc(ts, func(this, that *pair.Pair[string, string]) bool {
+	functional.SortFunc(ts, func(this, that *pair.Pair[string, string]) bool {
 		thisDist := len(this.A) - len(this.B)
 		thatDist := len(that.A) - len(that.B)
 		return thisDist > thatDist

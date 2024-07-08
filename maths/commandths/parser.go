@@ -2,8 +2,7 @@ package commandths
 
 import (
 	"fmt"
-
-	"github.com/leep-frog/command"
+	"strconv"
 )
 
 type parser struct {
@@ -96,7 +95,7 @@ type parserTerm struct {
 
 func (p *parser) toParserTerm(s string) (*parserTerm, error) {
 	// Parse int first (incase we have a negative number)
-	i, parseIntErr := command.ParseInt(s)
+	i, parseIntErr := strconv.Atoi(s)
 	if parseIntErr == nil {
 		return &parserTerm{numberSymbol, nil, i}, nil
 	}

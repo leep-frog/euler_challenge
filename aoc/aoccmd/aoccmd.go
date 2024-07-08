@@ -6,7 +6,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
+	"github.com/leep-frog/command/commander"
 	"github.com/leep-frog/command/sourcerer"
 	"github.com/leep-frog/euler_challenge/aoc"
 	"github.com/leep-frog/euler_challenge/parse"
@@ -65,19 +66,19 @@ func goFile(day int) string {
 }
 
 func (a *AdventOfCode) Node() command.Node {
-	yearArg := command.MapArg("YEAR", "Problem year", a.years, true)
-	dayArg := command.Arg[int]("DAY", "Problem day", command.Between(1, 25, true))
+	yearArg := commander.MapArg("YEAR", "Problem year", a.years, true)
+	dayArg := commander.Arg[int]("DAY", "Problem day", commander.Between(1, 25, true))
 
-	exampleFlag := command.BoolFlag("example", 'x', "Whether or not to run on the example input")
-	suffixFlag := command.Flag[string]("suffix", 's', "File suffix to use for problem")
+	exampleFlag := commander.BoolFlag("example", 'x', "Whether or not to run on the example input")
+	suffixFlag := commander.Flag[string]("suffix", 's', "File suffix to use for problem")
 
 	var usedDefault bool
 
-	mainNode := command.SerialNodes(
+	mainNode := commander.SerialNodes(
 		// Transform ["#x"] into ["#", "-x"]
 		// Note: this needs to come before the flag processor
 		&command.InputTransformer{
-			UpToIndex: -1,
+			UpToIndexInclusive: command.UnboundedList,
 			F: func(o command.Output, d *command.Data, s string) ([]string, error) {
 				r, err := regexp.Compile(`^([0-9]+)x$`)
 				if err != nil {
@@ -91,12 +92,12 @@ func (a *AdventOfCode) Node() command.Node {
 				return []string{m[1], "-x"}, nil
 			},
 		},
-		command.FlagProcessor(
+		commander.FlagProcessor(
 			exampleFlag,
 			suffixFlag,
 		),
 		// Adds default year if first argument is "d"
-		command.SuperSimpleProcessor(func(i *command.Input, d *command.Data) error {
+		commander.SuperSimpleProcessor(func(i *command.Input, d *command.Data) error {
 			if s, ok := i.Peek(); !ok || s != "d" {
 				return nil
 			}
@@ -107,7 +108,7 @@ func (a *AdventOfCode) Node() command.Node {
 		}),
 		yearArg,
 		dayArg,
-		command.SimpleProcessor(func(i *command.Input, o command.Output, d *command.Data, ed *command.ExecuteData) error {
+		commander.SimpleProcessor(func(i *command.Input, o command.Output, d *command.Data, ed *command.ExecuteData) error {
 			day := dayArg.Get(d)
 			year := yearArg.Get(d)
 
@@ -134,11 +135,11 @@ func (a *AdventOfCode) Node() command.Node {
 		}, nil /* No logic for complete */),
 	)
 
-	return &command.BranchNode{
+	return &commander.BranchNode{
 		Branches: map[string]command.Node{
-			"setDefault": command.SerialNodes(
-				command.Arg[int]("DEFAULT_YEAR", "Default year to use"),
-				&command.ExecutorProcessor{func(o command.Output, d *command.Data) error {
+			"setDefault": commander.SerialNodes(
+				commander.Arg[int]("DEFAULT_YEAR", "Default year to use"),
+				&commander.ExecutorProcessor{func(o command.Output, d *command.Data) error {
 					a.DefaultYear = d.Int("DEFAULT_YEAR")
 					a.changed = true
 					return nil
@@ -240,7 +241,7 @@ func generateDay(yearDir, yearInputDir string, year, day int, ed *command.Execut
 		"package y%d",
 		"",
 		`import (`,
-		`	"github.com/leep-frog/command"`,
+		`	"github.com/leep-frog/command/command"`,
 		`	"github.com/leep-frog/euler_challenge/aoc"`,
 		`)`,
 		"",

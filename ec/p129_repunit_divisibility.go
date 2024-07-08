@@ -3,7 +3,7 @@ package eulerchallenge
 import (
 	"fmt"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
@@ -45,7 +45,6 @@ func repunitable(n int) bool {
 // repunitSmallest returns the length of the smallest repunit (111...)
 // that has n as a factor. Calling functions should verify the input is
 // repunitable before calling this function
-//
 func repunitSmallest(n int) int {
 	if !repunitable(n) {
 		panic(fmt.Sprintf("repunit for n=%d requires GCD(n, 10) = 0", n))

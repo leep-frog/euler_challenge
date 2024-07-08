@@ -5,11 +5,11 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/aoc"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/parse"
-	"golang.org/x/exp/slices"
+	"github.com/leep-frog/functional"
 )
 
 func Day13() aoc.Day {
@@ -141,7 +141,7 @@ func (d *day13) Solve(lines []string, o command.Output) {
 	base1 := d.parsePacketFromString("[[2]]")
 	base2 := d.parsePacketFromString("[[6]]")
 	packets = append(packets, base1, base2)
-	slices.SortFunc(packets, func(this, that *packet) bool { return this.cmp(that) <= 0 })
+	functional.SortFunc(packets, func(this, that *packet) bool { return this.cmp(that) <= 0 })
 	mult := 1
 	for i, p := range packets {
 		if p.cmp(base1) == 0 || p.cmp(base2) == 0 {

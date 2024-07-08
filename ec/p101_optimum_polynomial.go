@@ -3,7 +3,7 @@ package eulerchallenge
 import (
 	"math/big"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/maths"
 )
 

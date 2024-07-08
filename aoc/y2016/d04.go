@@ -3,12 +3,11 @@ package y2016
 import (
 	"strings"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/aoc"
 	"github.com/leep-frog/euler_challenge/pair"
 	"github.com/leep-frog/euler_challenge/parse"
 	"github.com/leep-frog/functional"
-	"golang.org/x/exp/slices"
 )
 
 func Day04() aoc.Day {
@@ -45,7 +44,7 @@ func (d *day04) Solve(lines []string, o command.Output) {
 		sectorID := parse.Atoi(endParts[0])
 
 		elements := pair.Zip(counts)
-		slices.SortFunc(elements, func(this, that *pair.Pair[rune, int]) bool {
+		functional.SortFunc(elements, func(this, that *pair.Pair[rune, int]) bool {
 			if this.B != that.B {
 				return this.B > that.B
 			}

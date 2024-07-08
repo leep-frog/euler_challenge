@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 )
 
 func TestExecute(t *testing.T) {

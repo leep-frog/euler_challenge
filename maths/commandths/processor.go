@@ -3,7 +3,7 @@ package commandths
 import (
 	"fmt"
 
-	"golang.org/x/exp/slices"
+	"github.com/leep-frog/functional"
 )
 
 // Evaluate everything (assume parens are evaled)
@@ -61,7 +61,7 @@ func (ne *numericalTerm) evaluate() int {
 		got[cur.next.position] = true
 		ops = append(ops, cur.next)
 	}
-	slices.SortFunc(ops, func(this, that *operationTerm) bool {
+	functional.SortFunc(ops, func(this, that *operationTerm) bool {
 		if this.op.PemdasPriority() != that.op.PemdasPriority() {
 			return this.op.PemdasPriority() < that.op.PemdasPriority()
 		}

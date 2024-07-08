@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	twentyone "github.com/leep-frog/euler_challenge/aoc/2021"
 	eulerchallenge "github.com/leep-frog/euler_challenge/ec"
 )

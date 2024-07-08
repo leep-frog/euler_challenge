@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/bfs"
 	"github.com/leep-frog/euler_challenge/maths"
 	"golang.org/x/exp/maps"

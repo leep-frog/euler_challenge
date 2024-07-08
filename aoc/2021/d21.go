@@ -1,7 +1,7 @@
 package twentyone
 
 import (
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 )
 
 func D21() *problem {

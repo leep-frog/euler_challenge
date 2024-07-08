@@ -3,7 +3,7 @@ package eulerchallenge
 import (
 	"fmt"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/fraction"
 	"github.com/leep-frog/euler_challenge/generator"
 	"golang.org/x/exp/slices"

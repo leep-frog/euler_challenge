@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/leep-frog/command"
+	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/functional"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
