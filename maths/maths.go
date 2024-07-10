@@ -206,18 +206,6 @@ func (b *Binary) Concat(that *Binary) *Binary {
 	return &Binary{d}
 }
 
-func Join[T any](ts []T, s string) string {
-	var r []string
-	for _, t := range ts {
-		r = append(r, fmt.Sprintf("%v", t))
-	}
-	return strings.Join(r, s)
-}
-
-func JoinInt[T any](ts []T) int {
-	return MustIntFromString(Join(ts, "")).ToInt()
-}
-
 func (i *Int) Palindrome() bool {
 	s := i.String()
 	for idx := range s {
@@ -388,6 +376,24 @@ func Palindrome(n int) bool {
 		}
 	}
 	return true
+}
+
+func Reverse(i int) int {
+	neg := i < 0
+	if neg {
+		i = -i
+	}
+	var rev int
+	prod := 1
+	for _, d := range Digits(i) {
+		rev += prod * d
+		prod *= 10
+	}
+
+	if neg {
+		return -rev
+	}
+	return rev
 }
 
 func (i *Int) Reverse() *Int {

@@ -869,3 +869,24 @@ func TestRomanNumerals(t *testing.T) {
 		})
 	}
 }
+
+func TestReverse(t *testing.T) {
+	for _, test := range []struct {
+		name  string
+		input int
+		want  int
+	}{
+		{"Handles zero", 0, 0},
+		{"Handles single digit number", 7, 7},
+		{"Handles double digit number", 17, 71},
+		{"Handles triple digit number", 246, 642},
+		{"Handles number with trailing zeroes", 24060080000, 8006042},
+		{"Handles negative number", -123, -321},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			if diff := cmp.Diff(test.want, Reverse(test.input)); diff != "" {
+				t.Errorf("Reverse(%d) failed (-want, +got):\n%s", test.input, diff)
+			}
+		})
+	}
+}

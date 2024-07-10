@@ -1,6 +1,9 @@
 package eulerchallenge
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/combinatorics"
 	"github.com/leep-frog/euler_challenge/maths"
@@ -115,7 +118,12 @@ func P93() *problem {
 				}
 			}
 		}
-		o.Stdoutln(maths.Join(best.BestIndex(), ""), best.Best())
+
+		var strs []string
+		for _, e := range best.BestIndex() {
+			strs = append(strs, fmt.Sprintf("%v", e))
+		}
+		o.Stdoutln(strings.Join(strs, ""), best.Best())
 	}, []*execution{
 		{
 			args: []string{"9"},
