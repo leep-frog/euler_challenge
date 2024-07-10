@@ -7,6 +7,7 @@ import (
 	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/fraction"
 	"github.com/leep-frog/euler_challenge/maths"
+	"github.com/leep-frog/functional"
 	"golang.org/x/exp/slices"
 	"gonum.org/v1/plot/plotter"
 )
@@ -552,8 +553,120 @@ func (r *Rectangle[T]) Contains(p *Point[T]) bool {
 	return r.MinX <= p.X && p.X <= r.MaxX && r.MinY <= p.Y && p.Y <= r.MaxY
 }
 
+func (r *Rectangle[T]) Dist(p *Point[T]) float64 {
+	// Inside the rectangle
+	if r.Contains(p) {
+		return 0
+	}
+
+	// Directly above or below the rectangle
+	if r.MinX <= p.X && p.X <= r.MaxX {
+		// It's above
+		if p.Y > r.MaxY {
+			return float64(p.Y - r.MaxY)
+		}
+		// It's below
+		return float64(r.MinY - p.Y)
+	}
+
+	// Directly to the left or right of the rectangle
+	if r.MinY <= p.Y && p.Y <= r.MaxY {
+		// It's to the right
+		if p.X > r.MaxX {
+			return float64(p.X - r.MaxX)
+		}
+		// It's to the left
+		return float64(r.MinX - p.X)
+	}
+
+	// Otherwise, in a corner
+	best := maths.Smallest[any, float64]()
+	for _, q := range r.Corners() {
+		best.Check(p.Dist(q))
+	}
+	return best.Best()
+}
+
 func (p *Point[T]) BetweenInclusive(q, p2 *Point[T]) bool {
 	return p.Eq(q) || p2.Eq(q) || p.BetweenExclusive(q, p2)
+}
+
+type RectangularContainer[T maths.Mathable] struct {
+	point *Point[T]
+
+	rectangle  *Rectangle[T]
+	bottomLeft *RectangularContainer[T]
+	topRight   *RectangularContainer[T]
+}
+
+func NewRectangularContainer[T maths.Mathable](points []*Point[T]) *RectangularContainer[T] {
+	return splitPoints(points, true)
+}
+
+func (rc *RectangularContainer[T]) ShortestDistance(point *Point[T], best *maths.Bester[any, float64]) {
+	if rc.point != nil {
+		if !rc.point.Eq(point) {
+			best.Check(rc.point.Dist(point))
+		}
+		return
+	}
+
+	blDist := rc.bottomLeft.rectangle.Dist(point)
+	trDist := rc.topRight.rectangle.Dist(point)
+
+	if blDist <= best.Best() {
+		rc.bottomLeft.ShortestDistance(point, best)
+	}
+
+	if trDist <= best.Best() {
+		rc.topRight.ShortestDistance(point, best)
+	}
+}
+
+func splitPoints[T maths.Mathable](points []*Point[T], byX bool) *RectangularContainer[T] {
+	if len(points) == 0 {
+		panic("Need at least one point for RectangularContainer")
+	}
+
+	minX, minY := points[0].X, points[0].Y
+	maxX, maxY := minX, minY
+	for _, p := range points {
+		if p.X < minX {
+			minX = p.X
+		}
+		if p.X > maxX {
+			maxX = p.X
+		}
+		if p.Y < minY {
+			minY = p.Y
+		}
+		if p.Y > maxY {
+			maxY = p.Y
+		}
+	}
+	rect := NewRectangle[T](minX, minY, maxX, maxY)
+
+	if len(points) == 1 {
+		return &RectangularContainer[T]{
+			point:     points[0],
+			rectangle: rect,
+		}
+	}
+
+	functional.SortFunc(points, func(a, b *Point[T]) bool {
+		if byX {
+			return a.X < b.X
+		}
+		return a.Y < b.Y
+	})
+
+	splitIdx := len(points) / 2
+	bottomLeft, topRight := points[:splitIdx], points[splitIdx:]
+	return &RectangularContainer[T]{
+		rectangle:  rect,
+		bottomLeft: splitPoints(bottomLeft, !byX),
+		topRight:   splitPoints(topRight, !byX),
+	}
 }
 
 // Returns true if q is between p and p2

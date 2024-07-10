@@ -855,3 +855,86 @@ func TestBetween(t *testing.T) {
 		})
 	}
 }
+
+func TestRectangleDist(t *testing.T) {
+	rect := NewRectangle(-3, 1, 4, 6)
+	for _, test := range []struct {
+		name     string
+		rect     *Rectangle[int]
+		point    *Point[int]
+		wantDist float64
+	}{
+		{
+			name:     "point in rectangle",
+			rect:     rect,
+			point:    New(1, 4),
+			wantDist: 0,
+		},
+		{
+			name:     "point on edge",
+			rect:     rect,
+			point:    New(-3, 2),
+			wantDist: 0,
+		},
+		{
+			name:     "point on corner",
+			rect:     rect,
+			point:    New(4, 6),
+			wantDist: 0,
+		},
+		{
+			name:     "point above rectangle",
+			rect:     rect,
+			point:    New(0, 123),
+			wantDist: 117,
+		},
+		{
+			name:     "point below rectangle",
+			rect:     rect,
+			point:    New(0, -123),
+			wantDist: 124,
+		},
+		{
+			name:     "point to the left of rectangle",
+			rect:     rect,
+			point:    New(-10, 5),
+			wantDist: 7,
+		},
+		{
+			name:     "point to the right of rectangle",
+			rect:     rect,
+			point:    New(13, 2),
+			wantDist: 9,
+		},
+		{
+			name:     "point closest to the top-left corner",
+			rect:     rect,
+			point:    New(-5, 7),
+			wantDist: math.Sqrt(2*2 + 1*1),
+		},
+		{
+			name:     "point closest to the bottom-left corner",
+			rect:     rect,
+			point:    New(-5, -1),
+			wantDist: math.Sqrt(2*2 + 2*2),
+		},
+		{
+			name:     "point closest to the top-right corner",
+			rect:     rect,
+			point:    New(10, 7),
+			wantDist: math.Sqrt(6*6 + 1*1),
+		},
+		{
+			name:     "point closest to the bottom-right corner",
+			rect:     rect,
+			point:    New(11, -5),
+			wantDist: math.Sqrt(7*7 + 6*6),
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			if diff := cmp.Diff(test.wantDist, test.rect.Dist(test.point)); diff != "" {
+				t.Errorf("Rectangle.Diff(%v) failed (-want, +got):\n%s", test.point, diff)
+			}
+		})
+	}
+}

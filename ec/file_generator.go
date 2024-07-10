@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/leep-frog/command/command"
@@ -35,7 +36,7 @@ func FileGenerator() command.Node {
 				"package eulerchallenge",
 				"",
 				"import (",
-				"  \"github.com/leep-frog/command\"",
+				"  \"github.com/leep-frog/command/command\"",
 				")",
 				"",
 				fmt.Sprintf("func P%d() *problem {", num),
@@ -73,25 +74,31 @@ func FileGenerator() command.Node {
 				)
 			}
 
-			template = append(template)
+			// Full file paths
+			_, thisFile, _, _ := runtime.Caller(0)
+			ecDir := filepath.Dir(thisFile)
+			nodeGo := filepath.Join(ecDir, "node.go")
+
+			suffix := strings.ToLower(strings.Join(fileSuffixArg.Get(d), "_"))
+			newGoFile := filepath.Join(ecDir, fmt.Sprintf("p%d_%s.go", num, suffix))
 
 			// Create go file
-			suffix := strings.ToLower(strings.Join(fileSuffixArg.Get(d), "_"))
-			if err := os.WriteFile(fmt.Sprintf("p%d_%s.go", num, suffix), []byte(strings.Join(template, "\n")), 0644); err != nil {
+			if err := os.WriteFile(newGoFile, []byte(strings.Join(template, "\n")), 0644); err != nil {
 				return nil, o.Stderrf("failed to write new file: %v", err)
 			}
 
 			// Write example files if file input
 			if fileInput {
-				touch(fmt.Sprintf("p%d.txt", num))
+				inputDir := filepath.Join(ecDir, "input")
+				touch(filepath.Join(inputDir, fmt.Sprintf("p%d.txt", num)))
 				if exampleFlag.Get(d) {
-					touch(fmt.Sprintf("p%d_example.txt", num))
+					touch(filepath.Join(inputDir, fmt.Sprintf("p%d_example.txt", num)))
 				}
 			}
 
 			return []string{
 				// Add line to node.go
-				fmt.Sprintf("r \"(^.*END_LIST.*$)\" '\t\tP%d(),\n$1' node.go", num),
+				fmt.Sprintf("r \"(^.*END_LIST.*$)\" '\t\tP%d(),\n$1' %q", num, nodeGo),
 			}, nil
 		}),
 	)

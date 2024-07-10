@@ -3,7 +3,7 @@ package maths
 import "fmt"
 
 type Bestable interface {
-	~int | ~int64 | ~float64 | ~string
+	~int | ~int64 | ~uint64 | ~float64 | ~string
 }
 
 func Smallest[I any, T Bestable]() *Bester[I, T] {

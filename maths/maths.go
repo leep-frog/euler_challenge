@@ -11,8 +11,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/leep-frog/euler_challenge/bread"
-	"github.com/leep-frog/functional"
 	"github.com/leep-frog/euler_challenge/parse"
+	"github.com/leep-frog/functional"
 	"golang.org/x/exp/maps"
 )
 
@@ -214,7 +214,7 @@ func Join[T any](ts []T, s string) string {
 	return strings.Join(r, s)
 }
 
-func JoinInt[T any](ts ...T) int {
+func JoinInt[T any](ts []T) int {
 	return MustIntFromString(Join(ts, "")).ToInt()
 }
 
