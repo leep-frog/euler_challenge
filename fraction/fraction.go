@@ -21,6 +21,10 @@ func New(n, d int) *Fraction {
 	return &Fraction{absN, absD}
 }
 
+func (f *Fraction) ToFloat() float64 {
+	return float64(f.N) / float64(f.D)
+}
+
 func (f *Fraction) ToRational() *Rational {
 	return NewRational(f.N, f.D)
 }
