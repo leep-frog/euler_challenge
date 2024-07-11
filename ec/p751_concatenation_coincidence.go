@@ -12,6 +12,9 @@ const PRECISION = 100
 
 func P751() *problem {
 	return noInputNode(751, func(o command.Output) {
+
+		// The resulting number is non-decreasing, so we can binary search
+		// until they match!
 		left, right := big.NewFloat(2.0), big.NewFloat(3.0)
 		theta := midpoint(left, right)
 		f := opbig(theta, "")
