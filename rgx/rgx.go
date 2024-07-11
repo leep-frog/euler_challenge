@@ -24,6 +24,8 @@ func (r *Rgx) MustMatch(input string) []string {
 	return match
 }
 
+// Match matches the regex against the provided input and returns the *matched groups
+// only* and a boolean indicating if there was a match
 func (r *Rgx) Match(input string) ([]string, bool) {
 	match := r.r.FindStringSubmatch(input)
 	if len(match) == 0 {

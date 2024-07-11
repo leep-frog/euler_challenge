@@ -39,14 +39,14 @@ func FileGenerator() command.Node {
 				"  \"github.com/leep-frog/command/command\"",
 				")",
 				"",
-				fmt.Sprintf("func P%d() *problem {", num),
+				fmt.Sprintf("func P%d() *ecmodels.Problem {", num),
 			}
 
 			if fileInput {
 				template = append(template,
-					fmt.Sprintf("  return fileInputNode(%d, func(lines []string, o command.Output) {", num),
+					fmt.Sprintf("  return ecmodels.FileInputNode(%d, func(lines []string, o command.Output) {", num),
 					"    o.Stdoutln(lines)",
-					"  }, []*execution{",
+					"  }, []*ecmodels.Execution{",
 					"    {",
 					fmt.Sprintf(`      args: []string{"%d"},`, num),
 					`      want: "",`,
@@ -56,15 +56,15 @@ func FileGenerator() command.Node {
 				)
 			} else if noInputFlag.Get(d) {
 				template = append(template,
-					fmt.Sprintf("  return noInputNode(%d, func(o command.Output) {", num),
+					fmt.Sprintf("  return ecmodels.NoInputNode(%d, func(o command.Output) {", num),
 					"  })",
 					"}",
 				)
 			} else {
 				template = append(template,
-					fmt.Sprintf("  return intInputNode(%d, func(o command.Output, n int) {", num),
+					fmt.Sprintf("  return ecmodels.IntInputNode(%d, func(o command.Output, n int) {", num),
 					"    o.Stdoutln(n)",
-					"  }, []*execution{",
+					"  }, []*ecmodels.Execution{",
 					"    {",
 					`      args: []string{"1"},`,
 					`      want: "",`,

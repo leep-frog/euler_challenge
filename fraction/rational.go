@@ -45,6 +45,11 @@ func nrb(r *big.Rat) *Rational {
 	return &Rational{r}
 }
 
+func (r *Rational) Float64() float64 {
+	f, _ := r.r.Float64()
+	return f
+}
+
 func (r *Rational) Plus(j *Rational) *Rational {
 	if r.Undefined() || j.Undefined() {
 		return UndefinedRational()

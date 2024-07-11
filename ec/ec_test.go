@@ -22,7 +22,7 @@ var (
 	testFilter = func(cct *codingChallengeTest) bool {
 		toCheck := []int{
 			// Test numbers to check
-			357,
+			// 357,
 
 			// List of problems that use bfs package
 			// 18, 60, 61, 81, 82, 83, 88, 96, 108, 109, 118, 119, 122, 127, 151, 152, 233, 243,
@@ -56,14 +56,14 @@ func (cct *codingChallengeTest) shouldSkip() (string, bool) {
 func TestAll(t *testing.T) {
 	var tests []*codingChallengeTest
 	for _, p := range getProblems() {
-		for _, ex := range p.executions {
+		for _, ex := range p.Executions {
 			tests = append(tests, &codingChallengeTest{
-				p.num,
-				fmt.Sprintf("Problem %d, args %v, estimate %.1f", p.num, ex.args, ex.estimate),
-				append([]string{fmt.Sprintf("%d", p.num)}, ex.args...),
-				[]string{ex.want},
-				ex.estimate,
-				ex.skip,
+				p.Num,
+				fmt.Sprintf("Problem %d, args %v, estimate %.1f", p.Num, ex.Args, ex.Estimate),
+				append([]string{fmt.Sprintf("%d", p.Num)}, ex.Args...),
+				[]string{ex.Want},
+				ex.Estimate,
+				ex.Skip,
 				0.0,
 			})
 		}
