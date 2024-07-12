@@ -49,22 +49,21 @@ func FileGenerator() command.Node {
 					fmt.Sprintf("  return ecmodels.FileInputNode(%d, func(lines []string, o command.Output) {", num),
 					"    o.Stdoutln(lines)",
 					"  }, []*ecmodels.Execution{",
-					"    {",
-					fmt.Sprintf(`      Args: []string{"%s.txt"},`, pNum),
-					`      Want: "",`,
-					"    },",
 				)
 
 				if exampleFlag.Get(d) {
 					template = append(template,
 						"    {",
-						fmt.Sprintf(`      Args: []string{"%s_example.txt"},`, pNum),
+						fmt.Sprintf(`      Args: []string{"-x"},`, pNum),
 						`      Want: "",`,
 						"    },",
 					)
 				}
 
 				template = append(template,
+					"    {",
+					`      Want: "",`,
+					"    },",
 					"  })",
 					"}",
 				)
@@ -79,22 +78,22 @@ func FileGenerator() command.Node {
 					fmt.Sprintf("  return ecmodels.IntInputNode(%d, func(o command.Output, n int) {", num),
 					"    o.Stdoutln(n)",
 					"  }, []*ecmodels.Execution{",
-					"    {",
-					`      Args: []string{"1"},`,
-					`      Want: "",`,
-					"    },",
 				)
 
 				if exampleFlag.Get(d) {
 					template = append(template,
 						"    {",
-						`      Args: []string{"2"},`,
+						`      Args: []string{"1"},`,
 						`      Want: "",`,
 						"    },",
 					)
 				}
 
 				template = append(template,
+					"    {",
+					`      Args: []string{"2"},`,
+					`      Want: "",`,
+					"    },",
 					"  })",
 					"}",
 				)
