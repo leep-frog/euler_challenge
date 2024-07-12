@@ -1,6 +1,7 @@
 package ecmodels
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -73,16 +74,21 @@ func FileInputNode(num int, f func([]string, command.Output), executions []*Exec
 	}
 	dir = filepath.Dir(dir)
 
+	exampleFlag := commander.BoolFlag("example", 'x', "Whether to use the example file or not")
+
 	return &Problem{
 		Num: num,
 		N: commander.SerialNodes(
 			DescNode(num),
-			// TODO: RelativeFileNode
-			commander.Arg[string]("FILE", "", &commander.FileCompleter[string]{
-				Directory: filepath.Join(dir, "input"),
-			}),
+			commander.FlagProcessor(
+				exampleFlag,
+			),
 			&commander.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
-				b, err := os.ReadFile(filepath.Join(dir, "input", d.String("FILE")))
+				base := fmt.Sprintf("p%d.txt", num)
+				if exampleFlag.Get(d) {
+					base = fmt.Sprintf("p%d_example.txt", num)
+				}
+				b, err := os.ReadFile(filepath.Join(dir, "input", base))
 				if err != nil {
 					return o.Annotatef(err, "failed to read fileee")
 				}
