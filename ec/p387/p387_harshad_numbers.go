@@ -57,8 +57,9 @@ func P387() *ecmodels.Problem {
 			Want: "90619",
 		},
 		{
-			Args: []string{"13"},
-			Want: "696067597313468",
+			Args:     []string{"13"},
+			Want:     "696067597313468",
+			Estimate: 3,
 		},
 	})
 }
