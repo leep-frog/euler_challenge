@@ -11,7 +11,7 @@ import (
 
 func P11() *ecmodels.Problem {
 	return ecmodels.IntInputNode(11, func(o command.Output, n int) {
-		ss := parse.ReadFileLines(filepath.Join("input", "p11.txt"))
+		ss := parse.ReadFileLines(filepath.Join("..", "input", "p11.txt"))
 		var is [][]int
 		for _, rowStr := range ss {
 			var row []int

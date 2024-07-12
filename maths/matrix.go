@@ -251,8 +251,9 @@ func Determinant(matrix [][]*big.Rat) *big.Rat {
 	return determinant(matrix, nRows, nCols, linkedlist.NewList(rs...), linkedlist.NewList(cs...), map[string]*big.Rat{})
 }
 
+// TODO: Use fraction.Rational everywhere instead of bigs
 func determinant(matrix [][]*big.Rat, nRows, nCols int, rows, cols *linkedlist.Node[int], detCache map[string]*big.Rat) *big.Rat {
-	code := fmt.Sprintf("%v:%v", rows, cols)
+	code := fmt.Sprintf("%v:%v", rows.CircularRepresentation(), cols.CircularRepresentation())
 	if detCache != nil {
 		if r, ok := detCache[code]; ok {
 			return big.NewRat(0, 1).Set(r)

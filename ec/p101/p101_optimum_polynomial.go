@@ -12,9 +12,9 @@ func P101() *ecmodels.Problem {
 	return ecmodels.IntInputNode(101, func(o command.Output, k int) {
 		/* Logic for solution
 		  Let N = |--------------------|
-			        | 1 1  1  1 ...      |
-						  | 1 2  4  8 ...      |
-						  | 3 8 27 81 ...      |
+			        | 1 1 1  1 ...       |
+						  | 1 2 4  8 ...       |
+						  | 1 3 8 27 ...       |
 			  			| ...                |
 			        |--------------------|
 

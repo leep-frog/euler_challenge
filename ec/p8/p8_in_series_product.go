@@ -10,7 +10,7 @@ import (
 
 func P8() *ecmodels.Problem {
 	return ecmodels.IntInputNode(8, func(o command.Output, n int) {
-		s := parse.ReadFileInput(filepath.Join("input", "p8.txt"))
+		s := parse.ReadFileInput(filepath.Join("..", "input", "p8.txt"))
 		var is []int
 		for i := 0; i < len(s); i++ {
 			is = append(is, parse.Atoi(s[i:i+1]))

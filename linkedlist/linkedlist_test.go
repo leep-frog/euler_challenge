@@ -109,7 +109,7 @@ func TestEndAndString(t *testing.T) {
 				}
 			}
 
-			if diff := cmp.Diff(test.wantStr, CircularRepresentation(test.list)); diff != "" {
+			if diff := cmp.Diff(test.wantStr, test.list.CircularRepresentation()); diff != "" {
 				t.Errorf("CircularRepresentation(%v) returned incorrect value (-want, +got):\n%s", test.list, diff)
 			}
 

@@ -192,23 +192,13 @@ func Representation[T comparable](n *Node[T]) string {
 	return strings.Join(r, " -> ")
 }
 
-func CircularRepresentation[T comparable](n *Node[T]) string {
+func (n *Node[T]) CircularRepresentation() string {
 	var r []string
 	iterate(n, nil,
 		func(prev, k *Node[T]) {
 			r = append(r, fmt.Sprintf("(%v)", k.Value), "...")
 		},
 		func(k *Node[T]) {
-			if k.Prev != nil {
-				if k.Prev.Next.Value != k.Value {
-					panic(fmt.Sprintf("Broken link: k=%v, prev=%v, prev.next=%v", k.Value, k.Prev.Value, k.Prev.Next.Value))
-				}
-			}
-			if k.Next != nil {
-				if k.Next.Prev.Value != k.Value {
-					panic(fmt.Sprintf("Broken link: k=%v, next=%v, next.prev=%v", k.Value, k.Next.Value, k.Next.Prev.Value))
-				}
-			}
 			r = append(r, fmt.Sprintf("%v", k.Value))
 		},
 	)
