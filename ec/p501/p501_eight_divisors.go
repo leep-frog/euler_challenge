@@ -1,9 +1,6 @@
 package p501
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
 	"github.com/leep-frog/euler_challenge/generator"
@@ -16,7 +13,6 @@ type problem501 struct{}
 func (p *problem501) SingleAndCubePrimeCount(n int, primes *generator.Prime) int {
 	var sum int
 	for iter, prime := primes.Start(0); 2*maths.Pow(prime, 3) <= n; prime = iter.Next() {
-		fmt.Println("1a", prime, time.Now())
 		sum += primes.PrimePi(n / maths.Pow(prime, 3))
 		// Can also check iter
 		if maths.Pow(prime, 4) <= n {
@@ -57,7 +53,7 @@ func P501() *ecmodels.Problem {
 	return ecmodels.IntInputNode(501, func(o command.Output, n int) {
 		primes := generator.BatchedSievedPrimes()
 		p := &problem501{}
-		o.Stdoutln(p.SingleAndCubePrimeCount(n, primes), +p.ThreeDistinctPrimeCount(n, primes)+p.SeventhExpCount(n, primes))
+		o.Stdoutln(p.SingleAndCubePrimeCount(n, primes) + p.ThreeDistinctPrimeCount(n, primes) + p.SeventhExpCount(n, primes))
 	}, []*ecmodels.Execution{
 		{
 			Args: []string{"100"},
