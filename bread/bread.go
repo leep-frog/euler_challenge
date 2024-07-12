@@ -2,6 +2,8 @@
 package bread
 
 import (
+	"math/rand"
+
 	"golang.org/x/exp/constraints"
 	"golang.org/x/exp/slices"
 )
@@ -86,4 +88,15 @@ func MergeSort[T constraints.Ordered](a, b []T, removeDuplicates bool) []T {
 		}
 	}
 	return merged
+}
+
+func Shuffle[T any](items []T) {
+	for i := 0; i < len(items)-1; i++ {
+		// Pick a random number between
+		swapIdx := i + (rand.Int() % (len(items) - i))
+		if swapIdx == i {
+			continue
+		}
+		items[i], items[swapIdx] = items[swapIdx], items[i]
+	}
 }

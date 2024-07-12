@@ -45,6 +45,10 @@ func nrb(r *big.Rat) *Rational {
 	return &Rational{r}
 }
 
+func (r *Rational) Rat() *big.Rat {
+	return r.r
+}
+
 func (r *Rational) Float64() float64 {
 	f, _ := r.r.Float64()
 	return f
