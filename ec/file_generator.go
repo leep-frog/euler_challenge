@@ -68,13 +68,29 @@ func FileGenerator() command.Node {
 					"}",
 				)
 			} else if noInputFlag.Get(d) {
-				template = append(template,
-					fmt.Sprintf("  return ecmodels.NoInputNode(%d, func(o command.Output) {", num),
-					"  }, &ecmodels.Execution{",
-					`    Want: "",`,
-					"  })",
-					"}",
-				)
+				if exampleFlag.Get(d) {
+					template = append(template,
+						fmt.Sprintf("  return ecmodels.NoInputWithExampleNode(%d, func(o command.Output) {", num),
+						"  }, []*ecmodels.Execution{",
+						`    {`,
+						`      Args: "-x",`,
+						`      Want: "",`,
+						`    },`,
+						`    {`,
+						`      Want: "",`,
+						`    },`,
+						"  })",
+						"}",
+					)
+				} else {
+					template = append(template,
+						fmt.Sprintf("  return ecmodels.NoInputNode(%d, func(o command.Output) {", num),
+						"  }, &ecmodels.Execution{",
+						`    Want: "",`,
+						"  })",
+						"}",
+					)
+				}
 			} else {
 				template = append(template,
 					fmt.Sprintf("  return ecmodels.IntInputNode(%d, func(o command.Output, n int) {", num),

@@ -67,14 +67,16 @@ type Execution struct {
 	Skip     string
 }
 
+var (
+	exampleFlag = commander.BoolFlag("example", 'x', "Whether to use the example input or not")
+)
+
 func FileInputNode(num int, f func([]string, command.Output), executions []*Execution) *Problem {
 	_, dir, _, ok := runtime.Caller(3)
 	if !ok {
 		panic("failed to fetch file caller")
 	}
 	dir = filepath.Dir(dir)
-
-	exampleFlag := commander.BoolFlag("example", 'x', "Whether to use the example file or not")
 
 	return &Problem{
 		Num: num,
@@ -111,5 +113,22 @@ func NoInputNode(num int, f func(command.Output), ex *Execution) *Problem {
 			}},
 		),
 		Executions: []*Execution{ex},
+	}
+}
+
+func NoInputWithExampleNode(num int, f func(output command.Output, example bool), executions []*Execution) *Problem {
+	return &Problem{
+		Num: num,
+		N: commander.SerialNodes(
+			DescNode(num),
+			commander.FlagProcessor(
+				exampleFlag,
+			),
+			&commander.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
+				f(o, exampleFlag.Get(d))
+				return nil
+			}},
+		),
+		Executions: executions,
 	}
 }
