@@ -29,8 +29,9 @@ func P346() *ecmodels.Problem {
 			Want: "15864",
 		},
 		{
-			Args: []string{"12"},
-			Want: "336108797689259276",
+			Args:     []string{"12"},
+			Want:     "336108797689259276",
+			Estimate: 0.5,
 		},
 	})
 }
