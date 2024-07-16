@@ -98,10 +98,12 @@ import (
 	"github.com/leep-frog/euler_challenge/ec/p181"
 	"github.com/leep-frog/euler_challenge/ec/p184"
 	"github.com/leep-frog/euler_challenge/ec/p187"
+	"github.com/leep-frog/euler_challenge/ec/p188"
 	"github.com/leep-frog/euler_challenge/ec/p19"
 	"github.com/leep-frog/euler_challenge/ec/p191"
 	"github.com/leep-frog/euler_challenge/ec/p2"
 	"github.com/leep-frog/euler_challenge/ec/p20"
+	"github.com/leep-frog/euler_challenge/ec/p203"
 	"github.com/leep-frog/euler_challenge/ec/p204"
 	"github.com/leep-frog/euler_challenge/ec/p205"
 	"github.com/leep-frog/euler_challenge/ec/p206"
@@ -130,11 +132,15 @@ import (
 	"github.com/leep-frog/euler_challenge/ec/p333"
 	"github.com/leep-frog/euler_challenge/ec/p34"
 	"github.com/leep-frog/euler_challenge/ec/p345"
+	"github.com/leep-frog/euler_challenge/ec/p346"
+	"github.com/leep-frog/euler_challenge/ec/p347"
 	"github.com/leep-frog/euler_challenge/ec/p35"
 	"github.com/leep-frog/euler_challenge/ec/p357"
 	"github.com/leep-frog/euler_challenge/ec/p36"
 	"github.com/leep-frog/euler_challenge/ec/p37"
 	"github.com/leep-frog/euler_challenge/ec/p38"
+	"github.com/leep-frog/euler_challenge/ec/p381"
+	"github.com/leep-frog/euler_challenge/ec/p387"
 	"github.com/leep-frog/euler_challenge/ec/p39"
 	"github.com/leep-frog/euler_challenge/ec/p4"
 	"github.com/leep-frog/euler_challenge/ec/p40"
@@ -150,8 +156,10 @@ import (
 	"github.com/leep-frog/euler_challenge/ec/p47"
 	"github.com/leep-frog/euler_challenge/ec/p48"
 	"github.com/leep-frog/euler_challenge/ec/p49"
+	"github.com/leep-frog/euler_challenge/ec/p493"
 	"github.com/leep-frog/euler_challenge/ec/p5"
 	"github.com/leep-frog/euler_challenge/ec/p50"
+	"github.com/leep-frog/euler_challenge/ec/p500"
 	"github.com/leep-frog/euler_challenge/ec/p501"
 	"github.com/leep-frog/euler_challenge/ec/p51"
 	"github.com/leep-frog/euler_challenge/ec/p52"
@@ -211,13 +219,6 @@ import (
 	"github.com/leep-frog/euler_challenge/ec/p97"
 	"github.com/leep-frog/euler_challenge/ec/p98"
 	"github.com/leep-frog/euler_challenge/ec/p99"
-	"github.com/leep-frog/euler_challenge/ec/p493"
-	"github.com/leep-frog/euler_challenge/ec/p387"
-	"github.com/leep-frog/euler_challenge/ec/p188"
-	"github.com/leep-frog/euler_challenge/ec/p347"
-	"github.com/leep-frog/euler_challenge/ec/p381"
-	"github.com/leep-frog/euler_challenge/ec/p346"
-	"github.com/leep-frog/euler_challenge/ec/p500"
 	// END_IMPORT_LIST
 )
 
@@ -439,6 +440,7 @@ func getProblems() []*ecmodels.Problem {
 		p381.P381(),
 		p346.P346(),
 		p500.P500(),
+		p203.P203(),
 		// END_LIST (needed for file_generator.go)
 	}
 }
@@ -450,7 +452,7 @@ func Branches() map[string]command.Node {
 		if _, ok := m[pStr]; ok {
 			log.Fatalf("Duplicate problem entry: %d, %d", i, p.Num)
 		}
-		m[pStr] = p.N
+		m[pStr] = p.Node()
 	}
 	return m
 }
