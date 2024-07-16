@@ -145,7 +145,10 @@ func FileGenerator() command.Node {
 			return []string{
 				// Add line to node.go
 				fmt.Sprintf("r \"(^.*END_LIST.*$)\" '\t\t%s.P%d(),\n$1' %q", pNum, num, nodeGo),
+				// Add import to node.go
 				fmt.Sprintf("r \"(^.*END_IMPORT_LIST.*$)\" '\t\\\"github.com/leep-frog/euler_challenge/ec/%s\\\"\n$1' %q", pNum, nodeGo),
+				// Update CURRENT_PROBLEM
+				fmt.Sprintf("r \"(^[0-9]*)[0-9]+,(.*CURRENT_PROBLEM)$\" \"$1%s$2\"", num),
 			}, nil
 		}),
 	)
