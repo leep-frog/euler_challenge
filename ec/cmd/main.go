@@ -1,7 +1,10 @@
 package main
 
 import (
+	"log"
 	"os"
+	"path/filepath"
+	"runtime"
 
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/command/commander"
@@ -10,7 +13,20 @@ import (
 )
 
 func main() {
-	os.Exit(sourcerer.Source([]sourcerer.CLI{&ecCLI{}}))
+	_, thisFile, _, ok := runtime.Caller(0)
+	if !ok {
+		log.Fatalf("Failed to get file path from runtime.Caller()")
+	}
+
+	ecDir := filepath.Dir(thisFile)
+	aliasers := sourcerer.Aliasers(map[string][]string{
+		"e":  {"goleep", "-d", ecDir, "ec"},
+		"es": {"goleep", "-d", ecDir, "ec", "-s"},
+	})
+	os.Exit(sourcerer.Source(
+		[]sourcerer.CLI{&ecCLI{}},
+		aliasers,
+	))
 }
 
 type ecCLI struct{}
