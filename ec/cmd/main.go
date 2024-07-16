@@ -10,6 +10,7 @@ import (
 	"github.com/leep-frog/command/commander"
 	"github.com/leep-frog/command/sourcerer"
 	eulerchallenge "github.com/leep-frog/euler_challenge/ec"
+	"github.com/leep-frog/euler_challenge/maths/commandths"
 )
 
 func main() {
@@ -24,7 +25,10 @@ func main() {
 		"es": {"goleep", "-d", ecDir, "ec", "-s"},
 	})
 	os.Exit(sourcerer.Source(
-		[]sourcerer.CLI{&ecCLI{}},
+		[]sourcerer.CLI{
+			&ecCLI{},
+			commandths.CLI(),
+		},
 		aliasers,
 	))
 }
