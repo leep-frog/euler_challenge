@@ -121,6 +121,7 @@ func FileGenerator() command.Node {
 			_, thisFile, _, _ := runtime.Caller(0)
 			ecDir := filepath.Dir(thisFile)
 			nodeGo := filepath.Join(ecDir, "node.go")
+			ecTestGo := filepath.Join(ecDir, "ec_test.go")
 
 			suffix := strings.ToLower(strings.Join(fileSuffixArg.Get(d), "_"))
 			newGoFile := filepath.Join(ecDir, pNum, fmt.Sprintf("p%d_%s.go", num, suffix))
@@ -148,7 +149,7 @@ func FileGenerator() command.Node {
 				// Add import to node.go
 				fmt.Sprintf("r \"(^.*END_IMPORT_LIST.*$)\" '\t\\\"github.com/leep-frog/euler_challenge/ec/%s\\\"\n$1' %q", pNum, nodeGo),
 				// Update CURRENT_PROBLEM
-				fmt.Sprintf("r \"(^[0-9]*)[0-9]+,(.*CURRENT_PROBLEM)$\" \"$1%s$2\"", num),
+				fmt.Sprintf("r \"(^[0-9]*)[0-9]+,(.*CURRENT_PROBLEM)$\" \"$1%s$2\" %q", num, ecTestGo),
 			}, nil
 		}),
 	)
