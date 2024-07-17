@@ -63,6 +63,7 @@ func jumpAndLog(n int) int {
 /***************
 * Log Approach *
 ****************/
+// This was inspired by comments from the problem thread after I solved it with the jumping approach
 
 func logApproach(n int) int {
 	var power, count int
