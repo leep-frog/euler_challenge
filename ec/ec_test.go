@@ -23,7 +23,7 @@ var (
 	testFilter = func(cct *codingChallengeTest) bool {
 		toCheck := []int{
 			// Test numbers to check
-			// 231, // CURRENT_PROBLEM
+			686, // CURRENT_PROBLEM
 
 			// List of problems that use bfs package
 			// 18, 60, 61, 81, 82, 83, 88, 96, 108, 109, 118, 119, 122, 127, 151, 152, 233, 243,
