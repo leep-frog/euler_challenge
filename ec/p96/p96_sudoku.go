@@ -48,12 +48,11 @@ func P96() *ecmodels.Problem {
 		o.Stdoutln(sum)
 	}, []*ecmodels.Execution{
 		{
-			Args:     []string{"p96.txt"},
 			Want:     "24702",
 			Estimate: 0.5,
 		},
 		{
-			Args: []string{"p96_example.txt"},
+			Args: []string{"-x"},
 			Want: "483",
 		},
 	})

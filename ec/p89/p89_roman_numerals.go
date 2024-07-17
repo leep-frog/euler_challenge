@@ -15,7 +15,6 @@ func P89() *ecmodels.Problem {
 		o.Stdoutln(saved)
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"p89.txt"},
 			Want: "743",
 		},
 	})

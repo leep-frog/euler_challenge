@@ -37,11 +37,10 @@ func P107() *ecmodels.Problem {
 		o.Stdoutln(totalWeight - mstWeight)
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"p107_network.txt"},
 			Want: "259679",
 		},
 		{
-			Args: []string{"p107_example.txt"},
+			Args: []string{"-x"},
 			Want: "150",
 		},
 	})

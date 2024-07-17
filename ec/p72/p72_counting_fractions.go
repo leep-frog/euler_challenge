@@ -30,7 +30,7 @@ func P72() *ecmodels.Problem {
 		{
 			Args:     []string{"1000000"},
 			Want:     "303963552391",
-			Estimate: 6,
+			Estimate: 2,
 		},
 		{
 			Args: []string{"8"},

@@ -24,7 +24,7 @@ func main() {
 	aliasers := sourcerer.Aliasers(map[string][]string{
 		"e":  {"goleep", "-d", ecCmdDir, "ec"},
 		"es": {"goleep", "-d", ecCmdDir, "ec", "-s"},
-		"et": {"gt", "-v", ecDir},
+		"et": {"gt", "-v", ecDir, "-t", "6000"},
 	})
 	os.Exit(sourcerer.Source(
 		[]sourcerer.CLI{

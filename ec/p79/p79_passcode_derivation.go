@@ -33,7 +33,6 @@ func P79() *ecmodels.Problem {
 		o.Stdoutln(strings.Join(r, ""), ok)
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"p79.txt"},
 			Want: "73162890 true",
 		},
 	})

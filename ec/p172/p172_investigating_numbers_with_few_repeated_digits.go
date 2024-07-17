@@ -1,8 +1,6 @@
 package p172
 
 import (
-	"fmt"
-
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/combinatorics"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
@@ -59,7 +57,6 @@ func recursive172(rem, min int, cur []int) *maths.Int {
 
 func P172() *ecmodels.Problem {
 	return ecmodels.IntInputNode(172, func(o command.Output, n int) {
-		fmt.Println("START")
 		o.Stdoutln(recursive172(n, 1, nil))
 	}, []*ecmodels.Execution{
 		{

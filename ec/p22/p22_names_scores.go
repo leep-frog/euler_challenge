@@ -45,7 +45,6 @@ func P22() *ecmodels.Problem {
 		o.Stdoutln(score)
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"p22.txt"},
 			Want: "871198282",
 		},
 	})

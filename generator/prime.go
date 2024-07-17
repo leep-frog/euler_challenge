@@ -246,25 +246,16 @@ func (p *Prime) PrimeFactors(n int) map[int]int {
 		return r
 	}
 	ogN := n
-	r := map[int]int{}
 	for i := 0; ; i++ {
 		pi := int(p.Nth(i))
-		for n%pi == 0 {
-			r[pi]++
-			n = n / pi
-			if n == 1 {
-				cachedPrimeFactors[ogN] = r
-				return r
-			}
-			if extra, ok := cachedPrimeFactors[n]; ok {
-				for k, v := range extra {
-					r[k] += v
-				}
-				cachedPrimeFactors[ogN] = r
-				return r
-			}
+		if n%pi == 0 {
+			fs := copy(p.PrimeFactors(n / pi))
+			fs[pi]++
+			cachedPrimeFactors[ogN] = fs
+			return fs
 		}
 	}
+	panic("Should not reach here")
 }
 
 // Overrides Generator.Contains

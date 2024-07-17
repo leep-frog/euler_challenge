@@ -23,11 +23,10 @@ func P54() *ecmodels.Problem {
 		o.Stdoutln(count)
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"p54.txt"},
 			Want: "376",
 		},
 		{
-			Args: []string{"p54_example.txt"},
+			Args: []string{"-x"},
 			Want: "3",
 		},
 	})

@@ -22,7 +22,6 @@ func P105() *ecmodels.Problem {
 		o.Stdoutln(total)
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"p105_sets.txt"},
 			Want: "73702",
 		},
 	})

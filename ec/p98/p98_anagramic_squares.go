@@ -94,7 +94,6 @@ func P98() *ecmodels.Problem {
 		}
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"words.txt"},
 			Want: "18769",
 		},
 	})

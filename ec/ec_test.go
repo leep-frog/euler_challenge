@@ -11,6 +11,7 @@ import (
 	"github.com/leep-frog/command/commandertest"
 	"github.com/leep-frog/command/commandtest"
 	"github.com/leep-frog/euler_challenge/maths"
+	"github.com/leep-frog/functional"
 )
 
 var (
@@ -22,7 +23,7 @@ var (
 	testFilter = func(cct *codingChallengeTest) bool {
 		toCheck := []int{
 			// Test numbers to check
-			203, // CURRENT_PROBLEM
+			// 231, // CURRENT_PROBLEM
 
 			// List of problems that use bfs package
 			// 18, 60, 61, 81, 82, 83, 88, 96, 108, 109, 118, 119, 122, 127, 151, 152, 233, 243,
@@ -40,6 +41,9 @@ type codingChallengeTest struct {
 	estimate float64
 	skip     string
 
+	// The order
+	exIdx int
+
 	elapsed float64
 }
 
@@ -56,7 +60,7 @@ func (cct *codingChallengeTest) shouldSkip() (string, bool) {
 func TestAll(t *testing.T) {
 	var tests []*codingChallengeTest
 	for _, p := range getProblems() {
-		for _, ex := range p.Executions {
+		for exIdx, ex := range p.Executions {
 			tests = append(tests, &codingChallengeTest{
 				p.Num,
 				fmt.Sprintf("Problem %d, args %v, estimate %.1f", p.Num, ex.Args, ex.Estimate),
@@ -64,19 +68,35 @@ func TestAll(t *testing.T) {
 				[]string{ex.Want},
 				ex.Estimate,
 				ex.Skip,
+				exIdx,
 				0.0,
 			})
 		}
 	}
 
+	// Get total and per-test estimates
 	var totalEst float64
+	numToEst := map[int]float64{}
 	for _, test := range tests {
 		if _, skip := test.shouldSkip(); !skip && testFilter(test) {
 			totalEst += test.estimate
+			numToEst[test.num] += test.estimate
 		}
 	}
 	minEst, secEst := int(totalEst)/60, int(totalEst)%60
 	t.Logf("Test estimate: %dm:%ds", minEst, secEst)
+
+	// Sort the tests by estimate and then by problem
+	functional.SortFunc(tests, func(a, b *codingChallengeTest) bool {
+		// If the same problem number, maintain order
+		if a.num == b.num {
+			return a.exIdx < b.exIdx
+		}
+
+		// Otherwise return the quicker problem
+		aEst, bEst := numToEst[a.num], numToEst[b.num]
+		return aEst < bEst
+	})
 
 	for _, test := range tests {
 		// tmr := profiler.NewTimer()

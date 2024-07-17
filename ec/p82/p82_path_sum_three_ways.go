@@ -21,7 +21,6 @@ func P82() *ecmodels.Problem {
 		o.Stdoutln(dist)
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"p82.txt"},
 			Want: "260324",
 		},
 	})

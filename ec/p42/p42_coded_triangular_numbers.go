@@ -21,7 +21,6 @@ func P42() *ecmodels.Problem {
 		o.Stdoutln(count)
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"words.txt"},
 			Want: "162",
 		},
 	})

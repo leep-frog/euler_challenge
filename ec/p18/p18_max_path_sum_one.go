@@ -30,11 +30,10 @@ func P18() *ecmodels.Problem {
 		o.Stdoutln((maxValue * len(tower)) - int(dist))
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"p18_example.txt"},
+			Args: []string{"-x"},
 			Want: "23",
 		},
 		{
-			Args: []string{"p18.txt"},
 			Want: "1074",
 		},
 		{

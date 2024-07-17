@@ -28,7 +28,6 @@ func P13() *ecmodels.Problem {
 		o.Stdoutln(strings.Join(sumStr, "")[:10])
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"p13.txt"},
 			Want: "5537376230",
 		},
 	})

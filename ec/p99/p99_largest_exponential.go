@@ -23,7 +23,6 @@ func P99() *ecmodels.Problem {
 		o.Stdoutln(best.BestIndex())
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"p099.txt"},
 			Want: "709",
 		},
 	})

@@ -29,7 +29,6 @@ func P102() *ecmodels.Problem {
 		o.Stdoutln(count)
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"p102_triangles.txt"},
 			Want: "228",
 		},
 	})

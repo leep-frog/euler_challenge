@@ -53,7 +53,6 @@ func P59() *ecmodels.Problem {
 		o.Stderrln("nope", len(chars))
 	}, []*ecmodels.Execution{
 		{
-			Args:     []string{"p59.txt"},
 			Want:     "129448",
 			Estimate: 1,
 		},

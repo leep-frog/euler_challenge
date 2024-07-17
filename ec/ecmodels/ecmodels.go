@@ -72,11 +72,16 @@ var (
 )
 
 func FileInputNode(num int, f func([]string, command.Output), executions []*Execution) *Problem {
-	_, dir, _, ok := runtime.Caller(3)
+	_, ecModelsGo, _, ok := runtime.Caller(0)
 	if !ok {
 		panic("failed to fetch file caller")
 	}
-	dir = filepath.Dir(dir)
+	inputDir := filepath.Join(filepath.Dir(filepath.Dir(ecModelsGo)), "input")
+
+	inputFileArg := commander.OptionalArg[string]("INPUT_FILE", "The input file for the problem", &commander.FileCompleter[string]{
+		Directory:         inputDir,
+		IgnoreDirectories: true,
+	})
 
 	return &Problem{
 		Num: num,
@@ -85,15 +90,26 @@ func FileInputNode(num int, f func([]string, command.Output), executions []*Exec
 			commander.FlagProcessor(
 				exampleFlag,
 			),
+			inputFileArg,
 			&commander.ExecutorProcessor{F: func(o command.Output, d *command.Data) error {
-				base := fmt.Sprintf("p%d.txt", num)
-				if exampleFlag.Get(d) {
-					base = fmt.Sprintf("p%d_example.txt", num)
+
+				// Determine which input file to use
+				var inputFile string
+				if inputFileArg.Provided(d) {
+					inputFile = filepath.Join(inputDir, inputFileArg.Get(d))
+				} else if exampleFlag.Get(d) {
+					inputFile = filepath.Join(inputDir, fmt.Sprintf("p%d_example.txt", num))
+				} else {
+					inputFile = filepath.Join(inputDir, fmt.Sprintf("p%d.txt", num))
 				}
-				b, err := os.ReadFile(filepath.Join(dir, "input", base))
+
+				// Parse the file
+				b, err := os.ReadFile(inputFile)
 				if err != nil {
-					return o.Annotatef(err, "failed to read fileee")
+					return o.Annotatef(err, "failed to read file")
 				}
+
+				// Run the problem
 				f(strings.Split(strings.TrimSpace(string(b)), "\n"), o)
 				return nil
 			}},

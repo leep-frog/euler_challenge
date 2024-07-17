@@ -15,11 +15,10 @@ func P81() *ecmodels.Problem {
 		o.Stdoutln(dist)
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"p81_example.txt"},
+			Args: []string{"-x"},
 			Want: "2427",
 		},
 		{
-			Args: []string{"p81.txt"},
 			Want: "427337",
 		},
 	})
