@@ -19,10 +19,12 @@ func main() {
 		log.Fatalf("Failed to get file path from runtime.Caller()")
 	}
 
-	ecDir := filepath.Dir(thisFile)
+	ecCmdDir := filepath.Dir(thisFile)
+	ecDir := filepath.Dir(ecCmdDir)
 	aliasers := sourcerer.Aliasers(map[string][]string{
-		"e":  {"goleep", "-d", ecDir, "ec"},
-		"es": {"goleep", "-d", ecDir, "ec", "-s"},
+		"e":  {"goleep", "-d", ecCmdDir, "ec"},
+		"es": {"goleep", "-d", ecCmdDir, "ec", "-s"},
+		"et": {"gt", "-v", ecDir},
 	})
 	os.Exit(sourcerer.Source(
 		[]sourcerer.CLI{
