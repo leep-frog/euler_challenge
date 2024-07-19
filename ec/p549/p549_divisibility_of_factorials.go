@@ -1,8 +1,6 @@
 package p549
 
 import (
-	"fmt"
-
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
 	"github.com/leep-frog/euler_challenge/generator"
@@ -14,17 +12,17 @@ func P549() *ecmodels.Problem {
 		p := generator.Primes()
 
 		var sum int
-		for i := 2; i <= n; i++ {
-			if i%1000000 == 0 {
-				fmt.Println(i)
-			}
+		for i := 2; i <= maths.Pow(10, n); i++ {
 			sum += smallS(i, p)
 		}
-		fmt.Println(sum)
-
+		o.Stdoutln(sum)
 	}, []*ecmodels.Execution{
 		{
 			Args: []string{"2"},
+			Want: "2012",
+		},
+		{
+			Args: []string{"8"},
 			Want: "476001479068717",
 		},
 	})
