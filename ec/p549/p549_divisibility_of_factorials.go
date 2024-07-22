@@ -7,6 +7,7 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
+// Related to p320
 func P549() *ecmodels.Problem {
 	return ecmodels.IntInputNode(549, func(o command.Output, n int) {
 		p := generator.Primes()

@@ -20,6 +20,10 @@ func NewInt(n int) *Int {
 	return nb(big.NewInt(int64(n)))
 }
 
+func NewInt64(n int64) *Int {
+	return nb(big.NewInt(n))
+}
+
 func FromBigInt(n *big.Int) *Int {
 	return nb(n)
 }
