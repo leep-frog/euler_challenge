@@ -226,6 +226,7 @@ func (p *Prime) Factors(n int) []int {
 		additional := p.Factors(otherFactor)
 		mAdditional := []int{1}
 		for _, a := range additional {
+			// TODO: Check this logic if multiple factors (2*2*2 * ...) and primeFactor is 2
 			mAdditional = append(mAdditional, a*primeFactor)
 		}
 		return bread.MergeSort(additional, mAdditional, true)
@@ -233,30 +234,46 @@ func (p *Prime) Factors(n int) []int {
 }
 
 func (p *Prime) PrimeFactors(n int) map[int]int {
-	// TODO: update this to use composite cache
-	if n <= 1 {
-		return nil
-	}
-	if r, ok := cachedPrimeFactors[n]; ok {
-		return r
-	}
-	if p.Contains(n) {
-		r := map[int]int{n: 1}
-		cachedPrimeFactors[n] = r
-		return r
-	}
-	ogN := n
-	for i := 0; ; i++ {
-		pi := int(p.Nth(i))
-		if n%pi == 0 {
-			fs := copy(p.PrimeFactors(n / pi))
-			fs[pi]++
-			cachedPrimeFactors[ogN] = fs
-			return fs
-		}
-	}
-	panic("Should not reach here")
+	return CompositeCacher(p, n, cachedPrimeFactors,
+		func(i int) map[int]int {
+			if i <= 1 {
+				return nil
+			}
+			return map[int]int{i: 1}
+		},
+		func(primeFactor, otherFactor int) map[int]int {
+			m := copy(p.PrimeFactors(otherFactor))
+			m[primeFactor]++
+			return m
+		},
+	)
 }
+
+// func (p *Prime) PrimeFactors(n int) map[int]int {
+// 	// TODO: update this to use composite cache
+// 	if n <= 1 {
+// 		return nil
+// 	}
+// 	if r, ok := cachedPrimeFactors[n]; ok {
+// 		return r
+// 	}
+// 	if p.Contains(n) {
+// 		r := map[int]int{n: 1}
+// 		cachedPrimeFactors[n] = r
+// 		return r
+// 	}
+// 	ogN := n
+// 	for i := 0; ; i++ {
+// 		pi := int(p.Nth(i))
+// 		if n%pi == 0 {
+// 			fs := copy(p.PrimeFactors(n / pi))
+// 			fs[pi]++
+// 			cachedPrimeFactors[ogN] = fs
+// 			return fs
+// 		}
+// 	}
+// 	panic("Should not reach here")
+// }
 
 // Overrides Generator.Contains
 func (p *Prime) Contains(n int) bool {

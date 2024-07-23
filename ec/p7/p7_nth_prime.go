@@ -9,8 +9,6 @@ import (
 func P7() *ecmodels.Problem {
 	return ecmodels.IntInputNode(7, func(o command.Output, n int) {
 		p := generator.Primes()
-		// p := generator.SievedPrimes()
-		// p := generator.BasicPrimes()
 		o.Stdoutln(p.Nth(n - 1))
 	}, []*ecmodels.Execution{
 		{

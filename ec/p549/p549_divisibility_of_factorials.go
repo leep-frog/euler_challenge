@@ -11,10 +11,11 @@ import (
 func P549() *ecmodels.Problem {
 	return ecmodels.IntInputNode(549, func(o command.Output, n int) {
 		p := generator.Primes()
+		cache := map[int]int{}
 
 		var sum int
 		for i := 2; i <= maths.Pow(10, n); i++ {
-			sum += smallS(i, p)
+			sum += solveIt(p, cache, i)
 		}
 		o.Stdoutln(sum)
 	}, []*ecmodels.Execution{
@@ -23,20 +24,42 @@ func P549() *ecmodels.Problem {
 			Want: "2012",
 		},
 		{
-			Args: []string{"8"},
-			Want: "476001479068717",
+			Args:     []string{"8"},
+			Want:     "476001479068717",
+			Estimate: 75,
 		},
 	})
 }
 
-func smallS(n int, p *generator.Prime) int {
-	b := maths.Largest[int, int]()
-	fs := p.PrimeFactors(n)
-	for f, cnt := range fs {
-		b.Check(factorCount(f, cnt))
-	}
-	return b.Best()
+func solveIt(p *generator.Prime, cache map[int]int, n int) int {
+	return generator.CompositeCacher[int](p, n, cache,
+		func(i int) int {
+			return i
+		},
+		func(primeFactor, otherFactor int) int {
+
+			largest := cache[otherFactor]
+
+			cnt := 1
+			for ; otherFactor > 1 && otherFactor%primeFactor == 0; cnt, otherFactor = cnt+1, otherFactor/primeFactor {
+			}
+			res := factorCount(primeFactor, cnt)
+
+			if res > largest {
+				return res
+			}
+			return largest
+		})
 }
+
+// func smallS(n int, p *generator.Prime) int {
+// 	b := maths.Largest[int, int]()
+// 	fs := p.PrimeFactors(n)
+// 	for f, cnt := range fs {
+// 		b.Check(factorCount(f, cnt))
+// 	}
+// 	return b.Best()
+// }
 
 func factorCount(f int, cnt int) int {
 	// Assume f > 1 and cnt > 0
