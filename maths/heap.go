@@ -9,6 +9,15 @@ type Heap[T any] struct {
 	ih *internalHeap[T]
 }
 
+// If f returns false, then iteration stops
+func (h *Heap[T]) Iter(f func(T) bool) {
+	for _, t := range h.ih.items {
+		if !f(t) {
+			break
+		}
+	}
+}
+
 func (h *Heap[T]) Len() int {
 	return h.ih.Len()
 }
