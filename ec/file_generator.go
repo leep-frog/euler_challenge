@@ -70,10 +70,10 @@ func FileGenerator() command.Node {
 			} else if noInputFlag.Get(d) {
 				if exampleFlag.Get(d) {
 					template = append(template,
-						fmt.Sprintf("  return ecmodels.NoInputWithExampleNode(%d, func(o command.Output) {", num),
+						fmt.Sprintf("  return ecmodels.NoInputWithExampleNode(%d, func(o command.Output, ex bool) {", num),
 						"  }, []*ecmodels.Execution{",
 						`    {`,
-						`      Args: "-x",`,
+						`      Args: []string{"-x"},`,
 						`      Want: "",`,
 						`    },`,
 						`    {`,
