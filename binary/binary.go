@@ -18,6 +18,18 @@ func (b *Binary) Double() {
 	b.digits = append(b.digits, false)
 }
 
+func (b *Binary) Half() {
+	if len(b.digits) > 0 {
+		b.digits = b.digits[:len(b.digits)-1]
+	} else {
+		b.digits = []bool{false}
+	}
+}
+
+func (b *Binary) Size() int {
+	return len(b.digits)
+}
+
 func (b *Binary) DoublePlusOne() {
 	b.digits = append(b.digits, true)
 }
@@ -25,7 +37,7 @@ func (b *Binary) DoublePlusOne() {
 func (b *Binary) String() string {
 	var r []string
 	for i := 0; i < len(b.digits); i++ {
-		if b.at(i) {
+		if b.At(i) {
 			r = append(r, "1")
 		} else {
 			r = append(r, "0")
@@ -38,7 +50,7 @@ func (b *Binary) ToInt() int {
 	start := 1
 	sum := 0
 	for i := 0; i < len(b.digits); i++ {
-		if b.at(i) {
+		if b.At(i) {
 			sum += start
 		}
 		start *= 2
@@ -54,7 +66,7 @@ func BinaryFromInt(k int) *Binary {
 	return &Binary{bread.Reverse(digits)}
 }
 
-func (b *Binary) at(i int) bool {
+func (b *Binary) At(i int) bool {
 	return b.digits[len(b.digits)-1-i]
 }
 
@@ -83,14 +95,14 @@ func (b *Binary) Minus(that *Binary) *Binary {
 			count++
 			rem = false
 		}
-		if that.at(i) {
+		if that.At(i) {
 			count++
 		}
 		if count == 0 {
-			digits = append(digits, b.at(i))
+			digits = append(digits, b.At(i))
 		}
 		if count == 1 {
-			if b.at(i) {
+			if b.At(i) {
 				digits = append(digits, false)
 			} else {
 				digits = append(digits, true)
@@ -98,7 +110,7 @@ func (b *Binary) Minus(that *Binary) *Binary {
 			}
 		}
 		if count == 2 {
-			digits = append(digits, b.at(i))
+			digits = append(digits, b.At(i))
 			rem = true
 		}
 	}

@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"time"
 
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/command/commander"
@@ -49,7 +50,7 @@ func (ecCLI) Node() command.Node {
 		),
 		commander.SimpleProcessor(func(i *command.Input, o command.Output, d *command.Data, ed *command.ExecuteData) error {
 			if startFlag.Get(d) {
-				o.Stdoutln("START")
+				o.Stdoutln("START", time.Now())
 			}
 			return nil
 		}, nil),

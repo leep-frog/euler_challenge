@@ -16,6 +16,7 @@ require (
 	github.com/go-latex/latex v0.0.0-20210823091927-c0d11ff05a81 // indirect
 	github.com/go-pdf/fpdf v0.6.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
+	github.com/google/btree v1.1.2 // indirect
 	github.com/google/uuid v1.4.0 // indirect
 	github.com/leep-frog/functional v0.0.0-20240708221334-b864e0eb0c6b // indirect
 	golang.org/x/image v0.10.0 // indirect
