@@ -1,6 +1,9 @@
 package p893
 
 import (
+	"fmt"
+
+	"github.com/google/btree"
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
 	"github.com/leep-frog/euler_challenge/generator"
@@ -15,6 +18,8 @@ func P893() *ecmodels.Problem {
 			0 + 6, 2, 5, 5, 4, 5, 6, 3, 7, 6,
 		}
 
+		fmt.Println("A")
+
 		valsAddOnly := []int{
 			count[0],
 			count[1],
@@ -23,10 +28,24 @@ func P893() *ecmodels.Problem {
 			count[0],
 			count[1],
 		}
+		addTree := btree.NewG[int](2, func(a, b int) bool {
+			betterA := maths.Min(valsAddOnly[a], valsMulOnly[a])
+			betterB := maths.Min(valsAddOnly[b], valsMulOnly[b])
+			if betterA == betterB {
+				return a < b
+			}
+			return betterA < betterB
+		})
+		addTree.ReplaceOrInsert(1)
 
 		p := generator.Primes()
+
 		for len(valsAddOnly) <= n {
 			k := len(valsAddOnly)
+
+			if k%1_000 == 0 {
+				fmt.Println(k)
+			}
 
 			// Check the best possible values
 			bestMulOnly := maths.Smallest[int, int]()
@@ -48,17 +67,27 @@ func P893() *ecmodels.Problem {
 				bestMulOnly.Check(2 + valsMulOnly[f] + valsMulOnly[k/f])
 			}
 
-			// Add to things
-			// TODO: Optimize
-			for i := 1; i <= k/2; i++ {
-				bestAddOnly.Check(2 + valsMulOnly[i] + valsMulOnly[k-i])
-				bestAddOnly.Check(2 + valsMulOnly[i] + valsAddOnly[k-i])
-				bestAddOnly.Check(2 + valsAddOnly[i] + valsMulOnly[k-i])
-				bestAddOnly.Check(2 + valsAddOnly[i] + valsAddOnly[k-i])
-			}
+			// (Brute force): Add to things, but only consider values that are the best
+			// for i := 1; i <= k/2; i++ {
+			// 	if bestAddOnly.Check(2+valsMulOnly[i]+valsMulOnly[k-i]) || bestAddOnly.Check(2+valsMulOnly[i]+valsAddOnly[k-i]) || bestAddOnly.Check(2+valsAddOnly[i]+valsMulOnly[k-i]) || bestAddOnly.Check(2+valsAddOnly[i]+valsAddOnly[k-i]) {
+			// 		m[i]++
+			// 		if k == 2980 {
+			// 			fmt.Println(k, i, k-i)
+			// 		}
+			// 	}
+			// }
+
+			// Try adding pairs together
+			addTree.Ascend(func(item int) bool {
+				betterL, betterR := maths.Min(valsAddOnly[item], valsMulOnly[item]), maths.Min(valsAddOnly[k-item], valsMulOnly[k-item])
+				bestAddOnly.Check(2 + betterL + betterR)
+				// Only consider the smaller of the two values for optimization
+				return betterL <= bestAddOnly.Best()/2
+			})
 
 			valsAddOnly = append(valsAddOnly, bestAddOnly.Best())
 			valsMulOnly = append(valsMulOnly, bestMulOnly.Best())
+			addTree.ReplaceOrInsert(k)
 		}
 
 		var sum int
