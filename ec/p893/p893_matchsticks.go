@@ -10,6 +10,11 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
+type node struct {
+	number int
+	value  int
+}
+
 func P893() *ecmodels.Problem {
 	return ecmodels.IntInputNode(893, func(o command.Output, n int) {
 
@@ -28,15 +33,13 @@ func P893() *ecmodels.Problem {
 			count[0],
 			count[1],
 		}
-		addTree := btree.NewG[int](2, func(a, b int) bool {
-			betterA := maths.Min(valsAddOnly[a], valsMulOnly[a])
-			betterB := maths.Min(valsAddOnly[b], valsMulOnly[b])
-			if betterA == betterB {
-				return a < b
+		addTree := btree.NewG[node](2, func(a, b node) bool {
+			if a.value == b.value {
+				return a.number < b.number
 			}
-			return betterA < betterB
+			return a.value < b.value
 		})
-		addTree.ReplaceOrInsert(1)
+		addTree.ReplaceOrInsert(node{1, count[1]})
 
 		p := generator.Primes()
 
@@ -78,16 +81,18 @@ func P893() *ecmodels.Problem {
 			// }
 
 			// Try adding pairs together
-			addTree.Ascend(func(item int) bool {
-				betterL, betterR := maths.Min(valsAddOnly[item], valsMulOnly[item]), maths.Min(valsAddOnly[k-item], valsMulOnly[k-item])
-				bestAddOnly.Check(2 + betterL + betterR)
+			addTree.Ascend(func(item node) bool {
+				betterR := maths.Min(valsAddOnly[k-item.number], valsMulOnly[k-item.number])
+				bestAddOnly.Check(2 + item.value + betterR)
 				// Only consider the smaller of the two values for optimization
-				return betterL <= bestAddOnly.Best()/2
+				return item.value <= bestAddOnly.Best()/2
 			})
 
 			valsAddOnly = append(valsAddOnly, bestAddOnly.Best())
 			valsMulOnly = append(valsMulOnly, bestMulOnly.Best())
-			addTree.ReplaceOrInsert(k)
+			addTree.ReplaceOrInsert(node{
+				k, maths.Min(bestAddOnly.Best(), bestMulOnly.Best()),
+			})
 		}
 
 		var sum int
