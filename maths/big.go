@@ -109,6 +109,17 @@ func (i *Int) DivInt(j int) *Int {
 	return i.Div(NewInt(j))
 }
 
+// PowMod returns (a^b % mod)
+// This can be used to execute division in modulo by providing a negative exponent
+func PowMod(a, b, m int) int {
+	result := new(big.Int).Exp(
+		big.NewInt(int64(a)),
+		big.NewInt(int64(b)),
+		big.NewInt(int64(m)),
+	)
+	return int(result.Int64())
+}
+
 func (i *Int) ModInt(j int) int {
 	return i.Mod(NewInt(j)).ToInt()
 }
@@ -253,12 +264,19 @@ func Choose(n, r int) *Int {
 	return Factorial(n).Div(Factorial(r).Times(Factorial(n - r)))
 }
 
-func Factorial(n int) *Int {
-	r := One()
-	for i := 1; i <= n; i++ {
-		r = r.Times(NewInt(i))
+var (
+	factorialCache = []*Int{
+		One(),
+		One(),
 	}
-	return r
+)
+
+func Factorial(n int) *Int {
+	for len(factorialCache) <= n {
+		v := len(factorialCache) - 1
+		factorialCache = append(factorialCache, factorialCache[v].TimesInt(v+1))
+	}
+	return factorialCache[n].Copy()
 }
 
 func FactorialI(n int) int {
