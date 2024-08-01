@@ -1,8 +1,6 @@
 package p853
 
 import (
-	"fmt"
-
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
 )
@@ -19,10 +17,9 @@ func P853() *ecmodels.Problem {
 		for i := 3; i < max; i++ {
 			if pisano(i, v) {
 				sum += i
-				fmt.Println(i)
 			}
 		}
-		fmt.Println(sum)
+		o.Stdoutln(sum)
 	}, []*ecmodels.Execution{
 		{
 			Args: []string{"-x"},

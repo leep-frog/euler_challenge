@@ -19,7 +19,6 @@ func P53() *ecmodels.Problem {
 		}
 		o.Stdoutln(count)
 	}, &ecmodels.Execution{
-		Want:     "4075",
-		Estimate: 3,
+		Want: "4075",
 	})
 }
