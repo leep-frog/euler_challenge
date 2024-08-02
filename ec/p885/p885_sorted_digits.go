@@ -9,6 +9,8 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
+const mod = 1123455689
+
 func P885() *ecmodels.Problem {
 	return ecmodels.IntInputNode(885, func(o command.Output, n int) {
 
@@ -18,24 +20,28 @@ func P885() *ecmodels.Problem {
 	}, []*ecmodels.Execution{
 		{
 			Args: []string{"1"},
-			Want: "",
+			Want: "45",
 		},
 		{
-			Args: []string{"2"},
-			Want: "",
+			Args: []string{"5"},
+			Want: "1543545675",
+		},
+		{
+			Args:     []string{"18"},
+			Want:     "827850196",
+			Estimate: 90,
 		},
 	})
 }
 
-func combos(rem, min int, cur []int) *maths.Int {
+func combos(rem, min int, cur []int) int {
 	if rem == 0 {
-		return combinatorics.PermutationCount(cur).Times(maths.IntFromDigits(cur))
+		return (combinatorics.PermutationCount(cur).ModInt(mod) * maths.IntFromDigits(cur).ModInt(mod)) % mod
 	}
 
-	m := maths.Zero()
+	var m int
 	for i := min; i <= 9; i++ {
-		m = m.Plus(combos(rem-1, i, append(cur, i)))
+		m = (m + combos(rem-1, i, append(cur, i))) % mod
 	}
-
 	return m
 }
