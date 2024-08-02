@@ -2,20 +2,27 @@ package combinatorics
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/maths"
+	"github.com/leep-frog/functional"
 	"golang.org/x/exp/slices"
 )
 
 var (
-	permutationCountCache = map[string]int{}
+	permutationCountCache = map[string]*maths.Int{}
 )
 
 func PermutationCount[T any](parts []T) *maths.Int {
 	counts := createCounts(parts)
 	slices.Sort(counts)
+
+	code := strings.Join(functional.Map(counts, strconv.Itoa), "_")
+	if v, ok := permutationCountCache[code]; ok {
+		return v
+	}
 
 	// Total count if all elements were different
 	v := maths.Factorial(len(parts))
@@ -27,6 +34,7 @@ func PermutationCount[T any](parts []T) *maths.Int {
 		v, _ = v.Divide(maths.Factorial(c))
 	}
 
+	permutationCountCache[code] = v
 	return v
 }
 
