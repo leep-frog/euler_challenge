@@ -1,10 +1,6 @@
 package p745
 
-// TODO: Change to 745
-
 import (
-	"fmt"
-
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
 	"github.com/leep-frog/euler_challenge/generator"
@@ -26,14 +22,20 @@ func P745() *ecmodels.Problem {
 			Want: "767",
 		},
 		{
-			Args: []string{"14"},
-			Want: "94586478",
+			Args:     []string{"14"},
+			Want:     "94586478",
+			Estimate: 150,
 		},
 	})
 }
 
 // Assume sum is the sum of G(n), but where it's when only numbers
-// from 1 through k are considered. When considering (k+1)
+// from 1 through k are considered. When considering (k+1), simply consider the numbers to remove
+// For primes, we simply subtract 1 (for 3^2 ==> + 9 - 1)
+// For composites, however, we need to consider overlaps:
+// (2*3)^2 ==> Subtract 4 and 9 since those are no longer best for this spot
+// But then also consider that both of those values subtracted a 1, so need to add one back
+// So on and so forth with extra including/excluding at different spots.
 func clever(n int) int {
 	p := generator.Primes()
 
@@ -42,10 +44,6 @@ func clever(n int) int {
 	mapper := make([]map[int]int, maths.Sqrt(n)+1, maths.Sqrt(n)+1)
 
 	for k := 2; k*k <= n; k++ {
-
-		if k%10_000 == 0 {
-			fmt.Println(k)
-		}
 
 		// The number of times we see k
 		t := n / (k * k)
@@ -70,6 +68,9 @@ func clever(n int) int {
 			for k, v := range mapper[c] {
 				nm[k] -= v
 			}
+
+			fm[c*c]--
+			offset -= c * c
 		}
 
 		for sq, v := range nm {
@@ -80,12 +81,6 @@ func clever(n int) int {
 				offset -= sq
 				fm[sq] = -1
 			}
-		}
-
-		for f := range pfs {
-			c := k / f
-			fm[c*c]--
-			offset -= c * c
 		}
 
 		for _, k := range fm {
