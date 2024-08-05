@@ -39,61 +39,13 @@ func clever(n int) int {
 
 	sum := n
 
-	mapper := map[int]map[int]int{
-		// 1: map[int]int{
-		// 	1: 1,
-		// },
-	}
+	mapper := make([]map[int]int, maths.Sqrt(n)+1, maths.Sqrt(n)+1)
 
 	for k := 2; k*k <= n; k++ {
 
 		if k%10_000 == 0 {
 			fmt.Println(k)
 		}
-
-		// 4 => Rm ones
-		// 9 => Rm ones
-		// 16 => Rm every fourth four
-		// 25 => Rm ones
-		// 36 => Rm
-
-		// 04 08 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72
-		//  4  4  4 16  4  4  4 16 36  4  4 16  4  4  4 16  4 36
-		//  4  4  4 16  4  4  4 16 36  4  4 16  4  4  4 16  4 36
-
-		// 2 => Rm ones
-		// 3 => Rm ones
-		// 4 => Rm every other two
-		// 5 => Rm ones
-		// 6 (2,3) => Rm one third of remaining twos and one half of threes
-		// 8 => Rm every other 4
-		// 9 => Rm every other 3
-		// 10 => Rm one half of fives and one fifth of twos
-		// 30 =>
-
-		// 2, 6, 10, 14, 18, 22, 26, 30
-		// 34, 38, 42, 46, 50,
-
-		// 60 => 2, 4
-
-		// Whenever we get to a number
-		// 1. Add all the counts for that number
-		// 2. Subtract all the factor pairs for that number
-
-		// At 4 * 9, subtract 4 values and 9 values
-		// At 4 * 9 * 25, we have (4*9, 25) (4, 9*25), (4*25, 9)
-		// Already would have subtracted all 4s and 9s (from 4*9)
-		// Already would have subtracted all 25s (from 4*25 or 9*25)
-		// Need to subtract the following values: (4*9), (4*25), (9*25)
-		// So, iterate ver factors that are a square of a prime
-
-		// What about with multiple values:
-		// 4 * 4 * 9
-		// At 4 * 9, subtract 4 values and 9 values
-		// At 4 * 4, subtract 4 values
-		// Need to subtract (4*4) values and (4*9) values
-
-		// 36=2*2*3*3
 
 		// The number of times we see k
 		t := n / (k * k)
@@ -108,121 +60,44 @@ func clever(n int) int {
 			continue
 		}
 
-		// 144 -> 1
-		// 4 -> 4
-		// 9 -> 4 + 9 - 1
-		// 36 -> 4 + 9 - 1 + (36 - 4 - 9 + 1)
-		// 36 -> 36
-		//
-
-		// 12=12*12 = 2*2*2*2*3*3*3*3
-		// 2*2*3*3 => (2, 223), (3 223)
-		// 2*2*3*3 => (22, 33f), (3 223)
-
 		offset := k * k
 		pfs := p.PrimeFactors(k)
 
-		if true {
-			nm, fm := map[int]int{}, map[int]int{
-				// k * k: 1,
-			}
+		nm, fm := map[int]int{}, map[int]int{}
 
-			for f := range pfs {
-				c := k / f
-				for k, v := range mapper[c] {
-					nm[k] -= v
-				}
-			}
-
-			for sq, v := range nm {
-				if v > 1 {
-					offset += sq
-					fm[sq] = 1
-				} else if v < -1 {
-					offset -= sq
-					fm[sq] = -1
-				}
-			}
-
-			for f := range pfs {
-				c := k / f
-				fm[c*c]--
-				offset -= c * c
-			}
-
-			for _, k := range fm {
-				if fm[k] == 0 {
-					delete(fm, k)
-				}
-			}
-
-			mapper[k] = fm
-			// fmt.Println(mapper, offset)
-
-			// fmt.Println("+++++")
-			// for _, i := range []int{1, 2, 3, 4, 6, 8, 12, 24} {
-			// 	if v, ok := mapper[i]; ok {
-			// 		fmt.Println(i, v)
-			// 	}
-			// }
-
-		} else {
-
-			// first := true
-			// var onesRemoved int
-			rmFactorCnt := map[int]int{}
-			for f := range pfs {
-				c := k / f
-				offset -= c * c
-				// if !first {
-				if p.Contains(c) {
-					rmFactorCnt[1]++
-					// onesRemoved++
-				} else {
-					for sf := range p.PrimeFactors(c) {
-						rmFactorCnt[sf]++
-					}
-				}
-			}
-
-			// 16*9, 36*4
-			// 4*3 6*2
-
-			for rf, cnt := range rmFactorCnt {
-				if cnt > 1 {
-					offset = offset + rf*rf*(cnt-1)
-				}
+		for f := range pfs {
+			c := k / f
+			for k, v := range mapper[c] {
+				nm[k] -= v
 			}
 		}
 
-		/*if onesRemoved > 1 {
-			if k == 12 {
-				fmt.Println("REM", offset, onesRemoved)
+		for sq, v := range nm {
+			if v > 1 {
+				offset += sq
+				fm[sq] = 1
+			} else if v < -1 {
+				offset -= sq
+				fm[sq] = -1
 			}
-			offset = offset + (onesRemoved - 1)
-			if k == 12 {
-				fmt.Println("REMF", offset)
+		}
+
+		for f := range pfs {
+			c := k / f
+			fm[c*c]--
+			offset -= c * c
+		}
+
+		for _, k := range fm {
+			if fm[k] == 0 {
+				delete(fm, k)
 			}
-		}*/
+		}
+
+		mapper[k] = fm
 
 		sum = (sum + t*(offset)) % mod
-
-		// for _, f := range p.Factors(k) {
-
-		// Subtract the
-
-		// f = 9, p = 4*25
-		// We've counted 9 before that we should not have
-		// }
-
-		// 4 * 9 * 25
-		// 2 * 3 * 5
-		// 1, 4, 9, 25, 4*9, 4*25, 9*25
-		//
 	}
-	// var sum int
-	// sum
-	//
 	return sum
 }
 
