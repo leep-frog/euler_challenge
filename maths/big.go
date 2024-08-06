@@ -111,6 +111,7 @@ func (i *Int) DivInt(j int) *Int {
 
 // PowMod returns (a^b % mod)
 // This can be used to execute division in modulo by providing a negative exponent
+// FYI: this is really REALLY slow (but so are maps), so cache this in individual problems when possible
 func PowMod(a, b, m int) int {
 	result := new(big.Int).Exp(
 		big.NewInt(int64(a)),
@@ -262,6 +263,21 @@ func Biggify(is []int) []*Int {
 // TODO: make separate files for things (like combinatorics, sets, etc.)
 func Choose(n, r int) *Int {
 	return Factorial(n).Div(Factorial(r).Times(Factorial(n - r)))
+}
+
+func ChooseMod(n, r, mod int) int {
+	v := 1
+
+	for i := n - r + 1; i <= n; i++ {
+		v = (v * i) % mod
+	}
+
+	for i := 1; i <= r; i++ {
+		c := PowMod(i, -1, mod)
+		v = (v * c) % mod
+	}
+
+	return v
 }
 
 var (
