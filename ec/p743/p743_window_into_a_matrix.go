@@ -13,19 +13,21 @@ const (
 )
 
 func P743() *ecmodels.Problem {
-	return ecmodels.IntInputNode(743, func(o command.Output, n int) {
+	return ecmodels.NoInputWithExampleNode(743, func(o command.Output, ex bool) {
 		// o.Stdoutln(n)
-		fmt.Println(a2(3, 9))
-		fmt.Println(a2(4, 20))
-		fmt.Println(a2(maths.Pow(10, 8), maths.Pow(10, 16)))
+		if ex {
+			o.Stdoutln(a2(3, 9), a2(4, 20))
+		} else {
+			o.Stdoutln(a2(maths.Pow(10, 8), maths.Pow(10, 16)))
+		}
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"1"},
-			Want: "",
+			Args: []string{"-x"},
+			Want: "560 1060870",
 		},
 		{
-			Args: []string{"2"},
-			Want: "259158998",
+			Want:     "259158998",
+			Estimate: 150,
 		},
 	})
 }
@@ -40,16 +42,9 @@ func a(k, n int) int {
 		// Number of ways they can be arranged
 		// Choose positions of 1s, * choose position of 2s
 		// (k choose numOnes) * (numOnes choose numTwos)
-		// fmt.Println(k, numOnes, numTwosAndZeros)
-
-		// big, small := numOnes, numTwosAndZeros
-		// if big < small {
-		// 	big, small = small, big
-		//
 		coef := maths.Choose(k, numOnes).Times(maths.Choose(k-numOnes, numTwosAndZeros/2))
 
 		v := coef.Times(maths.BigPow(2, numOnes*(n/k)))
-		fmt.Println(coef, v)
 
 		// numOnes can be in any order
 		sum = (sum + v.ModInt(mod)) % mod
@@ -63,14 +58,7 @@ func a2(k, n int) int {
 	kChooseNumOnes := 1
 	remChooseNumTwos := 1
 
-	// (k-e) choose ()
-	// (k-e)!
-
 	for numOnes := k; numOnes >= 0; numOnes -= 2 {
-		if numOnes%10_0000 == 0 {
-			fmt.Println(numOnes)
-		}
-		// fmt.Println(k)
 		numTwosAndZeros := k - numOnes
 
 		// Number of ways they can be arranged
@@ -79,13 +67,8 @@ func a2(k, n int) int {
 
 		// coef := maths.Choose(k, numOnes).Times(maths.Choose(k-numOnes, numTwosAndZeros/2))
 		coef := (remChooseNumTwos * kChooseNumOnes) % mod
-		// fmt.Println(maths.Choose(k, numOnes), kChooseNumOnes)
-		// fmt.Println("NN", maths.Choose(k-numOnes, numTwosAndZeros/2), remChooseNumTwos)
 
-		// v := coef.Times(maths.BigPow(2, numOnes*(n/k)))
-		// v :=
 		v := (coef * maths.PowMod(2, numOnes*(n/k), mod) % mod)
-		// fmt.Println(coef, v)
 
 		// numOnes can be in any order
 		sum = (sum + v) % mod
