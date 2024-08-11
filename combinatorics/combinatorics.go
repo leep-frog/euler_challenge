@@ -16,7 +16,7 @@ var (
 )
 
 func PermutationCount[T any](parts []T) *maths.Int {
-	counts := createCounts(parts)
+	counts, _ := createCounts(parts)
 	slices.Sort(counts)
 
 	code := strings.Join(functional.Map(counts, strconv.Itoa), "_")
@@ -118,7 +118,7 @@ type Combinatorics[T any] struct {
 	OrderMatters     bool
 }
 
-func createCounts[T any](parts []T) []int {
+func createCounts[T any](parts []T) ([]int, []T) {
 	var realParts []T
 	var counts []int
 	indexMap := map[string]int{}
@@ -131,16 +131,17 @@ func createCounts[T any](parts []T) []int {
 			realParts = append(realParts, part)
 		}
 	}
-	return counts
+	return counts, realParts
 }
 
 func GenerateCombos[T any](c *Combinatorics[T]) [][]T {
 	var all [][]T
-	generateCombos(c, createCounts(c.Parts), 0, nil, &all)
+	counts, realParts := createCounts(c.Parts)
+	generateCombos(c, counts, realParts, 0, nil, &all)
 	return all
 }
 
-func generateCombos[T any](c *Combinatorics[T], counts []int, minIndex int, cur []T, all *[][]T) {
+func generateCombos[T any](c *Combinatorics[T], counts []int, realParts []T, minIndex int, cur []T, all *[][]T) {
 	if c.MinLength <= len(cur) && len(cur) <= c.MaxLength && len(cur) > 0 {
 		*all = append(*all, bread.Copy(cur))
 	}
@@ -157,7 +158,7 @@ func generateCombos[T any](c *Combinatorics[T], counts []int, minIndex int, cur 
 	for k := start; k < len(counts); k++ {
 		if counts[k] > 0 || c.AllowReplacement {
 			counts[k]--
-			generateCombos(c, counts, k, append(cur, c.Parts[k]), all)
+			generateCombos(c, counts, realParts, k, append(cur, realParts[k]), all)
 			counts[k]++
 		}
 	}
