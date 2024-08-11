@@ -12,13 +12,13 @@ import (
 func P692() *ecmodels.Problem {
 	return ecmodels.IntInputNode(692, func(o command.Output, n int) {
 
+		// After doing brute force, I noticed that brute(fibonacci(i)) = A055244(i)
+		s := series.A055244()
+
 		f := generator.Fibonaccis()
 		idx := 0
 		for ; f.Nth(idx) != n; idx++ {
 		}
-
-		// After doing brute force, I noticed that brute(fibonacci(i)) = A055244(i)
-		s := series.A055244()
 
 		o.Stdoutln(s.Get(idx))
 	}, []*ecmodels.Execution{
