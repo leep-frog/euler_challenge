@@ -612,6 +612,10 @@ func QuadraticRoots(a, b, c float64) []float64 {
 	}
 }
 
+func Join(digits []int) int {
+	return FromDigits(digits)
+}
+
 func FromDigits(digits []int) int {
 	n := 0
 	coef := 1
