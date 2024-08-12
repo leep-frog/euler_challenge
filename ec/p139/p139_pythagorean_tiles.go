@@ -7,7 +7,7 @@ import (
 )
 
 func P139() *ecmodels.Problem {
-	return ecmodels.IntInputNode(139, func(o command.Output, n int) {
+	return ecmodels.NoInputNode(139, func(o command.Output) {
 		var count int
 		tg := generator.RightTriangleGenerator().Iterator()
 		for t := tg.Next(); t.GuaranteedMinimumPerimeter() < 100_000_000; t = tg.Next() {
@@ -18,11 +18,8 @@ func P139() *ecmodels.Problem {
 			}
 		}
 		o.Stdoutln(count)
-	}, []*ecmodels.Execution{
-		{
-			Args:     []string{"1"},
-			Want:     "10057761",
-			Estimate: 20,
-		},
+	}, &ecmodels.Execution{
+		Want:     "10057761",
+		Estimate: 20,
 	})
 }

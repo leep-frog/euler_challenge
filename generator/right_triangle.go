@@ -3,6 +3,8 @@ package generator
 import (
 	"fmt"
 	"sort"
+
+	"github.com/leep-frog/euler_challenge/maths"
 )
 
 type RightTriangle struct {
@@ -29,13 +31,12 @@ func (rt *RightTriangle) LT(that *RightTriangle) bool {
 }
 
 func RightTriangleGenerator() *Generator[*RightTriangle] {
-	return newCustomGen[*RightTriangle](&triangleGenerator{1, 1, Primes()})
+	return newCustomGen[*RightTriangle](&triangleGenerator{1, 1})
 }
 
 type triangleGenerator struct {
-	m      int
-	n      int
-	primes *Prime
+	m int
+	n int
 }
 
 func (tg *triangleGenerator) Next(g *Generator[*RightTriangle]) *RightTriangle {
@@ -49,7 +50,7 @@ func (tg *triangleGenerator) Next(g *Generator[*RightTriangle]) *RightTriangle {
 			if tg.n%2 == 1 && tg.m%2 == 1 {
 				continue
 			}
-			if tg.n > 1 && !tg.primes.Coprimes(tg.m, tg.n) {
+			if tg.n > 1 && !maths.Coprime(tg.m, tg.n) {
 				continue
 			}
 
