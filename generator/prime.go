@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"math/rand"
 	"strconv"
 
 	"github.com/leep-frog/euler_challenge/bread"
@@ -287,6 +288,21 @@ func (p *Prime) Contains(n int) bool {
 	}
 	for i, pn := 0, p.Nth(0); pn*pn <= n; i, pn = i+1, p.Nth(i+1) {
 		if n%pn == 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func (p *Prime) FermatContains(n, checks int) bool {
+
+	if n < 100 {
+		return p.Contains(n)
+	}
+
+	for i := 0; i <= checks; i++ {
+		a := (rand.Int() % (n - 4)) + 2
+		if maths.PowMod(a, n-1, n) != 1 {
 			return false
 		}
 	}
