@@ -26,8 +26,9 @@ func P725() *ecmodels.Problem {
 			Want: "85499991450",
 		},
 		{
-			Args: []string{"2020"},
-			Want: "4598797036650685",
+			Args:     []string{"2020"},
+			Want:     "4598797036650685",
+			Estimate: 0.5,
 		},
 	})
 }
@@ -42,13 +43,10 @@ var (
 func s(n int) int {
 
 	// m[d] is the number of times digit d shows up
-	var m []int
-	for len(m) <= 9 {
-		m = append(m, 0)
-	}
+	m := make([]int, 10)
 
 	// Iterate over each digit-sum number (e.g. 9 in the number 945) and update m
-	counts := make([]int, 10, 10)
+	counts := make([]int, 10)
 	for i := 1; i <= 9; i++ {
 		counts[i]++
 		got := dp(n, n-1, i, 0, counts)
@@ -88,10 +86,7 @@ func dp(n, remDigits, remValue, min int, counts []int) []int {
 	}
 
 	// Create the new sums
-	m := []int{}
-	for len(m) <= 9 {
-		m = append(m, 0)
-	}
+	m := make([]int, 10)
 	for i := min; i <= remValue && i <= 9; i++ {
 		for cnt := 1; i*cnt <= remValue && cnt <= remDigits; cnt++ {
 			counts[i] += cnt
