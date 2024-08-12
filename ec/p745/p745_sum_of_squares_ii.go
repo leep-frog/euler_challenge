@@ -41,7 +41,7 @@ func clever(n int) int {
 
 	sum := n
 
-	mapper := make([]map[int]int, maths.Sqrt(n)+1, maths.Sqrt(n)+1)
+	mapper := make([]map[int]int, maths.Sqrt(n)+1)
 
 	for k := 2; k*k <= n; k++ {
 
