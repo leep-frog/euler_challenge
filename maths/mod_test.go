@@ -75,3 +75,39 @@ func TestSolveMod(t *testing.T) {
 		})
 	}
 }
+
+func TestCoprimes(t *testing.T) {
+	for _, test := range []struct {
+		a, b, want  int
+		wantCoprime bool
+	}{
+		{8, 11, 1, true},
+		{8, 4, 4, false},
+		{8, 24, 8, false},
+		{24, 8, 8, false},
+		{17, 27, 1, true},
+		{84, 27, 3, false},
+		{90, 27, 9, false},
+		{90, 54, 18, false},
+		{42823, 6409, 17, false},
+		{42824, 6409, 1, true},
+	} {
+		t.Run(fmt.Sprintf("Gcd(%d, %d)", test.a, test.b), func(t *testing.T) {
+			// Test GCD(a, b) and GCD(b, a)
+			if diff := cmp.Diff(test.want, Gcd(test.a, test.b)); diff != "" {
+				t.Errorf("Gcd(%d, %d) returned incorrect result (-want, +got):\n%s", test.a, test.b, diff)
+			}
+			if diff := cmp.Diff(test.want, Gcd(test.b, test.a)); diff != "" {
+				t.Errorf("Gcd(%d, %d) returned incorrect result (-want, +got):\n%s", test.b, test.a, diff)
+			}
+
+			// Test Coprime(a, b) and Coprime(b, a)
+			if Coprime(test.a, test.b) != test.wantCoprime {
+				t.Errorf("Coprime(%d, %d) returned incorrect result. Want %v, got %v", test.a, test.b, test.wantCoprime, !test.wantCoprime)
+			}
+			if Coprime(test.b, test.a) != test.wantCoprime {
+				t.Errorf("Coprime(%d, %d) returned incorrect result. Want %v, got %v", test.b, test.a, test.wantCoprime, !test.wantCoprime)
+			}
+		})
+	}
+}

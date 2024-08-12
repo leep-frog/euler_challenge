@@ -34,3 +34,20 @@ func recurSolveMod(a, mod int) []int {
 		p[0] - factor*p[1],
 	}
 }
+
+// Coprime returns whether or not a and b are coprime.
+func Coprime(a, b int) bool {
+	return Gcd(a, b) == 1
+}
+
+// Gcd uses the Euclidean Algorithm to determine GCD(a, b).
+// This logic was determined from page 4 of https://www.math.utah.edu/~fguevara/ACCESS2013/Euclid.pdf
+func Gcd(a, b int) int {
+	offset := b % a
+
+	if offset == 0 {
+		return a
+	}
+
+	return Gcd(offset, a)
+}
