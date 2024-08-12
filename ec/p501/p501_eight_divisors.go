@@ -1,6 +1,8 @@
 package p501
 
 import (
+	"strings"
+
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
 	"github.com/leep-frog/euler_challenge/generator"
@@ -67,13 +69,15 @@ func P501() *ecmodels.Problem {
 			Args: []string{"1000000"},
 			Want: "224427",
 		},
-		// Takes over an hour. Other solvers used a built-in Mathematica function
-		// that we don't have access to and implementation (https://en.wikipedia.org/wiki/Prime-counting_function)
-		// is convoluted. I'm fine not implementing my own efficient PrimePi()
-		// function and assuming we just would have had one.
 		{
-			Args:     []string{"1_000_000_000_000"},
-			Want:     "197912312715",
+			Args: []string{"1_000_000_000_000"},
+			Want: "197912312715",
+			Skip: strings.Join([]string{
+				`Takes over an hour. Other solvers used a built-in Mathematica function`,
+				`that we don't have access to and implementation (https://en.wikipedia.org/wiki/Prime-counting_function)`,
+				`is convoluted. I'm fine not implementing my own efficient PrimePi()`,
+				`function and assuming we just would have had one.`,
+			}, "\n"),
 			Estimate: 75 * 60,
 		},
 	})
