@@ -1,26 +1,25 @@
 package p153
 
 import (
-	"fmt"
-
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
-	"github.com/leep-frog/euler_challenge/generator"
+	"github.com/leep-frog/euler_challenge/maths"
 )
 
 func P153() *ecmodels.Problem {
 	return ecmodels.IntInputNode(153, func(o command.Output, n int) {
-		p := generator.Primes()
-		var ss int
-		counts := make([]int, n/2+1, n/2+1)
+
+		// Create an array of the sum of factors for each number
+		counts := make([]int, n/2+1)
 		for i := 1; i <= n/2; i++ {
-			if i%1_000_000 == 0 {
-				fmt.Println(i)
+			for j := i; j <= n/2; j += i {
+				counts[j] += i
 			}
-			for _, k := range p.Factors(i) {
-				ss += k
-			}
-			counts[i] = ss
+		}
+
+		// Cumulate the array
+		for i := 0; i < len(counts)-1; i++ {
+			counts[i+1] += counts[i]
 		}
 
 		var actualTotal int
@@ -39,7 +38,7 @@ func P153() *ecmodels.Problem {
 		var iSums int
 		for i := 1; i*i <= n; i++ {
 			for j := i; j*j+i*i <= n; j++ {
-				if p.Coprimes(i, j) && (i != 1) && (j != 1) {
+				if !maths.Coprime(i, j) && (i != 1) && (j != 1) {
 					continue
 				}
 				val := 2 * (i + j)
@@ -52,8 +51,6 @@ func P153() *ecmodels.Problem {
 			}
 		}
 		o.Stdoutln(iSums + actualTotal)
-
-		return
 	}, []*ecmodels.Execution{
 		{
 			Args: []string{"5"},
@@ -66,7 +63,7 @@ func P153() *ecmodels.Problem {
 		{
 			Args:     []string{"100000000"},
 			Want:     "17971254122360635",
-			Estimate: 300,
+			Estimate: 10,
 		},
 	})
 }

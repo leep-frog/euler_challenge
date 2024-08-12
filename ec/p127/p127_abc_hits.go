@@ -78,7 +78,7 @@ func (n *node127) Done(ctx *context127, dp bfs.DFSPath[*node127]) bool {
 		return false
 	}
 	// Don't need to check (a, c) since that is guaranteed based on AdjacentStates
-	if ctx.g.Coprimes(n.a, ctx.c) || ctx.g.Coprimes(b, ctx.c) {
+	if !ctx.g.Coprimes(n.a, ctx.c) || !ctx.g.Coprimes(b, ctx.c) {
 		return false
 	}
 	ctx.sum += ctx.c

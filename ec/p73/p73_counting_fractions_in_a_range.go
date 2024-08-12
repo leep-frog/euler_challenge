@@ -15,7 +15,7 @@ func P73() *ecmodels.Problem {
 				if num*3 <= den {
 					continue
 				}
-				if p.Coprimes(num, den) {
+				if !p.Coprimes(num, den) {
 					continue
 				}
 				unique++

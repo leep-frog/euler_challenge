@@ -18,7 +18,7 @@ func P141() *ecmodels.Problem {
 				if squares.Contains(f) {
 					den := maths.Sqrt(f)
 					for num := 1; num < den; num++ {
-						if p.Coprimes(num, den) {
+						if !p.Coprimes(num, den) {
 							continue
 						}
 						k := a*a*num/den + a*num*num/(den*den)

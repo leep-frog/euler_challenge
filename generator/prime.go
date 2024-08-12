@@ -123,12 +123,12 @@ func (p *Prime) Coprimes(a, b int) bool {
 	bFactors := p.PrimeFactors(b)
 	for k := range p.PrimeFactors(a) {
 		if _, ok := bFactors[k]; ok {
-			maths.Insert(coprimeCache, a, b, true)
-			return true
+			maths.Insert(coprimeCache, a, b, false)
+			return false
 		}
 	}
-	maths.Insert(coprimeCache, a, b, false)
-	return false
+	maths.Insert(coprimeCache, a, b, true)
+	return true
 }
 
 func (p *Prime) MutablePrimeFactors(n int) map[int]int {

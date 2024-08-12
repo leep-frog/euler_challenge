@@ -111,12 +111,12 @@ func brute176(k int, primes *generator.Generator[int]) int {
 
 		a := 2 * m * n
 		b := m*m - n*n
-		if !generator.Coprimes(a, b, primes) {
+		if generator.Coprimes(a, b, primes) {
 			cnt++
 		}
 		continue
 
-		if generator.Coprimes(m, n, primes) {
+		if !generator.Coprimes(m, n, primes) {
 			continue
 		}
 
@@ -132,7 +132,7 @@ func brute176(k int, primes *generator.Generator[int]) int {
 			}
 			a := 2 * m * n
 			b := m*m - n*n
-			if !generator.Coprimes(a, b, primes) {
+			if generator.Coprimes(a, b, primes) {
 				cnt++
 			}
 		}

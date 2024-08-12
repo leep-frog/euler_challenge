@@ -246,7 +246,7 @@ func rightTris(n int, p *generator.Generator[int], ignoreCoprimes bool) int {
 			// b^2 = n^2/2 - a^2
 			if maths.IsSquare(n*n/2 - a*a) {
 				b := maths.Sqrt(n*n/2 - a*a)
-				cp := !generator.Coprimes(a, b, p)
+				cp := generator.Coprimes(a, b, p)
 				if cp || ignoreCoprimes {
 					// fmt.Println("EVEN", n, a, b, cp)
 					cnt++
@@ -272,7 +272,7 @@ func rightTris(n int, p *generator.Generator[int], ignoreCoprimes bool) int {
 		// B and A both need to be odd integers
 		if maths.IsSquare(2*n*n - a.N*a.N) {
 			b := maths.Sqrt(2*n*n - a.N*a.N)
-			cp := !generator.Coprimes(a.N, b, p)
+			cp := generator.Coprimes(a.N, b, p)
 			if cp || ignoreCoprimes {
 				//fmt.Println("ODD", n, a.N, b, cp)
 				cnt++
@@ -288,7 +288,7 @@ func bruteNumValuesOdd(n int, primes *generator.Generator[int]) {
 	for a := 1; a < n; a++ {
 		if maths.IsSquare(2*n*n - a*a) {
 			b := maths.Sqrt(2*n*n - a*a)
-			if !generator.Coprimes(a, b, primes) {
+			if generator.Coprimes(a, b, primes) {
 				fmt.Println("YUP", n, a, maths.Sqrt(2*n*n-a*a))
 			}
 		}

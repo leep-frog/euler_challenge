@@ -49,7 +49,7 @@ func (tg *triangleGenerator) Next(g *Generator[*RightTriangle]) *RightTriangle {
 			if tg.n%2 == 1 && tg.m%2 == 1 {
 				continue
 			}
-			if tg.n > 1 && tg.primes.Coprimes(tg.m, tg.n) {
+			if tg.n > 1 && !tg.primes.Coprimes(tg.m, tg.n) {
 				continue
 			}
 

@@ -54,7 +54,7 @@ func (n *node243) AdjacentStates(ctx *context243) []*node243 {
 func cnt243(n int, p *generator.Prime) int {
 	cnt := 1
 	for i := 2; i < n; i++ {
-		if !p.Coprimes(n, i) {
+		if p.Coprimes(n, i) {
 			cnt++
 		}
 	}
