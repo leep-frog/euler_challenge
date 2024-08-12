@@ -1,22 +1,17 @@
 package p181
 
 import (
-	"fmt"
-
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
 )
 
-func rec(depth, remB, remW, minB, minW int, cur [][]int, cache map[string]int) int {
-	//fmt.Println(strings.Repeat("  ", depth), remB, remW, minB, minW)
-	//fmt.Println(strings.Repeat("  ", depth), cur, remB, remW)
-	code := fmt.Sprintf("%d, %d, %d, %d", remB, remW, minB, minW)
-	if v, ok := cache[code]; ok {
-		//fmt.Println("USED CACHE!")
-		return v
+func rec(remB, remW, minB, minW int, cur [][]int, cache []int) int {
+	code := 1000000*remB + 10000*remW + 100*minB + minW
+	if cache[code] >= 0 {
+		return cache[code]
 	}
+
 	if remB == 0 && remW == 0 {
-		//fmt.Println("GOTIT", cur)
 		return 1
 	}
 
@@ -33,17 +28,15 @@ func rec(depth, remB, remW, minB, minW int, cur [][]int, cache map[string]int) i
 		if minB == 0 && w == 0 {
 			continue
 		}
-		sum += rec(depth+1, remB-minB, remW-w, minB, w, append(cur, []int{minB, w}), cache)
+		sum += rec(remB-minB, remW-w, minB, w, append(cur, []int{minB, w}), cache)
 	}
 
 	// Now increase blacks
 	for b := minB + 1; b <= remB; b++ {
 		for w := 0; w <= remW; w++ {
-			sum += rec(depth+1, remB-b, remW-w, b, w, append(cur, []int{b, w}), cache)
+			sum += rec(remB-b, remW-w, b, w, append(cur, []int{b, w}), cache)
 		}
 	}
-	//for b := minB; b <= remB
-	// First add more white ones
 
 	cache[code] = sum
 	return sum
@@ -51,17 +44,23 @@ func rec(depth, remB, remW, minB, minW int, cur [][]int, cache map[string]int) i
 
 func P181() *ecmodels.Problem {
 	return ecmodels.IntsInputNode(181, 2, 0, func(o command.Output, ns []int) {
-		fmt.Println("START")
 		b := ns[0]
 		w := ns[1]
-		c := map[string]int{}
-		o.Stdoutln(rec(0, b, w, 0, 0, nil, c))
-		//fmt.Println(c)
+		c := make([]int, 100000000)
+		for i := range c {
+			c[i] = -1
+		}
+
+		if b > w {
+			b, w = w, b
+		}
+
+		o.Stdoutln(rec(w, b, 0, 0, nil, c))
 	}, []*ecmodels.Execution{
 		{
-			Args:     []string{"60", "40"},
-			Want:     "83735848679360680",
-			Estimate: 4*60 + 30,
+			Args: []string{"60", "40"},
+			Want: "83735848679360680",
+			// Estimate: 4*60 + 30,
 		},
 	})
 }
