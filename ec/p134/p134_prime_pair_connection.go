@@ -16,15 +16,16 @@ func P134() *ecmodels.Problem {
 		for i := 2; g.Nth(i) < 1000000; i++ {
 			p1, p2 := g.Nth(i), g.Nth(i+1)
 
-			iter := maths.Pow(10, len(strconv.Itoa(p1)))
-			v := p1
-			for ; v%p2 != 0; v += iter {
-			}
-			sum += v
+			// p1 + offset*x mod p2 == 0
+			// offset*x mod p2 == (p2-p1)
+			// where offset = 10^k
+			offset := maths.Pow(10, len(strconv.Itoa(p1)))
+			x := maths.SolveMod(offset, p2, p2-p1)
+			sum += p1 + offset*x
 		}
 		o.Stdoutln(sum)
 	}, &ecmodels.Execution{
 		Want:     "18613426663617118",
-		Estimate: 40,
+		Estimate: 0.5,
 	})
 }
