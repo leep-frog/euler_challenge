@@ -20,7 +20,8 @@ func PermutationCount[T any](parts []T) *maths.Int {
 	return PermutationFromCount(counts)
 }
 
-func PermutationFromCount(counts []int) *maths.Int {
+func PermutationFromCount(ogCounts []int) *maths.Int {
+	counts := bread.Copy(ogCounts)
 	slices.Sort(counts)
 
 	code := strings.Join(functional.Map(counts, strconv.Itoa), "_")

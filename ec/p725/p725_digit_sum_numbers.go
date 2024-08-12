@@ -42,9 +42,9 @@ var (
 func s(n int) int {
 
 	// m[d] is the number of times digit d shows up
-	var m []*maths.Int
+	var m []int
 	for len(m) <= 9 {
-		m = append(m, maths.Zero())
+		m = append(m, 0)
 	}
 
 	// Iterate over each digit-sum number (e.g. 9 in the number 945) and update m
@@ -53,7 +53,7 @@ func s(n int) int {
 		counts[i]++
 		got := dp(n, n-1, i, 0, counts)
 		for i, v := range got {
-			m[i] = m[i].Plus(v)
+			m[i] = (m[i] + v) % mod
 		}
 		counts[i]--
 	}
@@ -62,13 +62,13 @@ func s(n int) int {
 	res := maths.Zero()
 	for k, v := range m {
 		num := maths.MustIntFromString(strings.Repeat(fmt.Sprintf("%d", k), n))
-		res = res.Plus(num.Times(v))
+		res = res.Plus(num.TimesInt(v))
 	}
 
 	return res.ModInt(mod)
 }
 
-func dp(n, remDigits, remValue, min int, counts []int) []*maths.Int {
+func dp(n, remDigits, remValue, min int, counts []int) []int {
 	if remDigits == 0 {
 		if remValue != 0 {
 			return nil
@@ -78,25 +78,25 @@ func dp(n, remDigits, remValue, min int, counts []int) []*maths.Int {
 		combos := combinatorics.PermutationFromCount(bread.Copy(counts))
 
 		// Create the result based on the existing counts
-		return functional.Map(counts, func(i int) *maths.Int {
+		return functional.Map(counts, func(i int) int {
 			// We need to divide by n because a number is in each spot an equal number of times
 			// Consider 123, 132, 213, 312, 231, 321, Count of 1 is 1, combos is 6, but it's in each spot 1*6/2=3 times
 			// Consider 448, 484, 844. Count of 4 is 2, combos is 3, but it's in each spot 2*3/3 = 2 times
 			// We also need to divide here because dividing above isn't always correct, when combos % n != 0
-			return combos.TimesInt(i).DivInt(n)
+			return combos.TimesInt(i).DivInt(n).ModInt(mod)
 		})
 	}
 
 	// Create the new sums
-	m := []*maths.Int{}
+	m := []int{}
 	for len(m) <= 9 {
-		m = append(m, maths.Zero())
+		m = append(m, 0)
 	}
 	for i := min; i <= remValue && i <= 9; i++ {
 		for cnt := 1; i*cnt <= remValue && cnt <= remDigits; cnt++ {
 			counts[i] += cnt
 			for k, v := range dp(n, remDigits-cnt, remValue-(i*cnt), i+1, counts) {
-				m[k] = m[k].Plus(v)
+				m[k] = (m[k] + v) % mod
 			}
 			counts[i] -= cnt
 		}
