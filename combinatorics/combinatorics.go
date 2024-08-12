@@ -17,6 +17,10 @@ var (
 
 func PermutationCount[T any](parts []T) *maths.Int {
 	counts, _ := createCounts(parts)
+	return PermutationFromCount(counts)
+}
+
+func PermutationFromCount(counts []int) *maths.Int {
 	slices.Sort(counts)
 
 	code := strings.Join(functional.Map(counts, strconv.Itoa), "_")
@@ -25,7 +29,7 @@ func PermutationCount[T any](parts []T) *maths.Int {
 	}
 
 	// Total count if all elements were different
-	v := maths.Factorial(len(parts))
+	v := maths.Factorial(bread.Sum(counts))
 
 	for _, c := range counts {
 		if c == 1 {
