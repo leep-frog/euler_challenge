@@ -71,18 +71,28 @@ func P154() *ecmodels.Problem {
 
 		cnt := 0
 		for i, offset := n, 0; offset <= n/2; i, offset = i-1, offset+1 {
-			coef := fc.Choose(n, i)
+
+			// We need (n choose i) * (i choose j)
+			// n choose i -> n! / (i! * (n-i)!)
+			// i choose j -> i! / (j! * (i-j)!)
+			// (n choose i) * (i choose j) =  (n! / (i! * (n-i)!)) * (i! / (j! * (i-j)!))
+			//                             = n! / ( (n-i)! * j! * (i-j)! )
+
+			// currentFactors tracks the current amount of each factor
+			var currentFactors []int
+			for idx := range factors {
+				// n! / (n-i)!
+				currentFactors = append(currentFactors, fc.divs[n][idx]-fc.divs[n-i][idx])
+			}
+
 			for j := offset; j <= i/2; j++ {
 				// See if it is divisble
-				divisble := true
-				v := fc.Choose(i, j)
-				for i, mn := range minNeeded {
-					if coef[i]+v[i] < mn {
-						divisble = false
+				for idx, f := range fc.divs[j] {
+					// Divide by (j!) and (i-j)!
+					// and see if there are still enough factors left over to divide minNeeded
+					if currentFactors[idx]-f-fc.divs[i-j][idx] < minNeeded[idx] {
+						goto END_LOOP
 					}
-				}
-				if !divisble {
-					continue
 				}
 
 				// If on the left line and the downward line, we are in the middle (only 1).
@@ -96,6 +106,8 @@ func P154() *ecmodels.Problem {
 					// bisect the triangle from all three vertices).
 					cnt += 6
 				}
+
+			END_LOOP:
 			}
 		}
 
@@ -126,9 +138,9 @@ func P154() *ecmodels.Problem {
 			Want: "12",
 		},
 		{
-			Args: []string{"200000", "1000000000000"},
-			Want: "479742450",
-			// Estimate: 300,
+			Args:     []string{"200000", "1000000000000"},
+			Want:     "479742450",
+			Estimate: 15,
 		},
 	})
 }
@@ -137,25 +149,6 @@ type FactorialChecker struct {
 	factors []int
 
 	divs [][]int
-}
-
-// Returns the number of each factor in the numerator
-func (fc *FactorialChecker) Choose(n, k int) []int {
-	// n! / (k!(n-k)!)
-
-	var rs []int
-	for i := range fc.factors {
-		// Number of the factors in n!
-		nf := fc.divs[n][i]
-		// Number of the factors in k!
-		kf := fc.divs[k][i]
-		// Number of the factors in (n-k)!
-		knf := fc.divs[n-k][i]
-
-		// Number of factors in the numerator:
-		rs = append(rs, nf-kf-knf)
-	}
-	return rs
 }
 
 // Note: only works if factors are primes.
