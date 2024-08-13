@@ -126,9 +126,9 @@ func P154() *ecmodels.Problem {
 			Want: "12",
 		},
 		{
-			Args:     []string{"200000", "1000000000000"},
-			Want:     "479742450",
-			Estimate: 300,
+			Args: []string{"200000", "1000000000000"},
+			Want: "479742450",
+			// Estimate: 300,
 		},
 	})
 }
@@ -149,7 +149,7 @@ func (fc *FactorialChecker) Choose(n, k int) []int {
 		nf := fc.divs[n][i]
 		// Number of the factors in k!
 		kf := fc.divs[k][i]
-		// Number of the factors in k!
+		// Number of the factors in (n-k)!
 		knf := fc.divs[n-k][i]
 
 		// Number of factors in the numerator:
@@ -160,20 +160,13 @@ func (fc *FactorialChecker) Choose(n, k int) []int {
 
 // Note: only works if factors are primes.
 func NewFC(k int, factors []int) *FactorialChecker {
-	// currentF is an array of [factor, factor^x] where factor^x is
-	// bigger than the current number we are on in the iteration below.
-	var currentF [][]int
-	for _, f := range factors {
-		currentF = append(currentF, []int{f, f})
-	}
-
 	lf := len(factors)
-	divs := [][]int{make([]int, lf, lf)}
+	divs := [][]int{make([]int, lf)}
 	for i := 1; i <= k; i++ {
 		var newRow []int
-		for ci, cf := range currentF {
+		for ci, cf := range factors {
 			v := divs[i-1][ci]
-			for s := i; s%cf[1] == 0; s, v = s/cf[1], v+1 {
+			for s := i; s%cf == 0; s, v = s/cf, v+1 {
 			}
 			newRow = append(newRow, v)
 		}
