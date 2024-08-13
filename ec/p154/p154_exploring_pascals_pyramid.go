@@ -4,6 +4,9 @@ import (
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
 	"github.com/leep-frog/euler_challenge/generator"
+	"github.com/leep-frog/euler_challenge/maths"
+	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
 )
 
 /*
@@ -62,10 +65,14 @@ func P154() *ecmodels.Problem {
 		// Create the factors slice (each element is [factor, number of factors needed]).
 		divFactors := generator.Primes().PrimeFactors(div)
 		var minNeeded, factors []int
-		for f, m := range divFactors {
+		factorKeys := maps.Keys(divFactors)
+		// slices.Sort(factorKeys)
+		slices.Sort(factorKeys)
+		for _, f := range factorKeys {
 			factors = append(factors, f)
-			minNeeded = append(minNeeded, m)
+			minNeeded = append(minNeeded, divFactors[f])
 		}
+		lf := len(factors)
 
 		fc := NewFC(n, factors)
 
@@ -82,15 +89,16 @@ func P154() *ecmodels.Problem {
 			var currentFactors []int
 			for idx := range factors {
 				// n! / (n-i)!
-				currentFactors = append(currentFactors, fc.divs[n][idx]-fc.divs[n-i][idx])
+				currentFactors = append(currentFactors, fc.divs[idx][n]-fc.divs[idx][n-i])
 			}
 
 			for j := offset; j <= i/2; j++ {
-				// See if it is divisble
-				for idx, f := range fc.divs[j] {
+				// See if the current factors are divisible by minNeeded
+				// Iterate from largest factor to smallest since larger factor is more likely to be removed
+				for idx := lf - 1; idx >= 0; idx-- {
 					// Divide by (j!) and (i-j)!
 					// and see if there are still enough factors left over to divide minNeeded
-					if currentFactors[idx]-f-fc.divs[i-j][idx] < minNeeded[idx] {
+					if currentFactors[idx]-fc.divs[idx][j]-fc.divs[idx][i-j] < minNeeded[idx] {
 						goto END_LOOP
 					}
 				}
@@ -140,7 +148,7 @@ func P154() *ecmodels.Problem {
 		{
 			Args:     []string{"200000", "1000000000000"},
 			Want:     "479742450",
-			Estimate: 15,
+			Estimate: 10,
 		},
 	})
 }
@@ -165,5 +173,7 @@ func NewFC(k int, factors []int) *FactorialChecker {
 		}
 		divs = append(divs, newRow)
 	}
-	return &FactorialChecker{factors, divs}
+
+	// We transpose here for better efficiency in memory access in the core logic above
+	return &FactorialChecker{factors, maths.SimpleTranspose(divs)}
 }
