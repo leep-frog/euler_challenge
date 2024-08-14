@@ -38,21 +38,17 @@ func P788() *ecmodels.Problem {
 func dominatingNumbers(n int) int {
 	var sum int
 
-	nChooseI := 1 // n choose 0 is 1
-	for i := 1; i < (n/2)+1; i++ {
-		//
-		nChooseI = (nChooseI * (n - i + 1)) % mod
-		inv := maths.PowMod(i, -1, mod)
-		nChooseI = (nChooseI * inv) % mod
-	}
+	nChooseI := 1 // n choose n is 1
 
-	for i := (n / 2) + 1; i < n; i++ {
+	// Start at n-1, so we minimize the amount of choose iterations needed
+	// (i.e. if we started at zero, we'd need to increment up to (n/2)+1)
+	for i := n - 1; i >= (n/2)+1; i-- {
 		// number of non-dominating digits (s for subordinate digits)
 		s := n - i
 
 		// Update nChooseI
-		nChooseI = (nChooseI * (n - i + 1)) % mod
-		inv := maths.PowMod(i, -1, mod)
+		nChooseI = (nChooseI * (i + 1)) % mod
+		inv := maths.PowMod(n-i, -1, mod)
 		nChooseI = (nChooseI * inv) % mod
 
 		// Dominating digit is non-zero and in the front
