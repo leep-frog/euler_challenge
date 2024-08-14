@@ -38,7 +38,7 @@ func P153() *ecmodels.Problem {
 		var iSums int
 		for i := 1; i*i <= n; i++ {
 			for j := i; j*j+i*i <= n; j++ {
-				if !maths.Coprime(i, j) && (i != 1) && (j != 1) {
+				if (i != 1) && (j != 1) && !maths.Coprime(i, j) {
 					continue
 				}
 				val := 2 * (i + j)

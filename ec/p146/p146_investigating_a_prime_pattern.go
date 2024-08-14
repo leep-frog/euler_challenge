@@ -96,13 +96,13 @@ func P146() *ecmodels.Problem {
 		o.Stdoutln(sum)
 	}, []*ecmodels.Execution{
 		{
+			Args: []string{"1000000"},
+			Want: "1242490",
+		},
+		{
 			Args:     []string{"150000000"},
 			Want:     "676333270",
 			Estimate: 30,
-		},
-		{
-			Args: []string{"1000000"},
-			Want: "1242490",
 		},
 	})
 }
