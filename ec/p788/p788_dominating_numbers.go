@@ -36,7 +36,8 @@ func P788() *ecmodels.Problem {
 
 // dominatingNumbers returns the number of dominating numbers with *exacly* n digits.
 func dominatingNumbers(n int) int {
-	var sum int
+	// Start at 9, since i=n results in nine numbers (1111..., 2222..., ..., 9999...)
+	sum := 9
 
 	nChooseI := 1 // n choose n is 1
 
@@ -121,7 +122,7 @@ func dominatingNumbers(n int) int {
 		sum = (sum + v123) % mod
 
 	}
-	return (sum + 9%mod)
+	return sum
 }
 
 func brute(n int) int {
