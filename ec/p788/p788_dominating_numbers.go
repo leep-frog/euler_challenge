@@ -12,9 +12,15 @@ const (
 
 func P788() *ecmodels.Problem {
 	return ecmodels.IntInputNode(788, func(o command.Output, n int) {
+
+		var powMods []int
+		for len(powMods) <= n/2 {
+			powMods = append(powMods, maths.PowMod(9, len(powMods), mod))
+		}
+
 		var sum int
 		for i := 1; i <= n; i++ {
-			sum = (sum + dominatingNumbers(i)) % mod
+			sum = (sum + dominatingNumbers(i, powMods)) % mod
 		}
 		o.Stdoutln(sum)
 	}, []*ecmodels.Execution{
@@ -35,7 +41,7 @@ func P788() *ecmodels.Problem {
 }
 
 // dominatingNumbers returns the number of dominating numbers with *exacly* n digits.
-func dominatingNumbers(n int) int {
+func dominatingNumbers(n int, powMods []int) int {
 	// Start at 9, since i=n results in nine numbers (1111..., 2222..., ..., 9999...)
 	sum := 9
 
@@ -116,8 +122,7 @@ func dominatingNumbers(n int) int {
 		//      = 9^(s+1) * { (n-1)! * n } / { (i! * (n-1-i)! * (n-i) }
 		//      = 9^(s+1) * { n! } / { (i! * (n-i)! }
 		//      = 9^(s+1) * (n choose i)
-		// v123 := maths.BigPow(9, s+1).Times(maths.Choose(n, i))
-		v123 := (maths.PowMod(9, s+1, mod) * nChooseI) % mod
+		v123 := (powMods[s+1] * nChooseI) % mod
 
 		sum = (sum + v123) % mod
 
