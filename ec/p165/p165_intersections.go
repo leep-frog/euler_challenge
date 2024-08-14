@@ -3,6 +3,7 @@ package p165
 import (
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
+	"github.com/leep-frog/euler_challenge/fraction"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/euler_challenge/point"
 	"github.com/leep-frog/functional"
@@ -10,12 +11,30 @@ import (
 
 func P165() *ecmodels.Problem {
 	return ecmodels.IntInputNode(165, func(o command.Output, n int) {
+
 		ls := generatePoints165(n)
-		var intersections []*point.RationalPoint
+		functional.SortFunc(ls, func(a, b *point.RationalLineSegment) bool {
+			aMinX := maths.MinT(a.A.X, a.B.X)
+			bMinX := maths.MinT(b.A.X, b.B.X)
+			return aMinX.LT(bMinX)
+		})
+		intersections := make([]*point.RationalPoint, 0, len(ls)*len(ls))
+
+		var minXs []*fraction.Rational
+		for _, l := range ls {
+			minXs = append(minXs, maths.MinT(l.A.X, l.B.X))
+		}
+
 		for i, l := range ls {
+			lMaxX := maths.MaxT(l.A.X, l.B.X)
 			for j := i + 1; j < len(ls); j++ {
 				o := ls[j]
-				if intersect := l.Copy().Intersect(o.Copy()); intersect != nil {
+
+				if minXs[j].GTE(lMaxX) {
+					break
+				}
+
+				if intersect := l.Intersect(o); intersect != nil {
 					intersections = append(intersections, intersect)
 				}
 			}
@@ -45,9 +64,9 @@ func P165() *ecmodels.Problem {
 			Want: "1",
 		},
 		{
-			Args:     []string{"5000"},
-			Want:     "2868868",
-			Estimate: 200,
+			Args: []string{"5000"},
+			Want: "2868868",
+			Estimate: 175,
 		},
 	})
 }
