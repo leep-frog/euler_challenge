@@ -69,8 +69,8 @@ func (p *problem177) valid(theta1, theta2, theta3, theta4 int, m map[string]bool
 	ABC := float64(theta3 + theta4)
 	BC := point.NewLineSegment(B, point.New(B.X-p.cos(ABC), p.sin(ABC)))
 
-	D := AD.Intersect(BD)
-	C := AC.Intersect(BC)
+	D := AD.Intersect(BD, false)
+	C := AC.Intersect(BC, false)
 
 	ACD, ok := p.integerAngle(A, C, D)
 	if !ok {

@@ -120,8 +120,10 @@ func (ls *LineSegment[T]) EquationMB() (T, T) {
 	return m, b
 }
 
-// TODO: Combine RationalLineSegment with LineSegment (do like bfs.Int class)
-func (ls *LineSegment[T]) Intersect(that *LineSegment[T]) *Point[T] {
+// Intersect returns the intersection point of `ls` and `that` iff the intersection point
+// is exactly one point (not zero or infinitely many). The exclusive argument determines
+// if the endpoints should be allowed as well
+func (ls *LineSegment[T]) Intersect(that *LineSegment[T], exclusive bool) *Point[T] {
 	ls1, ls2 := ls, that
 	m1, b1 := ls1.EquationMB()
 	m2, b2 := ls2.EquationMB()
@@ -131,28 +133,28 @@ func (ls *LineSegment[T]) Intersect(that *LineSegment[T]) *Point[T] {
 
 	// If slopes are equal, then return
 	//fmt.Println("IF")
-	if m1 == m2 {
+	if m1 == m2 || (math.IsInf(float64(m1), 0) && math.IsInf(float64(m2), 0)) {
 		return nil
 	}
 	// Either slopes are (veritcal, horizontal), (horizontal, K) (vertical, K), or (K, K)
 
 	var x, y T
 	switch true {
-	case math.IsNaN(float64(m2)) && m1 == 0:
+	case (math.IsInf(float64(m2), 0) || math.IsNaN(float64(m2))) && m1 == 0:
 		m1, m2 = m2, m1
 		b1, b2 = b2, b1
 		ls1, ls2 = ls2, ls1
 		fallthrough
-	case math.IsNaN(float64(m1)) && m2 == 0:
+	case (math.IsInf(float64(m1), 0) || math.IsNaN(float64(m1))) && m2 == 0:
 		x = ls1.A.X
 		y = ls2.A.Y
 		break
-	case math.IsNaN(float64(m2)):
+	case math.IsInf(float64(m2), 0) || math.IsNaN(float64(m2)):
 		m1, m2 = m2, m1
 		b1, b2 = b2, b1
 		ls1, ls2 = ls2, ls1
 		fallthrough
-	case math.IsNaN(float64(m1)):
+	case math.IsInf(float64(m1), 0) || math.IsNaN(float64(m1)):
 		x = ls1.A.X
 		y = m2*x + b2
 		break
@@ -170,16 +172,15 @@ func (ls *LineSegment[T]) Intersect(that *LineSegment[T]) *Point[T] {
 		y = x*m1 + b1
 	}
 
-	return New(x, y)
-
-	// Now verify it's between them by verifying it's inside the box of
-	// (minX, minY), (maxX, maxY)
-	//p := &RationalPoint{x, y}
-	// TODO: Use OnSegmentExclusive??
-	/*if ls1.InBoxInclusive(p) && ls2.InBoxInclusive(p) && !ls1.HasVertex(p) && !ls2.HasVertex(p) {
+	p := New(x, y)
+	if !exclusive {
 		return p
 	}
-	return nil*/
+
+	if ls1.A.BetweenExclusive(p, ls1.B) && ls2.A.BetweenExclusive(p, ls2.B) {
+		return p
+	}
+	return nil
 }
 
 // returns m, b
@@ -198,9 +199,9 @@ func (rls *RationalLineSegment) EquationMB() (*fraction.Rational, *fraction.Rati
 	return m, b
 }
 
-// Note doesn't include edge points
-
-func (rls *RationalLineSegment) Intersect(that *RationalLineSegment) *RationalPoint {
+// IntersectExclusive returns the intersection point of ls and that iff
+// the intersection is exactly one point (not infinitely many) and isn't one of the endpoints of either line segment.
+func (rls *RationalLineSegment) IntersectExclusive(that *RationalLineSegment) *RationalPoint {
 	ls1, ls2 := rls, that
 	m1, b1 := ls1.EquationMB()
 	m2, b2 := ls2.EquationMB()
@@ -514,6 +515,10 @@ func (p *Point[T]) Eq(that *Point[T]) bool {
 	return p.X == that.X && p.Y == that.Y
 }
 
+func (p *Point[T]) ApproxEq(that *Point[T], eps T) bool {
+	return maths.Abs(p.X-that.X) <= eps && maths.Abs(p.Y-that.Y) <= eps
+}
+
 type Rectangle[T maths.Mathable] struct {
 	MinX, MinY, MaxX, MaxY T
 }
@@ -675,7 +680,7 @@ func (p *Point[T]) BetweenExclusive(q, p2 *Point[T]) bool {
 		return false
 	}
 
-	if p.HalfPlane(p2, q) != 0 {
+	if maths.Abs(float64(p.HalfPlane(p2, q))) > 0.001 {
 		return false
 	}
 

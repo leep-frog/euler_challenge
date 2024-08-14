@@ -34,7 +34,7 @@ func P165() *ecmodels.Problem {
 					break
 				}
 
-				if intersect := l.Intersect(o); intersect != nil {
+				if intersect := l.IntersectExclusive(o); intersect != nil {
 					intersections = append(intersections, intersect)
 				}
 			}
@@ -64,8 +64,8 @@ func P165() *ecmodels.Problem {
 			Want: "1",
 		},
 		{
-			Args: []string{"5000"},
-			Want: "2868868",
+			Args:     []string{"5000"},
+			Want:     "2868868",
 			Estimate: 175,
 		},
 	})
