@@ -44,8 +44,9 @@ type GeneratorInterface[T any] interface {
 }
 
 type Generator[T any] struct {
-	values   []T
-	set      map[string]bool
+	values []T
+	// map from value to values index for value
+	set      map[string]int
 	gi       GeneratorInterface[T]
 	less     func(T, T) bool
 	toString func(T) string
@@ -59,7 +60,7 @@ func (g *Generator[T]) Nth(i int) T {
 	for len(g.values) <= i {
 		nv := g.gi.Next(g)
 		g.values = append(g.values, nv)
-		g.set[g.toString(nv)] = true
+		g.set[g.toString(nv)] = len(g.values) - 1
 	}
 	return g.values[i]
 }
@@ -97,7 +98,7 @@ func newCustomGen[T CustomGeneratable[T]](gi GeneratorInterface[T]) *Generator[T
 		gi:       gi,
 		less:     func(i, j T) bool { return i.LT(j) },
 		toString: func(i T) string { return i.String() },
-		set:      map[string]bool{},
+		set:      map[string]int{},
 	}
 }
 
@@ -106,7 +107,7 @@ func newIntGen(gi GeneratorInterface[int]) *Generator[int] {
 		gi:       gi,
 		less:     func(i, j int) bool { return i < j },
 		toString: strconv.Itoa,
-		set:      map[string]bool{},
+		set:      map[string]int{},
 	}
 }
 
@@ -115,6 +116,6 @@ func newBigGen(gi GeneratorInterface[*maths.Int]) *Generator[*maths.Int] {
 		gi:       gi,
 		less:     func(i, j *maths.Int) bool { return i.LT(j) },
 		toString: func(i *maths.Int) string { return i.String() },
-		set:      map[string]bool{},
+		set:      map[string]int{},
 	}
 }
