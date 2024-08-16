@@ -39,7 +39,8 @@ func P650() *ecmodels.Problem {
 		// 	}
 		// }
 
-		o.Stdoutln(clever2(n))
+		// o.Stdoutln(clever2(n))
+		fmt.Println(clever2(n))
 	}, []*ecmodels.Execution{
 		{
 			Args: []string{"5"},
@@ -60,50 +61,50 @@ func P650() *ecmodels.Problem {
 	})
 }
 
-func basic(m int) int {
-	p := generator.Primes()
-	_ = p
+// func basic(m int) int {
+// 	p := generator.Primes()
+// 	_ = p
 
-	var sum int
-	for n := 1; n <= m; n++ {
+// 	var sum int
+// 	for n := 1; n <= m; n++ {
 
-		counts := make([]int, n+1)
+// 		counts := make([]int, n+1)
 
-		for i := 0; i <= n; i++ {
-			counts[i] = n - 1
-		}
+// 		for i := 0; i <= n; i++ {
+// 			counts[i] = n - 1
+// 		}
 
-		for i := 1; i < n; i++ {
-			coef := 2 * (n - i)
-			counts[i] -= coef
-		}
+// 		for i := 1; i < n; i++ {
+// 			coef := 2 * (n - i)
+// 			counts[i] -= coef
+// 		}
 
-		ps := map[int]int{}
-		for i := 1; i <= n; i++ {
-			for k, v := range p.MutablePrimeFactors(i) {
-				ps[k] += counts[i] * v
-				if ps[k] == 0 {
-					delete(ps, k)
-				}
-			}
-		}
+// 		ps := map[int]int{}
+// 		for i := 1; i <= n; i++ {
+// 			for k, v := range p.MutablePrimeFactors(i) {
+// 				ps[k] += counts[i] * v
+// 				if ps[k] == 0 {
+// 					delete(ps, k)
+// 				}
+// 			}
+// 		}
 
-		var pfPairs [][]int
-		for k, v := range ps {
-			if v != 0 {
-				pfPairs = append(pfPairs, []int{k, v})
-			}
-		}
+// 		var pfPairs [][]int
+// 		for k, v := range ps {
+// 			if v != 0 {
+// 				pfPairs = append(pfPairs, []int{k, v})
+// 			}
+// 		}
 
-		// fmt.Println(divisorSum(0, pfPairs)+1, brute(n))
-		// fmt.Println(n, divisorSum(0, pfPairs)+1)
-		sum = (sum + divisorSum2(0, pfPairs)) % mod
-		// fmt.Println(n, pfPairs, divisorSum2(0, pfPairs))
-		fmt.Println("REGULAR", n, sum, pfPairs)
-	}
-	// 721034267
-	return sum
-}
+// 		// fmt.Println(divisorSum(0, pfPairs)+1, brute(n))
+// 		// fmt.Println(n, divisorSum(0, pfPairs)+1)
+// 		sum = (sum + divisorSum2(0, pfPairs)) % mod
+// 		// fmt.Println(n, pfPairs, divisorSum2(0, pfPairs))
+// 		fmt.Println("REGULAR", n, sum, pfPairs)
+// 	}
+// 	// 721034267
+// 	return sum
+// }
 
 // func clever(n int) int {
 // 	p := generator.Primes()
@@ -147,31 +148,19 @@ func clever2(n int) int {
 	p := generator.Primes()
 	ps := map[int]int{}
 
-	// for i := 1; i <= n; i++ {
-	// 	fmt.Println(i, p.PrimeFactorsFast(i))
-	// }
-	// fmt.Println("Go")
-
 	sum := 1
 	prevSum := 1
 
 	factorsOfLower := map[int]int{}
 	for k := 2; k <= n; k++ {
+
+		fd := map[int]int{}
 		for _, pff := range p.PrimeFactorsFast(k) {
 			ky := pff[0]
 			v := pff[1]
-			old := harm(ky, ps[ky])
-			new := harm(ky, ps[ky]+v*(k-1))
 
-			inv := maths.PowMod(old, -1, mod)
-			prevSum = (((prevSum * inv) % mod) * new) % mod
-
-			ps[ky] += v * (k - 1)
+			fd[ky] = v * (k - 1)
 		}
-
-		// factorsOfLower
-
-		// fmt.Println("ADDING", k-2)
 
 		for _, pff := range p.PrimeFactorsFast(k - 1) {
 			k := pff[0]
@@ -180,52 +169,27 @@ func clever2(n int) int {
 		}
 
 		for k, v := range factorsOfLower {
-			old := harm(k, ps[k])
-			new := harm(k, ps[k]-v)
-			inv := maths.PowMod(old, -1, mod)
-			prevSum = (((prevSum * inv) % mod) * new) % mod
-			ps[k] -= v
+			fd[k] -= v
 		}
 
-		if k%100 == 0 {
+		if k%1000 == 0 {
 			fmt.Println(k)
+		}
+
+		for k, v := range fd {
+			old := harm(k, ps[k])
+			new := harm(k, ps[k]+v)
+			prevSum = (((prevSum * inv(old)) % mod) * new) % mod
+
+			ps[k] += v
+			if ps[k] == 0 {
+				delete(ps, k)
+			}
 		}
 
 		sum = (sum + prevSum) % mod
 	}
 	return sum
-}
-
-func divisorSum(idx int, pfPairs [][]int) int {
-	if idx == len(pfPairs) {
-		return 0
-	}
-
-	v, cnt := pfPairs[idx][0], pfPairs[idx][1]
-
-	ds := divisorSum(idx+1, pfPairs)
-	sum := ds
-	dss := (1 + ds)
-	for i := 1; i <= cnt; i++ {
-		y := (maths.Pow(v, i) * (dss))
-		sum = (sum + y)
-	}
-	return sum
-}
-
-func divisorSum2(idx int, pfPairs [][]int) int {
-	if idx == len(pfPairs) {
-		return 1
-	}
-
-	v, cnt := pfPairs[idx][0], pfPairs[idx][1]
-
-	var curS int
-	for i := 0; i <= cnt; i++ {
-		curS = (curS + maths.PowMod(v, i, mod)) % mod
-	}
-
-	return (curS * divisorSum2(idx+1, pfPairs)) % mod
 }
 
 func brute(n int) int {
@@ -238,17 +202,35 @@ func brute(n int) int {
 	return bread.Sum(bread.Copy(p.Factors(k.ToInt())))
 }
 
+var invCache = map[int]int{}
+
+func inv(k int) int {
+	if v, ok := invCache[k]; ok {
+		return v
+	}
+	v := maths.PowMod(k, -1, mod)
+	invCache[k] = v
+	return v
+}
+
+// for k, v := range invCache {}
+
 func harm(k, pow int) int {
 	p := maths.PowMod(k, pow+1, mod)
 	p = (p + mod - 1) % mod
-	inv := maths.PowMod(k-1, -1, mod)
-	return (p * inv) % mod
+
+	return (p * inv(k-1)) % mod
 }
 
-// func harm2(k, pow int) int {
-// 	var sum int
-// 	for i := 0; i <= pow; i++ {
-// 		sum = (sum + maths.PowMod(k, i, mod)) % mod
+// var(
+// 	pmCache = [][]int{}
+// )
+
+// func pm(k, pow int)  int {
+// 	for len(pmCache) <= k {
+// 		pmCache = append(pmCache, []int{})
 // 	}
-// 	return sum
+// 	for len(pmCache[k]) <= pow {
+// 		pmCache[k] = append(pmCache[k], maths.PowMod)
+// 	}
 // }
