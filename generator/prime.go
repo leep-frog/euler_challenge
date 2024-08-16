@@ -9,15 +9,17 @@ import (
 )
 
 var (
-	cachedPrimeFactors    = map[int]map[int]int{}
-	cachedFactors         = map[int][]int{}
-	cachedFactorCounts    = map[int]int{}
-	coprimeCache          = map[int]map[int]bool{}
-	cachedResilienceCount = map[int]int{}
+	cachedPrimeFactors       = map[int]map[int]int{}
+	cachedPrimeFactorIndices = [][][]int{}
+	cachedFactors            = map[int][]int{}
+	cachedFactorCounts       = map[int]int{}
+	coprimeCache             = map[int]map[int]bool{}
+	cachedResilienceCount    = map[int]int{}
 )
 
-func clearCaches() {
+func ClearCaches() {
 	cachedPrimeFactors = map[int]map[int]int{}
+	cachedPrimeFactorIndices = [][][]int{}
 	cachedFactors = map[int][]int{}
 	cachedFactorCounts = map[int]int{}
 	coprimeCache = map[int]map[int]bool{}
@@ -213,6 +215,41 @@ func CompositeCacher[T any](p *Prime, n int, cache map[int]T, forZeroOnePrime fu
 	}
 }
 
+// CompositeCacherFast is like CompositeCacher, but uses a slice to cache known values rather than a map.
+// This works very well for use cases that requires iterative values (all/most values up to n), but less well for sparse
+// sets of numbers.
+//
+// While a slice is faster, this requires memory of size O(n) (since the slice will be of length n)
+// hence why this won't work well for caching sparse sets of numbers.
+func CompositeCacherFast[T any](p *Prime, n int, pCache *[]T, forZeroOnePrime func(int) T, forNonPrime func(primeFactor, otherFactor int) T) T {
+
+	cache := *pCache
+	for len(cache) <= n {
+		k := len(cache)
+		if k <= 1 {
+			cache = append(cache, forZeroOnePrime(k))
+			continue
+		}
+
+		if p.Contains(k) {
+			cache = append(cache, forZeroOnePrime(k))
+			continue
+		}
+
+		for i := 0; ; i++ {
+			pi := int(p.Nth(i))
+			if n%pi != 0 {
+				continue
+			}
+
+			cache = append(cache, forNonPrime(pi, n/pi))
+			break
+		}
+	}
+	*pCache = cache
+	return cache[n]
+}
+
 func (p *Prime) Factors(n int) []int {
 	return CompositeCacher(p, n, cachedFactors, func(i int) []int {
 		if n < 1 {
@@ -246,6 +283,47 @@ func (p *Prime) PrimeFactors(n int) map[int]int {
 			m := copy(p.PrimeFactors(otherFactor))
 			m[primeFactor]++
 			return m
+		},
+	)
+}
+
+// TODO: Returning map[int]int might actually be faster.  Try it out
+func (p *Prime) PrimeFactorsFast(n int) [][]int {
+	return CompositeCacherFast(p, n, &cachedPrimeFactorIndices,
+		func(i int) [][]int {
+			if i <= 1 {
+				return nil
+			}
+			return [][]int{{i, 1}}
+		},
+		func(primeFactor, otherFactor int) [][]int {
+			pff := p.PrimeFactorsFast(otherFactor)
+
+			var m [][]int
+			var added bool
+			for _, pf := range pff {
+				if pf[0] == primeFactor {
+					added = true
+					m = append(m, []int{pf[0], pf[1] + 1})
+				} else {
+					m = append(m, []int{pf[0], pf[1]})
+				}
+			}
+
+			if added {
+				return m
+			}
+			return append(m, []int{primeFactor, 1})
+			// for _, p := range m {
+			// 	if p[0] == primeFactor {
+			// 		p[1]++
+			// 		return m
+			// 	}
+			// }
+
+			// // m := copy(
+			// // m[primeFactor]++
+			// return append(m, []int{primeFactor, 1})
 		},
 	)
 }
