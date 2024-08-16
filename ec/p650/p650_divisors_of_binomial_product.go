@@ -8,7 +8,6 @@ import (
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
-	"golang.org/x/exp/maps"
 )
 
 const mod = 1_000_000_007
@@ -18,13 +17,29 @@ func P650() *ecmodels.Problem {
 		p := generator.Primes()
 		_ = p
 
+		// fmt.Println("A", time.Now())
+		// for i := 1; i <= n; i++ {
+		// 	for _, pf := range p.PrimeFactorsFast(i) {
+		// 		_ = pf[0] + pf[1]
+		// 	}
+		// 	// fmt.Println(i, p.PrimeFactorsFast(i), p.PrimeFactors(i))
+		// }
+
+		// fmt.Println("B", time.Now())
+		// generator.ClearCaches()
+		// for i := 1; i <= n; i++ {
+		// 	p.PrimeFactors(i)
+		// }
+		// fmt.Println("C", time.Now())
+		// return
+
 		// for a := 2; a <= n; a++ {
 		// 	for b := 1; b <= n; b++ {
 		// 		fmt.Println(a, b, harm(a, b), harm2(a, b))
 		// 	}
 		// }
 
-		clever2(n)
+		o.Stdoutln(clever2(n))
 	}, []*ecmodels.Execution{
 		{
 			Args: []string{"5"},
@@ -90,52 +105,61 @@ func basic(m int) int {
 	return sum
 }
 
-func clever(n int) int {
-	p := generator.Primes()
-	ps := map[int]int{}
+// func clever(n int) int {
+// 	p := generator.Primes()
+// 	ps := map[int]int{}
 
-	sum := 1
-	for k := 2; k <= n; k++ {
-		for ky, v := range p.PrimeFactors(k) {
-			ps[ky] += v * (k - 2)
-		}
+// 	sum := 1
+// 	for k := 2; k <= n; k++ {
+// 		for ky, v := range p.PrimeFactorsFast(k) {
+// 			ps[ky] += v * (k - 2)
+// 		}
 
-		for b := 1; b < k-1; b++ {
-			for k, v := range p.PrimeFactors(k - b) {
-				ps[k] -= v
-			}
-		}
+// 		for b := 1; b < k-1; b++ {
+// 			for k, v := range p.PrimeFactorsFast(k - b) {
+// 				ps[k] -= v
+// 			}
+// 		}
 
-		for k, v := range p.PrimeFactors(k) {
-			ps[k] += v
-		}
+// 		for k, v := range p.PrimeFactorsFast(k) {
+// 			ps[k] += v
+// 		}
 
-		for k := range maps.Keys(ps) {
-			if ps[k] == 0 {
-				delete(ps, k)
-			}
-		}
+// 		for k := range maps.Keys(ps) {
+// 			if ps[k] == 0 {
+// 				delete(ps, k)
+// 			}
+// 		}
 
-		var pfPairs [][]int
-		for k, v := range ps {
-			if v != 0 {
-				pfPairs = append(pfPairs, []int{k, v})
-			}
-		}
-		sum = (sum + divisorSum2(0, pfPairs)) % mod
-		fmt.Println("CLEVER", k, sum)
-	}
-	return sum
-}
+// 		var pfPairs [][]int
+// 		for k, v := range ps {
+// 			if v != 0 {
+// 				pfPairs = append(pfPairs, []int{k, v})
+// 			}
+// 		}
+// 		sum = (sum + divisorSum2(0, pfPairs)) % mod
+// 		fmt.Println("CLEVER", k, sum)
+// 	}
+// 	return sum
+// }
 
 func clever2(n int) int {
 	p := generator.Primes()
 	ps := map[int]int{}
 
+	// for i := 1; i <= n; i++ {
+	// 	fmt.Println(i, p.PrimeFactorsFast(i))
+	// }
+	// fmt.Println("Go")
+
 	sum := 1
 	prevSum := 1
+
+	factorsOfLower := map[int]int{}
 	for k := 2; k <= n; k++ {
-		for ky, v := range p.PrimeFactors(k) {
+		for _, pff := range p.PrimeFactorsFast(k) {
+			ky := pff[0]
+			v := pff[1]
 			old := harm(ky, ps[ky])
 			new := harm(ky, ps[ky]+v*(k-1))
 
@@ -145,33 +169,29 @@ func clever2(n int) int {
 			ps[ky] += v * (k - 1)
 		}
 
-		for b := 1; b < k-1; b++ {
-			for k, v := range p.PrimeFactors(k - b) {
-				old := harm(k, ps[k])
-				new := harm(k, ps[k]-v)
-				inv := maths.PowMod(old, -1, mod)
-				prevSum = (((prevSum * inv) % mod) * new) % mod
-				ps[k] -= v
-			}
+		// factorsOfLower
+
+		// fmt.Println("ADDING", k-2)
+
+		for _, pff := range p.PrimeFactorsFast(k - 1) {
+			k := pff[0]
+			v := pff[1]
+			factorsOfLower[k] += v
 		}
 
-		// This part is added above
-		// for k, v := range p.PrimeFactors(k) {
-		// 	old := harm(k, ps[k])
-		// 	new := harm(k, ps[k]+v)
-		// 	inv := maths.PowMod(old, -1, mod)
-		// 	prevSum = (((prevSum * inv) % mod) * new) % mod
-		// 	ps[k] += v
-		// }
+		for k, v := range factorsOfLower {
+			old := harm(k, ps[k])
+			new := harm(k, ps[k]-v)
+			inv := maths.PowMod(old, -1, mod)
+			prevSum = (((prevSum * inv) % mod) * new) % mod
+			ps[k] -= v
+		}
 
-		// for k := range maps.Keys(ps) {
-		// 	if ps[k] == 0 {
-		// 		delete(ps, k)
-		// 	}
-		// }
+		if k%100 == 0 {
+			fmt.Println(k)
+		}
 
 		sum = (sum + prevSum) % mod
-		fmt.Println("CLEVER", k, sum, prevSum)
 	}
 	return sum
 }
