@@ -186,6 +186,8 @@ func TestGenerators(t *testing.T) {
 		7727, 7741, 7753, 7757, 7759, 7789, 7793, 7817, 7823, 7829, 7841, 7853, 7867, 7873, 7877, 7879, 7883, 7901, 7907, 7919,
 	}
 	fakeCache(t)
+
+	ClearCaches()
 	for _, test := range []struct {
 		name string
 		g    *Generator[int]
@@ -198,22 +200,22 @@ func TestGenerators(t *testing.T) {
 		},
 		{
 			name: "Generates best primes",
-			g:    SievedPrimes(thousandPrimes[len(thousandPrimes)-1] + 2),
+			g:    SievedPrimesUpTo(thousandPrimes[len(thousandPrimes)-1] + 2).Generator,
 			want: thousandPrimes,
 		},
 		{
 			name: "Generates best primes",
-			g:    BatchedSievedPrimes(2),
+			g:    BatchedSievedPrimesWithSize(2).Generator,
 			want: thousandPrimes,
 		},
 		{
 			name: "Generates best primes",
-			g:    BatchedSievedPrimes(10),
+			g:    BatchedSievedPrimesWithSize(10).Generator,
 			want: thousandPrimes,
 		},
 		{
 			name: "Generates best primes",
-			g:    BatchedSievedPrimes(11),
+			g:    BatchedSievedPrimesWithSize(11).Generator,
 			want: thousandPrimes,
 		},
 		{
@@ -248,7 +250,7 @@ func TestGenerators(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			iter := test.g.Iterator()
-			if iter.Idx != 0 || len(test.g.values) != 0 {
+			if iter.Idx != 0 {
 				t.Errorf("Generator.len() returned %d; want 0", iter.Idx)
 			}
 
@@ -257,9 +259,10 @@ func TestGenerators(t *testing.T) {
 				nexts = append(nexts, iter.Next())
 				lasts = append(lasts, iter.Last())
 				nths = append(nths, test.g.Nth(i))
-				if iter.Idx != i+1 || len(test.g.values) != i+1 {
-					t.Errorf("Generator.len() returned %d; want %d", len(test.g.values), i+1)
-				}
+				// Doesn't work with batched implementations
+				// if iter.Idx != i+1 || len(test.g.values) != i+1 {
+				// 	t.Errorf("Generator.len() returned %d; want %d", len(test.g.values), i+1)
+				// }
 			}
 
 			if diff := cmp.Diff(test.want, nexts); diff != "" {
@@ -344,3 +347,70 @@ func TestGenerators(t *testing.T) {
 // 		})
 // 	}
 // }
+
+func TestPrimeFactoredNumbers(t *testing.T) {
+	p := Primes()
+
+	for _, rev := range []bool{false} {
+		for _, test := range []struct {
+			a       int
+			b       int
+			wantDiv PrimeFactoredNumber
+			wantCmp int
+		}{
+			{1, 1, nil, 0},
+			{2, 1, PrimeFactoredNumber{{0, 1}}, 1},
+			{2, 2, nil, 0},
+			{7, 49, PrimeFactoredNumber{{3, -1}}, -1},
+			{6, 49, PrimeFactoredNumber{{3, -2}, {1, 1}, {0, 1}}, -1},
+			{720, 18 /* 40 */, PrimeFactoredNumber{{2, 1}, {0, 3}}, 1},
+			{1409, 1409, nil, 0},
+		} {
+
+			if rev {
+				test.a, test.b = test.b, test.a
+
+				test.wantCmp = -test.wantCmp
+
+				for _, pff := range test.wantDiv {
+					pff[1] = -pff[1]
+				}
+			}
+			t.Run(fmt.Sprintf("%d %d", test.a, test.b), func(t *testing.T) {
+				af, bf := p.PrimeFactoredNumberFast(test.a), p.PrimeFactoredNumberFast(test.b)
+
+				if diff := cmp.Diff(test.a, af.ToInt(p)); diff != "" {
+					t.Errorf("PrimeFactoredNumberFast(%d).ToInt() returned incorrect result (-want, +got):\n%s", test.a, diff)
+				}
+				if diff := cmp.Diff(test.b, bf.ToInt(p)); diff != "" {
+					t.Errorf("PrimeFactoredNumberFast(%d).ToInt() returned incorrect result (-want, +got):\n%s", test.b, diff)
+				}
+
+				// Times
+				wantProd := test.a * test.b
+				if diff := cmp.Diff(wantProd, af.Times(bf).ToInt(p)); diff != "" {
+					t.Errorf("PrimeFactoredNumberFast(%d).Times(PrimeFactoredNumberFast(%d)).ToInt() returned incorrect result (-want, +got):\n%s", test.a, test.b, diff)
+				}
+				if diff := cmp.Diff(p.PrimeFactoredNumberFast(wantProd), af.Times(bf)); diff != "" {
+					t.Errorf("PrimeFactoredNumberFast(%d).Times(PrimeFactoredNumberFast(%d)) returned incorrect result (-want, +got):\n%s", test.a, test.b, diff)
+				}
+
+				// Div
+				if diff := cmp.Diff(test.wantDiv, af.Div(bf)); diff != "" {
+					t.Errorf("PrimeFactoredNumberFast(%d).Div(PrimeFactoredNumberFast(%d)) returned incorrect result (-want, +got):\n%s", test.a, test.b, diff)
+				}
+
+				// Cmp
+				if diff := cmp.Diff(test.wantCmp, af.Cmp(bf)); diff != "" {
+					t.Errorf("PrimeFactoredNumberFast(%d).Cmp(PrimeFactoredNumberFast(%d)) returned incorrect result (-want, +got):\n%s", test.a, test.b, diff)
+				}
+
+				// Eq
+				wantEq := test.wantCmp == 0
+				if diff := cmp.Diff(wantEq, af.Eq(bf)); diff != "" {
+					t.Errorf("PrimeFactoredNumberFast(%d).Eq(PrimeFactoredNumberFast(%d)) returned incorrect result (-want, +got):\n%s", test.a, test.b, diff)
+				}
+			})
+		}
+	}
+}

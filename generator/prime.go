@@ -9,17 +9,19 @@ import (
 )
 
 var (
-	cachedPrimeFactors       = map[int]map[int]int{}
-	cachedPrimeFactorIndices = [][][]int{}
-	cachedFactors            = map[int][]int{}
-	cachedFactorCounts       = map[int]int{}
-	coprimeCache             = map[int]map[int]bool{}
-	cachedResilienceCount    = map[int]int{}
+	cachedPrimeFactors           = map[int]map[int]int{}
+	cachedPrimeFactorsFast       = [][][]int{}
+	cachedPrimeFactorIndicesFast = []PrimeFactoredNumber{}
+	cachedFactors                = map[int][]int{}
+	cachedFactorCounts           = map[int]int{}
+	coprimeCache                 = map[int]map[int]bool{}
+	cachedResilienceCount        = map[int]int{}
 )
 
 func ClearCaches() {
 	cachedPrimeFactors = map[int]map[int]int{}
-	cachedPrimeFactorIndices = [][][]int{}
+	cachedPrimeFactorsFast = [][][]int{}
+	cachedPrimeFactorIndicesFast = []PrimeFactoredNumber{}
 	cachedFactors = map[int][]int{}
 	cachedFactorCounts = map[int]int{}
 	coprimeCache = map[int]map[int]bool{}
@@ -31,10 +33,6 @@ func ClearCaches() {
 type Prime struct {
 	*Generator[int]
 }
-
-var (
-	rppCache = map[string]int{}
-)
 
 func (p *Prime) recPrimePi(rem, minIdx, maxV, sign int, start int) int {
 	if rem <= 0 {
@@ -238,11 +236,11 @@ func CompositeCacherFast[T any](p *Prime, n int, pCache *[]T, forZeroOnePrime fu
 
 		for i := 0; ; i++ {
 			pi := int(p.Nth(i))
-			if n%pi != 0 {
+			if k%pi != 0 {
 				continue
 			}
 
-			cache = append(cache, forNonPrime(pi, n/pi))
+			cache = append(cache, forNonPrime(pi, k/pi))
 			break
 		}
 	}
@@ -289,7 +287,7 @@ func (p *Prime) PrimeFactors(n int) map[int]int {
 
 // TODO: Returning map[int]int might actually be faster.  Try it out
 func (p *Prime) PrimeFactorsFast(n int) [][]int {
-	return CompositeCacherFast(p, n, &cachedPrimeFactorIndices,
+	return CompositeCacherFast(p, n, &cachedPrimeFactorsFast,
 		func(i int) [][]int {
 			if i <= 1 {
 				return nil
@@ -324,6 +322,184 @@ func (p *Prime) PrimeFactorsFast(n int) [][]int {
 			// // m := copy(
 			// // m[primeFactor]++
 			// return append(m, []int{primeFactor, 1})
+		},
+	)
+}
+
+// Stores primes in descending order
+type PrimeIndexCount []int
+
+func (pic PrimeIndexCount) Prime(p *Prime) int {
+	return p.Nth(pic[0])
+}
+
+func (pic PrimeIndexCount) Count() int {
+	return pic[1]
+}
+
+// type PrimeIndexNumber []PrimeIndexCount
+
+// func (pin PrimeIndexNumber) Times() int {
+// 	bread.MergeSort()
+// 	return pic[1]
+// }
+
+// Empty array means 1
+type PrimeFactoredNumber []PrimeIndexCount
+
+func (pfn PrimeFactoredNumber) ToInt(p *Prime) int {
+	prod := 1
+	for _, pf := range pfn {
+		prod *= maths.Pow(p.Nth(pf[0]), pf[1])
+	}
+	return prod
+}
+
+func (pfn PrimeFactoredNumber) Times(that PrimeFactoredNumber) PrimeFactoredNumber {
+	var res PrimeFactoredNumber
+
+	for ai, bi := 0, 0; ai < len(pfn) || bi < len(that); {
+		if ai == len(pfn) {
+			res = append(res, []int{that[bi][0], that[bi][1]})
+			bi++
+		} else if bi == len(that) || pfn[ai][0] > that[bi][0] {
+			res = append(res, []int{pfn[ai][0], pfn[ai][1]})
+			ai++
+		} else if pfn[ai][0] == that[bi][0] {
+			cnt := pfn[ai][1] + that[bi][1]
+			if cnt != 0 {
+				res = append(res, []int{pfn[ai][0], cnt})
+			}
+			ai++
+			bi++
+		} else {
+			res = append(res, []int{that[bi][0], that[bi][1]})
+			bi++
+		}
+	}
+	return res
+}
+
+func (pfn PrimeFactoredNumber) Div(that PrimeFactoredNumber) PrimeFactoredNumber {
+	var res PrimeFactoredNumber
+
+	for ai, bi := 0, 0; ai < len(pfn) || bi < len(that); {
+		if ai == len(pfn) {
+			res = append(res, []int{that[bi][0], -that[bi][1]})
+			bi++
+		} else if bi == len(that) || pfn[ai][0] > that[bi][0] {
+			res = append(res, []int{pfn[ai][0], pfn[ai][1]})
+			ai++
+		} else if pfn[ai][0] == that[bi][0] {
+			cnt := pfn[ai][1] - that[bi][1]
+			if cnt != 0 {
+				res = append(res, []int{pfn[ai][0], cnt})
+			}
+			ai++
+			bi++
+		} else {
+			res = append(res, []int{that[bi][0], -that[bi][1]})
+			bi++
+		}
+	}
+	return res
+}
+
+func (pfn PrimeFactoredNumber) Pow(k int) PrimeFactoredNumber {
+	var res PrimeFactoredNumber
+	for _, pic := range pfn {
+		res = append(res, []int{pic[0], pic[1] * k})
+	}
+	return res
+}
+
+func (pfn PrimeFactoredNumber) NumFactors(p *Prime, mod int) int {
+	res := 1
+	for _, pic := range pfn {
+		harmonic := maths.PowMod(p.Nth(pic[0]), pic[1]+1, mod)
+		harmonic = (harmonic + mod - 1) % mod
+		harmonic = (harmonic * maths.PowMod(p.Nth(pic[0])-1, -1, mod)) % mod
+		res = (res * harmonic) % mod
+	}
+	return res
+}
+
+// Iterate iterates over the factor values in pfn and that and runs f
+// on all values
+// TODO: Test this
+func (pfn PrimeFactoredNumber) Iterate(that PrimeFactoredNumber, f func(primeFactorIndex, thisCnt, thatCnt int)) {
+	for ai, bi := 0, 0; ai < len(pfn) || bi < len(that); {
+		if ai == len(pfn) {
+			f(that[bi][0], 0, that[bi][1])
+			bi++
+		} else if bi == len(that) || pfn[ai][0] > that[bi][0] {
+			f(pfn[ai][0], pfn[ai][1], 0)
+			ai++
+		} else if pfn[ai][0] == that[bi][0] {
+			f(pfn[ai][0], pfn[ai][1], that[bi][1])
+			ai++
+			bi++
+		} else {
+			f(that[bi][0], 0, that[bi][1])
+			bi++
+		}
+	}
+}
+
+func (pfn PrimeFactoredNumber) Eq(that PrimeFactoredNumber) bool {
+	return pfn.Cmp(that) == 0
+}
+
+func (pfn PrimeFactoredNumber) Cmp(that PrimeFactoredNumber) int {
+	for ai := 0; ai < len(pfn) || ai < len(that); ai++ {
+		if ai == len(pfn) {
+			return -1
+		} else if ai == len(that) {
+			return 1
+		} else if pfn[ai][0] == that[ai][0] {
+			if pfn[ai][1] < that[ai][1] {
+				return -1
+			} else if pfn[ai][1] > that[ai][1] {
+				return 1
+			}
+		} else if pfn[ai][0] > that[ai][0] {
+			return 1
+		} else {
+			return -1
+		}
+	}
+
+	return 0
+}
+
+func (p *Prime) PrimeFactoredNumberFast(n int) PrimeFactoredNumber {
+	return CompositeCacherFast(p, n, &cachedPrimeFactorIndicesFast,
+		func(i int) PrimeFactoredNumber {
+			if i <= 1 {
+				return nil
+			}
+			return []PrimeIndexCount{{p.index(i), 1}}
+		},
+		func(primeFactor, otherFactor int) PrimeFactoredNumber {
+			pff := p.PrimeFactoredNumberFast(otherFactor)
+
+			pfi := p.index(primeFactor)
+
+			var m []PrimeIndexCount
+			var added bool
+			for _, pf := range pff {
+				if pf[0] == pfi {
+					added = true
+					m = append(m, []int{pf[0], pf[1] + 1})
+				} else {
+					m = append(m, []int{pf[0], pf[1]})
+				}
+			}
+
+			if added {
+				return m
+			}
+			return append(m, []int{pfi, 1})
 		},
 	)
 }
@@ -370,6 +546,17 @@ func (p *Prime) Contains(n int) bool {
 		}
 	}
 	return true
+}
+
+func (p *Prime) index(pi int) int {
+	if !p.Contains(pi) {
+		return -1
+	}
+
+	lastIdx := len(p.values) - 1
+	for pa := p.values[lastIdx]; pa < pi; pa, lastIdx = p.Nth(lastIdx+1), lastIdx+1 {
+	}
+	return p.set[strconv.Itoa(pi)]
 }
 
 func (p *Prime) FermatContains(n, checks int) bool {
