@@ -97,7 +97,6 @@ func (m *Maths) Node() command.Node {
 				return nil
 			}},
 		),
-		DefaultCompletion: true,
 	}
 }
 

@@ -33,6 +33,7 @@ func main() {
 			commandths.CLI(),
 		},
 		aliasers,
+		commandths.Aliasers(),
 	))
 }
 
