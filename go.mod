@@ -19,6 +19,6 @@ require (
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/uuid v1.4.0 // indirect
 	github.com/leep-frog/functional v0.0.0-20240708221334-b864e0eb0c6b // indirect
-	golang.org/x/image v0.10.0 // indirect
-	golang.org/x/text v0.11.0 // indirect
+	golang.org/x/image v0.19.0 // indirect
+	golang.org/x/text v0.17.0 // indirect
 )
