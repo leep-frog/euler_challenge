@@ -13,20 +13,10 @@ const (
 	mod = 1234567891
 )
 
-var (
-	log2 = math.Log(2)
-)
-
 type squareRepr struct {
-	k      int
-	twoPow int
-
-	// The number will be k^(2^twoPow), we take the double log of that:
-	// log(k^2^twoPow) = 2 ^ twoPow * log(k)
-	// log(log(k^2^twoPow)) = log(2 ^ twoPow * log(k))
-	//                      = log(2^twoPow) + log(log(k))
-	//                      = twoPow * log(2) + log(log(k))
-	loglogk float64
+	k   int
+	pow int
+	log float64
 }
 
 func (sr *squareRepr) increment() {
@@ -34,22 +24,18 @@ func (sr *squareRepr) increment() {
 }
 
 func (sr *squareRepr) incrementTimes(n int) {
-	sr.twoPow += n
+	pow := maths.Pow(2, n)
+	sr.log *= float64(pow)
+	sr.pow *= pow
 }
 
-func (sr *squareRepr) incrementUpTo(rootMax *squareRepr) int {
+func (sr *squareRepr) incrementUpTo(max *squareRepr) int {
 	var increments int
-	for sr.lt(rootMax) {
+	for 2*sr.log < max.log {
 		sr.increment()
 		increments++
 	}
 	return increments
-}
-
-func (sr *squareRepr) lt(that *squareRepr) bool {
-	left := float64(sr.twoPow)*log2 + sr.loglogk
-	right := float64(that.twoPow)*log2 + that.loglogk
-	return left < right
 }
 
 func P822() *ecmodels.Problem {
@@ -60,16 +46,11 @@ func P822() *ecmodels.Problem {
 		var srs []*squareRepr
 		for i := 2; i <= n; i++ {
 			fmt.Println("adding", i)
-			srs = append(srs, &squareRepr{i, 0, math.Log(float64(i))})
+			srs = append(srs, &squareRepr{i, 1, math.Log(float64(i))})
 		}
 
-		last := srs[len(srs)-1]
-		sqrt := maths.Sqrt(last.k) - 1
-		maxRoot := &squareRepr{sqrt, 0, math.Log(float64(sqrt))}
-		_ = maxRoot
-
-		fmt.Println(brute(srs, m))
-		// fmt.Println(elegant(srs, m, maxRoot))
+		// fmt.Println(brute(srs, m))
+		fmt.Println(elegant(srs, m))
 
 		// First, get all values to be greater than the
 		// o.Stdoutln(n)
@@ -85,10 +66,10 @@ func P822() *ecmodels.Problem {
 	})
 }
 
-func elegant(nums []*squareRepr, times int, maxRoot *squareRepr) int {
+func elegant(nums []*squareRepr, times int) int {
 	var increments int
 	for _, n := range nums {
-		increments += n.incrementUpTo(maxRoot)
+		increments += n.incrementUpTo(nums[len(nums)-1])
 	}
 
 	incrAll := (times - increments) / len(nums)
@@ -105,7 +86,7 @@ func elegant(nums []*squareRepr, times int, maxRoot *squareRepr) int {
 
 func brute(nums []*squareRepr, times int) int {
 	heap := maths.NewHeap(func(sr1, sr2 *squareRepr) bool {
-		return sr1.lt(sr2)
+		return sr1.log < sr2.log
 	})
 
 	for _, n := range nums {
@@ -121,8 +102,8 @@ func brute(nums []*squareRepr, times int) int {
 
 	var sum int
 	heap.Iter(func(sr *squareRepr) bool {
-		sum = (sum + maths.PowMod(sr.k, maths.Pow(2, sr.twoPow), mod)) % mod
-		fmt.Println("summing", sr.k, sr.twoPow)
+		sum = (sum + maths.PowMod(sr.k, sr.pow, mod)) % mod
+		fmt.Println("summing", sr.k, sr.pow)
 		return true
 	})
 	return sum
