@@ -183,26 +183,33 @@ import (
 	"github.com/leep-frog/euler_challenge/ec/p63"
 	"github.com/leep-frog/euler_challenge/ec/p64"
 	"github.com/leep-frog/euler_challenge/ec/p65"
+	"github.com/leep-frog/euler_challenge/ec/p650"
 	"github.com/leep-frog/euler_challenge/ec/p66"
 	"github.com/leep-frog/euler_challenge/ec/p684"
 	"github.com/leep-frog/euler_challenge/ec/p686"
 	"github.com/leep-frog/euler_challenge/ec/p69"
+	"github.com/leep-frog/euler_challenge/ec/p692"
 	"github.com/leep-frog/euler_challenge/ec/p7"
 	"github.com/leep-frog/euler_challenge/ec/p70"
 	"github.com/leep-frog/euler_challenge/ec/p700"
 	"github.com/leep-frog/euler_challenge/ec/p701"
+	"github.com/leep-frog/euler_challenge/ec/p709"
 	"github.com/leep-frog/euler_challenge/ec/p71"
 	"github.com/leep-frog/euler_challenge/ec/p710"
 	"github.com/leep-frog/euler_challenge/ec/p719"
 	"github.com/leep-frog/euler_challenge/ec/p72"
+	"github.com/leep-frog/euler_challenge/ec/p725"
 	"github.com/leep-frog/euler_challenge/ec/p73"
 	"github.com/leep-frog/euler_challenge/ec/p74"
+	"github.com/leep-frog/euler_challenge/ec/p743"
 	"github.com/leep-frog/euler_challenge/ec/p745"
 	"github.com/leep-frog/euler_challenge/ec/p75"
 	"github.com/leep-frog/euler_challenge/ec/p751"
+	"github.com/leep-frog/euler_challenge/ec/p757"
 	"github.com/leep-frog/euler_challenge/ec/p76"
 	"github.com/leep-frog/euler_challenge/ec/p77"
 	"github.com/leep-frog/euler_challenge/ec/p78"
+	"github.com/leep-frog/euler_challenge/ec/p788"
 	"github.com/leep-frog/euler_challenge/ec/p79"
 	"github.com/leep-frog/euler_challenge/ec/p8"
 	"github.com/leep-frog/euler_challenge/ec/p80"
@@ -211,11 +218,14 @@ import (
 	"github.com/leep-frog/euler_challenge/ec/p81"
 	"github.com/leep-frog/euler_challenge/ec/p816"
 	"github.com/leep-frog/euler_challenge/ec/p82"
+	"github.com/leep-frog/euler_challenge/ec/p820"
+	"github.com/leep-frog/euler_challenge/ec/p822"
 	"github.com/leep-frog/euler_challenge/ec/p83"
 	"github.com/leep-frog/euler_challenge/ec/p84"
 	"github.com/leep-frog/euler_challenge/ec/p85"
 	"github.com/leep-frog/euler_challenge/ec/p853"
 	"github.com/leep-frog/euler_challenge/ec/p86"
+	"github.com/leep-frog/euler_challenge/ec/p862"
 	"github.com/leep-frog/euler_challenge/ec/p869"
 	"github.com/leep-frog/euler_challenge/ec/p87"
 	"github.com/leep-frog/euler_challenge/ec/p872"
@@ -235,15 +245,6 @@ import (
 	"github.com/leep-frog/euler_challenge/ec/p97"
 	"github.com/leep-frog/euler_challenge/ec/p98"
 	"github.com/leep-frog/euler_challenge/ec/p99"
-	"github.com/leep-frog/euler_challenge/ec/p709"
-	"github.com/leep-frog/euler_challenge/ec/p820"
-	"github.com/leep-frog/euler_challenge/ec/p743"
-	"github.com/leep-frog/euler_challenge/ec/p757"
-	"github.com/leep-frog/euler_challenge/ec/p692"
-	"github.com/leep-frog/euler_challenge/ec/p725"
-	"github.com/leep-frog/euler_challenge/ec/p788"
-	"github.com/leep-frog/euler_challenge/ec/p862"
-	"github.com/leep-frog/euler_challenge/ec/p650"
 	// END_IMPORT_LIST
 )
 
@@ -491,6 +492,7 @@ func getProblems() []*ecmodels.Problem {
 		p788.P788(),
 		p862.P862(),
 		p650.P650(),
+		p822.P822(),
 		// END_LIST (needed for file_generator.go)
 	}
 }
