@@ -1,7 +1,6 @@
 package p822
 
 import (
-	"fmt"
 	"math"
 	"math/big"
 
@@ -10,14 +9,14 @@ import (
 	"github.com/leep-frog/euler_challenge/maths"
 )
 
-const (
-	mod = 1234567891
-)
-
 var (
-	log2 = math.Log(2)
+	mod            = 1234567891
+	PRECISION uint = 100
+	log2           = math.Log(2)
 )
 
+// squareRepr is a specific representation of a number k^(2^twoPow).
+// Every time the number is squared, we simply need to increment twoPow
 type squareRepr struct {
 	k      int
 	twoPow int
@@ -30,10 +29,6 @@ type squareRepr struct {
 	loglogk float64
 }
 
-func (sr *squareRepr) increment() {
-	sr.incrementTimes(1)
-}
-
 func (sr *squareRepr) incrementTimes(n int) {
 	sr.twoPow += n
 }
@@ -41,13 +36,11 @@ func (sr *squareRepr) incrementTimes(n int) {
 func (sr *squareRepr) incrementUpTo(rootMax *squareRepr) int {
 	var increments int
 	for sr.lt(rootMax) {
-		sr.increment()
+		sr.incrementTimes(1)
 		increments++
 	}
 	return increments
 }
-
-const PRECISION = 100
 
 func newFloat(f float64) *big.Float {
 	r := new(big.Float)
@@ -71,15 +64,6 @@ func (sr *squareRepr) lt(that *squareRepr) bool {
 	rtp = rtp.Add(rtp, newFloat(that.loglogk))
 
 	return ltp.Cmp(rtp) <= 0
-
-	lf := float64(sr.twoPow)*log2 + sr.loglogk
-	left := big.NewFloat(lf)
-	rf := float64(that.twoPow)*log2 + that.loglogk
-	right := big.NewFloat(rf)
-
-	fmt.Println("LEFT", ltp, left, "RIGHT", rtp, right)
-
-	return left.Cmp(right) < 0
 }
 
 func P822() *ecmodels.Problem {
@@ -89,80 +73,85 @@ func P822() *ecmodels.Problem {
 
 		var srs []*squareRepr
 		for i := 2; i <= n; i++ {
-			fmt.Println("adding", i)
 			srs = append(srs, &squareRepr{i, 0, math.Log(math.Log(float64(i)))})
 		}
 
 		sqrtIdx := (maths.Sqrt(n)) - 1
 		sqrtSq := srs[sqrtIdx]
 		maxRoot := &squareRepr{sqrtSq.k, 0, sqrtSq.loglogk}
-		_ = maxRoot
 
-		// fmt.Println(brute(srs, m))
-		fmt.Println(elegant(srs, m, maxRoot))
-
-		// First, get all values to be greater than the
-		// o.Stdoutln(n)
+		o.Stdoutln(elegant(srs, m, maxRoot))
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"1"},
-			Want: "",
+			Args: []string{"5", "3"},
+			Want: "34",
 		},
 		{
-			Args: []string{"2"},
-			Want: "",
+			Args: []string{"10", "100"},
+			Want: "845339386",
+		},
+		{
+			Args: []string{"10000", "10000000000000000"},
+			Want: "950591530",
 		},
 	})
 }
 
+// elegant uses the fact that all numbers will be squared a similar number of
+// times to reduce the number of operations required.
 func elegant(nums []*squareRepr, times int, maxRoot *squareRepr) int {
+
+	// Increment each number to be bigger than the squareRoot of the largest number
 	var increments int
 	for _, n := range nums {
 		increments += n.incrementUpTo(maxRoot)
 	}
 
-	incrAll := ((times - increments) / len(nums)) - 1
+	// Now, each number will be squared at least that many times
+	incrAll := ((times - increments) / len(nums))
 	for _, n := range nums {
-		fmt.Println("DOING", n, incrAll)
 		n.incrementTimes(incrAll)
-		// for i := 0; i < incrAll; i++ {
-		// n.increment()
-		// }
 	}
 
-	return brute(nums, ((times-increments)%len(nums))+len(nums))
+	// Finally, simply run the brute force algorithm for the remaining times
+	return brute(nums, (times-increments)%len(nums))
 }
 
-func brute(nums []*squareRepr, times int) int {
+// brute simply adds all number representations to a heap and iterates over the
+// smallest element n times, squaring it.
+func brute(nums []*squareRepr, n int) int {
+
+	// Create the heap
 	heap := maths.NewHeap(func(sr1, sr2 *squareRepr) bool {
 		return sr1.lt(sr2)
 	})
-
-	for _, n := range nums {
-		heap.Push(n)
+	for _, num := range nums {
+		heap.Push(num)
 	}
 
-	for i := 0; i < times; i++ {
-		// fmt.Println("start incrementing")
+	// Square the smallest number in the heap, n times
+	for i := 0; i < n; i++ {
 		sr := heap.Pop()
-		sr.increment()
-		// fmt.Println("incrementing", sr.k)
+		sr.incrementTimes(1)
 		heap.Push(sr)
-		// fmt.Println("done incrementing")
 	}
 
-	var sum, cnt int
+	// Calculate the mod sum
+	var sum int
 	heap.Iter(func(sr *squareRepr) bool {
-		fmt.Println("summing", sr.k, sr.twoPow)
-		// sum = (sum + maths.PowMod(sr.k, maths.PowMod(2, sr.twoPow, mod), mod)) % mod
 
-		// Num twos is sr.twoPos
-		// numTwos := sr.twoPow % (mod - 1)
+		// Consider 2^k % 3:
+		// 2^1 % 3 = 2 % 3 = 2
+		// 2^2 % 3 = 4 % 3 = 1
+		// 2^3 % 3 = 8 % 3 = 2
+		// 2^4 % 3 = 16 % 3 = 1
+		// So while the modulo is 3, the possibilities are (mod-1), hence why we
+		// take the PowMod with (mod-1)
+		moddedTwoPow := maths.PowMod(2, sr.twoPow, mod-1)
 
-		sum = (sum + maths.PowMod(sr.k, maths.PowMod(2, sr.twoPow, mod-1), mod)) % mod
-		cnt += sr.twoPow
+		// Increment the sum by k^moddedTwoPos
+		sum = (sum + maths.PowMod(sr.k, moddedTwoPow, mod)) % mod
 		return true
 	})
-	fmt.Println("COUNT", cnt)
 	return sum
 }
