@@ -12,7 +12,7 @@ import (
 var (
 	mod            = 1234567891
 	PRECISION uint = 100
-	log2           = math.Log(2)
+	log2           = newFloat(math.Log(2))
 )
 
 // squareRepr is a specific representation of a number k^(2^twoPow).
@@ -26,7 +26,7 @@ type squareRepr struct {
 	// log(log(k^2^twoPow)) = log(2 ^ twoPow * log(k))
 	//                      = log(2^twoPow) + log(log(k))
 	//                      = twoPow * log(2) + log(log(k))
-	loglogk float64
+	loglogk *big.Float
 }
 
 func (sr *squareRepr) incrementTimes(n int) {
@@ -56,12 +56,12 @@ func newFlint(i int) *big.Float {
 
 func (sr *squareRepr) lt(that *squareRepr) bool {
 	ltp := newFlint(sr.twoPow)
-	ltp = ltp.Mul(ltp, newFloat(log2))
-	ltp = ltp.Add(ltp, newFloat(sr.loglogk))
+	ltp = ltp.Mul(ltp, log2)
+	ltp = ltp.Add(ltp, sr.loglogk)
 
 	rtp := newFlint(that.twoPow)
-	rtp = rtp.Mul(rtp, newFloat(log2))
-	rtp = rtp.Add(rtp, newFloat(that.loglogk))
+	rtp = rtp.Mul(rtp, log2)
+	rtp = rtp.Add(rtp, that.loglogk)
 
 	return ltp.Cmp(rtp) <= 0
 }
@@ -73,7 +73,7 @@ func P822() *ecmodels.Problem {
 
 		var srs []*squareRepr
 		for i := 2; i <= n; i++ {
-			srs = append(srs, &squareRepr{i, 0, math.Log(math.Log(float64(i)))})
+			srs = append(srs, &squareRepr{i, 0, newFloat(math.Log(math.Log(float64(i))))})
 		}
 
 		sqrtIdx := (maths.Sqrt(n)) - 1
