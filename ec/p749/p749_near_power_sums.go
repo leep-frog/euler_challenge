@@ -5,7 +5,7 @@ import (
 	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
 	"github.com/leep-frog/euler_challenge/maths"
-	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
 )
 
 func P749() *ecmodels.Problem {
@@ -23,7 +23,7 @@ func P749() *ecmodels.Problem {
 		{
 			Args:     []string{"16"},
 			Want:     "13459471903176422",
-			Estimate: 60,
+			Estimate: 45,
 		},
 	})
 }
@@ -63,7 +63,7 @@ func checkDigits(digits []int) int {
 		for _, offset := range []int{-1, 1} {
 			k := powSum + offset
 			kDigitMap := toDigitMap(maths.Digits(k))
-			if maps.Equal(digitMap, kDigitMap) {
+			if slices.Equal(digitMap, kDigitMap) {
 				sum += k
 			}
 		}
@@ -72,11 +72,11 @@ func checkDigits(digits []int) int {
 	return sum
 }
 
-func toDigitMap(digits []int) map[int]int {
-	digitMap := map[int]int{}
+func toDigitMap(digits []int) []int {
+	digitMap := make([]int, 10, 10)
 	for _, d := range digits {
 		digitMap[d]++
 	}
-	delete(digitMap, 0)
+	digitMap[0] = 0
 	return digitMap
 }
