@@ -141,14 +141,18 @@ func createCounts[T any](parts []T) ([]int, []T) {
 
 func GenerateCombos[T any](c *Combinatorics[T]) [][]T {
 	var all [][]T
-	counts, realParts := createCounts(c.Parts)
-	generateCombos(c, counts, realParts, 0, nil, &all)
+	EvaluateCombos(c, func(t []T) { all = append(all, bread.Copy(t)) })
 	return all
 }
 
-func generateCombos[T any](c *Combinatorics[T], counts []int, realParts []T, minIndex int, cur []T, all *[][]T) {
+func EvaluateCombos[T any](c *Combinatorics[T], applyFunc func([]T)) {
+	counts, realParts := createCounts(c.Parts)
+	generateCombos(c, counts, realParts, 0, nil, applyFunc)
+}
+
+func generateCombos[T any](c *Combinatorics[T], counts []int, realParts []T, minIndex int, cur []T, applyFunc func([]T)) {
 	if c.MinLength <= len(cur) && len(cur) <= c.MaxLength && len(cur) > 0 {
-		*all = append(*all, bread.Copy(cur))
+		applyFunc(cur)
 	}
 
 	if len(cur) >= c.MaxLength {
@@ -163,7 +167,7 @@ func generateCombos[T any](c *Combinatorics[T], counts []int, realParts []T, min
 	for k := start; k < len(counts); k++ {
 		if counts[k] > 0 || c.AllowReplacement {
 			counts[k]--
-			generateCombos(c, counts, realParts, k, append(cur, realParts[k]), all)
+			generateCombos(c, counts, realParts, k, append(cur, realParts[k]), applyFunc)
 			counts[k]++
 		}
 	}

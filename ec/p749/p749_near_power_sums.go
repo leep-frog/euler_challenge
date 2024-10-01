@@ -3,6 +3,7 @@ package p749
 import (
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/bread"
+	"github.com/leep-frog/euler_challenge/combinatorics"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
 	"github.com/leep-frog/euler_challenge/maths"
 	"golang.org/x/exp/slices"
@@ -10,7 +11,25 @@ import (
 
 func P749() *ecmodels.Problem {
 	return ecmodels.IntInputNode(749, func(o command.Output, n int) {
-		o.Stdoutln(check(n, n, 0, make([]int, 10)))
+
+		var parts []int
+		for i := 0; i <= 9; i++ {
+			parts = append(parts, i)
+		}
+
+		c := &combinatorics.Combinatorics[int]{
+			Parts:            parts,
+			MinLength:        n,
+			MaxLength:        n,
+			AllowReplacement: true,
+			OrderMatters:     false,
+		}
+
+		var sum int
+		combinatorics.EvaluateCombos(c, func(digits []int) {
+			sum += checkDigits(n, toDigitMap(digits))
+		})
+		o.Stdoutln(sum)
 	}, []*ecmodels.Execution{
 		{
 			Args: []string{"2"},
@@ -23,10 +42,12 @@ func P749() *ecmodels.Problem {
 		{
 			Args:     []string{"16"},
 			Want:     "13459471903176422",
-			Estimate: 45,
+			Estimate: 30,
 		},
 	})
 }
+
+/* This was used initially, but then realized that we can just use the combinatorics package
 
 func check(n, length, min int, digitMap []int) int {
 	if length == 0 {
@@ -40,7 +61,7 @@ func check(n, length, min int, digitMap []int) int {
 		digitMap[i]--
 	}
 	return cnt
-}
+}*/
 
 func checkDigits(n int, digitMap []int) int {
 	if bread.Sum(digitMap[1:]) == 0 {
