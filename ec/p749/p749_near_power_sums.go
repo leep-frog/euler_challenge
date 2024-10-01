@@ -10,7 +10,7 @@ import (
 
 func P749() *ecmodels.Problem {
 	return ecmodels.IntInputNode(749, func(o command.Output, n int) {
-		o.Stdoutln(check(n, 0, nil))
+		o.Stdoutln(check(n, 0, nil, make([]int, 10)))
 	}, []*ecmodels.Execution{
 		{
 			Args: []string{"2"},
@@ -28,24 +28,27 @@ func P749() *ecmodels.Problem {
 	})
 }
 
-func check(length, min int, digits []int) int {
+func check(length, min int, digits, digitMap []int) int {
 	if length == 0 {
-		return checkDigits(digits)
+		return checkDigits(digits, digitMap)
 	}
 
 	var cnt int
 	for i := min; i <= 9; i++ {
-		cnt += check(length-1, i, append(digits, i))
+		digitMap[i]++
+		cnt += check(length-1, i, append(digits, i), digitMap)
+		digitMap[i]--
 	}
 	return cnt
 }
 
-func checkDigits(digits []int) int {
+func checkDigits(digits, digitMap []int) int {
 	if bread.Sum(digits) == 0 {
 		return 0
 	}
 
-	digitMap := toDigitMap(digits)
+	old := digitMap[0]
+	digitMap[0] = 0
 
 	var sum int
 	prevPowSum := -1
@@ -69,11 +72,12 @@ func checkDigits(digits []int) int {
 		}
 
 	}
+	digitMap[0] = old
 	return sum
 }
 
 func toDigitMap(digits []int) []int {
-	digitMap := make([]int, 10, 10)
+	digitMap := make([]int, 10)
 	for _, d := range digits {
 		digitMap[d]++
 	}
