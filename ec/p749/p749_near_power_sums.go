@@ -68,19 +68,19 @@ func check(n, length, min int, digitMap []int) int {
 }*/
 
 func checkDigits(maxValue int, digitMap []int) int {
-	k := bread.Sum(digitMap[1:])
-	if k == 0 {
+	pos := bread.Sum(digitMap[1:])
+	if pos == 0 {
 		return 0
 	}
 
-	// Let k be the number of non-zero values. Then, the largest the powSum can be
-	// is k*(9^pow). This value should be at least 10^(k).
+	// Let pos be the number of non-zero values. Then, the largest the powSum can be
+	// is pos*(9^pow). This value should be at least 10^(pos).
 	// So, solve for pow in the below:
-	// k*9^pow >= 10^k
-	// log(k) + pow*log(9) >= k*log(10)
-	// pow*log(9) >= k*log(10) - log(k)
-	// pow >= (k*log(10) - log(k)) / log(9)
-	startPow := int(math.Ceil(((float64(k)*math.Log(10) - math.Log(float64(k))) / math.Log(9))))
+	// pos*9^pow >= 10^pos
+	// log(pos) + pow*log(9) >= pos*log(10)
+	// pow*log(9) >= pos*log(10) - log(pos)
+	// pow >= (pos*log(10) - log(pos)) / log(9)
+	startPow := int(math.Ceil(((float64(pos)*math.Log(10) - math.Log(float64(pos))) / math.Log(9))))
 
 	var sum int
 	prevPowSum := -1
