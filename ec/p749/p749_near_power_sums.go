@@ -1,6 +1,8 @@
 package p749
 
 import (
+	"math"
+
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/combinatorics"
@@ -25,9 +27,11 @@ func P749() *ecmodels.Problem {
 			OrderMatters:     false,
 		}
 
+		maxValue := maths.Pow(10, n)
+
 		var sum int
 		combinatorics.EvaluateCombos(c, func(digits []int) {
-			sum += checkDigits(n, toDigitMap(digits))
+			sum += checkDigits(maxValue, toDigitMap(digits))
 		})
 		o.Stdoutln(sum)
 	}, []*ecmodels.Execution{
@@ -42,7 +46,7 @@ func P749() *ecmodels.Problem {
 		{
 			Args:     []string{"16"},
 			Want:     "13459471903176422",
-			Estimate: 30,
+			Estimate: 6,
 		},
 	})
 }
@@ -63,23 +67,30 @@ func check(n, length, min int, digitMap []int) int {
 	return cnt
 }*/
 
-func checkDigits(n int, digitMap []int) int {
-	if bread.Sum(digitMap[1:]) == 0 {
+func checkDigits(maxValue int, digitMap []int) int {
+	k := bread.Sum(digitMap[1:])
+	if k == 0 {
 		return 0
 	}
 
-	old := digitMap[0]
-	digitMap[0] = 0
+	// Let k be the number of non-zero values. Then, the largest the powSum can be
+	// is k*(9^pow). This value should be at least 10^(k).
+	// So, solve for pow in the below:
+	// k*9^pow >= 10^k
+	// log(k) + pow*log(9) >= k*log(10)
+	// pow*log(9) >= k*log(10) - log(k)
+	// pow >= (k*log(10) - log(k)) / log(9)
+	startPow := int(math.Ceil(((float64(k)*math.Log(10) - math.Log(float64(k))) / math.Log(9))))
 
 	var sum int
 	prevPowSum := -1
-	for pow := 1; ; pow++ {
+	for pow := maths.Max(startPow, 1); ; pow++ {
 		var powSum int
 		for k, v := range digitMap {
 			powSum += v * maths.Pow(k, pow)
 		}
 
-		if len(maths.Digits(powSum-1)) > n || powSum == prevPowSum {
+		if powSum >= maxValue || powSum == prevPowSum {
 			break
 		}
 		prevPowSum = powSum
@@ -87,13 +98,15 @@ func checkDigits(n int, digitMap []int) int {
 		for _, offset := range []int{-1, 1} {
 			k := powSum + offset
 			kDigitMap := toDigitMap(maths.Digits(k))
-			if slices.Equal(digitMap, kDigitMap) {
+
+			// The number of zeroes can be different (e.g. [3 5], [0 0 3 5]), so
+			// ignore those in the comparison
+			if slices.Equal(digitMap[1:], kDigitMap[1:]) {
 				sum += k
 			}
 		}
 
 	}
-	digitMap[0] = old
 	return sum
 }
 
@@ -102,6 +115,5 @@ func toDigitMap(digits []int) []int {
 	for _, d := range digits {
 		digitMap[d]++
 	}
-	digitMap[0] = 0
 	return digitMap
 }
