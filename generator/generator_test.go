@@ -386,6 +386,13 @@ func TestPrimeFactoredNumbers(t *testing.T) {
 					t.Errorf("PrimeFactoredNumberFast(%d).ToInt() returned incorrect result (-want, +got):\n%s", test.b, diff)
 				}
 
+				if diff := cmp.Diff(test.a, af.ToBigInt(p).ToInt()); diff != "" {
+					t.Errorf("PrimeFactoredNumberFast(%d).ToBigInt() returned incorrect result (-want, +got):\n%s", test.a, diff)
+				}
+				if diff := cmp.Diff(test.b, bf.ToBigInt(p).ToInt()); diff != "" {
+					t.Errorf("PrimeFactoredNumberFast(%d).ToBigInt() returned incorrect result (-want, +got):\n%s", test.b, diff)
+				}
+
 				// Times
 				wantProd := test.a * test.b
 				if diff := cmp.Diff(wantProd, af.Times(bf).ToInt(p)); diff != "" {
@@ -395,9 +402,22 @@ func TestPrimeFactoredNumbers(t *testing.T) {
 					t.Errorf("PrimeFactoredNumberFast(%d).Times(PrimeFactoredNumberFast(%d)) returned incorrect result (-want, +got):\n%s", test.a, test.b, diff)
 				}
 
+				// TimesInt
+				if diff := cmp.Diff(wantProd, af.TimesInt(test.b).ToInt(p)); diff != "" {
+					t.Errorf("PrimeFactoredNumberFast(%d).TimesInt(PrimeFactoredNumberFast(%d)).ToInt() returned incorrect result (-want, +got):\n%s", test.a, test.b, diff)
+				}
+				if diff := cmp.Diff(p.PrimeFactoredNumberFast(wantProd), af.TimesInt(test.b)); diff != "" {
+					t.Errorf("PrimeFactoredNumberFast(%d).TimesInt(PrimeFactoredNumberFast(%d)) returned incorrect result (-want, +got):\n%s", test.a, test.b, diff)
+				}
+
 				// Div
 				if diff := cmp.Diff(test.wantDiv, af.Div(bf)); diff != "" {
 					t.Errorf("PrimeFactoredNumberFast(%d).Div(PrimeFactoredNumberFast(%d)) returned incorrect result (-want, +got):\n%s", test.a, test.b, diff)
+				}
+
+				// DivInt
+				if diff := cmp.Diff(test.wantDiv, af.DivInt(test.b)); diff != "" {
+					t.Errorf("PrimeFactoredNumberFast(%d).DivInt(PrimeFactoredNumberFast(%d)) returned incorrect result (-want, +got):\n%s", test.a, test.b, diff)
 				}
 
 				// Cmp
@@ -412,5 +432,26 @@ func TestPrimeFactoredNumbers(t *testing.T) {
 				}
 			})
 		}
+	}
+}
+
+func TestPrimeFactoredNumberFactorials(t *testing.T) {
+	for _, test := range []struct {
+		n    int
+		want string
+	}{
+		{0, "1"},
+		{1, "1"},
+		{2, "2"},
+		{3, "6"},
+		{6, "720"},
+		{10, "3628800"},
+		{123, "12146304367025329675766243241881295855454217088483382315328918161829235892362167668831156960612640202170735835221294047782591091570411651472186029519906261646730733907419814952960000000000000000000000000000"},
+	} {
+		t.Run(fmt.Sprintf("PrimeFactoredNumberFactorial(%d)", test.n), func(t *testing.T) {
+			if diff := cmp.Diff(test.want, primeSingleton.PrimeFactoredNumberFactorial(test.n).ToBigInt(primeSingleton).String()); diff != "" {
+				t.Errorf("PrimeFactoredNumberFactorial(%d) returned incorrect result (-want, +got):\n%s", test.n, diff)
+			}
+		})
 	}
 }
