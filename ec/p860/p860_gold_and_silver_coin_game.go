@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/leep-frog/command/command"
-	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/combinatorics"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
 	"github.com/leep-frog/euler_challenge/maths"
@@ -18,35 +17,19 @@ const (
 func P860() *ecmodels.Problem {
 	return ecmodels.IntInputNode(860, func(o command.Output, n int) {
 		o.Stdoutln(clever(n))
-		// o.Stdoutln(wut(n))
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"1"},
-			Want: "",
+			Args: []string{"10"},
+			Want: "63594",
 		},
 		{
-			Args: []string{"2"},
-			Want: "",
+			Args: []string{"9898"},
+			Want: "958666903",
 		},
 	})
 }
 
-func wut(n int) int {
-	var cnt int
-	combinatorics.EvaluateCombos(&combinatorics.Combinatorics[int]{
-		Parts:            []int{-4, -1, 1, 4},
-		AllowReplacement: true,
-		MinLength:        n,
-		MaxLength:        n,
-	}, func(t []int) {
-		if bread.Sum(t) == 0 {
-			cnt++
-			// fmt.Println(t)
-		}
-	})
-	return cnt
-}
-
+// TODO: Mod factorial cache
 var (
 	factoMod = []int{
 		1, 1,
@@ -63,9 +46,6 @@ func modFactorial(n int) int {
 
 func clever(n int) int {
 	numerator := modFactorial(n)
-
-	k := make([]int, 1_000_000_000)
-	_ = k[4560]
 
 	var sum int
 	for smallOffset, bigOffset := 0, 0; smallOffset+bigOffset <= n; smallOffset, bigOffset = smallOffset+2, bigOffset+8 {
@@ -99,8 +79,6 @@ func clever(n int) int {
 			curCount = (curCount * maths.PowMod(divFact, -1, mod)) % mod
 		}
 
-		// count
-
 		// Need b to be positive:
 		// b = (n - 2*a - bigOffset - smallOffest) / 2 >= 0
 		//     n >= 2*a + bigOffset + smallOffest
@@ -114,13 +92,10 @@ func clever(n int) int {
 
 			// (logic copied from combinatorics package)
 
-			// v := combinatorics.PermutationFromCount([]int{a, b, c, d}).ModInt(mod)
-			// fmt.Println(v, curCount.ToInt(p))
-
 			v := curCount
 			if smallOffset > 0 {
-				// v = (v * 2) % mod
-				sum = (sum + v) % mod
+				v = (v * 2) % mod
+				// sum = (sum + v) % mod
 			}
 			sum = (sum + v) % mod
 
@@ -137,14 +112,17 @@ func clever(n int) int {
 	return sum
 }
 
-func f(idx, remaining int, game *stacks) int {
+/************************************************
+* Everything below this is brute force solution *
+*************************************************/
+
+func brute(idx, remaining int, game *stacks) int {
 	if remaining == 0 {
 
 		if game.isFair() {
 			if !game.symmetric() {
 				fmt.Println("===========")
-				// fmt.Println(game.prettyString())
-				fmt.Println(game)
+				fmt.Println(game.prettyString())
 				fmt.Println("FAIR ^")
 			}
 			return game.count()
@@ -163,17 +141,13 @@ func f(idx, remaining int, game *stacks) int {
 		incr, decr = func() { game.silverGold++ }, func() { game.silverGold-- }
 	case 3:
 		incr, decr = func() { game.silverSilver++ }, func() { game.silverSilver-- }
-	// case 4:
-	// incr, decr = func() { game.gold++ }, func() { game.gold-- }
-	// case 5:
-	// incr, decr = func() { game.silver++ }, func() { game.silver-- }
 	default:
 		return 0
 	}
 
 	var cnt int
 	for i := 0; i <= remaining; i++ {
-		cnt += f(idx+1, remaining-i, game)
+		cnt += brute(idx+1, remaining-i, game)
 		incr()
 	}
 
