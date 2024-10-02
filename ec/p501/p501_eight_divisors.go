@@ -58,16 +58,19 @@ func P501() *ecmodels.Problem {
 		o.Stdoutln(p.SingleAndCubePrimeCount(n, primes) + p.ThreeDistinctPrimeCount(n, primes) + p.SeventhExpCount(n, primes))
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"100"},
-			Want: "10",
+			Args:     []string{"100"},
+			Want:     "10",
+			Estimate: 0.5,
 		},
 		{
-			Args: []string{"1000"},
-			Want: "180",
+			Args:     []string{"1000"},
+			Want:     "180",
+			Estimate: 0.5,
 		},
 		{
-			Args: []string{"1000000"},
-			Want: "224427",
+			Args:     []string{"1000000"},
+			Want:     "224427",
+			Estimate: 2.5,
 		},
 		{
 			Args: []string{"1_000_000_000_000"},

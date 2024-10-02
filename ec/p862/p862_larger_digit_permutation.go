@@ -1,8 +1,6 @@
 package p862
 
 import (
-	"time"
-
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/combinatorics"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
@@ -15,7 +13,7 @@ func P862() *ecmodels.Problem {
 		for zs := 0; zs < n; zs++ {
 			s = s.Plus(dp(zs, n-zs, 1, nil))
 		}
-		o.Stdoutln(s, time.Now())
+		o.Stdoutln(s)
 	}, []*ecmodels.Execution{
 		{
 			Args: []string{"3"},
