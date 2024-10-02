@@ -355,6 +355,18 @@ func (pfn PrimeFactoredNumber) ToInt(p *Prime) int {
 	return prod
 }
 
+func (pfn PrimeFactoredNumber) ToBigInt(p *Prime) *maths.Int {
+	prod := maths.One()
+	for _, pf := range pfn {
+		prod = prod.Times(maths.BigPow(p.Nth(pf[0]), pf[1]))
+	}
+	return prod
+}
+
+func (pfn PrimeFactoredNumber) TimesInt(d int) PrimeFactoredNumber {
+	return pfn.Times(primeSingleton.PrimeFactoredNumberFast(d))
+}
+
 func (pfn PrimeFactoredNumber) Times(that PrimeFactoredNumber) PrimeFactoredNumber {
 	var res PrimeFactoredNumber
 
@@ -378,6 +390,10 @@ func (pfn PrimeFactoredNumber) Times(that PrimeFactoredNumber) PrimeFactoredNumb
 		}
 	}
 	return res
+}
+
+func (pfn PrimeFactoredNumber) DivInt(d int) PrimeFactoredNumber {
+	return pfn.Div(primeSingleton.PrimeFactoredNumberFast(d))
 }
 
 func (pfn PrimeFactoredNumber) Div(that PrimeFactoredNumber) PrimeFactoredNumber {
@@ -502,6 +518,22 @@ func (p *Prime) PrimeFactoredNumberFast(n int) PrimeFactoredNumber {
 			return append(m, []int{pfi, 1})
 		},
 	)
+}
+
+var (
+	factoredFactorialCache = []PrimeFactoredNumber{
+		primeSingleton.PrimeFactoredNumberFast(1),
+		primeSingleton.PrimeFactoredNumberFast(1),
+	}
+)
+
+func (p *Prime) PrimeFactoredNumberFactorial(n int) PrimeFactoredNumber {
+	for len(factoredFactorialCache) <= n {
+		lastIdx := len(factoredFactorialCache) - 1
+		factoredFactorialCache = append(factoredFactorialCache, factoredFactorialCache[lastIdx].Times(p.PrimeFactoredNumberFast(lastIdx+1)))
+	}
+
+	return factoredFactorialCache[n]
 }
 
 // func (p *Prime) PrimeFactors(n int) map[int]int {
