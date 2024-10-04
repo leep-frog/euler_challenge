@@ -4,6 +4,7 @@ import (
 	"math"
 
 	"github.com/leep-frog/command/command"
+	"github.com/leep-frog/euler_challenge/bfs"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
 )
 
@@ -14,10 +15,8 @@ var (
 func P587() *ecmodels.Problem {
 	return ecmodels.IntInputNode(587, func(o command.Output, pow int) {
 		target := math.Pow(10, -float64(pow))
-		n := 1
-		for ; calculate(float64(n)) > target; n++ {
-		}
-		o.Stdoutln(n)
+		res, _ := bfs.BinarySearch[float64](1, -target, func(i int) float64 { return -calculate(i) })
+		o.Stdoutln(res)
 	}, []*ecmodels.Execution{
 		{
 			Args: []string{"1"},
@@ -27,12 +26,18 @@ func P587() *ecmodels.Problem {
 			Args: []string{"3"},
 			Want: "2240",
 		},
+		{
+			Args: []string{"8"},
+			Want: "232951565",
+		},
 	})
 }
 
 // We place the drawing such that the left-most circle has a radius of one and
 // is centered at the origin. Therefore, the bottom left corner is at (-1, -1)
-func calculate(n float64) float64 {
+func calculate(ni int) float64 {
+	n := float64(ni)
+
 	squareArea := 4.0 // square with size length 2
 	circleArea := pi  // circle with radius 1
 	sectionArea := (squareArea - circleArea) / 4.0
