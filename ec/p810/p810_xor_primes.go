@@ -22,7 +22,7 @@ func P810() *ecmodels.Problem {
 		{
 			Args:     []string{"5000000"},
 			Want:     "124136381",
-			Estimate: 5,
+			Estimate: 3.5,
 		},
 	})
 }
@@ -53,6 +53,8 @@ func explore(maxIdx, k int, xorPrimes []int, sieve []bool) {
 	sieve[k] = true
 
 	for i := 0; i <= maxIdx; i++ {
+		// Note that xorPrimes[i] will always be less than k
+		// (which is important for xorMult performance reasons).
 		v := xorMult(k, xorPrimes[i])
 		if v >= len(sieve) {
 			break
@@ -61,12 +63,9 @@ func explore(maxIdx, k int, xorPrimes []int, sieve []bool) {
 	}
 }
 
+// xorMult runs the XOR multiplication logic as defined in the problem.
+// For performance reasons, it's best if bi < ai.
 func xorMult(ai, bi int) int {
-
-	if bi > ai {
-		ai, bi = bi, ai
-	}
-
 	var r int
 	for bi > 0 {
 		if bi&1 == 1 {
