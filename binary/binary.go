@@ -140,6 +140,24 @@ func (b *Binary) Minus(that *Binary) *Binary {
 	return nb
 }
 
+func (b *Binary) Reverse() *Binary {
+	return &Binary{bread.Reverse(b.digits)}
+}
+
+func (b *Binary) XOR(that *Binary) *Binary {
+	var digits []bool
+	for i := 0; i < len(b.digits) || i < len(that.digits); i++ {
+
+		left := i < len(b.digits) && b.digits[len(b.digits)-1-i]
+		right := i < len(that.digits) && that.digits[len(that.digits)-1-i]
+		digits = append(digits, left != right)
+	}
+
+	nb := &Binary{bread.Reverse(digits)}
+	nb.trim()
+	return nb
+}
+
 // Trim the leading zeroes
 func (b *Binary) trim() {
 	for len(b.digits) > 0 && !b.digits[0] {
