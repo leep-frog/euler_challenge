@@ -33,11 +33,10 @@ func (h *Heap[T]) Pop() T {
 // It is very important to note that we point to the same object
 // that is still in the heap (we do not create a copy of it).
 func (h *Heap[T]) Peek() T {
-	t := h.ih.Pop().(T)
-	h.Push(t)
-	return t
+	return h.ih.Peek().(T)
 }
 
+// NewHeap returns a min-heap which uses the provided less-than comparison function.
 func NewHeap[T any](lt func(T, T) bool) *Heap[T] {
 	return &Heap[T]{&internalHeap[T]{nil, lt}}
 }
@@ -71,4 +70,8 @@ func (h *internalHeap[T]) Pop() any {
 	last := h.items[len(h.items)-1]
 	h.items = h.items[:len(h.items)-1]
 	return last
+}
+
+func (h *internalHeap[T]) Peek() any {
+	return h.items[0]
 }
