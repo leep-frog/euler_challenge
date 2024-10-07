@@ -32,6 +32,7 @@ func Product[T Operable](elements []T) T {
 	return sum
 }
 
+// Reverse creates a *NEW* slice with the same elements as ts, but in reverse order.
 func Reverse[T any](ts []T) []T {
 	st := make([]T, len(ts))
 	for i, v := range ts {
