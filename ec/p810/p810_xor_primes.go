@@ -2,7 +2,9 @@ package p810
 
 import (
 	"github.com/leep-frog/command/command"
+	"github.com/leep-frog/euler_challenge/binary"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
+	"github.com/leep-frog/euler_challenge/maths"
 )
 
 func P810() *ecmodels.Problem {
@@ -18,15 +20,17 @@ func P810() *ecmodels.Problem {
 			Want: "151369",
 		},
 		{
-			Args: []string{"5000000"},
-			Want: "124136381",
+			Args:     []string{"5000000"},
+			Want:     "124136381",
+			Estimate: 5,
 		},
 	})
 }
 
 func xorSieve(n int) int {
-	// TODO: greeidly choose size and slowly increment
-	sieve := make([]bool, n*100)
+
+	sizePow := binary.BinaryFromInt(n).Size() + 4
+	sieve := make([]bool, maths.Pow(2, sizePow))
 	xorPrimes := []int{2}
 
 	sieve[0] = true
