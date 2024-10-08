@@ -16,25 +16,26 @@ var (
 		"f": 7,
 		"r": 9,
 	}
-	numbers = []int{}
-	words   = map[string]bool{
+
+	words = map[string]bool{
 		"free": true,
 		"reef": true,
 		"area": true,
 		"fare": true,
 	}
-	wordNumberMap = map[int]bool{}
 )
 
 func P679() *ecmodels.Problem {
 	return ecmodels.IntInputNode(679, func(o command.Output, n int) {
 
-		// Populate the numbers slice
+		// Map the letters to numbers
+		var numbers []int
 		for _, letterValue := range letters {
 			numbers = append(numbers, letterValue)
 		}
 
 		// Populate the wordNumberMap
+		wordNumberMap := map[int]bool{}
 		p := generator.Primes()
 		wordProduct := 1
 		for word := range words {
@@ -50,7 +51,7 @@ func P679() *ecmodels.Problem {
 			wordProduct *= wordNumber
 		}
 
-		o.Stdoutln(dp(n, wordProduct, 0))
+		o.Stdoutln(dp(n, wordProduct, 0, numbers, wordNumberMap))
 	}, []*ecmodels.Execution{
 		{
 			Args: []string{"9"},
@@ -75,7 +76,7 @@ var (
 // wordsNeeded is really a set of integers, but we mimic that by making it the
 // product of all the wordNumbers (note this requires that all wordNumbers are
 // primes which is guaratneed above)
-func dp(remaining int, wordsNeeded int, currentWord int) int {
+func dp(remaining, wordsNeeded, currentWord int, numbers []int, wordNumberMap map[int]bool) int {
 	if remaining == 0 {
 		if wordsNeeded == 1 {
 			return 1
@@ -101,7 +102,7 @@ func dp(remaining int, wordsNeeded int, currentWord int) int {
 			continue
 		}
 
-		sum += dp(remaining-1, wordsNeeded, nextWord%1000)
+		sum += dp(remaining-1, wordsNeeded, nextWord%1000, numbers, wordNumberMap)
 
 		if removedWord {
 			wordsNeeded *= nextWord

@@ -6,13 +6,15 @@ import (
 	"strings"
 
 	"github.com/leep-frog/euler_challenge/bread"
+	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
 	"github.com/leep-frog/functional"
 	"golang.org/x/exp/slices"
 )
 
 var (
-	permutationCountCache = map[string]*maths.Int{}
+	permutationCountCache = map[string]generator.PrimeFactoredNumber{}
+	p                     = generator.Primes()
 )
 
 func PermutationCount[T any](parts []T) *maths.Int {
@@ -21,6 +23,10 @@ func PermutationCount[T any](parts []T) *maths.Int {
 }
 
 func PermutationFromCount(ogCounts []int) *maths.Int {
+	return PermutationFromCountNew(ogCounts).ToBigInt(p)
+}
+
+func PermutationFromCountNew(ogCounts []int) generator.PrimeFactoredNumber {
 	counts := bread.Copy(ogCounts)
 	slices.Sort(counts)
 
@@ -30,13 +36,13 @@ func PermutationFromCount(ogCounts []int) *maths.Int {
 	}
 
 	// Total count if all elements were different
-	v := maths.Factorial(bread.Sum(counts))
+	v := p.PrimeFactoredNumberFactorial(bread.Sum(counts))
 
 	for _, c := range counts {
 		if c == 1 {
 			continue
 		}
-		v, _ = v.Divide(maths.Factorial(c))
+		v = v.Div(p.PrimeFactoredNumberFactorial(c))
 	}
 
 	permutationCountCache[code] = v
