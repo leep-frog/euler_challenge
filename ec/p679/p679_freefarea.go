@@ -11,23 +11,35 @@ import (
 )
 
 var (
-	letters = []string{
-		"a",
-		"e",
-		"f",
-		"r",
+	letters = map[string]int{
+		"a": 1,
+		"e": 2,
+		"f": 3,
+		"r": 4,
 	}
-	wordMap = map[string]bool{
+	words = map[string]bool{
 		"free": true,
 		"reef": true,
 		"area": true,
 		"fare": true,
 	}
+	wordMap = map[int]bool{}
 )
 
 func P679() *ecmodels.Problem {
 	return ecmodels.IntInputNode(679, func(o command.Output, n int) {
-		o.Stdoutln(dp(n, maps.Clone(wordMap), nil))
+
+		for word := range words {
+			var wordNumber int
+			for _, l := range strings.Split(word, "") {
+				wordNumber = 10*wordNumber + letters[l]
+			}
+			wordMap[wordNumber] = true
+		}
+
+		fmt.Println(wordMap)
+
+		o.Stdoutln(dp(n, maps.Clone(wordMap), 0))
 	}, []*ecmodels.Execution{
 		{
 			Args: []string{"9"},
@@ -48,7 +60,7 @@ var (
 	cache = map[string]int{}
 )
 
-func dp(remaining int, wordsNeeded map[string]bool, currentWord []string) int {
+func dp(remaining int, wordsNeeded map[int]bool, currentWord int) int {
 	if remaining == 0 {
 		if len(wordsNeeded) == 0 {
 			return 1
@@ -56,18 +68,16 @@ func dp(remaining int, wordsNeeded map[string]bool, currentWord []string) int {
 		return 0
 	}
 
-	var start int
-	if len(currentWord) > 3 {
-		start = len(currentWord) - 3
-	}
 	codeParts := []string{
-		fmt.Sprintf("%d", remaining),
-		strings.Join(currentWord[start:], ""),
+		fmt.Sprintf("%d %d", remaining, currentWord%1000),
 	}
 
 	keys := maps.Keys(wordsNeeded)
 	slices.Sort(keys)
-	codeParts = append(codeParts, keys...)
+	for _, k := range keys {
+		codeParts = append(codeParts, fmt.Sprintf("%d", k))
+	}
+
 	code := strings.Join(codeParts, " ")
 	if v, ok := cache[code]; ok {
 		return v
@@ -75,24 +85,24 @@ func dp(remaining int, wordsNeeded map[string]bool, currentWord []string) int {
 
 	var sum int
 	for _, letter := range letters {
-		nextWord := append(currentWord, letter)
+		nextWord := 10*currentWord + letter
 
-		var removedWord string
+		var removedWord bool
 
-		if len(nextWord) >= 4 {
-			currentWordString := strings.Join(nextWord[len(nextWord)-4:], "")
+		if nextWord >= 1000 {
+			// currentWordString := strings.Join(nextWord[len(nextWord)-4:], "")
 
-			if wordsNeeded[currentWordString] {
-				removedWord = currentWordString
-				delete(wordsNeeded, currentWordString)
-			} else if wordMap[currentWordString] {
+			if wordsNeeded[nextWord] {
+				removedWord = true
+				delete(wordsNeeded, nextWord)
+			} else if wordMap[nextWord] {
 				continue
 			}
 		}
-		sum += dp(remaining-1, wordsNeeded, nextWord)
+		sum += dp(remaining-1, wordsNeeded, nextWord%1000)
 
-		if removedWord != "" {
-			wordsNeeded[removedWord] = true
+		if removedWord {
+			wordsNeeded[nextWord] = true
 		}
 	}
 
