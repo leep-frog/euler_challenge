@@ -30,8 +30,16 @@ func P679() *ecmodels.Problem {
 		o.Stdoutln(dp(n, maps.Clone(wordMap), nil))
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"2"},
-			Want: "",
+			Args: []string{"9"},
+			Want: "1",
+		},
+		{
+			Args: []string{"15"},
+			Want: "72863",
+		},
+		{
+			Args: []string{"30"},
+			Want: "644997092988678",
 		},
 	})
 }
@@ -42,7 +50,6 @@ var (
 
 func dp(remaining int, wordsNeeded map[string]bool, currentWord []string) int {
 	if remaining == 0 {
-		// fmt.Println(currentWord, wordsNeeded)
 		if len(wordsNeeded) == 0 {
 			return 1
 		}
@@ -55,9 +62,7 @@ func dp(remaining int, wordsNeeded map[string]bool, currentWord []string) int {
 	}
 	codeParts := []string{
 		fmt.Sprintf("%d", remaining),
-		"PRE",
 		strings.Join(currentWord[start:], ""),
-		"POST",
 	}
 
 	keys := maps.Keys(wordsNeeded)
@@ -67,7 +72,6 @@ func dp(remaining int, wordsNeeded map[string]bool, currentWord []string) int {
 	if v, ok := cache[code]; ok {
 		return v
 	}
-	// if cac
 
 	var sum int
 	for _, letter := range letters {
@@ -84,10 +88,6 @@ func dp(remaining int, wordsNeeded map[string]bool, currentWord []string) int {
 			} else if wordMap[currentWordString] {
 				continue
 			}
-
-			// if v, ok := wordMap[currentWordString]; ok {
-
-			// }
 		}
 		sum += dp(remaining-1, wordsNeeded, nextWord)
 
