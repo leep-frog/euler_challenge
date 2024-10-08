@@ -15,7 +15,7 @@ var (
 func P587() *ecmodels.Problem {
 	return ecmodels.IntInputNode(587, func(o command.Output, pow int) {
 		target := math.Pow(10, -float64(pow))
-		res, _ := bfs.BinarySearch[float64](1, -target, func(i int) float64 { return -calculate(i) })
+		res, _ := bfs.UnboundedBinarySearch(1, -target, func(i int) float64 { return -calculate(i) })
 		o.Stdoutln(res)
 	}, []*ecmodels.Execution{
 		{

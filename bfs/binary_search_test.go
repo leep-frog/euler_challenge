@@ -34,7 +34,7 @@ func TestBinarySearch(t *testing.T) {
 		{0, 19, 7, false},
 	} {
 		t.Run(fmt.Sprintf("BinarySearch(start=%d, target=%d)", test.start, test.target), func(t *testing.T) {
-			got, gotOk := BinarySearch[int](test.start, test.target, func(i int) int { return i * 3 })
+			got, gotOk := UnboundedBinarySearch[int](test.start, test.target, func(i int) int { return i * 3 })
 
 			if diff := cmp.Diff(test.want, got); diff != "" {
 				t.Errorf("returned incorrect int result (-want, +got):\n%s", diff)
@@ -83,7 +83,7 @@ func TestBinarySearch_DifferentStarts(t *testing.T) {
 			{121, 41, false},
 		} {
 			t.Run(fmt.Sprintf("BinarySearch(start=%d, target=%d)", start, test.target), func(t *testing.T) {
-				got, gotOk := BinarySearch[int](start, test.target, func(i int) int { return i * 3 })
+				got, gotOk := UnboundedBinarySearch[int](start, test.target, func(i int) int { return i * 3 })
 
 				if diff := cmp.Diff(test.want, got); diff != "" {
 					t.Errorf("returned incorrect int result (-want, +got):\n%s", diff)
@@ -113,7 +113,7 @@ func TestBinarySearch_Panic(t *testing.T) {
 					gotRecover = fmt.Sprintf("%v", recover())
 				}()
 
-				BinarySearch[int](test.start, test.target, func(i int) int { return i * 3 })
+				UnboundedBinarySearch[int](test.start, test.target, func(i int) int { return i * 3 })
 			}
 
 			f()

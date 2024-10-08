@@ -6,14 +6,14 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-// BinarySearch searches for the target for an unbounded set of indices (mapped by evaluateFunc). If it finds an exact match
+// UnboundedBinarySearch searches for the target for an unbounded set of indices (mapped by evaluateFunc). If it finds an exact match
 // it returns (matchingIdx, true). Otherwise, it returns the first element that has a value larger than the target.
 //
 // If it could not find a match (either due to invalid arguments or because the solution is above the maximum integer value),
 // then it panics.
 //
 // (We could return -1 in those cases, but I prefer failures of this to be really noisy).
-func BinarySearch[T constraints.Integer | constraints.Float](start int, target T, evaluteFunc func(int) T) (int, bool) {
+func UnboundedBinarySearch[T constraints.Integer | constraints.Float](start int, target T, evaluteFunc func(int) T) (int, bool) {
 	if start < 0 {
 		panic(fmt.Sprintf("invalid start=%d", start))
 	}

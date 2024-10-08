@@ -5,6 +5,7 @@ import (
 	"github.com/leep-frog/euler_challenge/bread"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
 	"github.com/leep-frog/euler_challenge/generator"
+	"golang.org/x/exp/slices"
 )
 
 var (
@@ -28,16 +29,15 @@ func P407() *ecmodels.Problem {
 			curFactors := p.Factors(a)
 			for i := len(curFactors) - 1; i >= 0; i-- {
 				f1 := curFactors[i]
-				for j := len(prevFactors) - 1; j >= 0; j-- {
-					f2 := prevFactors[j]
+
+				// Start where  [f1 * f2 > a] <===> [f2 > a / f1]
+				startIdx, _ := slices.BinarySearch(prevFactors, 1+(a/f1))
+				for _, f2 := range prevFactors[startIdx:] {
 					factor := f1 * f2
-					if a >= factor {
+					if factor > n {
 						break
 					}
-					if factor <= n {
-						bests[factor] = a
-					} else {
-					}
+					bests[factor] = a
 				}
 			}
 			prevFactors = curFactors
@@ -54,8 +54,9 @@ func P407() *ecmodels.Problem {
 			Want: "314034",
 		},
 		{
-			Args: []string{"10000000"},
-			Want: "39782849136421",
+			Args:     []string{"10000000"},
+			Want:     "39782849136421",
+			Estimate: 15,
 		},
 	})
 }
