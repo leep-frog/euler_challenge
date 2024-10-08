@@ -6,40 +6,51 @@ import (
 
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
+	"github.com/leep-frog/euler_challenge/generator"
 )
 
 var (
 	letters = map[string]int{
 		"a": 1,
-		"e": 2,
-		"f": 3,
-		"r": 4,
+		"e": 3,
+		"f": 7,
+		"r": 9,
 	}
-	words = map[string]bool{
+	numbers = []int{}
+	words   = map[string]bool{
 		"free": true,
 		"reef": true,
 		"area": true,
 		"fare": true,
 	}
-	wordMap = map[int]bool{}
+	wordNumberMap = map[int]bool{}
 )
 
 func P679() *ecmodels.Problem {
 	return ecmodels.IntInputNode(679, func(o command.Output, n int) {
 
+		// Populate the numbers slice
+		for _, letterValue := range letters {
+			numbers = append(numbers, letterValue)
+		}
+
+		// Populate the wordNumberMap
+		p := generator.Primes()
+		wordProduct := 1
 		for word := range words {
 			var wordNumber int
 			for _, l := range strings.Split(word, "") {
 				wordNumber = 10*wordNumber + letters[l]
 			}
-			wordMap[wordNumber] = true
+			wordNumberMap[wordNumber] = true
+			if !p.Contains(wordNumber) {
+				o.Stderrf("All word numbers must be prime, but %d has factors %v\n", wordNumber, p.PrimeFactors(wordNumber))
+				return
+			}
+			wordProduct *= wordNumber
 		}
 
-		fmt.Println(wordMap)
-
-		o.Stdoutln(dp(n, maps.Clone(wordMap), 0))
+		o.Stdoutln(dp(n, wordProduct, 0))
 	}, []*ecmodels.Execution{
 		{
 			Args: []string{"9"},
@@ -60,49 +71,40 @@ var (
 	cache = map[string]int{}
 )
 
-func dp(remaining int, wordsNeeded map[int]bool, currentWord int) int {
+// Rather than use strings, we use integers for faster processing.
+// wordsNeeded is really a set of integers, but we mimic that by making it the
+// product of all the wordNumbers (note this requires that all wordNumbers are
+// primes which is guaratneed above)
+func dp(remaining int, wordsNeeded int, currentWord int) int {
 	if remaining == 0 {
-		if len(wordsNeeded) == 0 {
+		if wordsNeeded == 1 {
 			return 1
 		}
 		return 0
 	}
 
-	codeParts := []string{
-		fmt.Sprintf("%d %d", remaining, currentWord%1000),
-	}
-
-	keys := maps.Keys(wordsNeeded)
-	slices.Sort(keys)
-	for _, k := range keys {
-		codeParts = append(codeParts, fmt.Sprintf("%d", k))
-	}
-
-	code := strings.Join(codeParts, " ")
+	code := fmt.Sprintf("%d %d %d", remaining, wordsNeeded, currentWord)
 	if v, ok := cache[code]; ok {
 		return v
 	}
 
 	var sum int
-	for _, letter := range letters {
-		nextWord := 10*currentWord + letter
+	for _, number := range numbers {
+		nextWord := 10*currentWord + number
 
 		var removedWord bool
 
-		if nextWord >= 1000 {
-			// currentWordString := strings.Join(nextWord[len(nextWord)-4:], "")
-
-			if wordsNeeded[nextWord] {
-				removedWord = true
-				delete(wordsNeeded, nextWord)
-			} else if wordMap[nextWord] {
-				continue
-			}
+		if wordsNeeded%nextWord == 0 {
+			removedWord = true
+			wordsNeeded /= nextWord
+		} else if wordNumberMap[nextWord] {
+			continue
 		}
+
 		sum += dp(remaining-1, wordsNeeded, nextWord%1000)
 
 		if removedWord {
-			wordsNeeded[nextWord] = true
+			wordsNeeded *= nextWord
 		}
 	}
 
