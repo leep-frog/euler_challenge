@@ -27,7 +27,7 @@ func P731() *ecmodels.Problem {
 				if offset < 0 {
 					offset += patternLen
 				}
-				curVal = 10*curVal + clever(decimalOffset, offset+1)
+				curVal = 10*curVal + maths.NthDigit(decimalOffset, offset+1)
 			}
 			val += curVal
 		}
@@ -46,20 +46,6 @@ func P731() *ecmodels.Problem {
 			Want: "6086371427",
 		},
 	})
-}
-
-// Stolen from 820
-// TODO: make this a function in maths
-func clever(k, n int) int {
-	// d_n(k) = [ floor(10^n) / k ] mod 10
-
-	// Not sure why (got equality online), but
-	// d_n(k) = floor[ (10^n mod 10k) / k ]
-	// return maths.PowMod(10, n, 10*k) / k
-
-	// The above can also be simplified to
-	// d_n(k) = floor[ 10 * (10^(n-1) mod k) / k ]
-	return 10 * maths.PowMod(10, n-1, k) / k
 }
 
 func pattern(k int) []int {
