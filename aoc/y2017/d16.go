@@ -7,7 +7,6 @@ import (
 	"github.com/leep-frog/euler_challenge/aoc"
 	"github.com/leep-frog/euler_challenge/linkedlist"
 	"github.com/leep-frog/euler_challenge/parse"
-	"github.com/leep-frog/functional"
 )
 
 func Day16() aoc.Day {
@@ -51,26 +50,27 @@ func (d *day16) Solve(lines []string, o command.Output) {
 		}
 	}
 
-	root := linkedlist.CircularNumbered(numLetters)
-	seen := map[string]int{}
-	upTo := 1_000_000_000
-	var part1 string
+	// TODO: Uncomment and fix below reference error
+	// root := linkedlist.CircularNumbered(numLetters)
+	// seen := map[string]int{}
+	// upTo := 1_000_000_000
+	// var part1 string
 
-	for i := 0; i < upTo; i++ {
-		code := linkedlist.CircularRepresentation(root)
-		if _, ok := seen[code]; ok {
-			upTo = i + (upTo % i)
-		}
-		seen[code] = i
+	// for i := 0; i < upTo; i++ {
+	// 	code := linkedlist.CircularRepresentation(root)
+	// 	if _, ok := seen[code]; ok {
+	// 		upTo = i + (upTo % i)
+	// 	}
+	// 	seen[code] = i
 
-		for _, dance := range dances {
-			root = dance(root)
-		}
-		if i == 0 {
-			part1 = strings.Join(functional.Map(root.ToSlice(), func(k int) string { return revLetterMap[k] }), "")
-		}
-	}
-	o.Stdoutln(part1, strings.Join(functional.Map(root.ToSlice(), func(k int) string { return revLetterMap[k] }), ""))
+	// 	for _, dance := range dances {
+	// 		root = dance(root)
+	// 	}
+	// 	if i == 0 {
+	// 		part1 = strings.Join(functional.Map(root.ToSlice(), func(k int) string { return revLetterMap[k] }), "")
+	// 	}
+	// }
+	// o.Stdoutln(part1, strings.Join(functional.Map(root.ToSlice(), func(k int) string { return revLetterMap[k] }), ""))
 }
 
 func (d *day16) Cases() []*aoc.Case {

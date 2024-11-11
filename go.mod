@@ -1,10 +1,12 @@
 module github.com/leep-frog/euler_challenge
 
-go 1.20
+go 1.21.0
+
+toolchain go1.23.2
 
 require (
 	github.com/google/go-cmp v0.6.0
-	github.com/leep-frog/command v0.0.0-20240422232310-6f3d57286155
+	github.com/leep-frog/command v0.0.0-20241111025054-48c71fb62de9
 	golang.org/x/exp v0.0.0-20240707233637-46b078467d37
 	gonum.org/v1/plot v0.12.0
 )

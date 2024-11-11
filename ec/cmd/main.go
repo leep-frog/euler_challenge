@@ -28,6 +28,7 @@ func main() {
 		"et": {"gt", "-v", ecDir, "-t", "6000"},
 	})
 	os.Exit(sourcerer.Source(
+		"ecCLIs",
 		[]sourcerer.CLI{
 			&ecCLI{},
 			commandths.CLI(),
