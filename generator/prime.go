@@ -347,6 +347,24 @@ func (pic PrimeIndexCount) Count() int {
 // Empty array means 1
 type PrimeFactoredNumber []PrimeIndexCount
 
+func (pfn PrimeFactoredNumber) PrimeDivisors(p *Prime) []int {
+	divs := []int{1}
+	for _, idxCnt := range pfn {
+
+		f := p.Nth(idxCnt[0])
+		curF := f
+		cnt := idxCnt[1]
+		originalDivsLen := len(divs)
+		for i := 0; i < cnt; i++ {
+			for j := 0; j < originalDivsLen; j++ {
+				divs = append(divs, divs[j]*curF)
+			}
+			curF *= f
+		}
+	}
+	return divs
+}
+
 func (pfn PrimeFactoredNumber) ToInt(p *Prime) int {
 	prod := 1
 	for _, pf := range pfn {

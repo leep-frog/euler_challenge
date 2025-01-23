@@ -59,6 +59,7 @@ var (
 	cachedDivisors = map[int][]int{}
 )
 
+// TODO: Use prime package to do this more efficiently
 func Divisors(i int) []int {
 	v, ok := cachedDivisors[i]
 	if !ok {
