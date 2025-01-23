@@ -265,6 +265,7 @@ import (
 	"github.com/leep-frog/euler_challenge/ec/p323"
 	"github.com/leep-frog/euler_challenge/ec/p211"
 	"github.com/leep-frog/euler_challenge/ec/p303"
+	"github.com/leep-frog/euler_challenge/ec/p207"
 	// END_IMPORT_LIST
 )
 
@@ -533,6 +534,7 @@ func getProblems() []*ecmodels.Problem {
 		p323.P323(),
 		p211.P211(),
 		p303.P303(),
+		p207.P207(),
 		// END_LIST (needed for file_generator.go)
 	}
 }
