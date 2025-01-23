@@ -40,7 +40,7 @@ func P518() *ecmodels.Problem {
 		},
 		{
 			Args:     []string{"8"},
-			Want:     "100315739184392\n",
+			Want:     "100315739184392",
 			Estimate: 100,
 		},
 	})
