@@ -135,6 +135,10 @@ func (ds *dsWrapper[M, T]) AdjacentStates(m M, _ DFSPath[T]) []*dsWrapper[M, T] 
 	return dsConverter[M, T]().convertSlice(ds.state.AdjacentStates(m))
 }
 
+// DFS runs a depth-first search on the provided states.
+// Note that this ultimately uses a stack (via slice) which can use up a lot of memory.
+// Consider using a custom recursive algorithm if your recursion stack will be short,
+// but number of neighbors might be high.
 func DFS[M any, T DepthSearcher[M, T]](initStates []T, m M, opts ...DFSOption) []T {
 	b := &dsBiconverter[M, T]{}
 	return dfsFinal(
