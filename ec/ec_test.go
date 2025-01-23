@@ -24,7 +24,6 @@ var (
 		toCheck := []int{
 			// Test numbers to check
 			323, // CURRENT_PROBLEM
-			518,
 
 			// List of problems that use bfs package
 			// 18, 60, 61, 81, 82, 83, 88, 96, 108, 109, 118, 119, 122, 127, 151, 152, 233, 243,
