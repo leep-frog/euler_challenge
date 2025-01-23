@@ -1,37 +1,23 @@
 package p518
 
 import (
-	"fmt"
-
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
 	"github.com/leep-frog/euler_challenge/generator"
 	"github.com/leep-frog/euler_challenge/maths"
-	"github.com/leep-frog/euler_challenge/profiler"
-)
-
-var (
-	pf = profiler.New()
 )
 
 func P518() *ecmodels.Problem {
-	return ecmodels.IntInputNode(518, func(o command.Output, n int) {
+	return ecmodels.IntInputNode(518, func(o command.Output, pow int) {
+		n := maths.Pow(10, pow)
 		p := generator.Primes()
 
 		var sum int
 
-		prev := 1000000
-
 		for i := 0; p.Nth(i) < n; i++ {
 			a := p.Nth(i) + 1
 
-			if a > prev {
-				fmt.Println(a)
-				prev += 1000000
-			}
-
 			// First, do all integer sequences
-			pf.Start("Ints")
 			for j := 2; a*j*j < n; j++ {
 				b, c := a*j, a*(j*j)
 				if b <= n && c <= n && p.Contains(b-1) && p.Contains(c-1) {
@@ -46,17 +32,16 @@ func P518() *ecmodels.Problem {
 			}
 			sum += dfs(p, fs, n, a, 1)
 		}
-		fmt.Println(sum)
-		pf.End()
-		fmt.Println(pf)
+		o.Stdoutln(sum)
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"1"},
-			Want: "",
+			Args: []string{"2"},
+			Want: "1035",
 		},
 		{
-			Args: []string{"2"},
-			Want: "",
+			Args:     []string{"8"},
+			Want:     "100315739184392\n",
+			Estimate: 100,
 		},
 	})
 }
@@ -71,11 +56,9 @@ func dfs(p *generator.Prime, factors [][]int, n int, a int, denom int) int {
 		var sum int
 
 		for numer := denom + 1; ((a/denom)/denom)*numer*numer < n; numer++ {
-			pf.Start("Cops")
 			if !p.Coprimes(numer, denom) {
 				continue
 			}
-			pf.Start("Loop")
 
 			b := (a / denom) * numer
 			c := (b / denom) * numer
