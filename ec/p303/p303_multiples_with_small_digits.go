@@ -1,22 +1,23 @@
 package p303
 
 import (
-	"fmt"
-
 	"github.com/leep-frog/command/command"
 	"github.com/leep-frog/euler_challenge/ec/ecmodels"
 	"github.com/leep-frog/euler_challenge/maths"
-	"golang.org/x/exp/maps"
 )
 
 func P303() *ecmodels.Problem {
-	return ecmodels.IntInputNode(303, func(o command.Output, n int) {
+	return ecmodels.IntInputNode(303, func(o command.Output, pow int) {
 
-		m := map[int]bool{}
-		for i := 1; i <= n; i++ {
-			m[i] = true
+		n := uint64(maths.Pow(10, pow))
+
+		// Used to use a map[uint64]bool for this, but iterating over keys was expensive
+		var s []uint64
+		for i := uint64(1); i <= n; i++ {
+			s = append(s, i)
 		}
-		o.Stdoutln(dfs(m, []*maths.Int{maths.NewInt(1), maths.NewInt(2)}, n))
+
+		o.Stdoutln(dfs(s, &smallDigitIncrementer{}, n))
 	}, []*ecmodels.Execution{
 		{
 			Args: []string{"2"},
@@ -29,50 +30,56 @@ func P303() *ecmodels.Problem {
 	})
 }
 
-func markCompleted(m map[int]bool, n, k int, v *maths.Int) *maths.Int {
-	sum := maths.Zero()
-
+func markCompleted(s []uint64, sum, n, k, v uint64) ([]uint64, uint64) {
+	remove := map[uint64]bool{}
 	for cur := k; cur <= n; cur *= 10 {
-		delete(m, cur)
+		remove[cur] = true
 		// This intentionally uses k because the ratio stays the same:
 		// (v / k) == (10v / 10k) == (100v / 100k) == ...
-		sum = sum.Plus(v.DivInt(k))
+		sum += v
+	}
+
+	var r []uint64
+	for _, v := range s {
+		if !remove[v] {
+			r = append(r, v)
+		}
+	}
+	return r, sum
+}
+
+func dfs(s []uint64, sdi *smallDigitIncrementer, n uint64) uint64 {
+
+	var sum uint64
+
+	// First, clear all the /9+/ values because they require the largest values
+	// but create a very simple pattern (k ones followed by 4k twos)
+	for nines, ones, twos := uint64(9), []int{1}, []int{2, 2, 2, 2}; nines <= n; nines, ones, twos = nines*10+9, append(ones, 1), append(twos, 2, 2, 2, 2) {
+		s, sum = markCompleted(s, sum, n, nines, maths.IntFromDigits(append(ones, twos...)).DivInt(int(nines)).Int().Uint64())
+	}
+
+	for len(s) > 0 {
+		v := sdi.next()
+
+		for _, k := range s {
+			if v%k == 0 {
+				s, sum = markCompleted(s, sum, n, k, v/k)
+			}
+		}
 	}
 	return sum
 }
 
-func dfs(m map[int]bool, opts []*maths.Int, n int) *maths.Int {
+type smallDigitIncrementer struct {
+	prev uint64
+}
 
-	sum := maths.Zero()
-
-	// First, clear all the /9+/ values because they require the largest values
-	// but create a very simple pattern (k ones followed by 4k twos)
-	for nines, ones, twos := 9, []int{1}, []int{2, 2, 2, 2}; nines <= n; nines, ones, twos = nines*10+9, append(ones, 1), append(twos, 2, 2, 2, 2) {
-		sum = sum.Plus(markCompleted(m, n, nines, maths.IntFromDigits(append(ones, twos...))))
+func (sdi *smallDigitIncrementer) next() uint64 {
+	tenPow := uint64(1)
+	for cur := sdi.prev; cur > 0 && cur%10 == 2; cur, tenPow = cur/10, tenPow*10 {
+		sdi.prev -= tenPow * 2
 	}
 
-	for len(m) > 0 {
-		next := opts[0]
-		opts = opts[1:]
-
-		for _, k := range maps.Keys(m) {
-			if next.ModInt(k) == 0 {
-
-				sum = sum.Plus(markCompleted(m, n, k, next))
-				fmt.Println(len(m))
-
-				if k == 9 || k == 99 || k == 999 || k == 9999 {
-					fmt.Println("nines", k, next)
-				}
-
-				if len(m) < 20 {
-					fmt.Println(sum, "|", k, next, m)
-				}
-
-			}
-		}
-
-		opts = append(opts, next.TimesInt(10), next.TimesInt(10).PlusInt(1), next.TimesInt(10).PlusInt(2))
-	}
-	return sum
+	sdi.prev += tenPow
+	return sdi.prev
 }

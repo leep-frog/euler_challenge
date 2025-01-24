@@ -50,6 +50,7 @@ func (ecCLI) Node() command.Node {
 		commander.FlagProcessor(
 			startFlag,
 		),
+		// commander.IfData(startFlag.Name(), commander.PrintlnProcessor("START", time.Now())),
 		commander.SimpleProcessor(func(i *command.Input, o command.Output, d *command.Data, ed *command.ExecuteData) error {
 			if !startFlag.Get(d) {
 				o.Stdoutln("START", time.Now())
@@ -61,5 +62,11 @@ func (ecCLI) Node() command.Node {
 			DefaultCompletion: true,
 			Default:           eulerchallenge.FileGenerator(),
 		},
+		&commander.ExecutorProcessor{func(o command.Output, d *command.Data) error {
+			if !startFlag.Get(d) {
+				o.Stdoutln("END", time.Now())
+			}
+			return nil
+		}},
 	)
 }
