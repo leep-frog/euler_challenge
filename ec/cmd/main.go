@@ -46,6 +46,7 @@ func (ecCLI) Setup() []string { return nil }
 
 func (ecCLI) Node() command.Node {
 	startFlag := commander.BoolFlag("start", 's', "If not set, then START is outputted at the beginning of the command execution (so you can tell if delay is due to problem complexity or go compilation)")
+	var startTime time.Time
 	return commander.SerialNodes(
 		commander.FlagProcessor(
 			startFlag,
@@ -53,6 +54,7 @@ func (ecCLI) Node() command.Node {
 		// commander.IfData(startFlag.Name(), commander.PrintlnProcessor("START", time.Now())),
 		commander.SimpleProcessor(func(i *command.Input, o command.Output, d *command.Data, ed *command.ExecuteData) error {
 			if !startFlag.Get(d) {
+				startTime = time.Now()
 				o.Stdoutln("START", time.Now())
 			}
 			return nil
@@ -64,7 +66,10 @@ func (ecCLI) Node() command.Node {
 		},
 		&commander.ExecutorProcessor{func(o command.Output, d *command.Data) error {
 			if !startFlag.Get(d) {
-				o.Stdoutln("END", time.Now())
+				endTime := time.Now()
+				startMillis, endMillis := startTime.UnixMilli(), endTime.UnixMilli()
+				diff := endMillis - startMillis
+				o.Stdoutf("DUR: %d.%ds\n", diff/1000, diff%1000)
 			}
 			return nil
 		}},
