@@ -13,6 +13,8 @@ type UnionFind[T comparable] struct {
 	setMap map[int]map[T]bool
 	// groupCount is used to keep track of the next group number
 	groupCount int
+	// largestGroup is the size of the largest group
+	largestGroup *maths.Bester[int, int]
 }
 
 // NewUnionFind returns an initialized UnionFind object.
@@ -21,6 +23,7 @@ func New[T comparable]() *UnionFind[T] {
 		map[T]int{},
 		map[int]map[T]bool{},
 		0,
+		maths.Largest[int, int](),
 	}
 }
 
@@ -48,6 +51,7 @@ func (uf *UnionFind[T]) Insert(a T) {
 	uf.setMap[uf.groupCount] = map[T]bool{
 		a: true,
 	}
+	uf.largestGroup.Check(1)
 }
 
 // Merge merges the groups for a and b. If a and b are already in the same group
@@ -63,6 +67,7 @@ func (uf *UnionFind[T]) Merge(a, b T) bool {
 	ag, aInGroup := uf.elementMap[a]
 	bg, bInGroup := uf.elementMap[b]
 	if !aInGroup && !bInGroup {
+		// Neither is in a group
 		uf.groupCount++
 		uf.elementMap[a] = uf.groupCount
 		uf.elementMap[b] = uf.groupCount
@@ -70,18 +75,36 @@ func (uf *UnionFind[T]) Merge(a, b T) bool {
 			a: true,
 			b: true,
 		}
+		uf.largestGroup.Check(2)
 	} else if !aInGroup {
+		// a isn't in a group so add it to the group that b is in
 		uf.setMap[bg][a] = true
 		uf.elementMap[a] = bg
+		uf.largestGroup.Check(len(uf.setMap[bg]))
 	} else if !bInGroup {
+		// b isn't in a group so add it to the group that a is in
 		uf.setMap[ag][b] = true
 		uf.elementMap[b] = ag
-	} else {
+		uf.largestGroup.Check(len(uf.setMap[ag]))
+
+		// If reach one of the below if-else statements, then both are in an existing group.
+		// We want to iterate over the smaller group which is what the below two blocks do.
+	} else if len(uf.setMap[ag]) < len(uf.setMap[bg]) {
+		// a's group is smaller so add those elements to b's group
 		for v := range uf.setMap[ag] {
 			uf.setMap[bg][v] = true
 			uf.elementMap[v] = bg
 		}
 		delete(uf.setMap, ag)
+		uf.largestGroup.Check(len(uf.setMap[bg]))
+	} else {
+		// b's group is smaller so add those elements to a's group
+		for v := range uf.setMap[bg] {
+			uf.setMap[ag][v] = true
+			uf.elementMap[v] = ag
+		}
+		delete(uf.setMap, bg)
+		uf.largestGroup.Check(len(uf.setMap[ag]))
 	}
 	return true
 }
@@ -97,4 +120,9 @@ func (uf *UnionFind[T]) Connected(a, b T) bool {
 // at least once.
 func (uf *UnionFind[T]) Elements() []T {
 	return maps.Keys(uf.elementMap)
+}
+
+// LargestSetSize returns the size of the largest connected set.
+func (uf *UnionFind[T]) LargestSetSize() int {
+	return uf.largestGroup.Best()
 }
