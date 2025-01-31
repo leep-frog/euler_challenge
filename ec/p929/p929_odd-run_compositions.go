@@ -13,32 +13,190 @@ const (
 
 func P929() *ecmodels.Problem {
 	return ecmodels.IntInputNode(929, func(o command.Output, n int) {
-		// var sum int
-
-		// for i := 1; i <= n; i++ {
-		// 	fmt.Println("B", i, f(i, -1), byStart(i))
-		// 	fmt.Println(byStartCache)
-		// }
-		fmt.Println(byStart(n))
+		o.Stdoutln(F(n))
 	}, []*ecmodels.Execution{
 		{
-			Args: []string{"2"},
-			Want: "",
+			Args:     []string{"2"},
+			Estimate: 15,
+			Want:     "57322484",
 		},
 	})
 }
+
+/***************************************************
+*               APPROACH THREE (15s)              *
+***************************************************/
+
+/***
+
+Basic approach is that we recursively calculate F(x) by considering the
+sequences for x that start with a number, k (f(x, k))
+
+Since there needs to be an odd number of k, then this is simply:
+f(x, k) = [All sequences for x starting with 1 k]
++ [All sequences for x starting with multiple k's]
+
+= [{k} concatenated with all sequences for (x-k) that don't start with k]
++ [{k,k} concatenated with all sequences for (x-2k) starting with k]
+
+Therefore:
+f(x, k) = F(x - k) - f(x - k, k) + f(x - 2k, k)
+
+I made this realization and was able to implement FOne to get the solution.
+
+The first post in the problem thread then points out that a recursive formula
+can be used. I did the math on paper, but will refrain from copying that here
+since it's tedious to type in code, but basically:
+
+f(x, k) = F(x-k) - F(x-2k) + 2F(x-3k) - 3F(x-4k) + 5F(x-5k) - ...
+
+And
+
+F(x) = sum from k = 1 to x of f(x, k)
+
+By combining the above two, we can then get:
+
+F(x) = f(x, 1)
++ f(x, 2)
++ f(x, 3)
++ ...
+
+= F(x-1) - F(x-2) + 2F(x-3) - 3F(x-4) + 5F(x-5) - ...
+=          F(x-2)           -  F(x-4)             ...
+=                    F(x-3)                       ...
+=                              F(x-4)             ...
+=                                        F(x-4)   ...
+
+You can see that we can calculate the coefficients for each F(x-i)
+instead of having to recur more deeply each time.
+
+That's exactly what approach three now does.
+
+*[1] It is simply to see that f(x, x) should equal 1
+
+Given our equality assumption above, however:
+f(x, x) = F(x - x) - f(0, x) + f(-x, x)
+1 = F(0) - f(0, x) + f(-x, x)
+
+It is reasonable to assume that f(k, *) for k < 0 should be 0
+This, however implies that 1 = F(0)
+Hence why the 0-th index is 1
+
+***/
+
+func F(n int) int {
+
+	summedFibCoefs := make([]int, n+1)
+
+	for k := 1; k <= n; k++ {
+		a, b := 1, 1
+		sign := 1
+		for i := k; i <= n; i += k {
+			fibCoef := sign * a
+			a, b = b, (a+b)%mod
+			summedFibCoefs[i] += fibCoef
+			sign *= -1
+		}
+	}
+
+	for i, v := range summedFibCoefs {
+		summedFibCoefs[i] = (mod + v) % mod
+	}
+
+	F := []int{
+		// We know that f(x, x) should equal 1
+		// Given our equality assumption, however:
+		// f(x, x) = F(x - x) - f(0, x) + f(-x, x)
+		//
+		//	1 = F(0) - f(0, x) + f(-x, x)
+		//
+		// It is reasonable to assume that f(k, *) for k < 0 should be 0
+		// This, however implies that 1 = F(0)
+		// Hence why the 0-th index is 1
+		1,
+		1,
+	}
+	for n >= len(F) {
+
+		x := len(F)
+		if x%1000 == 0 {
+			fmt.Println(x)
+		}
+
+		var sum int
+		for k := 1; k <= x; k++ {
+			sum = (sum + (summedFibCoefs[k] * F[x-k])) % mod
+		}
+		F = append(F, sum)
+	}
+
+	return F[n]
+}
+
+/***************************************************
+*                 APPROACH TWO (10m)              *
+***************************************************/
+func fTwo(x, start int) int {
+
+	if x == start {
+		return 1
+	}
+
+	if start > x {
+		panic("Bad args")
+	}
+
+	sign := 1
+	var sum int
+	a, b := 1, 1
+	for idx := 1; start*idx <= x; idx++ {
+		fibCoef := sign * a
+		a, b = b, (a+b)%mod
+		sum = (sum + (fibCoef * FTwo(x-idx*start) % mod)) % mod
+		sign *= -1
+	}
+
+	return sum
+
+}
+
+var (
+	fCache = []int{
+		1, // See *[1] for why F(0) is 1
+		1,
+	}
+)
+
+func FTwo(n int) int {
+	for n >= len(fCache) {
+		x := len(fCache)
+
+		var sum int
+		for i := 1; i <= x; i++ {
+			fp := fTwo(x, i)
+			sum = (sum + fp) % mod
+		}
+
+		fCache = append(fCache, sum)
+	}
+	return fCache[n]
+}
+
+/***************************************************
+*                   APPROACH ONE (~1 hour)                  *
+***************************************************/
 
 var (
 	cache = map[string]int{}
 )
 
-func f(n, mostRecent int) int {
+func fOne(n, mostRecent int) int {
 	if n == 0 {
 		return 1
 	}
 
 	if n < 0 {
-		panic("NO")
+		panic("Bad args")
 	}
 
 	code := fmt.Sprintf("%d-%d", n, mostRecent)
@@ -52,7 +210,7 @@ func f(n, mostRecent int) int {
 			continue
 		}
 		for cnt := 1; i*cnt <= n; cnt += 2 {
-			sum += f(n-i*cnt, i)
+			sum += fOne(n-i*cnt, i)
 		}
 	}
 	cache[code] = sum
@@ -76,13 +234,9 @@ var (
 	}
 )
 
-func byStart(n int) int {
+func FOne(n int) int {
 	for len(byStartCache) <= n {
 		k := len(byStartCache)
-
-		if k%100 == 0 {
-			fmt.Println("CALCING FOR", k)
-		}
 
 		byKStart := make([]int, k+1)
 		var total int
@@ -106,74 +260,4 @@ func byStart(n int) int {
 		byStartCache = append(byStartCache, byKStart)
 	}
 	return byStartCache[n][0]
-	// var sum int
 }
-
-// var (
-// 	// Map from n to starting number to number of arrangements that add up to n
-// 	// and start with starting number. Zero index is the total sum of arrangements
-// 	// for n
-// 	byStartMapCache = map[string]int{
-// 		"1-0": 1,
-// 		"1-1": 1,
-// 	}
-// )
-
-// func solve(n int) int {
-// 	for i := 1; i <= n; i++ {
-
-// 	}
-// }
-
-// func byStartMap(n, start int) int {
-// 	code := fmt.Sprintf("%d-%d", n, start)
-// 	if v, ok := byStartMapCache[code]; ok {
-// 		return v
-// 	}
-
-// 	if start > n {
-// 		panic("AH")
-// 	}
-
-// 	// Add a single i to all arrangements of (k-i) that don't start with i
-// 	v := byStartMap(n-start, 0)
-// 	if start <= n-start {
-// 		v = (v + mod - byStartMap(n-start, start)) % mod
-// 	}
-
-// 	// Add two start's to all arrangements of (n-start) that start with start
-// 	if n-2*start > 0 && n-2*start >= start {
-// 		v = (v + byStartMap(n-2*start, start)) % mod
-// 	}
-
-// 	byStartMapCache[code] = v
-// 	return v
-// }
-
-//
-
-// 1 1 4 4 10 19 33 59 113 210
-
-// []
-// [  1]
-// [  1  0]
-// [  4  2  1]
-// [  4  2  0  1]
-// [ 10  4  3  1  1]
-// [ 19  8  5  3  1  1]
-// [ 33 15  8  3  4  1  1]
-// [ 59 26 14  9  3  4  1  1]
-// [113 48 28 17  9  4  4  1  1]
-// [210 91 50 31 18  9  4  4  1  1]
-
-// []
-// [  1]
-// [  1  0]
-// [  4  2  1]
-// [  4  2  0  1]
-// [ 10  4  3  1  1]
-// [ 19  8  5  3  1  1]
-// [ 33 15  8  3  4  1  1]
-// [ 59 26 14  9  3  4  1  1]
-// [113 48 28 17  9  4  4  1  1]
-// [210 91 50 31 18  9  4  4  1  1]
