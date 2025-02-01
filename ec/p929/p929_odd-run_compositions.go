@@ -16,7 +16,15 @@ func P929() *ecmodels.Problem {
 		o.Stdoutln(F(n))
 	}, []*ecmodels.Execution{
 		{
-			Args:     []string{"2"},
+			Args: []string{"1000"},
+			Want: "984660863",
+		},
+		{
+			Args: []string{"10000"},
+			Want: "351367844",
+		},
+		{
+			Args:     []string{"100000"},
 			Estimate: 15,
 			Want:     "57322484",
 		},
@@ -104,24 +112,11 @@ func F(n int) int {
 	}
 
 	F := []int{
-		// We know that f(x, x) should equal 1
-		// Given our equality assumption, however:
-		// f(x, x) = F(x - x) - f(0, x) + f(-x, x)
-		//
-		//	1 = F(0) - f(0, x) + f(-x, x)
-		//
-		// It is reasonable to assume that f(k, *) for k < 0 should be 0
-		// This, however implies that 1 = F(0)
-		// Hence why the 0-th index is 1
-		1,
+		1, // See *[1] for why F(0) is 1
 		1,
 	}
 	for n >= len(F) {
-
 		x := len(F)
-		if x%1000 == 0 {
-			fmt.Println(x)
-		}
 
 		var sum int
 		for k := 1; k <= x; k++ {
@@ -130,6 +125,10 @@ func F(n int) int {
 		F = append(F, sum)
 	}
 
+	// Note that -mod < F[n] < mod, so if it's negative, we only need to add 1*mod
+	if F[n] < 0 {
+		return F[n] + mod
+	}
 	return F[n]
 }
 
