@@ -135,8 +135,8 @@ func P927() *ecmodels.Problem {
 			Want: "",
 		},
 		{
-			Args: []string{"2"},
-			Want: "",
+			Args: []string{"1000000"},
+			Want: "207282955",
 		},
 	})
 }
