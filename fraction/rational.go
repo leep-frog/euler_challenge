@@ -23,8 +23,18 @@ func NewRational(n, d int) *Rational {
 	return nr(n, d)
 }
 
+func NewRationalFromFloat(f float64) *Rational {
+	r := big.NewRat(1, 1)
+	r.SetFloat64(f)
+	return &Rational{r}
+}
+
 func NewBigRational(r *big.Rat) *Rational {
 	return nrb(r)
+}
+
+func NewBigRationalFromInt(n, d *big.Int) *Rational {
+	return nri(n, d)
 }
 
 func nr(n, d int) *Rational {

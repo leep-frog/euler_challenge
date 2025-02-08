@@ -1,7 +1,14 @@
 import numpy as np
 from itertools import combinations_with_replacement
 from scipy.linalg import solve
-import sys
+
+import scipy.sparse as sp
+from scipy.sparse.linalg import cg
+from mpmath import mp, mpf
+
+cg
+
+mp.dps = 100
 
 def generate_states(n, k):
     """
@@ -43,7 +50,6 @@ def expected_meeting_time(n, k, initial_config):
     Compute the expected number of steps for k balls to meet in an n-node cycle.
     """
     states = generate_states(n, k)
-    print("NUM STATES", len(states))
     A, b = transition_probabilities(n, k, states)
     T_values = solve(A, b)  # Solve the linear system Ax = b
 
@@ -53,10 +59,9 @@ def expected_meeting_time(n, k, initial_config):
     return T_values[state_index[tuple(sorted(initial_config))]]
 
 # Example usage
-n = int(sys.argv[1])  # Number of nodes in the cycle
-k = int(sys.argv[2])  # Number of balls
-initial_config = (0 for x in range(k))
-# initial_config = (0, 0, 0, 0, 0, 0, 1, 2)  # Initial positions of the balls
+n = 10  # Number of nodes in the cycle
+k = 8  # Number of balls
+initial_config = (0, 0, 0, 0, 0, 0, 1, 2)  # Initial positions of the balls
 
 print("START")
 expected_time = expected_meeting_time(n, k, initial_config)

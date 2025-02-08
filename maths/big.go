@@ -324,3 +324,9 @@ func (i *Int) TrimDigits(n int) *Int {
 	n = Min(n, len(iStr))
 	return MustIntFromString(iStr[len(iStr)-n:])
 }
+
+func (i *Int) SignificantDigits(n int) *Int {
+	iStr := i.String()
+	n = Min(n, len(iStr))
+	return MustIntFromString(iStr[:n])
+}
