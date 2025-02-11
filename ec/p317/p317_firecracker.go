@@ -87,7 +87,8 @@ func P317() *ecmodels.Problem {
 
 	}, []*ecmodels.Execution{
 		{
-			Want: "",
+			Want:     "1856532.8455",
+			Estimate: 250,
 		},
 	})
 }
@@ -576,6 +577,7 @@ func bigIncrementer(ni int) {
 		prevPoint,
 	}
 
+	// TODO: instead of incrementing, binary search up to a threshold
 	incr := newFlote(0.0001)
 	// angleIncr := newFlote(0.000001)
 	// angle := angleIncr
