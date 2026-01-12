@@ -115,3 +115,12 @@ func (r *Range) Merge(that *Range) *Range {
 	merged.verifyAndSimplify()
 	return merged
 }
+
+// Returns the number of values included in the range.
+func (r *Range) Size() int {
+	size := 0
+	for i := 0; i < len(r.inflectionPoints); i += 2 {
+		size += r.inflectionPoints[i+1] - r.inflectionPoints[i] + 1
+	}
+	return size
+}
