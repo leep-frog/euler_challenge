@@ -2,6 +2,7 @@ package point
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/leep-frog/euler_challenge/maths"
 )
@@ -27,6 +28,11 @@ func rotateFunc(x, y, z int, rs ...Rotation) func(*Point3D) *Point3D {
 
 func (p *Point3D) Code() string {
 	return p.String()
+}
+
+func (p *Point3D) Distance(o *Point3D) float64 {
+	// return math.Sqrt(float64(p.X*p.X + p.Y*p.Y + p.Z*p.Z))
+	return math.Sqrt(float64((p.X-o.X)*(p.X-o.X) + (p.Y-o.Y)*(p.Y-o.Y) + (p.Z-o.Z)*(p.Z-o.Z)))
 }
 
 func (p *Point3D) Minus(s *Point3D) *Point3D {
